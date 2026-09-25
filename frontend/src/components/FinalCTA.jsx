@@ -16,8 +16,9 @@ export default function FinalCTA() {
                 <span>Admissions Now Open</span>
               </div>
 
-              <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
-                Begin Your Heritage Journey
+              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+                <span className="block sm:inline">Begin Your</span>{' '}
+                <span className="block sm:inline">Heritage Journey</span>
               </h2>
 
               <p className="font-['Cormorant_Garamond'] text-xl sm:text-2xl text-[#F7F2E8] tracking-wide font-normal">

@@ -25,8 +25,9 @@ export default function SacredDisconnect() {
                 <span className="inline-block px-4 py-1 rounded-full bg-[#F7F2E8] border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium">
                   Cultural Reflection
                 </span>
-                <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl md:text-5xl font-bold text-[#4A2C20] tracking-tight mt-2.5">
-                  Reconnect with What Matters
+                <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#4A2C20] tracking-tight mt-2.5 leading-tight">
+                  <span className="block sm:inline">Reconnect with</span>{' '}
+                  <span className="block sm:inline">What Truly Matters</span>
                 </h2>
                 <div className="w-20 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
               </div>

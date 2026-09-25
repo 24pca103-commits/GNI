@@ -140,12 +140,10 @@ export default function Hero() {
           </div>
 
           {/* Heading in Cormorant Garamond - Sentence Case */}
-          <h1 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[#F7F2E8] tracking-tight leading-[1.15]">
-            <span>
-              {current.headingMain}{' '}
-              <span className="text-[#B89555] italic block sm:inline">
-                {current.headingAccent}
-              </span>
+          <h1 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[#F7F2E8] tracking-tight leading-[1.15]">
+            <span className="block sm:inline">{current.headingMain}</span>{' '}
+            <span className="text-[#B89555] italic block sm:inline">
+              {current.headingAccent}
             </span>
           </h1>
 

@@ -53,8 +53,9 @@ export default function About() {
               <Sparkles className="w-3.5 h-3.5 text-[#B89555]" />
               <span>About Global Nagas Institute</span>
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
-              Preserving Ancient Tamil Wisdom Through Living Craftsmanship
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
+              <span className="block sm:inline">Preserving Ancient Tamil Wisdom</span>{' '}
+              <span className="block sm:inline">Through Living Craftsmanship</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">

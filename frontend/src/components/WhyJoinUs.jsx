@@ -85,8 +85,9 @@ export default function WhyJoinUs() {
               <Sparkles className="w-3.5 h-3.5 text-[#B89555]" />
               <span>Why Join Global Nagas Institute</span>
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
-              Why Join Global Nagas Institute?
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
+              <span className="block sm:inline">Why Join</span>{' '}
+              <span className="block sm:inline">Global Nagas Institute?</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">
