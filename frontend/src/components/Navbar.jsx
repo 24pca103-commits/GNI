@@ -40,22 +40,36 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50">
       {/* Top Contact & Announcement Bar in Dark Brown (#4A2C20) */}
       <div className="bg-[#4A2C20] border-b border-[#B89555]/20 text-[#F7F2E8]/90 py-1.5 px-3 sm:px-4 text-xs font-['DM_Sans'] overflow-hidden">
-        {/* Mobile View: Strictly 1 Single Clean Line (No Wrapping) */}
-        <div className="sm:hidden flex items-center justify-between text-[11px] whitespace-nowrap overflow-hidden">
-          <a
-            href="tel:+919061621111"
-            className="flex items-center gap-1.5 text-[#F7F2E8] shrink-0 font-medium font-number"
-          >
-            <Phone className="w-3 h-3 text-[#B89555] shrink-0" />
-            <span>+91 90616 21111</span>
-          </a>
-          <span className="text-[#B89555]/40 mx-2 shrink-0">•</span>
-          <div className="flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] animate-pulse shrink-0" />
-            <span className="text-[#F7F2E8]/90 truncate">
-              Admissions Open 2026 Cohorts
-            </span>
-          </div>
+        {/* Mobile View: Nav links in Top Navbar (Strictly 1 Single Clean Swipeable Line) */}
+        <div className="sm:hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 text-[11.5px] whitespace-nowrap">
+          {navLinks.map((item) => {
+            const isSpecial = item.label.toLowerCase().includes('learning journey');
+
+            if (isSpecial) {
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="font-['DM_Sans'] text-[11px] font-bold text-[#B89555] shrink-0 flex items-center gap-1 animate-text-glow cursor-pointer py-0.5 px-2.5 rounded-full bg-[#B89555]/15 border border-[#B89555]/40"
+                >
+                  <Sparkles className="w-3 h-3 text-[#B89555] animate-pulse shrink-0" />
+                  <span>{item.label}</span>
+                </a>
+              );
+            }
+
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className="font-['DM_Sans'] text-[11.5px] font-medium text-[#F7F2E8]/90 hover:text-[#B89555] transition-colors shrink-0 py-0.5 px-2 rounded-full hover:bg-white/10 cursor-pointer"
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </div>
 
         {/* Desktop View: Full Contact & Announcement */}
