@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-number: 'DM Sans', sans-serif;
+  
+  --color-deepbrown: #4A2C20;
+  --color-chocolate: #6B4030;
+  --color-ivory: #F7F2E8;
+  --color-gold: #B89555;
+  --color-darkcharcoal: #241A16;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  body {
+    background-color: #F7F2E8;
+    color: #241A16;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: #241A16;
+    letter-spacing: -0.01em;
+    font-variant-numeric: lining-nums proportional-nums;
+    font-feature-settings: "lnum" 1;
+  }
+}
+
+/* Number / Statistics font in DM Sans SemiBold or Bold */
+.font-number {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+}
+
+.font-num-semibold {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Custom Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F2E8;
+}
+::-webkit-scrollbar-thumb {
+  background: #6B4030;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B89555;
+}
+
+/* Shimmering Gold Glow Animation for Highlighted Items */
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(184, 149, 85, 0.35);
+    border-color: rgba(184, 149, 85, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(184, 149, 85, 0.85), 0 0 24px rgba(184, 149, 85, 0.45);
+    border-color: #B89555;
+  }
+}
+
+.animate-gold-glow {
+  animation: goldGlow 2s ease-in-out infinite;
+}
+
+/* Shimmering Text-Only Glow Animation for Highlighted Text */
+@keyframes textGlow {
+  0%, 100% {
+    color: #B89555;
+    text-shadow: 0 0 2px rgba(184, 149, 85, 0.4);
+  }
+  50% {
+    color: #4A2C20;
+    text-shadow: 0 0 10px rgba(184, 149, 85, 0.9), 0 0 16px rgba(184, 149, 85, 0.6);
+  }
+}
+
+.animate-text-glow {
+  animation: textGlow 2s ease-in-out infinite;
+}
