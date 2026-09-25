@@ -67,9 +67,9 @@ export default function About() {
 
         {/* Unified Symmetrical Showcase Stage */}
         <Reveal direction="up" delay={180}>
-          <div className="bg-[#F7F2E8] rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-md grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-[#6B4030]/15 shadow-md grid lg:grid-cols-12 gap-6 lg:gap-12 items-center">
             {/* Left Column: Authentic Studio Visual with Fixed Proportions */}
-            <div className="lg:col-span-6 relative rounded-2xl overflow-hidden shadow-lg border border-[#6B4030]/20 bg-[#241A16] h-[340px] sm:h-[420px] group">
+            <div className="lg:col-span-6 relative rounded-2xl overflow-hidden shadow-lg border border-[#6B4030]/20 bg-[#241A16] h-[300px] sm:h-[420px] group">
               <img
                 src="/artisan/hands-on-studio.jpg"
                 alt="Master artisans and students sculpting and carving sacred Tamil idols at Global Nagas Institute"
@@ -77,29 +77,29 @@ export default function About() {
               />
 
               {/* Overlaid Gold Badge on Top Left */}
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-[#6B4030]/15 flex items-center gap-2">
-                <Award className="w-4 h-4 text-[#B89555]" />
-                <span className="text-xs font-['DM_Sans'] font-bold text-[#4A2C20]">
+              <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-white/95 backdrop-blur-md px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full shadow-md border border-[#6B4030]/15 flex items-center gap-1.5 sm:gap-2">
+                <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
+                <span className="text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20]">
                   Living Atelier & Repository
                 </span>
               </div>
 
-              {/* Floating Bottom Status Bar */}
-              <div className="absolute bottom-4 left-4 right-4 bg-[#241A16]/95 backdrop-blur-md px-4 py-3 rounded-xl border border-[#B89555]/30 flex items-center justify-between text-[#F7F2E8]">
-                <div>
-                  <p className="font-['Cormorant_Garamond'] text-xl font-bold text-[#B89555] leading-none">
+              {/* Floating Bottom Status Bar - Clean 2-Col Grid to Prevent Text Overlap */}
+              <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 bg-[#241A16]/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#B89555]/30 grid grid-cols-2 divide-x divide-[#B89555]/30 text-[#F7F2E8]">
+                <div className="pr-2 sm:pr-3 min-w-0">
+                  <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#B89555] leading-tight truncate">
                     4 Heritage Pillars
                   </p>
-                  <p className="font-['DM_Sans'] text-[11px] text-[#F7F2E8]/80 mt-1">
-                    Painting, Libi, Metal & Applications
+                  <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/80 mt-0.5 leading-tight truncate">
+                    <span className="hidden sm:inline">Painting, Libi, Metal & Applications</span>
+                    <span className="sm:hidden">Painting, Libi & Metal</span>
                   </p>
                 </div>
-                <div className="h-7 w-px bg-[#B89555]/30" />
-                <div>
-                  <p className="font-['Cormorant_Garamond'] text-xl font-bold text-[#B89555] leading-none">
+                <div className="pl-2.5 sm:pl-3.5 min-w-0">
+                  <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#B89555] leading-tight truncate">
                     1:3 Ratio
                   </p>
-                  <p className="font-['DM_Sans'] text-[11px] text-[#F7F2E8]/80 mt-1">
+                  <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/80 mt-0.5 leading-tight truncate">
                     25% Theory : 75% Studio
                   </p>
                 </div>

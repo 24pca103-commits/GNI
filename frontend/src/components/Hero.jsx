@@ -191,21 +191,21 @@ export default function Hero() {
             </button>
           </div>
 
-          {/* Core Highlights Placed Directly Below Register Button */}
-          <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6 text-xs sm:text-sm font-['DM_Sans'] text-[#F7F2E8]/90">
-            <div className="flex items-center gap-2">
-              <span className="font-number text-base sm:text-lg font-bold text-[#B89555]">4</span>
-              <span>Heritage Pillars</span>
+          {/* Core Highlights Placed Directly Below Register Button - Strictly Single Line on Mobile */}
+          <div className="pt-3 flex flex-nowrap items-center justify-between sm:justify-start gap-1.5 sm:gap-6 text-[10.5px] sm:text-sm font-['DM_Sans'] text-[#F7F2E8]/90 w-full sm:w-auto">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <span className="font-number text-sm sm:text-lg font-bold text-[#B89555]">4</span>
+              <span className="whitespace-nowrap">Heritage Pillars</span>
             </div>
-            <div className="h-3.5 w-px bg-white/20 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="font-number text-base sm:text-lg font-bold text-[#B89555]">60</span>
-              <span>Days Creator Journey</span>
+            <div className="h-3 w-px bg-white/20 shrink-0" />
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <span className="font-number text-sm sm:text-lg font-bold text-[#B89555]">60</span>
+              <span className="whitespace-nowrap">Days <span className="hidden sm:inline">Creator </span>Journey</span>
             </div>
-            <div className="h-3.5 w-px bg-white/20 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#B89555]" />
-              <span>Hands-on Livelihood</span>
+            <div className="h-3 w-px bg-white/20 shrink-0" />
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+              <span className="whitespace-nowrap">Hands-on Livelihood</span>
             </div>
           </div>
         </div>
