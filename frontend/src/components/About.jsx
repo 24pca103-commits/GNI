@@ -84,22 +84,22 @@ export default function About() {
                 </span>
               </div>
 
-              {/* Floating Bottom Status Bar - Clean 2-Col Grid to Prevent Text Overlap */}
-              <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 bg-[#241A16]/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#B89555]/30 grid grid-cols-2 divide-x divide-[#B89555]/30 text-[#F7F2E8]">
-                <div className="pr-2 sm:pr-3 min-w-0">
-                  <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#B89555] leading-tight truncate">
+              {/* Floating Bottom Status Bar - Clean 2-Col Grid showing full text without truncation */}
+              <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 bg-[#241A16]/95 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#B89555]/30 grid grid-cols-2 divide-x divide-[#B89555]/30 text-[#F7F2E8]">
+                <div className="pr-2.5 sm:pr-3 min-w-0">
+                  <p className="font-['Cormorant_Garamond'] text-sm sm:text-xl font-bold text-[#B89555] leading-tight">
                     4 Heritage Pillars
                   </p>
-                  <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/80 mt-0.5 leading-tight truncate">
+                  <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/85 mt-0.5 leading-snug">
                     <span className="hidden sm:inline">Painting, Libi, Metal & Applications</span>
-                    <span className="sm:hidden">Painting, Libi & Metal</span>
+                    <span className="sm:hidden">Painting, Libi & Metal Studio</span>
                   </p>
                 </div>
                 <div className="pl-2.5 sm:pl-3.5 min-w-0">
-                  <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#B89555] leading-tight truncate">
+                  <p className="font-['Cormorant_Garamond'] text-sm sm:text-xl font-bold text-[#B89555] leading-tight">
                     1:3 Ratio
                   </p>
-                  <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/80 mt-0.5 leading-tight truncate">
+                  <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/85 mt-0.5 leading-snug">
                     25% Theory : 75% Studio
                   </p>
                 </div>
