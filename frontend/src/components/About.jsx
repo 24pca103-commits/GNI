@@ -35,7 +35,7 @@ export default function About() {
       icon: Hammer,
       title: 'Dignified Livelihood Creation',
       desc: 'Empowering traditional artisans, architects, and designers to command premium international markets for authentic sacred craftsmanship and luxury temple motifs.',
-      metric: '₹80K - ₹2.5L / Mo',
+      metric: '₹80K - ₹2.5L / Month',
       highlight: 'Skill to Sustainable Revenue',
     },
   ];
