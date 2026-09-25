@@ -88,7 +88,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative pt-28 pb-8 sm:pt-32 sm:pb-10 md:pt-36 md:pb-12 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
+      className="relative pt-36 pb-12 sm:pt-36 sm:pb-12 md:pt-40 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
     >
       {/* Background Auto-Sliding Carousel with Solid Color Overlay (No Gradients) */}
       <div className="absolute inset-0 z-0">
@@ -113,21 +113,21 @@ export default function Hero() {
         })}
       </div>
 
-      {/* Banner Left and Right Slider Arrows */}
+      {/* Banner Left and Right Slider Arrows on Desktop Only (Hidden on mobile so they never cover text) */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 sm:left-5 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#241A16]/80 hover:bg-[#B89555] hover:text-[#241A16] text-[#F7F2E8] border border-[#B89555]/40 flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer group"
+        className="hidden sm:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#241A16]/80 hover:bg-[#B89555] hover:text-[#241A16] text-[#F7F2E8] border border-[#B89555]/40 items-center justify-center transition-all duration-200 shadow-md cursor-pointer group"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-0.5 transition-transform" />
+        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-0.5 transition-transform" />
       </button>
 
       <button
         onClick={nextSlide}
-        className="absolute right-2 sm:right-5 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#241A16]/80 hover:bg-[#B89555] hover:text-[#241A16] text-[#F7F2E8] border border-[#B89555]/40 flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer group"
+        className="hidden sm:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#241A16]/80 hover:bg-[#B89555] hover:text-[#241A16] text-[#F7F2E8] border border-[#B89555]/40 items-center justify-center transition-all duration-200 shadow-md cursor-pointer group"
         aria-label="Next slide"
       >
-        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-0.5 transition-transform" />
+        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition-transform" />
       </button>
 
       {/* Main Content Area */}
@@ -213,20 +213,36 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Banner Bottom Center Alignment for Indicator Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+      {/* Banner Bottom Center Alignment for Indicator Dots & Mobile Controls */}
+      <div className="absolute bottom-3.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5">
+        <button
+          onClick={prevSlide}
+          className="sm:hidden w-7 h-7 rounded-full bg-[#241A16]/90 border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-center shadow-xs"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+
         {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => goToSlide(idx)}
-            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+            className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 cursor-pointer ${
               idx === currentSlide
-                ? 'w-8 bg-[#B89555]'
-                : 'w-2.5 bg-[#F7F2E8]/40 hover:bg-[#F7F2E8]/70'
+                ? 'w-7 sm:w-8 bg-[#B89555]'
+                : 'w-2 sm:w-2.5 bg-[#F7F2E8]/40 hover:bg-[#F7F2E8]/70'
             }`}
             aria-label={`Go to slide ${idx + 1}`}
           />
         ))}
+
+        <button
+          onClick={nextSlide}
+          className="sm:hidden w-7 h-7 rounded-full bg-[#241A16]/90 border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-center shadow-xs"
+          aria-label="Next slide"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
     </section>
   );
