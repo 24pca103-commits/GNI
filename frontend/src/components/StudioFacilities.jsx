@@ -110,24 +110,46 @@ export default function StudioFacilities() {
     },
   ];
 
-  // 3-in-Front Infinite Looping Carousel State
-  const extendedFacilities = [...facilities, ...facilities, ...facilities];
-  const [currentIndex, setCurrentIndex] = useState(facilities.length);
-  const [withTransition, setWithTransition] = useState(true);
+  // 3-in-Front Smooth Infinite Carousel State (100% Stuck-Proof)
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState(null); // 'next' | 'prev' | null
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
-  // Active facility is the center one of the 3 visible items (safe positive modulo)
-  const activeIndex = (((currentIndex + 1) % facilities.length) + facilities.length) % facilities.length;
   const current = facilities[activeIndex] || facilities[0];
   const CurrentIcon = current ? current.icon : facilities[0].icon;
 
   const nextSlide = () => {
-    setWithTransition(true);
-    setCurrentIndex((prev) => (prev >= facilities.length * 2 ? facilities.length : prev + 1));
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setSlideDirection('next');
+    setTimeout(() => {
+      setActiveIndex((prev) => (prev + 1) % facilities.length);
+      setSlideDirection(null);
+      setIsTransitioning(false);
+    }, 380);
   };
 
   const prevSlide = () => {
-    setWithTransition(true);
-    setCurrentIndex((prev) => (prev <= 0 ? facilities.length * 2 - 1 : prev - 1));
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setSlideDirection('prev');
+    setTimeout(() => {
+      setActiveIndex((prev) => (prev - 1 + facilities.length) % facilities.length);
+      setSlideDirection(null);
+      setIsTransitioning(false);
+    }, 380);
+  };
+
+  const goToSlide = (idx) => {
+    if (isTransitioning || idx === activeIndex) return;
+    setIsTransitioning(true);
+    setSlideDirection(idx > activeIndex ? 'next' : 'prev');
+    setTimeout(() => {
+      setActiveIndex(idx);
+      setSlideDirection(null);
+      setIsTransitioning(false);
+    }, 380);
   };
 
   // Touch handlers for mobile swipe
@@ -146,41 +168,40 @@ export default function StudioFacilities() {
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
-    if (distance > 45) {
+    if (distance > 40) {
       nextSlide();
-    } else if (distance < -45) {
+    } else if (distance < -40) {
       prevSlide();
     }
   };
 
-  // Continuous auto-sliding & looping every 4 seconds
+  // Auto-slide every 4.5 seconds (pauses on hover)
   useEffect(() => {
+    if (isPaused) return;
     const timer = setInterval(() => {
-      setWithTransition(true);
-      setCurrentIndex((prev) => (prev >= facilities.length * 2 ? facilities.length : prev + 1));
-    }, 4000);
+      nextSlide();
+    }, 4500);
     return () => clearInterval(timer);
-  }, [facilities.length]);
+  }, [activeIndex, isTransitioning, isPaused]);
 
-  // Seamless infinite loop transition handler
-  const handleTransitionEnd = () => {
-    if (currentIndex >= facilities.length * 2) {
-      setWithTransition(false);
-      setCurrentIndex((prev) => prev - facilities.length);
-    } else if (currentIndex < facilities.length) {
-      setWithTransition(false);
-      setCurrentIndex((prev) => prev + facilities.length);
-    }
+  // Dynamic 5-item window: guarantees previous, current, next, and transition buffers are always valid
+  const visibleFacilities = [
+    facilities[(activeIndex - 2 + facilities.length) % facilities.length],
+    facilities[(activeIndex - 1 + facilities.length) % facilities.length],
+    facilities[activeIndex],
+    facilities[(activeIndex + 1) % facilities.length],
+    facilities[(activeIndex + 2 + facilities.length) % facilities.length],
+  ];
+
+  // Track transform calculation:
+  // At rest: -20% (items 1, 2, 3 in view, with item 2 in center)
+  // On 'next': -40%
+  // On 'prev': 0%
+  const getTrackTransform = () => {
+    if (slideDirection === 'next') return 'translateX(-40%)';
+    if (slideDirection === 'prev') return 'translateX(0%)';
+    return 'translateX(-20%)';
   };
-
-  useEffect(() => {
-    if (!withTransition) {
-      const raf = requestAnimationFrame(() => {
-        setWithTransition(true);
-      });
-      return () => cancelAnimationFrame(raf);
-    }
-  }, [withTransition]);
 
   return (
     <section id="facilities" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
@@ -206,14 +227,19 @@ export default function StudioFacilities() {
 
         {/* 3-in-Front Scrolling & Looping Icon Carousel - Visible on Mobile & Desktop */}
         <Reveal direction="up" delay={150}>
-            <div className="relative mb-6 sm:mb-8 max-w-3xl mx-auto">
+            <div
+              className="relative mb-6 sm:mb-8 max-w-3xl mx-auto"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
               {/* Carousel Container with Arrows and Viewport */}
               <div className="flex items-center justify-between gap-2 sm:gap-4">
                 {/* Prev Button */}
                 <button
                   onClick={prevSlide}
+                  disabled={isTransitioning}
                   aria-label="Previous Studio"
-                  className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
+                  className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
                 >
                   <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
@@ -226,28 +252,30 @@ export default function StudioFacilities() {
                   className="flex-1 overflow-hidden py-3 px-1"
                 >
                   <div
-                    onTransitionEnd={handleTransitionEnd}
                     style={{
-                      transform: `translateX(-${(currentIndex * 100) / 3}%)`,
-                      transition: withTransition ? 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+                      width: '166.666667%',
+                      transform: getTrackTransform(),
+                      transition: isTransitioning ? 'transform 380ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none',
                     }}
                     className="flex items-start"
                   >
-                    {extendedFacilities.map((fac, idx) => {
+                    {visibleFacilities.map((fac, slotIdx) => {
                       const Icon = fac.icon;
-                      // Check if this item is currently the center active one
-                      const isCenter = idx === currentIndex + 1;
+                      // Slot index 2 is always the center active item
+                      const isCenter = slotIdx === 2;
 
                       return (
                         <div
-                          key={idx}
-                          className="w-1/3 flex-shrink-0 px-1 sm:px-2 flex flex-col items-center justify-center text-center"
+                          key={`${fac.id}-${slotIdx}`}
+                          style={{ width: '20%' }}
+                          className="shrink-0 px-1 sm:px-2 flex flex-col items-center justify-center text-center"
                         >
                           <button
                             onClick={() => {
-                              setWithTransition(true);
-                              const targetIndex = facilities.length + (idx % facilities.length) - 1;
-                              setCurrentIndex(targetIndex);
+                              if (slotIdx === 1) prevSlide();
+                              else if (slotIdx === 3) nextSlide();
+                              else if (slotIdx === 0) prevSlide();
+                              else if (slotIdx === 4) nextSlide();
                             }}
                             className="flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group focus:outline-hidden w-full"
                           >
@@ -287,8 +315,9 @@ export default function StudioFacilities() {
                 {/* Next Button */}
                 <button
                   onClick={nextSlide}
+                  disabled={isTransitioning}
                   aria-label="Next Studio"
-                  className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
+                  className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
                 >
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
@@ -299,10 +328,7 @@ export default function StudioFacilities() {
                 {facilities.map((fac, idx) => (
                   <button
                     key={fac.id}
-                    onClick={() => {
-                      setWithTransition(true);
-                      setCurrentIndex(facilities.length + idx - 1);
-                    }}
+                    onClick={() => goToSlide(idx)}
                     aria-label={`Slide to ${fac.title}`}
                     className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                       idx === activeIndex ? 'w-8 bg-[#B89555]' : 'w-2 bg-[#6B4030]/25 hover:bg-[#6B4030]/50'
