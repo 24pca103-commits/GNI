@@ -5,7 +5,7 @@ import Reveal from './Reveal';
 export default function TargetAudience() {
   const audiences = [
     {
-      num: '01',
+      num: '1',
       title: 'Architects / Interior Designers',
       category: 'Spatial Design & Sacred Architecture',
       image: '/artisan/audience-architect.jpg',
@@ -19,7 +19,7 @@ export default function TargetAudience() {
       tag: 'Architectural Heritage',
     },
     {
-      num: '02',
+      num: '2',
       title: 'Jewellery Designers / Artists',
       category: 'Ornamental Metallurgy & Traditional Art',
       image: '/artisan/audience-jewellery.jpg',
@@ -33,7 +33,7 @@ export default function TargetAudience() {
       tag: 'Creative Craftsmanship',
     },
     {
-      num: '03',
+      num: '3',
       title: 'History Lovers / Students / Homemakers',
       category: 'Cultural Identity & Sustainable Livelihood',
       image: '/artisan/audience-history.jpg',

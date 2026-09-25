@@ -12,7 +12,19 @@
   --color-darkcharcoal: #241A16;
 }
 
+/* Override Cormorant Garamond digits to use normal standard numbers from DM Sans */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: local('DM Sans'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
+  unicode-range: U+0030-0039;
+  font-display: swap;
+}
+
 @layer base {
+  *, ::before, ::after {
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
   html {
     scroll-behavior: smooth;
     font-family: 'DM Sans', sans-serif;
@@ -32,17 +44,13 @@
     font-family: 'Cormorant Garamond', Georgia, serif;
     color: #241A16;
     letter-spacing: -0.01em;
-    font-variant-numeric: lining-nums proportional-nums;
-    font-feature-settings: "lnum" 1;
   }
 }
 
-/* Number / Statistics font in DM Sans SemiBold or Bold */
+/* Number / Statistics font in normal DM Sans */
 .font-number {
   font-family: 'DM Sans', sans-serif;
-  font-weight: 700;
   font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.01em;
 }
 
 .font-num-semibold {

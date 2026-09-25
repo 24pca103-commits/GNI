@@ -69,7 +69,7 @@ export default function TransformationSection() {
 
                     {/* Step Number Tag */}
                     <span className="mt-3 text-xs font-number font-bold text-[#B89555]">
-                      Step 0{idx + 1}
+                      Step {idx + 1}
                     </span>
                   </div>
                 );

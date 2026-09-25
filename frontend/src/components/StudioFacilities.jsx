@@ -356,7 +356,7 @@ export default function StudioFacilities() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
                     <CurrentIcon className="w-4 h-4 text-[#B89555]" />
-                    <span>Facility Specification <span className="font-number font-bold text-[#B89555]">0{activeIndex + 1}</span></span>
+                    <span>Facility Specification <span className="font-number font-bold text-[#B89555]">{activeIndex + 1}</span></span>
                   </div>
                   <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#241A16] tracking-tight">
                     {current.title}

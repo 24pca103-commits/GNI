@@ -20,7 +20,7 @@ export default function LearningJourney() {
   const steps = [
     {
       period: 'Day 1–10',
-      phase: 'Phase 01',
+      phase: 'Phase 1',
       title: 'Drawing & Symbols',
       desc: 'Practical drawing and traditional symbols.',
       icon: Pencil,
@@ -29,7 +29,7 @@ export default function LearningJourney() {
     },
     {
       period: 'Day 11–20',
-      phase: 'Phase 02',
+      phase: 'Phase 2',
       title: 'Tamili & Inscriptions',
       desc: 'Tamili script and inscription practice.',
       icon: FileCode2,
@@ -38,7 +38,7 @@ export default function LearningJourney() {
     },
     {
       period: 'Day 21–30',
-      phase: 'Phase 03',
+      phase: 'Phase 3',
       title: 'Rock Art & Painting',
       desc: 'Traditional visual language and painting practice.',
       icon: Paintbrush,
@@ -47,7 +47,7 @@ export default function LearningJourney() {
     },
     {
       period: 'Day 31–40',
-      phase: 'Phase 04',
+      phase: 'Phase 4',
       title: 'Iconography',
       desc: 'Understanding symbols, forms and cultural meaning.',
       icon: Sparkles,
@@ -56,7 +56,7 @@ export default function LearningJourney() {
     },
     {
       period: 'Day 41–50',
-      phase: 'Phase 05',
+      phase: 'Phase 5',
       title: 'Naga Jewellery & Metal Basics',
       desc: 'Introduction to traditional metal craftsmanship.',
       icon: Flame,
@@ -65,7 +65,7 @@ export default function LearningJourney() {
     },
     {
       period: 'Day 51–60',
-      phase: 'Phase 06',
+      phase: 'Phase 6',
       title: 'Real-World Applications + 1 Field Visit',
       desc: 'Apply heritage knowledge to modern creative fields + 1 immersive field visit.',
       icon: Briefcase,
@@ -139,7 +139,7 @@ export default function LearningJourney() {
                     {steps[activeStep].period}
                   </span>
                   <span className="text-xs font-['DM_Sans'] text-[#6B4030] font-semibold">
-                    {steps[activeStep].phase} of 06
+                    {steps[activeStep].phase} of 6
                   </span>
                 </div>
                 <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">

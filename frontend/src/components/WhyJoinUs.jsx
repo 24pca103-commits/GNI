@@ -17,7 +17,7 @@ import FloatingBubbles from './FloatingBubbles';
 export default function WhyJoinUs() {
   const benefits = [
     {
-      step: '01',
+      step: '1',
       icon: Award,
       title: 'Direct Living Master Lineage',
       tag: 'Sacred Lineage',
@@ -26,7 +26,7 @@ export default function WhyJoinUs() {
       badge: 'Master Sthapathi Mentorship',
     },
     {
-      step: '02',
+      step: '2',
       icon: Hammer,
       title: '1:3 Harmonic Theory To Practice Ratio',
       tag: 'Skill Over Theory',
@@ -35,16 +35,16 @@ export default function WhyJoinUs() {
       badge: 'Physical Hammer & Chisel Work',
     },
     {
-      step: '03',
+      step: '3',
       icon: Compass,
       title: 'Livelihood Creation & Revenue Pathways',
       tag: 'Skill To Income',
       desc: 'Translate ancient rock art, inscriptions, and sacred metalwork into lucrative modern applications: pooja room sanctums, jewellery motifs, and luxury interiors.',
-      metric: '₹80K - ₹2.5L / Mo',
+      metric: '₹80K - ₹2.5L / Month',
       badge: 'High-Demand Market Placement',
     },
     {
-      step: '04',
+      step: '4',
       icon: Layers,
       title: 'Authentic Studio Kits & Tools Included',
       tag: 'Complete Materials',
@@ -53,7 +53,7 @@ export default function WhyJoinUs() {
       badge: 'Traditional Toolkit Shipped',
     },
     {
-      step: '05',
+      step: '5',
       icon: Users,
       title: 'A2O Creators Guild & Fellowship',
       tag: 'Creative Circle',
@@ -62,7 +62,7 @@ export default function WhyJoinUs() {
       badge: 'Annual Heritage Showcase',
     },
     {
-      step: '06',
+      step: '6',
       icon: Feather,
       title: 'Revival of Endangered Cultural Pride',
       tag: 'Ancient Tamil Wisdom',
@@ -111,7 +111,7 @@ export default function WhyJoinUs() {
                     <div>
                       {/* Header: Step Number & Icon */}
                       <div className="flex items-center justify-between mb-5">
-                        <span className="font-['Cormorant_Garamond'] text-3xl font-bold text-[#6B4030]/25 group-hover:text-[#B89555] transition-colors">
+                        <span className="font-['DM_Sans'] text-2xl font-bold text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors">
                           {item.step}
                         </span>
                         <div className="w-12 h-12 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">

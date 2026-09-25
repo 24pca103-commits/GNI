@@ -5,7 +5,7 @@ import Reveal from './Reveal';
 export default function HeritageFramework() {
   const pillars = [
     {
-      number: '01',
+      number: '1',
       title: 'Painting (Art & Heritage)',
       category: 'Art & Heritage',
       badge: 'Core Studio Track',
@@ -16,7 +16,7 @@ export default function HeritageFramework() {
       tags: ['Rock Painting', 'Temple Painting', 'Basic Sketching', 'Iconography'],
     },
     {
-      number: '02',
+      number: '2',
       title: 'Libi (Language & Epigraphy)',
       category: 'Language & Epigraphy',
       badge: 'Archival Epigraphy Track',
@@ -27,7 +27,7 @@ export default function HeritageFramework() {
       tags: ['Tamili Script', 'Copper Plates', 'Stone Inscriptions', 'Reading Basics'],
     },
     {
-      number: '03',
+      number: '3',
       title: 'Sculpturing & Nagas Metal Art',
       category: 'Sculpturing & Metal Art',
       badge: 'Work Integrated Guild',
@@ -38,7 +38,7 @@ export default function HeritageFramework() {
       tags: ['Naga Jewellery', 'Copper/Brass Work', 'Sacred Metal Craft', 'Sculpturing'],
     },
     {
-      number: '04',
+      number: '4',
       title: 'Heritage Applications',
       category: 'Design & Livelihood',
       badge: 'Industry Incubation Track',

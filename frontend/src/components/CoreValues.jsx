@@ -6,7 +6,7 @@ import FloatingBubbles from './FloatingBubbles';
 export default function CoreValues() {
   const values = [
     {
-      num: '01',
+      num: '1',
       title: 'Preserve Heritage',
       statement: 'Save Tamil Wisdom Through Practice',
       detail:
@@ -16,7 +16,7 @@ export default function CoreValues() {
       metric: '100% Living Tradition',
     },
     {
-      num: '02',
+      num: '2',
       title: 'Create With Hands',
       statement: 'Skill Over Theory Through Tactile Work',
       detail:
@@ -26,7 +26,7 @@ export default function CoreValues() {
       metric: '3:1 Practical Ratio',
     },
     {
-      num: '03',
+      num: '3',
       title: 'Sacred Craftsmanship',
       statement: 'Respect Tradition and Ancient Canons',
       detail:
@@ -36,7 +36,7 @@ export default function CoreValues() {
       metric: 'Millennia-Old Codes',
     },
     {
-      num: '04',
+      num: '4',
       title: 'Livelihood Creation',
       statement: 'Skill → Income → Dignified Identity',
       detail:
@@ -46,7 +46,7 @@ export default function CoreValues() {
       metric: 'Sustainable Income',
     },
     {
-      num: '05',
+      num: '5',
       title: 'Cultural Pride',
       statement: 'Bring Ancient Wisdom into Modern Life',
       detail:

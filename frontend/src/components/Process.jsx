@@ -15,7 +15,7 @@ import FloatingBubbles from './FloatingBubbles';
 export default function Process() {
   const steps = [
     {
-      step: '01',
+      step: '1',
       title: 'Epigraphical & Script Ingestion',
       icon: FileText,
       description:
@@ -23,7 +23,7 @@ export default function Process() {
       badge: 'Step 1: Epigraphical Archival',
     },
     {
-      step: '02',
+      step: '2',
       title: 'Material & Tool Standards Maintenance',
       icon: Hammer,
       description:
@@ -31,7 +31,7 @@ export default function Process() {
       badge: 'Step 2: Sacred Metallurgy',
     },
     {
-      step: '03',
+      step: '3',
       title: 'Tactile Lineage Transmission',
       icon: Users,
       description:
@@ -39,7 +39,7 @@ export default function Process() {
       badge: 'Step 3: Studio Transmission',
     },
     {
-      step: '04',
+      step: '4',
       title: 'Shilpa Canons & Authenticity Audits',
       icon: ShieldCheck,
       description:
@@ -47,7 +47,7 @@ export default function Process() {
       badge: 'Step 4: Canonic Quality Audit',
     },
     {
-      step: '05',
+      step: '5',
       title: 'Repository Archiving & Livelihood Release',
       icon: Archive,
       description:
@@ -92,7 +92,7 @@ export default function Process() {
                   <div>
                     {/* Header: Step Number & Icon */}
                     <div className="flex items-center justify-between mb-4">
-                      <span className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors">
+                      <span className="font-['DM_Sans'] text-2xl font-bold text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors">
                         {item.step}
                       </span>
                       <div className="w-11 h-11 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
