@@ -28,13 +28,13 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: 'Home', href: '#home', icon: Home },
-    { label: 'Heritage Pillars', href: '#heritage-skills', icon: Bookmark },
-    { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles },
-    { label: 'Studios', href: '#facilities', icon: Palette },
-    { label: 'Workshops', href: '#workshop', icon: Hammer },
-    { label: 'Creators Circle', href: '#community', icon: Users },
-    { label: 'About', href: '#about', icon: Compass },
+    { label: 'Home', href: '#home', icon: Home, shortLabel: 'Home' },
+    { label: 'Heritage Pillars', href: '#heritage-skills', icon: Bookmark, shortLabel: 'Pillars' },
+    { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles, shortLabel: 'Journey' },
+    { label: 'Studios', href: '#facilities', icon: Palette, shortLabel: 'Studios' },
+    { label: 'Workshops', href: '#workshop', icon: Hammer, shortLabel: 'Workshop' },
+    { label: 'Creators Circle', href: '#community', icon: Users, shortLabel: 'Circle' },
+    { label: 'About', href: '#about', icon: Compass, shortLabel: 'About' },
   ];
 
   const handleNavClick = (e, href) => {
@@ -183,9 +183,9 @@ export default function Navbar() {
       </nav>
       </header>
 
-      {/* Mobile Fixed Bottom Navigation Bar - Icons Only, No Scroller */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] py-2 px-2">
-        <div className="flex items-center justify-around w-full max-w-md mx-auto">
+      {/* Mobile Fixed Bottom Navigation Bar - Icons with Names Below */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] py-1.5 px-1">
+        <div className="flex items-center justify-between w-full max-w-md mx-auto">
           {navLinks.map((item) => {
             const isSpecial = item.label.toLowerCase().includes('learning journey');
             const Icon = item.icon;
@@ -198,9 +198,14 @@ export default function Navbar() {
                   onClick={(e) => handleNavClick(e, item.href)}
                   aria-label={item.label}
                   title={item.label}
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[#B89555] text-[#241A16] shadow-md active:scale-90 transition-transform cursor-pointer"
+                  className="flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-transform cursor-pointer group"
                 >
-                  <Sparkles className="w-5 h-5 text-[#241A16] animate-pulse" />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#B89555] text-[#241A16] shadow-md">
+                    <Sparkles className="w-4 h-4 text-[#241A16] animate-pulse" />
+                  </div>
+                  <span className="text-[9.5px] font-['DM_Sans'] font-bold text-[#B89555] mt-0.5 truncate max-w-full">
+                    {item.shortLabel || item.label}
+                  </span>
                 </a>
               );
             }
@@ -212,9 +217,14 @@ export default function Navbar() {
                 onClick={(e) => handleNavClick(e, item.href)}
                 aria-label={item.label}
                 title={item.label}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-[#F7F2E8]/85 hover:text-[#B89555] hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
+                className="flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 text-[#F7F2E8]/85 hover:text-[#B89555] active:scale-95 transition-all cursor-pointer group"
               >
-                {Icon && <Icon className="w-5 h-5" />}
+                <div className="w-7 h-7 flex items-center justify-center rounded-lg group-hover:bg-white/10 transition-colors">
+                  {Icon && <Icon className="w-4.5 h-4.5" />}
+                </div>
+                <span className="text-[9.5px] font-['DM_Sans'] font-medium text-[#F7F2E8]/80 group-hover:text-[#B89555] mt-0.5 truncate max-w-full">
+                  {item.shortLabel || item.label}
+                </span>
               </a>
             );
           })}
