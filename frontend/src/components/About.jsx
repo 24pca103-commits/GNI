@@ -156,43 +156,56 @@ export default function About() {
           </div>
         </Reveal>
 
-        {/* 3 Symmetrical, Equal-Height Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-8 sm:mt-10">
-          {pillars.map((pillar) => {
-            const IconComponent = pillar.icon;
+        {/* 3 Symmetrical, Equal-Height Feature Cards - Sliding on Mobile */}
+        <Reveal direction="up" delay={250}>
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-8 mt-8 sm:mt-10">
+            {pillars.map((pillar) => {
+              const IconComponent = pillar.icon;
 
-            return (
-              <Reveal key={pillar.id} direction="up" delay={250 + pillar.id * 100}>
-                <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
-                  <div>
-                    {/* Header: Icon & Metric Pill */}
-                    <div className="flex items-center justify-between mb-5">
-                      <div className="w-12 h-12 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                        <IconComponent className="w-6 h-6" />
+              return (
+                <div
+                  key={pillar.id}
+                  className="w-[84vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                >
+                  <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                    <div>
+                      {/* Header: Icon & Metric Pill */}
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="w-12 h-12 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                          <IconComponent className="w-6 h-6" />
+                        </div>
+                        <span className="text-[11px] font-['DM_Sans'] font-bold text-[#241A16] bg-[#B89555] px-3 py-1 rounded-full shadow-xs">
+                          {pillar.metric}
+                        </span>
                       </div>
-                      <span className="text-[11px] font-['DM_Sans'] font-bold text-[#241A16] bg-[#B89555] px-3 py-1 rounded-full shadow-xs">
-                        {pillar.metric}
-                      </span>
+
+                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
+                        {pillar.title}
+                      </h3>
+
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal">
+                        {pillar.desc}
+                      </p>
                     </div>
 
-                    <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
-                      {pillar.title}
-                    </h3>
-
-                    <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal">
-                      {pillar.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-5 pt-3.5 border-t border-[#6B4030]/10 flex items-center gap-2 text-[11px] font-['DM_Sans'] text-[#4A2C20] font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
-                    <span>{pillar.highlight}</span>
+                    <div className="mt-5 pt-3.5 border-t border-[#6B4030]/10 flex items-center gap-2 text-[11px] font-['DM_Sans'] text-[#4A2C20] font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                      <span>{pillar.highlight}</span>
+                    </div>
                   </div>
                 </div>
-              </Reveal>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+
+          {/* Mobile Swipe Hint Dots */}
+          <div className="flex md:hidden items-center justify-center gap-1.5 mt-3">
+            {pillars.map((_, i) => (
+              <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
+            ))}
+            <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view more</span>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -181,206 +181,292 @@ export default function StudioFacilities() {
           </div>
         </Reveal>
 
-        {/* 3-in-Front Scrolling & Looping Carousel */}
-        <Reveal direction="up" delay={150}>
-          <div className="relative mb-6 sm:mb-8 max-w-3xl mx-auto">
-            {/* Carousel Container with Arrows and Viewport */}
-            <div className="flex items-center justify-between gap-3 sm:gap-4">
-              {/* Prev Button */}
-              <button
-                onClick={prevSlide}
-                aria-label="Previous Studio"
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              {/* Viewport: Shows EXACTLY 3 items in front at a time */}
-              <div className="flex-1 overflow-hidden py-3 px-1">
-                <div
-                  onTransitionEnd={handleTransitionEnd}
-                  style={{
-                    transform: `translateX(-${(currentIndex * 100) / 3}%)`,
-                    transition: withTransition ? 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
-                  }}
-                  className="flex items-start"
-                >
-                  {extendedFacilities.map((fac, idx) => {
-                    const Icon = fac.icon;
-                    // Check if this item is currently the center active one
-                    const isCenter = idx === currentIndex + 1;
-
-                    return (
-                      <div
-                        key={idx}
-                        className="w-1/3 flex-shrink-0 px-1 sm:px-2 flex flex-col items-center justify-center text-center"
-                      >
-                        <button
-                          onClick={() => {
-                            setWithTransition(true);
-                            const targetIndex = facilities.length + (idx % facilities.length) - 1;
-                            setCurrentIndex(targetIndex);
-                          }}
-                          className="flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group focus:outline-hidden w-full"
-                        >
-                          {/* Round Shape Icon Container */}
-                          <div
-                            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
-                              isCenter
-                                ? 'bg-[#4A2C20] text-[#B89555] ring-4 ring-[#B89555]/40 shadow-xl scale-110'
-                                : 'bg-white border border-[#6B4030]/20 text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105 shadow-sm opacity-80 group-hover:opacity-100'
-                            }`}
-                          >
-                            <Icon className="w-6 h-6" />
-                          </div>
-
-                          {/* Name Mentioned Below Icon */}
-                          <span
-                            className={`text-xs font-['DM_Sans'] mt-2.5 max-w-[120px] leading-snug line-clamp-2 transition-colors ${
-                              isCenter ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
-                            }`}
-                          >
-                            {fac.title}
-                          </span>
-
-                          {/* Center Active Indicator Dot/Bar */}
-                          {isCenter ? (
-                            <span className="w-6 h-1 rounded-full bg-[#B89555] mt-1.5 transition-all" />
-                          ) : (
-                            <span className="w-1.5 h-1.5 rounded-full bg-transparent mt-1.5" />
-                          )}
-                        </button>
+        {/* Mobile View: Horizontally Swipeable Studio Cards */}
+        <div className="md:hidden">
+          <Reveal direction="up" delay={150}>
+            <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4">
+              {facilities.map((fac, idx) => {
+                const Icon = fac.icon;
+                return (
+                  <div
+                    key={fac.id}
+                    className="w-[85vw] max-w-[320px] shrink-0 snap-center flex flex-col"
+                  >
+                    <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-lg flex flex-col justify-between h-full select-none">
+                      {/* Studio Image Header */}
+                      <div className="relative h-48 overflow-hidden bg-[#241A16]">
+                        <img
+                          src={fac.image}
+                          alt={fac.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-[#241A16]/25" />
+                        <div className="absolute top-3 left-3 bg-[#241A16]/90 px-3 py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[11px] font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm">
+                          <Icon className="w-3 h-3 text-[#B89555]" />
+                          <span className="text-[#F7F2E8]">{fac.category}</span>
+                        </div>
+                        <div className="absolute bottom-3 right-3 bg-[#241A16]/85 px-2.5 py-0.5 rounded-full text-[10px] font-['DM_Sans'] text-[#B89555] font-bold">
+                          0{idx + 1} / 0{facilities.length}
+                        </div>
                       </div>
-                    );
-                  })}
+
+                      {/* Content Body */}
+                      <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1.5 text-xs text-[#6B4030] font-['DM_Sans']">
+                            <Icon className="w-4 h-4 text-[#B89555]" />
+                            <span>Facility 0{idx + 1}</span>
+                          </div>
+                          <h3 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#241A16] leading-snug">
+                            {fac.title}
+                          </h3>
+                          <p className="font-['DM_Sans'] text-xs text-[#241A16]/80 leading-relaxed font-normal mt-2">
+                            {fac.desc}
+                          </p>
+
+                          {/* Tools & Equipment */}
+                          <div className="mt-4 pt-3 border-t border-[#6B4030]/15 space-y-1.5">
+                            <span className="text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
+                              Tools & Equipment:
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {fac.tools.slice(0, 3).map((t, tIdx) => (
+                                <span
+                                  key={tIdx}
+                                  className="px-2 py-0.5 rounded-md text-[10px] font-['DM_Sans'] bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/15"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Supervisor Footnote */}
+                        <div className="pt-3 border-t border-[#6B4030]/15 flex items-center justify-between text-[11px] font-['DM_Sans'] text-[#6B4030]">
+                          <span className="text-[#B89555] font-semibold">{fac.curator}</span>
+                          <ShieldCheck className="w-4 h-4 text-[#B89555]" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile Dots */}
+            <div className="flex items-center justify-center gap-1.5 mt-3">
+              {facilities.map((_, i) => (
+                <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
+              ))}
+              <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view 6 studios</span>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Desktop View: 3-in-Front Scrolling Carousel + Split Workbench */}
+        <div className="hidden md:block">
+          {/* 3-in-Front Scrolling & Looping Carousel */}
+          <Reveal direction="up" delay={150}>
+            <div className="relative mb-6 sm:mb-8 max-w-3xl mx-auto">
+              {/* Carousel Container with Arrows and Viewport */}
+              <div className="flex items-center justify-between gap-3 sm:gap-4">
+                {/* Prev Button */}
+                <button
+                  onClick={prevSlide}
+                  aria-label="Previous Studio"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                {/* Viewport: Shows EXACTLY 3 items in front at a time */}
+                <div className="flex-1 overflow-hidden py-3 px-1">
+                  <div
+                    onTransitionEnd={handleTransitionEnd}
+                    style={{
+                      transform: `translateX(-${(currentIndex * 100) / 3}%)`,
+                      transition: withTransition ? 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+                    }}
+                    className="flex items-start"
+                  >
+                    {extendedFacilities.map((fac, idx) => {
+                      const Icon = fac.icon;
+                      // Check if this item is currently the center active one
+                      const isCenter = idx === currentIndex + 1;
+
+                      return (
+                        <div
+                          key={idx}
+                          className="w-1/3 flex-shrink-0 px-1 sm:px-2 flex flex-col items-center justify-center text-center"
+                        >
+                          <button
+                            onClick={() => {
+                              setWithTransition(true);
+                              const targetIndex = facilities.length + (idx % facilities.length) - 1;
+                              setCurrentIndex(targetIndex);
+                            }}
+                            className="flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group focus:outline-hidden w-full"
+                          >
+                            {/* Round Shape Icon Container */}
+                            <div
+                              className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                                isCenter
+                                  ? 'bg-[#4A2C20] text-[#B89555] ring-4 ring-[#B89555]/40 shadow-xl scale-110'
+                                  : 'bg-white border border-[#6B4030]/20 text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105 shadow-sm opacity-80 group-hover:opacity-100'
+                              }`}
+                            >
+                              <Icon className="w-6 h-6" />
+                            </div>
+
+                            {/* Name Mentioned Below Icon */}
+                            <span
+                              className={`text-xs font-['DM_Sans'] mt-2.5 max-w-[120px] leading-snug line-clamp-2 transition-colors ${
+                                isCenter ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
+                              }`}
+                            >
+                              {fac.title}
+                            </span>
+
+                            {/* Center Active Indicator Dot/Bar */}
+                            {isCenter ? (
+                              <span className="w-6 h-1 rounded-full bg-[#B89555] mt-1.5 transition-all" />
+                            ) : (
+                              <span className="w-1.5 h-1.5 rounded-full bg-transparent mt-1.5" />
+                            )}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={nextSlide}
+                  aria-label="Next Studio"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Loop Progress Dots for the 6 studios */}
+              <div className="flex items-center justify-center gap-2 mt-4">
+                {facilities.map((fac, idx) => (
+                  <button
+                    key={fac.id}
+                    onClick={() => {
+                      setWithTransition(true);
+                      setCurrentIndex(facilities.length + idx - 1);
+                    }}
+                    aria-label={`Slide to ${fac.title}`}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      idx === activeIndex ? 'w-8 bg-[#B89555]' : 'w-2 bg-[#6B4030]/25 hover:bg-[#6B4030]/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Dynamic Studio Showcase Stage - Split Visual & Workbench */}
+          <Reveal direction="up" delay={200}>
+            <div
+              key={current.id}
+              className="bg-white rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-[0_24px_50px_-10px_rgba(74,44,32,0.2)] grid lg:grid-cols-12 gap-8 items-center relative overflow-hidden transition-all duration-500"
+            >
+              {/* Left Column: Authentic Studio Visual with Details */}
+              <div className="lg:col-span-6 relative rounded-2xl overflow-hidden bg-[#241A16] h-[340px] sm:h-[420px] group">
+                <img
+                  src={current.image}
+                  alt={current.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-[#241A16]/30" />
+
+                {/* Top Category Tag */}
+                <div className="absolute top-4 left-4 bg-[#241A16]/90 px-3.5 py-1.5 rounded-xl border border-[#B89555]/30 text-[#B89555] text-xs font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm">
+                  <CurrentIcon className="w-3.5 h-3.5 text-[#B89555]" />
+                  <span className="text-[#F7F2E8]">{current.category}</span>
+                </div>
+
+                {/* Bottom Curator Panel */}
+                <div className="absolute bottom-4 left-4 right-4 bg-[#241A16]/90 p-4 rounded-xl border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-['DM_Sans'] text-[#B89555] font-semibold block">
+                      Lead Supervisor
+                    </span>
+                    <p className="font-['DM_Sans'] text-xs text-white font-medium">
+                      {current.curator}
+                    </p>
+                  </div>
+                  <ShieldCheck className="w-5 h-5 text-[#B89555]" />
                 </div>
               </div>
 
-              {/* Next Button */}
-              <button
-                onClick={nextSlide}
-                aria-label="Next Studio"
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Loop Progress Dots for the 6 studios */}
-            <div className="flex items-center justify-center gap-2 mt-4">
-              {facilities.map((fac, idx) => (
-                <button
-                  key={fac.id}
-                  onClick={() => {
-                    setWithTransition(true);
-                    setCurrentIndex(facilities.length + idx - 1);
-                  }}
-                  aria-label={`Slide to ${fac.title}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === activeIndex ? 'w-8 bg-[#B89555]' : 'w-2 bg-[#6B4030]/25 hover:bg-[#6B4030]/50'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </Reveal>
-
-        {/* Dynamic Studio Showcase Stage - Split Visual & Workbench */}
-        <Reveal direction="up" delay={200}>
-          <div
-            key={current.id}
-            className="bg-white rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-[0_24px_50px_-10px_rgba(74,44,32,0.2)] grid lg:grid-cols-12 gap-8 items-center relative overflow-hidden transition-all duration-500"
-          >
-            {/* Left Column: Authentic Studio Visual with Details */}
-            <div className="lg:col-span-6 relative rounded-2xl overflow-hidden bg-[#241A16] h-[340px] sm:h-[420px] group">
-              <img
-                src={current.image}
-                alt={current.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-              <div className="absolute inset-0 bg-[#241A16]/30" />
-
-              {/* Top Category Tag */}
-              <div className="absolute top-4 left-4 bg-[#241A16]/90 px-3.5 py-1.5 rounded-xl border border-[#B89555]/30 text-[#B89555] text-xs font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm">
-                <CurrentIcon className="w-3.5 h-3.5 text-[#B89555]" />
-                <span className="text-[#F7F2E8]">{current.category}</span>
-              </div>
-
-              {/* Bottom Curator Panel */}
-              <div className="absolute bottom-4 left-4 right-4 bg-[#241A16]/90 p-4 rounded-xl border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-between">
-                <div>
-                  <span className="text-[11px] font-['DM_Sans'] text-[#B89555] font-semibold block">
-                    Lead Supervisor
-                  </span>
-                  <p className="font-['DM_Sans'] text-xs text-white font-medium">
-                    {current.curator}
+              {/* Right Column: Workbench Specifications & Tools */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
+                    <CurrentIcon className="w-4 h-4 text-[#B89555]" />
+                    <span>Facility Specification <span className="font-number font-bold text-[#B89555]">0{activeIndex + 1}</span></span>
+                  </div>
+                  <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#241A16] tracking-tight">
+                    {current.title}
+                  </h3>
+                  <p className="font-['DM_Sans'] text-sm sm:text-[14.5px] text-[#241A16]/80 leading-relaxed font-normal">
+                    {current.desc}
                   </p>
                 </div>
-                <ShieldCheck className="w-5 h-5 text-[#B89555]" />
+
+                {/* Studio Equipment & Tools Grid */}
+                <div className="space-y-2.5">
+                  <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030] flex items-center gap-1.5">
+                    <Wrench className="w-3.5 h-3.5 text-[#B89555]" />
+                    <span>Tools & Equipment Provided:</span>
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {current.tools.map((t, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 rounded-lg text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/20"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Practical Capabilities List */}
+                <div className="space-y-2 pt-2 border-t border-[#6B4030]/15">
+                  <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030]">
+                    Core Learning Outcomes:
+                  </h4>
+                  <div className="space-y-1.5">
+                    {current.capabilities.map((c, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#241A16]/85">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                        <span>{c}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Studio Bottom Bar */}
+                <div className="pt-4 border-t border-[#6B4030]/15 flex items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
+                  <span className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-[#B89555]" />
+                    <span>30–50 Students Cohort Batch</span>
+                  </span>
+                  <span className="font-semibold text-[#B89555]">
+                    Open for 2026 Admissions
+                  </span>
+                </div>
               </div>
             </div>
-
-            {/* Right Column: Workbench Specifications & Tools */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
-                  <CurrentIcon className="w-4 h-4 text-[#B89555]" />
-                  <span>Facility Specification <span className="font-number font-bold text-[#B89555]">0{activeIndex + 1}</span></span>
-                </div>
-                <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#241A16] tracking-tight">
-                  {current.title}
-                </h3>
-                <p className="font-['DM_Sans'] text-sm sm:text-[14.5px] text-[#241A16]/80 leading-relaxed font-normal">
-                  {current.desc}
-                </p>
-              </div>
-
-              {/* Studio Equipment & Tools Grid */}
-              <div className="space-y-2.5">
-                <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030] flex items-center gap-1.5">
-                  <Wrench className="w-3.5 h-3.5 text-[#B89555]" />
-                  <span>Tools & Equipment Provided:</span>
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {current.tools.map((t, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 rounded-lg text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/20"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Practical Capabilities List */}
-              <div className="space-y-2 pt-2 border-t border-[#6B4030]/15">
-                <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030]">
-                  Core Learning Outcomes:
-                </h4>
-                <div className="space-y-1.5">
-                  {current.capabilities.map((c, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#241A16]/85">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
-                      <span>{c}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Studio Bottom Bar */}
-              <div className="pt-4 border-t border-[#6B4030]/15 flex items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
-                <span className="flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5 text-[#B89555]" />
-                  <span>30–50 Students Cohort Batch</span>
-                </span>
-                <span className="font-semibold text-[#B89555]">
-                  Open for 2026 Admissions
-                </span>
-              </div>
-            </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

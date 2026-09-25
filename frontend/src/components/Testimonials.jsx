@@ -67,54 +67,67 @@ export default function Testimonials() {
           </div>
         </Reveal>
 
-        {/* Testimonials Grid in Title Case */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {testimonials.map((item, idx) => (
-            <Reveal key={idx} direction="up" delay={idx * 120}>
-              <div className="bg-[#F7F2E8] rounded-3xl p-6 sm:p-8 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
-                <div>
-                  {/* Rating Stars in Antique Gold #B89555 & Quote Icon */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-1">
-                      {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-[#B89555] text-[#B89555]" />
-                      ))}
+        {/* Testimonials Grid: Sliding on Mobile, Grid on Larger Screens */}
+        <Reveal direction="up" delay={150}>
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8">
+            {testimonials.map((item, idx) => (
+              <div
+                key={idx}
+                className="w-[84vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+              >
+                <div className="bg-[#F7F2E8] rounded-3xl p-6 sm:p-8 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                  <div>
+                    {/* Rating Stars in Antique Gold #B89555 & Quote Icon */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-1">
+                        {[...Array(item.rating)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-[#B89555] text-[#B89555]" />
+                        ))}
+                      </div>
+                      <MessageSquareQuote className="w-6 h-6 text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors" />
                     </div>
-                    <MessageSquareQuote className="w-6 h-6 text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors" />
+
+                    {/* Review Text */}
+                    <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-sm leading-relaxed italic mb-6 font-normal">
+                      "{item.review}"
+                    </p>
                   </div>
 
-                  {/* Review Text */}
-                  <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-sm leading-relaxed italic mb-6 font-normal">
-                    "{item.review}"
-                  </p>
-                </div>
-
-                {/* Author Info */}
-                <div className="pt-4 border-t border-[#6B4030]/15 flex items-center gap-4">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-12 h-12 rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-['Cormorant_Garamond'] font-bold text-[#241A16] text-lg">
-                        {item.name}
-                      </h3>
-                      <CheckCircle2 className="w-4 h-4 text-[#B89555] shrink-0" title="Verified Cohort Graduate" />
+                  {/* Author Info */}
+                  <div className="pt-4 border-t border-[#6B4030]/15 flex items-center gap-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-['Cormorant_Garamond'] font-bold text-[#241A16] text-lg">
+                          {item.name}
+                        </h3>
+                        <CheckCircle2 className="w-4 h-4 text-[#B89555] shrink-0" title="Verified Cohort Graduate" />
+                      </div>
+                      <p className="font-['DM_Sans'] text-xs font-semibold text-[#6B4030]">
+                        {item.role}
+                      </p>
+                      <p className="font-['DM_Sans'] text-[11px] text-[#B89555] font-medium mt-0.5">
+                        {item.batch}
+                      </p>
                     </div>
-                    <p className="font-['DM_Sans'] text-xs font-semibold text-[#6B4030]">
-                      {item.role}
-                    </p>
-                    <p className="font-['DM_Sans'] text-[11px] text-[#B89555] font-medium mt-0.5">
-                      {item.batch}
-                    </p>
                   </div>
                 </div>
               </div>
-            </Reveal>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          {/* Mobile Swipe Hint Dots */}
+          <div className="flex md:hidden items-center justify-center gap-1.5 mt-3">
+            {testimonials.map((_, i) => (
+              <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
+            ))}
+            <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view reviews</span>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

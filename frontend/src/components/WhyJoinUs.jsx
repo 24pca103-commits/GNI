@@ -96,52 +96,65 @@ export default function WhyJoinUs() {
           </div>
         </Reveal>
 
-        {/* Benefits Grid: 6 Distinct Pillars in Title Case */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {benefits.map((item, idx) => {
-            const Icon = item.icon;
+        {/* Benefits Grid: 6 Distinct Pillars - Sliding on Mobile */}
+        <Reveal direction="up" delay={150}>
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 lg:gap-8">
+            {benefits.map((item) => {
+              const Icon = item.icon;
 
-            return (
-              <Reveal key={item.step} direction="up" delay={150 + idx * 80}>
-                <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
-                  <div>
-                    {/* Header: Step Number & Icon */}
-                    <div className="flex items-center justify-between mb-5">
-                      <span className="font-['Cormorant_Garamond'] text-3xl font-bold text-[#6B4030]/25 group-hover:text-[#B89555] transition-colors">
-                        {item.step}
-                      </span>
-                      <div className="w-12 h-12 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                        <Icon className="w-6 h-6" />
+              return (
+                <div
+                  key={item.step}
+                  className="w-[82vw] max-w-[310px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                >
+                  <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                    <div>
+                      {/* Header: Step Number & Icon */}
+                      <div className="flex items-center justify-between mb-5">
+                        <span className="font-['Cormorant_Garamond'] text-3xl font-bold text-[#6B4030]/25 group-hover:text-[#B89555] transition-colors">
+                          {item.step}
+                        </span>
+                        <div className="w-12 h-12 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                          <Icon className="w-6 h-6" />
+                        </div>
                       </div>
+
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-['DM_Sans'] font-semibold bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/15 mb-2.5">
+                        {item.tag}
+                      </span>
+
+                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
+                        {item.title}
+                      </h3>
+
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal">
+                        {item.desc}
+                      </p>
                     </div>
 
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-['DM_Sans'] font-semibold bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/15 mb-2.5">
-                      {item.tag}
-                    </span>
-
-                    <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
-                      {item.title}
-                    </h3>
-
-                    <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal">
-                      {item.desc}
-                    </p>
-                  </div>
-
-                  {/* Card Footer: Metric & Badge */}
-                  <div className="mt-6 pt-4 border-t border-[#6B4030]/10 flex items-center justify-between">
-                    <span className="font-['DM_Sans'] text-xs font-bold text-[#241A16]">
-                      {item.metric}
-                    </span>
-                    <span className="font-['DM_Sans'] text-[11px] font-medium text-[#B89555]">
-                      {item.badge}
-                    </span>
+                    {/* Card Footer: Metric & Badge */}
+                    <div className="mt-6 pt-4 border-t border-[#6B4030]/10 flex items-center justify-between">
+                      <span className="font-['DM_Sans'] text-xs font-bold text-[#241A16]">
+                        {item.metric}
+                      </span>
+                      <span className="font-['DM_Sans'] text-[11px] font-medium text-[#B89555]">
+                        {item.badge}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </Reveal>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+
+          {/* Mobile Swipe Hint Dots */}
+          <div className="flex md:hidden items-center justify-center gap-1.5 mt-3">
+            {benefits.map((_, i) => (
+              <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
+            ))}
+            <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view more</span>
+          </div>
+        </Reveal>
 
         {/* Bottom Call to Action Card */}
         <Reveal direction="up" delay={650}>

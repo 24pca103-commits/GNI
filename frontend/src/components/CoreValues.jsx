@@ -97,13 +97,17 @@ export default function CoreValues() {
           </div>
         </Reveal>
 
-        {/* Symmetrical 5 Pillars Cards Grid: Default Clean White, Color Changes Only on Hover */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 items-stretch">
-          {values.map((v, idx) => {
-            const Icon = v.icon;
+        {/* Symmetrical 5 Pillars Cards: Sliding on Mobile, Grid on Larger Screens */}
+        <Reveal direction="up" delay={150}>
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-5 items-stretch">
+            {values.map((v) => {
+              const Icon = v.icon;
 
-            return (
-              <Reveal key={v.num} direction="up" delay={150 + idx * 70}>
+              return (
+                <div
+                  key={v.num}
+                  className="w-[78vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
+                >
                 <div
                   className="group h-full rounded-2xl p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#B89555] hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-[#B89555]/40"
                 >
@@ -147,10 +151,19 @@ export default function CoreValues() {
                     </span>
                   </div>
                 </div>
-              </Reveal>
+              </div>
             );
           })}
         </div>
+
+        {/* Mobile Swipe Hint Dots */}
+        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-2">
+          {values.map((_, i) => (
+            <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
+          ))}
+          <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view 5 values</span>
+        </div>
+      </Reveal>
       </div>
     </section>
   );
