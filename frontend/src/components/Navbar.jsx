@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Mail, Phone, ArrowRight, Sparkles } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Mail,
+  Phone,
+  ArrowRight,
+  Sparkles,
+  Home,
+  Bookmark,
+  Hammer,
+  Users,
+  Compass,
+  Palette,
+} from 'lucide-react';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,12 +28,13 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: 'Home', href: '#home' },
-    { label: 'Heritage Pillars', href: '#heritage-skills' },
-    { label: 'Learning Journey', href: '#learning-journey' },
-    { label: 'Workshops', href: '#workshop' },
-    { label: 'Creators Circle', href: '#community' },
-    { label: 'About', href: '#about' },
+    { label: 'Home', href: '#home', icon: Home },
+    { label: 'Heritage Pillars', href: '#heritage-skills', icon: Bookmark },
+    { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles },
+    { label: 'Studios', href: '#facilities', icon: Palette },
+    { label: 'Workshops', href: '#workshop', icon: Hammer },
+    { label: 'Creators Circle', href: '#community', icon: Users },
+    { label: 'About', href: '#about', icon: Compass },
   ];
 
   const handleNavClick = (e, href) => {
@@ -37,68 +51,36 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Top Contact & Announcement Bar in Dark Brown (#4A2C20) */}
-      <div className="bg-[#4A2C20] border-b border-[#B89555]/20 text-[#F7F2E8]/90 py-1.5 px-3 sm:px-4 text-xs font-['DM_Sans'] overflow-hidden">
-        {/* Mobile View: Nav links in Top Navbar (Strictly 1 Single Clean Swipeable Line) */}
-        <div className="sm:hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 text-[11.5px] whitespace-nowrap">
-          {navLinks.map((item) => {
-            const isSpecial = item.label.toLowerCase().includes('learning journey');
-
-            if (isSpecial) {
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className="font-['DM_Sans'] text-[11px] font-bold text-[#B89555] shrink-0 flex items-center gap-1 animate-text-glow cursor-pointer py-0.5 px-2.5 rounded-full bg-[#B89555]/15 border border-[#B89555]/40"
-                >
-                  <Sparkles className="w-3 h-3 text-[#B89555] animate-pulse shrink-0" />
-                  <span>{item.label}</span>
-                </a>
-              );
-            }
-
-            return (
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50">
+        {/* Top Contact & Announcement Bar in Dark Brown (#4A2C20) */}
+        <div className="bg-[#4A2C20] border-b border-[#B89555]/20 text-[#F7F2E8]/90 py-1.5 px-3 sm:px-4 text-xs font-['DM_Sans']">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3 sm:gap-5">
               <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className="font-['DM_Sans'] text-[11.5px] font-medium text-[#F7F2E8]/90 hover:text-[#B89555] transition-colors shrink-0 py-0.5 px-2 rounded-full hover:bg-white/10 cursor-pointer"
+                href="mailto:info@artisancoach.org"
+                className="hover:text-[#B89555] transition-colors flex items-center gap-1.5 text-[#F7F2E8]/85"
               >
-                {item.label}
+                <Mail className="w-3.5 h-3.5 text-[#B89555]" />
+                <span className="hidden sm:inline">info@artisancoach.org</span>
               </a>
-            );
-          })}
-        </div>
+              <a
+                href="tel:+919061621111"
+                className="flex items-center gap-1.5 hover:text-[#B89555] transition-colors text-[#F7F2E8]/85"
+              >
+                <Phone className="w-3.5 h-3.5 text-[#B89555]" />
+                <span className="font-number font-medium text-[#F7F2E8] text-[11px] sm:text-xs">+91 90616 21111</span>
+              </a>
+            </div>
 
-        {/* Desktop View: Full Contact & Announcement */}
-        <div className="hidden sm:flex max-w-7xl mx-auto items-center justify-between">
-          <div className="flex items-center gap-5">
-            <a
-              href="mailto:info@artisancoach.org"
-              className="hover:text-[#B89555] transition-colors flex items-center gap-1.5 text-[#F7F2E8]/85"
-            >
-              <Mail className="w-3.5 h-3.5 text-[#B89555]" />
-              <span className="hidden sm:inline">info@artisancoach.org</span>
-            </a>
-            <a
-              href="tel:+919061621111"
-              className="flex items-center gap-1.5 hover:text-[#B89555] transition-colors text-[#F7F2E8]/85"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#B89555]" />
-              <span className="font-number font-medium text-[#F7F2E8]">+91 90616 21111</span>
-            </a>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#B89555] animate-pulse" />
-            <span className="text-xs text-[#F7F2E8]/90 font-normal">
-              Admissions Open for 2026 Heritage Creator Cohorts
-            </span>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#B89555] animate-pulse" />
+              <span className="text-[11px] sm:text-xs text-[#F7F2E8]/90 font-normal">
+                Admissions Open 2026
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Main Sticky Navbar in Light Palette Color (#F7F2E8) */}
       <nav
@@ -259,6 +241,52 @@ export default function Navbar() {
           </div>
         )}
       </nav>
-    </header>
+      </header>
+
+      {/* Mobile Fixed Bottom Navigation Menu Bar ("kila menu menus") */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] py-2 px-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar whitespace-nowrap px-1">
+          {navLinks.map((item) => {
+            const isSpecial = item.label.toLowerCase().includes('learning journey');
+            const Icon = item.icon;
+
+            if (isSpecial) {
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#B89555] text-[#241A16] font-['DM_Sans'] text-xs font-bold shadow-sm shrink-0 animate-text-glow cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#241A16] animate-pulse shrink-0" />
+                  <span>{item.label}</span>
+                </a>
+              );
+            }
+
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-[#F7F2E8] font-['DM_Sans'] text-xs font-medium border border-white/10 shrink-0 transition-all cursor-pointer"
+              >
+                {Icon && <Icon className="w-3.5 h-3.5 text-[#B89555] shrink-0" />}
+                <span>{item.label}</span>
+              </a>
+            );
+          })}
+
+          {/* Mobile Register Button in Bottom Bar */}
+          <Link
+            to="/register"
+            className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-[#B89555] hover:bg-[#c7a462] text-[#241A16] font-['DM_Sans'] text-xs font-bold shrink-0 transition-colors shadow-sm ml-0.5"
+          >
+            <span>Register</span>
+            <ArrowRight className="w-3 h-3 text-[#241A16]" />
+          </Link>
+        </div>
+      </div>
+    </>
   );
 }

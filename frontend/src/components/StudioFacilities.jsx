@@ -130,6 +130,29 @@ export default function StudioFacilities() {
     setCurrentIndex((prev) => (prev <= 0 ? facilities.length * 2 - 1 : prev - 1));
   };
 
+  // Touch handlers for mobile swipe
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 45) {
+      nextSlide();
+    } else if (distance < -45) {
+      prevSlide();
+    }
+  };
+
   // Continuous auto-sliding & looping every 4 seconds
   useEffect(() => {
     const timer = setInterval(() => {
@@ -181,107 +204,27 @@ export default function StudioFacilities() {
           </div>
         </Reveal>
 
-        {/* Mobile View: Horizontally Swipeable Studio Cards */}
-        <div className="md:hidden">
-          <Reveal direction="up" delay={150}>
-            <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4">
-              {facilities.map((fac, idx) => {
-                const Icon = fac.icon;
-                return (
-                  <div
-                    key={fac.id}
-                    className="w-[85vw] max-w-[320px] shrink-0 snap-center flex flex-col"
-                  >
-                    <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-lg flex flex-col justify-between h-full select-none">
-                      {/* Studio Image Header */}
-                      <div className="relative h-48 overflow-hidden bg-[#241A16]">
-                        <img
-                          src={fac.image}
-                          alt={fac.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-[#241A16]/25" />
-                        <div className="absolute top-3 left-3 bg-[#241A16]/90 px-3 py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[11px] font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm">
-                          <Icon className="w-3 h-3 text-[#B89555]" />
-                          <span className="text-[#F7F2E8]">{fac.category}</span>
-                        </div>
-                        <div className="absolute bottom-3 right-3 bg-[#241A16]/85 px-2.5 py-0.5 rounded-full text-[10px] font-['DM_Sans'] text-[#B89555] font-bold">
-                          0{idx + 1} / 0{facilities.length}
-                        </div>
-                      </div>
-
-                      {/* Content Body */}
-                      <div className="p-5 flex flex-col justify-between flex-1 space-y-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1.5 text-xs text-[#6B4030] font-['DM_Sans']">
-                            <Icon className="w-4 h-4 text-[#B89555]" />
-                            <span>Facility 0{idx + 1}</span>
-                          </div>
-                          <h3 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#241A16] leading-snug">
-                            {fac.title}
-                          </h3>
-                          <p className="font-['DM_Sans'] text-xs text-[#241A16]/80 leading-relaxed font-normal mt-2">
-                            {fac.desc}
-                          </p>
-
-                          {/* Tools & Equipment */}
-                          <div className="mt-4 pt-3 border-t border-[#6B4030]/15 space-y-1.5">
-                            <span className="text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
-                              Tools & Equipment:
-                            </span>
-                            <div className="flex flex-wrap gap-1.5">
-                              {fac.tools.slice(0, 3).map((t, tIdx) => (
-                                <span
-                                  key={tIdx}
-                                  className="px-2 py-0.5 rounded-md text-[10px] font-['DM_Sans'] bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/15"
-                                >
-                                  {t}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Supervisor Footnote */}
-                        <div className="pt-3 border-t border-[#6B4030]/15 flex items-center justify-between text-[11px] font-['DM_Sans'] text-[#6B4030]">
-                          <span className="text-[#B89555] font-semibold">{fac.curator}</span>
-                          <ShieldCheck className="w-4 h-4 text-[#B89555]" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Mobile Dots */}
-            <div className="flex items-center justify-center gap-1.5 mt-3">
-              {facilities.map((_, i) => (
-                <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
-              ))}
-              <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view 6 studios</span>
-            </div>
-          </Reveal>
-        </div>
-
-        {/* Desktop View: 3-in-Front Scrolling Carousel + Split Workbench */}
-        <div className="hidden md:block">
-          {/* 3-in-Front Scrolling & Looping Carousel */}
-          <Reveal direction="up" delay={150}>
+        {/* 3-in-Front Scrolling & Looping Icon Carousel - Visible on Mobile & Desktop */}
+        <Reveal direction="up" delay={150}>
             <div className="relative mb-6 sm:mb-8 max-w-3xl mx-auto">
               {/* Carousel Container with Arrows and Viewport */}
-              <div className="flex items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center justify-between gap-2 sm:gap-4">
                 {/* Prev Button */}
                 <button
                   onClick={prevSlide}
                   aria-label="Previous Studio"
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
+                  className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
-                {/* Viewport: Shows EXACTLY 3 items in front at a time */}
-                <div className="flex-1 overflow-hidden py-3 px-1">
+                {/* Viewport: Shows EXACTLY 3 items in front at a time (Touch Swipeable) */}
+                <div
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className="flex-1 overflow-hidden py-3 px-1"
+                >
                   <div
                     onTransitionEnd={handleTransitionEnd}
                     style={{
@@ -345,9 +288,9 @@ export default function StudioFacilities() {
                 <button
                   onClick={nextSlide}
                   aria-label="Next Studio"
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
+                  className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
 
@@ -374,10 +317,13 @@ export default function StudioFacilities() {
           <Reveal direction="up" delay={200}>
             <div
               key={current.id}
-              className="bg-white rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-[0_24px_50px_-10px_rgba(74,44,32,0.2)] grid lg:grid-cols-12 gap-8 items-center relative overflow-hidden transition-all duration-500"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              className="bg-white rounded-3xl p-5 sm:p-10 border border-[#6B4030]/15 shadow-[0_24px_50px_-10px_rgba(74,44,32,0.2)] grid lg:grid-cols-12 gap-6 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
             >
               {/* Left Column: Authentic Studio Visual with Details */}
-              <div className="lg:col-span-6 relative rounded-2xl overflow-hidden bg-[#241A16] h-[340px] sm:h-[420px] group">
+              <div className="lg:col-span-6 relative rounded-2xl overflow-hidden bg-[#241A16] h-[260px] sm:h-[340px] md:h-[420px] group">
                 <img
                   src={current.image}
                   alt={current.title}
@@ -466,7 +412,6 @@ export default function StudioFacilities() {
               </div>
             </div>
           </Reveal>
-        </div>
       </div>
     </section>
   );

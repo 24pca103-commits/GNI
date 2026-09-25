@@ -19,7 +19,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#F7F2E8] text-[#241A16] border-t border-[#6B4030]/20 py-6 sm:py-8">
+    <footer className="bg-[#F7F2E8] text-[#241A16] border-t border-[#6B4030]/20 py-6 sm:py-8 pb-20 sm:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8 pb-5 sm:pb-6 border-b border-[#6B4030]/15 items-start">
           {/* Brand Info (6 cols) */}
