@@ -26,8 +26,7 @@ export default function SacredDisconnect() {
                   Cultural Reflection
                 </span>
                 <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#4A2C20] tracking-tight mt-2.5 leading-tight">
-                  <span className="block sm:inline">Reconnect with</span>{' '}
-                  <span className="block sm:inline">What Truly Matters</span>
+                  Reconnect with What Truly Matters
                 </h2>
                 <div className="w-20 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
               </div>

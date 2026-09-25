@@ -38,8 +38,7 @@ export default function InstitutionalPedagogy() {
               <span>The Learning Methodology</span>
             </span>
             <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
-              <span className="block sm:inline">Timeless Wisdom.</span>{' '}
-              <span className="block sm:inline">Hands-on Mastery.</span>
+              Timeless Wisdom. Hands-on Mastery.
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed">

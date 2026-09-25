@@ -39,8 +39,7 @@ export default function CreatorsCircle() {
 
             <Reveal direction="up" delay={200}>
               <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
-                <span className="block sm:inline">A2O Creators</span>{' '}
-                <span className="block sm:inline">Circle Community</span>
+                A2O Creators Circle Community
               </h2>
             </Reveal>
 

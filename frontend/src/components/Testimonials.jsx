@@ -57,8 +57,7 @@ export default function Testimonials() {
               <span>Artisan Alumni Voices</span>
             </span>
             <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
-              <span className="block sm:inline">Words From Our</span>{' '}
-              <span className="block sm:inline">Heritage Creators</span>
+              Words From Our Heritage Creators
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">
