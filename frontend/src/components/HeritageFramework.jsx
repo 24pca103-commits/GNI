@@ -11,9 +11,9 @@ export default function HeritageFramework() {
       badge: 'Core Studio Track',
       image: '/artisan/pillar-painting.jpg',
       description:
-        'Prehistoric rock painting, temple painting, basic sketching, and sacred iconography.',
-      subjects: 'Prehistoric rock art, temple murals, basic sketching, sacred deity iconography',
-      tags: ['Rock Painting', 'Temple Painting', 'Basic Sketching', 'Iconography'],
+        'Prehistoric rock painting, temple murals, sketching, and sacred deity iconography.',
+      subjects: 'Rock art, temple murals, sketching & iconography',
+      tags: ['Rock Painting', 'Temple Murals', 'Sketching', 'Iconography'],
     },
     {
       number: '2',
@@ -22,9 +22,9 @@ export default function HeritageFramework() {
       badge: 'Archival Epigraphy Track',
       image: '/artisan/pillar-epigraphy.jpg',
       description:
-        'Tamili script, copper plate inscription basics, and stone inscription reading.',
-      subjects: 'Tamili script, copper plate engraving, stone inscription reading, Sangam archives',
-      tags: ['Tamili Script', 'Copper Plates', 'Stone Inscriptions', 'Reading Basics'],
+        'Tamili Brahmi script deciphering, copper plate engraving, and stone inscription reading.',
+      subjects: 'Tamili script, copper plates & stone inscriptions',
+      tags: ['Tamili Script', 'Copper Plates', 'Stone Inscriptions'],
     },
     {
       number: '3',
@@ -33,9 +33,9 @@ export default function HeritageFramework() {
       badge: 'Work Integrated Guild',
       image: '/artisan/pillar-metal.jpg',
       description:
-        'Handmade naga jewellery, copper/brass work, and sacred metal craft.',
-      subjects: 'Handmade naga jewellery, copper/brass work, sacred metal casting, antique repoussé',
-      tags: ['Naga Jewellery', 'Copper/Brass Work', 'Sacred Metal Craft', 'Sculpturing'],
+        'Handmade naga jewellery, copper/brass repoussé, and sacred metal casting traditions.',
+      subjects: 'Naga jewellery, repoussé & metal casting',
+      tags: ['Naga Jewellery', 'Copper/Brass', 'Metal Casting'],
     },
     {
       number: '4',
@@ -44,9 +44,9 @@ export default function HeritageFramework() {
       badge: 'Industry Incubation Track',
       image: '/artisan/pillar-applications.jpg',
       description:
-        'Blouse design, pooja room interiors, jewellery motifs, architecture elements, home décor, branding.',
-      subjects: 'Blouse design, pooja room interiors, jewellery motifs, architecture elements, home décor, branding',
-      tags: ['Blouse Design', 'Pooja Interiors', 'Jewellery Motifs', 'Architecture Elements', 'Home Décor', 'Branding'],
+        'Blouse design, pooja room sanctums, jewellery motifs, and sacred architectural elements.',
+      subjects: 'Pooja interiors, blouse motifs & heritage decor',
+      tags: ['Pooja Interiors', 'Jewellery Motifs', 'Heritage Décor'],
     },
   ];
 
@@ -70,15 +70,15 @@ export default function HeritageFramework() {
               <span className="block sm:inline">Heritage & Industry Needs</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-base sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3">
-              Four comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship — Premium + Structured.
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3">
+              Four comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship.
             </p>
 
             {/* Centered Repository Action Button */}
             <div className="inline-block">
               <button
                 onClick={handleStaticClick}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors cursor-default shadow-sm"
+                className="inline-flex items-center gap-2 px-5 py-2 sm:px-6 sm:py-2.5 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors cursor-default shadow-sm"
               >
                 <span>View All Repository Tracks</span>
                 <ArrowRight className="w-3.5 h-3.5 text-[#241A16]" />
@@ -89,16 +89,16 @@ export default function HeritageFramework() {
 
         {/* 4 Cards Grid - Sliding on Mobile */}
         <Reveal direction="up" delay={150}>
-          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8 lg:gap-10">
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8 lg:gap-10">
             {pillars.map((pillar) => {
               return (
                 <div
                   key={pillar.number}
-                  className="w-[84vw] max-w-[340px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[82vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_20px_45px_-8px_rgba(74,44,32,0.18)] hover:shadow-[0_30px_60px_-10px_rgba(74,44,32,0.28)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
+                  <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_18px_40px_-8px_rgba(74,44,32,0.16)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.26)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
                     {/* Card Featured Image */}
-                    <div className="relative h-60 sm:h-72 overflow-hidden bg-[#241A16]">
+                    <div className="relative h-44 sm:h-64 overflow-hidden bg-[#241A16]">
                       <img
                         src={pillar.image}
                         alt={pillar.title}
@@ -106,44 +106,44 @@ export default function HeritageFramework() {
                       />
 
                       {/* Category Pill with Bookmark Icon */}
-                      <div className="absolute top-4 left-4 bg-[#241A16]/90 px-3 py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-xs font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm z-10">
+                      <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm z-10">
                         <Bookmark className="w-3 h-3 text-[#B89555]" />
                         <span>{pillar.badge}</span>
                       </div>
 
                       {/* Bottom Dark Panel for Title */}
-                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/85 p-5 text-[#F7F2E8] z-10">
-                        <p className="font-['DM_Sans'] text-xs text-[#B89555] font-medium mb-0.5">
+                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/85 p-3.5 sm:p-5 text-[#F7F2E8] z-10">
+                        <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#B89555] font-medium mb-0.5">
                           {pillar.category}
                         </p>
-                        <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-snug">
                           {pillar.title}
                         </h3>
                       </div>
                     </div>
 
                     {/* Card Content Body */}
-                    <div className="p-6 sm:p-7 flex flex-col justify-between flex-1 space-y-5">
-                      <p className="font-['DM_Sans'] text-sm text-[#241A16]/85 leading-relaxed font-normal">
+                    <div className="p-4 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4">
+                      <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/85 leading-snug font-normal">
                         {pillar.description}
                       </p>
 
                       {/* Subject Curriculum Overview */}
-                      <div className="p-3.5 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-1">
-                        <span className="text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
-                          Subjects & practical modules:
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-0.5 sm:space-y-1">
+                        <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
+                          Modules & Practicals:
                         </span>
-                        <p className="text-xs font-['DM_Sans'] text-[#241A16]/80 leading-normal">
+                        <p className="text-[11.5px] sm:text-xs font-['DM_Sans'] text-[#241A16]/80 leading-snug">
                           {pillar.subjects}
                         </p>
                       </div>
 
                       {/* Tags */}
-                      <div className="flex flex-wrap gap-2 pt-1">
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
                         {pillar.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2.5 py-0.5 rounded-md text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20"
+                            className="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20"
                           >
                             {tag}
                           </span>
@@ -151,16 +151,16 @@ export default function HeritageFramework() {
                       </div>
 
                       {/* Know More Pill Button */}
-                      <div className="pt-4 border-t border-[#6B4030]/15 flex items-center justify-between">
-                        <span className="text-xs font-['DM_Sans'] font-semibold text-[#6B4030]">
+                      <div className="pt-2.5 sm:pt-4 border-t border-[#6B4030]/15 flex items-center justify-between">
+                        <span className="text-[11px] sm:text-xs font-['DM_Sans'] font-semibold text-[#6B4030]">
                           Cohort Track
                         </span>
                         <button
                           onClick={handleStaticClick}
-                          className="inline-flex items-center gap-2 px-5 py-2 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#241A16] border border-[#6B4030]/30 hover:border-[#B89555] hover:bg-[#B89555] transition-all cursor-default group/btn"
+                          className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full font-['DM_Sans'] text-[11px] sm:text-xs font-semibold text-[#241A16] border border-[#6B4030]/30 hover:border-[#B89555] hover:bg-[#B89555] transition-all cursor-default group/btn"
                         >
                           <span>Know More</span>
-                          <ArrowRight className="w-3.5 h-3.5 text-[#241A16] group-hover/btn:translate-x-1 transition-transform" />
+                          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#241A16] group-hover/btn:translate-x-1 transition-transform" />
                         </button>
                       </div>
                     </div>

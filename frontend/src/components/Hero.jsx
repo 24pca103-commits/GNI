@@ -106,8 +106,8 @@ export default function Hero() {
                 alt={slide.headingMain}
                 className="w-full h-full object-cover object-center"
               />
-              {/* Solid flat dark overlay - NO gradients */}
-              <div className="absolute inset-0 bg-[#241A16]/90" />
+              {/* Lightened dark overlay so background craft image is clearly visible */}
+              <div className="absolute inset-0 bg-[#241A16]/50 sm:bg-[#241A16]/55" />
             </div>
           );
         })}
