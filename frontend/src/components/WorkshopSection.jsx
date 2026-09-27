@@ -47,9 +47,9 @@ export default function WorkshopSection() {
 
         {/* Master Showcase Card */}
         <Reveal direction="up" delay={200}>
-          <div className="bg-white rounded-3xl overflow-hidden border border-[#6B4030]/15 shadow-sm grid lg:grid-cols-12 items-stretch">
+          <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#6B4030]/15 shadow-sm grid lg:grid-cols-12 items-stretch">
             {/* Left Column: Workshop Visual with Solid Overlay (No Gradients) */}
-            <div className="lg:col-span-5 relative bg-[#241A16] min-h-[320px] lg:min-h-full">
+            <div className="lg:col-span-5 relative bg-[#241A16] min-h-[220px] sm:min-h-[320px] lg:min-h-full">
               <img
                 src="/artisan/workshop.jpg"
                 alt="Tamil heritage workshop hands-on experience"
@@ -57,32 +57,32 @@ export default function WorkshopSection() {
               />
 
               {/* Floating Fee Badge on Image - Solid Overlay */}
-              <div className="absolute bottom-6 left-6 right-6 bg-[#241A16]/90 p-4 rounded-2xl border border-[#B89555]/40 text-[#F7F2E8] space-y-1">
-                <span className="font-['DM_Sans'] text-xs text-[#B89555] font-medium">
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-6 bg-[#241A16]/90 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#B89555]/40 text-[#F7F2E8] space-y-0.5 sm:space-y-1">
+                <span className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#B89555] font-medium">
                   Special Cohort Access
                 </span>
-                <p className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-white">
+                <p className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-white leading-tight">
                   Introductory Fee: <span className="font-number text-[#B89555]">₹4,999</span>
                 </p>
-                <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/80">
-                  Includes raw materials, inscription plate, and take-home craft kit.
+                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#F7F2E8]/80 leading-snug">
+                  Includes raw materials, inscription plate, and craft kit.
                 </p>
               </div>
             </div>
 
             {/* Right Column: Workshop Details, Activities & Working Register Button */}
-            <div className="lg:col-span-7 p-7 sm:p-10 lg:p-12 flex flex-col justify-between space-y-8">
+            <div className="lg:col-span-7 p-4 sm:p-10 lg:p-12 flex flex-col justify-between space-y-4 sm:space-y-8">
               {/* 4 Feature Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 {highlights.map((item, idx) => {
                   const Icon = item.icon;
                   return (
                     <div
                       key={idx}
-                      className="p-3 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 text-center space-y-1"
+                      className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 text-center space-y-0.5 sm:space-y-1"
                     >
-                      <Icon className="w-5 h-5 text-[#6B4030] mx-auto" />
-                      <p className="font-['DM_Sans'] text-xs font-medium text-[#241A16]">
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4030] mx-auto" />
+                      <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-medium text-[#241A16] leading-tight">
                         {item.label}
                       </p>
                     </div>
@@ -91,26 +91,26 @@ export default function WorkshopSection() {
               </div>
 
               {/* Workshop Activities (6 items in Sentence Case) */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-2">
-                  <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16]">
+              <div className="space-y-2.5 sm:space-y-4">
+                <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-1.5 sm:pb-2">
+                  <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16]">
                     Hands-on Activities
                   </h3>
-                  <span className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium">
+                  <span className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#6B4030] font-medium">
                     <span className="font-number font-bold">6</span> Practical Modules
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pt-0.5 sm:pt-1">
                   {activities.map((act, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-[#F7F2E8]/60 border border-[#6B4030]/15"
+                      className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-[#F7F2E8]/60 border border-[#6B4030]/15"
                     >
-                      <span className="w-5 h-5 rounded-full bg-[#4A2C20] text-[#B89555] text-xs font-number font-bold flex items-center justify-center shrink-0">
+                      <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#4A2C20] text-[#B89555] text-[10px] sm:text-xs font-number font-bold flex items-center justify-center shrink-0">
                         {index + 1}
                       </span>
-                      <span className="font-['DM_Sans'] text-xs sm:text-[13px] font-normal text-[#241A16]">
+                      <span className="font-['DM_Sans'] text-[11.5px] sm:text-[13px] font-normal text-[#241A16] leading-tight">
                         {act}
                       </span>
                     </div>
@@ -119,19 +119,19 @@ export default function WorkshopSection() {
               </div>
 
               {/* Functional CTA Button to /register */}
-              <div className="pt-4 border-t border-[#6B4030]/15 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-center sm:text-left space-y-1">
-                  <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-semibold">
-                    Limited Seats per Batch (<span className="font-number">30–50</span> Seats) • Introductory Fee: ₹4,999
+              <div className="pt-3 sm:pt-4 border-t border-[#6B4030]/15 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                <div className="text-center sm:text-left space-y-0.5 sm:space-y-1">
+                  <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#6B4030] font-semibold">
+                    Limited Seats (<span className="font-number">30–50</span> Seats) • Fee: ₹4,999
                   </p>
-                  <p className="font-['DM_Sans'] text-xs text-[#241A16]/80">
-                    Goal: Validate interest + identify paying audience + create social proof (photos, testimonials, videos).
+                  <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#241A16]/80 leading-snug">
+                    Hands-on learning, live sthapathi guidance & take-home craft.
                   </p>
                 </div>
 
                 <Link
                   to="/register"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 sm:px-8 sm:py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200"
                 >
                   <span>Register for Workshop</span>
                   <ArrowRight className="w-4 h-4 text-[#241A16]" />

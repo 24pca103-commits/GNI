@@ -89,10 +89,10 @@ export default function InstitutionalPedagogy() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mb-12">
           {/* Left Wing: 25% Theoretical Foundations */}
           <Reveal direction="up" delay={200}>
-            <div className="bg-white rounded-3xl overflow-hidden border border-[#6B4030]/20 border-b-4 border-b-[#6B4030] shadow-[0_24px_50px_-10px_rgba(74,44,32,0.18)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.25)] transition-all duration-300 flex flex-col justify-between h-full select-none group">
+            <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#6B4030]/20 border-b-4 border-b-[#6B4030] shadow-[0_20px_45px_-10px_rgba(74,44,32,0.16)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.25)] transition-all duration-300 flex flex-col justify-between h-full select-none group">
               <div>
                 {/* Header Image Frame */}
-                <div className="relative h-60 sm:h-72 overflow-hidden bg-[#241A16]">
+                <div className="relative h-40 sm:h-72 overflow-hidden bg-[#241A16]">
                   <img
                     src="/artisan/pillar-epigraphy.jpg"
                     alt="Epigraphical study, manuscripts, and temple canons"
@@ -101,43 +101,41 @@ export default function InstitutionalPedagogy() {
                   <div className="absolute inset-0 bg-[#241A16]/25" />
 
                   {/* Percentage Floating Badge */}
-                  <div className="absolute top-4 left-4 bg-[#241A16]/90 border border-[#6B4030]/40 px-3.5 py-1.5 rounded-xl flex items-center gap-2 z-10 shadow-sm">
-                    <BookOpen className="w-4 h-4 text-[#F7F2E8]" />
-                    <span className="font-number text-xl sm:text-2xl font-bold text-white">
+                  <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#241A16]/90 border border-[#6B4030]/40 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl flex items-center gap-1.5 sm:gap-2 z-10 shadow-sm">
+                    <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F7F2E8]" />
+                    <span className="font-number text-base sm:text-2xl font-bold text-white">
                       25%
                     </span>
-                    <span className="text-[11px] font-['DM_Sans'] uppercase font-semibold text-[#F7F2E8]/90 tracking-wider">
+                    <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] uppercase font-semibold text-[#F7F2E8]/90 tracking-wider">
                       Theory
                     </span>
                   </div>
                 </div>
 
                 {/* Card Content Body */}
-                <div className="p-7 sm:p-8 space-y-4">
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#6B4030]">
+                <div className="p-4 sm:p-8 space-y-2.5 sm:space-y-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] sm:text-xs font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#6B4030]">
                       Classical Foundations & Canons
                     </span>
-                    <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16] leading-snug">
+                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-3xl font-bold text-[#241A16] leading-snug">
                       Ancient Wisdom, Scripture & Epigraphy
                     </h3>
                   </div>
 
-                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-relaxed font-normal">
-                    The theoretical basis involves deep exploration of Sangam heritage literature, understanding
-                    sacred temple geometry, deciphering Tamili Brahmi epigraphical records, and learning the
-                    philosophical canons of traditional shilpa shastras.
+                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-snug font-normal">
+                    Explore Sangam heritage literature, temple geometry, Tamili Brahmi epigraphical records, and philosophical canons.
                   </p>
 
                   {/* Key Syllabus Modules */}
-                  <div className="pt-2 space-y-2.5">
-                    <span className="text-xs font-['DM_Sans'] font-bold text-[#4A2C20] block">
+                  <div className="pt-1 sm:pt-2 space-y-1.5 sm:space-y-2.5">
+                    <span className="text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] block">
                       Core Learning Modules:
                     </span>
                     {theoryPoints.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs font-['DM_Sans'] text-[#6B4030]">
-                        <CheckCircle2 className="w-4 h-4 text-[#6B4030] shrink-0 mt-0.5" />
-                        <span className="leading-snug">{item}</span>
+                      <div key={idx} className="flex items-start gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
+                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#6B4030] shrink-0 mt-0.5" />
+                        <span className="leading-snug text-[11.5px] sm:text-xs">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -145,7 +143,7 @@ export default function InstitutionalPedagogy() {
               </div>
 
               {/* Bottom Card Footer Meta */}
-              <div className="px-7 sm:px-8 py-4 bg-[#F7F2E8]/60 border-t border-[#6B4030]/15 flex items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
+              <div className="px-4 sm:px-8 py-2.5 sm:py-4 bg-[#F7F2E8]/60 border-t border-[#6B4030]/15 flex items-center justify-between text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
                 <span>15 hours per module</span>
                 <span className="font-semibold text-[#4A2C20]">Scriptural Grounding</span>
               </div>
@@ -154,10 +152,10 @@ export default function InstitutionalPedagogy() {
 
           {/* Right Wing: 75% Hands-on Studio Practice */}
           <Reveal direction="up" delay={250}>
-            <div className="bg-white rounded-3xl overflow-hidden border border-[#B89555]/30 border-b-4 border-b-[#B89555] shadow-[0_24px_50px_-10px_rgba(74,44,32,0.22)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.28)] transition-all duration-300 flex flex-col justify-between h-full select-none group">
+            <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#B89555]/30 border-b-4 border-b-[#B89555] shadow-[0_20px_45px_-10px_rgba(74,44,32,0.18)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.28)] transition-all duration-300 flex flex-col justify-between h-full select-none group">
               <div>
                 {/* Header Image Frame */}
-                <div className="relative h-60 sm:h-72 overflow-hidden bg-[#241A16]">
+                <div className="relative h-40 sm:h-72 overflow-hidden bg-[#241A16]">
                   <img
                     src="/artisan/hands-on-studio.jpg"
                     alt="Hands-on traditional metal sculpture and sacred craft studio apprentices"
@@ -166,43 +164,41 @@ export default function InstitutionalPedagogy() {
                   <div className="absolute inset-0 bg-[#241A16]/25" />
 
                   {/* Percentage Floating Badge */}
-                  <div className="absolute top-4 left-4 bg-[#4A2C20] border border-[#B89555]/50 px-3.5 py-1.5 rounded-xl flex items-center gap-2 shadow-md z-10">
-                    <Hammer className="w-4 h-4 text-[#B89555]" />
-                    <span className="font-number text-xl sm:text-2xl font-bold text-[#B89555]">
+                  <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#4A2C20] border border-[#B89555]/50 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl flex items-center gap-1.5 sm:gap-2 shadow-md z-10">
+                    <Hammer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
+                    <span className="font-number text-base sm:text-2xl font-bold text-[#B89555]">
                       75%
                     </span>
-                    <span className="text-[11px] font-['DM_Sans'] uppercase font-semibold text-white tracking-wider">
+                    <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] uppercase font-semibold text-white tracking-wider">
                       Hands-on Studio
                     </span>
                   </div>
                 </div>
 
                 {/* Card Content Body */}
-                <div className="p-7 sm:p-8 space-y-4">
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555]">
+                <div className="p-4 sm:p-8 space-y-2.5 sm:space-y-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] sm:text-xs font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555]">
                       Tactile Craft & Livelihood Creation
                     </span>
-                    <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16] leading-snug">
+                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-3xl font-bold text-[#241A16] leading-snug">
                       Tactile Craftsmanship & Modern Livelihood
                     </h3>
                   </div>
 
-                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-relaxed font-normal">
-                    The practical immersion involves tactile stone scribing, preparing natural mineral pigments,
-                    forging antique brass and copper repoussé, mastering naga jewellery, and creating commercial
-                    products for modern architecture and luxury interiors.
+                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-snug font-normal">
+                    Hands-on stone scribing, natural mineral pigments, antique brass repoussé, and commercial creations for luxury interiors.
                   </p>
 
                   {/* Key Syllabus Modules */}
-                  <div className="pt-2 space-y-2.5">
-                    <span className="text-xs font-['DM_Sans'] font-bold text-[#4A2C20] block">
-                      Core learning modules:
+                  <div className="pt-1 sm:pt-2 space-y-1.5 sm:space-y-2.5">
+                    <span className="text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] block">
+                      Core Learning Modules:
                     </span>
                     {practicePoints.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs font-['DM_Sans'] text-[#6B4030]">
-                        <CheckCircle2 className="w-4 h-4 text-[#B89555] shrink-0 mt-0.5" />
-                        <span className="leading-snug">{item}</span>
+                      <div key={idx} className="flex items-start gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
+                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555] shrink-0 mt-0.5" />
+                        <span className="leading-snug text-[11.5px] sm:text-xs">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -210,9 +206,9 @@ export default function InstitutionalPedagogy() {
               </div>
 
               {/* Bottom Card Footer Meta */}
-              <div className="px-7 sm:px-8 py-4 bg-[#F7F2E8]/60 border-t border-[#6B4030]/15 flex items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
+              <div className="px-4 sm:px-8 py-2.5 sm:py-4 bg-[#F7F2E8]/60 border-t border-[#6B4030]/15 flex items-center justify-between text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
                 <span>45 hours per module</span>
-                <span className="font-semibold text-[#B89555]">Tactile livelihood</span>
+                <span className="font-semibold text-[#B89555]">Tactile Livelihood</span>
               </div>
             </div>
           </Reveal>

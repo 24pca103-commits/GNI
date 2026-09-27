@@ -10,7 +10,7 @@ export default function CoreValues() {
       title: 'Preserve Heritage',
       statement: 'Save Tamil Wisdom Through Practice',
       detail:
-        'Living culture cannot be preserved solely inside museum glass; it survives when breathed into daily human practice.',
+        'Culture survives when breathed into daily hands-on practice, not inside museum glass.',
       icon: Shield,
       highlight: 'Living Practice',
       metric: '100% Living Tradition',
@@ -20,7 +20,7 @@ export default function CoreValues() {
       title: 'Create With Hands',
       statement: 'Skill Over Theory Through Tactile Work',
       detail:
-        'The touch of stone, mineral paint, and the hammer on metal — true understanding lives in the fingertips of the creator.',
+        'The touch of stone, mineral paint, and metal — mastery lives in the creator’s fingers.',
       icon: Hand,
       highlight: '75% Tactile Work',
       metric: '3:1 Practical Ratio',
@@ -30,7 +30,7 @@ export default function CoreValues() {
       title: 'Sacred Craftsmanship',
       statement: 'Respect Tradition and Ancient Canons',
       detail:
-        'Every motif, proportion, and inscription carries sacred philosophical context passed down across millennia.',
+        'Every motif, proportion, and inscription carries sacred philosophical context.',
       icon: Sparkles,
       highlight: 'Millennia Canons',
       metric: 'Millennia-Old Codes',
@@ -40,7 +40,7 @@ export default function CoreValues() {
       title: 'Livelihood Creation',
       statement: 'Skill → Income → Dignified Identity',
       detail:
-        'Cultural learning must empower economic self-sufficiency, transforming artisans into thriving entrepreneurs.',
+        'Cultural learning must empower economic self-reliance and dignified livelihoods.',
       icon: TrendingUp,
       highlight: 'Economic Dignity',
       metric: 'Sustainable Income',
@@ -50,7 +50,7 @@ export default function CoreValues() {
       title: 'Cultural Pride',
       statement: 'Bring Ancient Wisdom into Modern Life',
       detail:
-        'Bridging ancestral Tamil mastery with contemporary architecture, fashion, interior design, and global branding.',
+        'Bridging ancestral Tamil mastery with contemporary architecture and modern branding.',
       icon: Compass,
       highlight: 'Modern Relevance',
       metric: 'Modern Application',
@@ -62,7 +62,7 @@ export default function CoreValues() {
       {/* Gentle Floating Bubbles Animation */}
       <FloatingBubbles count={12} color="#B89555" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 sm:space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-5 sm:space-y-8">
         {/* Centered Section Header */}
         <Reveal direction="up" delay={100}>
           <div className="text-center max-w-3xl mx-auto">
@@ -81,17 +81,17 @@ export default function CoreValues() {
 
         {/* Centered Symmetrical Charter Banner */}
         <Reveal direction="up" delay={150}>
-          <div className="bg-[#4A2C20] rounded-2xl p-6 sm:p-8 text-[#F7F2E8] border border-[#B89555]/30 shadow-md text-center max-w-4xl mx-auto relative overflow-hidden">
-            <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="bg-[#4A2C20] rounded-2xl p-5 sm:p-8 text-[#F7F2E8] border border-[#B89555]/30 shadow-md text-center max-w-4xl mx-auto relative overflow-hidden">
+            <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
               <Award className="w-4 h-4 text-[#B89555]" />
               <span className="font-['DM_Sans'] text-xs uppercase tracking-wider text-[#B89555] font-semibold">
                 Global Nagas Institute Charter
               </span>
             </div>
-            <p className="font-['Cormorant_Garamond'] text-xl sm:text-2xl md:text-3xl text-white font-bold leading-snug">
+            <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-3xl text-white font-bold leading-snug">
               "Knowledge that remains untouched turns to memory; knowledge that creates turns to legacy."
             </p>
-            <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-2 font-normal">
+            <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-1.5 sm:mt-2 font-normal">
               Hover over any of the five pillars to explore its craft significance and studio standard.
             </p>
           </div>
@@ -99,54 +99,54 @@ export default function CoreValues() {
 
         {/* Symmetrical 5 Pillars Cards: Sliding on Mobile, Grid on Larger Screens */}
         <Reveal direction="up" delay={150}>
-          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-5 pt-1 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-5 items-stretch">
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-5 items-stretch">
             {values.map((v) => {
               const Icon = v.icon;
 
               return (
                 <div
                   key={v.num}
-                  className="w-[78vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[76vw] max-w-[260px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
                 >
                 <div
-                  className="group h-full rounded-2xl p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#B89555] hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-[#B89555]/40"
+                  className="group h-full rounded-2xl p-4 sm:p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#B89555] hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-[#B89555]/40"
                 >
-                  <div className="space-y-4">
+                  <div className="space-y-2.5 sm:space-y-4">
                     {/* Top Row: Number & Icon */}
                     <div className="flex items-center justify-between">
-                      <span className="font-number text-2xl font-bold leading-none text-[#4A2C20] group-hover:text-[#B89555] transition-colors">
+                      <span className="font-number text-xl sm:text-2xl font-bold leading-none text-[#4A2C20] group-hover:text-[#B89555] transition-colors">
                         {v.num}
                       </span>
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center transition-all bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#241A16] group-hover:text-[#B89555] group-hover:border group-hover:border-[#B89555]/40 group-hover:shadow-sm">
-                        <Icon className="w-5 h-5" />
+                      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-all bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#241A16] group-hover:text-[#B89555] group-hover:border group-hover:border-[#B89555]/40 group-hover:shadow-sm">
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                     </div>
 
                     {/* Value Title */}
                     <div>
-                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold leading-tight text-[#241A16] group-hover:text-white transition-colors">
+                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold leading-tight text-[#241A16] group-hover:text-white transition-colors">
                         {v.title}
                       </h3>
-                      <p className="font-['DM_Sans'] text-xs font-semibold mt-1.5 leading-snug text-[#6B4030] group-hover:text-[#B89555] transition-colors">
+                      <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-semibold mt-1 leading-snug text-[#6B4030] group-hover:text-[#B89555] transition-colors">
                         {v.statement}
                       </p>
                     </div>
 
                     {/* Detail Description */}
-                    <p className="font-['DM_Sans'] text-xs leading-relaxed font-normal pt-2 border-t border-[#6B4030]/10 text-[#241A16]/75 group-hover:border-white/10 group-hover:text-[#F7F2E8]/85 transition-colors">
+                    <p className="font-['DM_Sans'] text-xs leading-snug font-normal pt-1.5 sm:pt-2 border-t border-[#6B4030]/10 text-[#241A16]/75 group-hover:border-white/10 group-hover:text-[#F7F2E8]/85 transition-colors">
                       {v.detail}
                     </p>
 
                     {/* Benchmark Metric Tag */}
-                    <div className="flex items-center gap-1.5 pt-1 text-[11px] font-['DM_Sans'] font-medium text-[#6B4030] group-hover:text-[#B89555] transition-colors">
+                    <div className="flex items-center gap-1.5 pt-0.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030] group-hover:text-[#B89555] transition-colors">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
                       <span>{v.metric}</span>
                     </div>
                   </div>
 
                   {/* Bottom Highlight Pill */}
-                  <div className="pt-4 mt-4">
-                    <span className="inline-block w-full text-center text-[11px] font-['DM_Sans'] font-medium px-3 py-1.5 rounded-lg border border-[#6B4030]/15 bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:font-semibold group-hover:border-[#B89555] transition-all">
+                  <div className="pt-2.5 mt-2.5 sm:pt-4 sm:mt-4">
+                    <span className="inline-block w-full text-center text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#6B4030]/15 bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:font-semibold group-hover:border-[#B89555] transition-all">
                       {v.highlight}
                     </span>
                   </div>

@@ -346,10 +346,10 @@ export default function StudioFacilities() {
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              className="bg-white rounded-3xl p-5 sm:p-10 border border-[#6B4030]/15 shadow-[0_24px_50px_-10px_rgba(74,44,32,0.2)] grid lg:grid-cols-12 gap-6 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
+              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-[#6B4030]/15 shadow-[0_20px_45px_-10px_rgba(74,44,32,0.18)] grid lg:grid-cols-12 gap-4 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
             >
               {/* Left Column: Authentic Studio Visual with Details */}
-              <div className="lg:col-span-6 relative rounded-2xl overflow-hidden bg-[#241A16] h-[260px] sm:h-[340px] md:h-[420px] group">
+              <div className="lg:col-span-6 relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#241A16] h-[190px] sm:h-[340px] md:h-[420px] group">
                 <img
                   src={current.image}
                   alt={current.title}
@@ -358,51 +358,51 @@ export default function StudioFacilities() {
                 <div className="absolute inset-0 bg-[#241A16]/30" />
 
                 {/* Top Category Tag */}
-                <div className="absolute top-4 left-4 bg-[#241A16]/90 px-3.5 py-1.5 rounded-xl border border-[#B89555]/30 text-[#B89555] text-xs font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm">
-                  <CurrentIcon className="w-3.5 h-3.5 text-[#B89555]" />
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-lg sm:rounded-xl border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1.5 shadow-sm">
+                  <CurrentIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555]" />
                   <span className="text-[#F7F2E8]">{current.category}</span>
                 </div>
 
                 {/* Bottom Curator Panel */}
-                <div className="absolute bottom-4 left-4 right-4 bg-[#241A16]/90 p-4 rounded-xl border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-between">
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-4 sm:left-4 sm:right-4 bg-[#241A16]/90 p-2.5 sm:p-4 rounded-lg sm:rounded-xl border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] font-['DM_Sans'] text-[#B89555] font-semibold block">
+                    <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] text-[#B89555] font-semibold block">
                       Lead Supervisor
                     </span>
-                    <p className="font-['DM_Sans'] text-xs text-white font-medium">
+                    <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-white font-medium">
                       {current.curator}
                     </p>
                   </div>
-                  <ShieldCheck className="w-5 h-5 text-[#B89555]" />
+                  <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-[#B89555]" />
                 </div>
               </div>
 
               {/* Right Column: Workbench Specifications & Tools */}
-              <div className="lg:col-span-6 space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
-                    <CurrentIcon className="w-4 h-4 text-[#B89555]" />
+              <div className="lg:col-span-6 space-y-3 sm:space-y-6">
+                <div className="space-y-1 sm:space-y-2">
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
+                    <CurrentIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
                     <span>Facility Specification <span className="font-number font-bold text-[#B89555]">{activeIndex + 1}</span></span>
                   </div>
-                  <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#241A16] tracking-tight">
+                  <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl font-bold text-[#241A16] tracking-tight leading-snug">
                     {current.title}
                   </h3>
-                  <p className="font-['DM_Sans'] text-sm sm:text-[14.5px] text-[#241A16]/80 leading-relaxed font-normal">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[14.5px] text-[#241A16]/80 leading-snug font-normal">
                     {current.desc}
                   </p>
                 </div>
 
                 {/* Studio Equipment & Tools Grid */}
-                <div className="space-y-2.5">
-                  <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030] flex items-center gap-1.5">
-                    <Wrench className="w-3.5 h-3.5 text-[#B89555]" />
+                <div className="space-y-1.5 sm:space-y-2.5">
+                  <h4 className="font-['DM_Sans'] text-[11px] sm:text-xs font-bold text-[#6B4030] flex items-center gap-1.5">
+                    <Wrench className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555]" />
                     <span>Tools & Equipment Provided:</span>
                   </h4>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {current.tools.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 rounded-lg text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/20"
+                        className="px-2 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/20"
                       >
                         {t}
                       </span>
@@ -411,22 +411,22 @@ export default function StudioFacilities() {
                 </div>
 
                 {/* Practical Capabilities List */}
-                <div className="space-y-2 pt-2 border-t border-[#6B4030]/15">
-                  <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030]">
+                <div className="space-y-1.5 sm:space-y-2 pt-1.5 sm:pt-2 border-t border-[#6B4030]/15">
+                  <h4 className="font-['DM_Sans'] text-[11px] sm:text-xs font-bold text-[#6B4030]">
                     Core Learning Outcomes:
                   </h4>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1 sm:space-y-1.5">
                     {current.capabilities.map((c, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#241A16]/85">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
-                        <span>{c}</span>
+                      <div key={idx} className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#241A16]/85">
+                        <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" />
+                        <span className="leading-snug">{c}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Studio Bottom Bar */}
-                <div className="pt-4 border-t border-[#6B4030]/15 flex items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
+                <div className="pt-2.5 sm:pt-4 border-t border-[#6B4030]/15 flex items-center justify-between text-[10px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
                   <span className="flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-[#B89555]" />
                     <span>30–50 Students Cohort Batch</span>

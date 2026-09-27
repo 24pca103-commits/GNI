@@ -18,7 +18,7 @@ export default function About() {
       id: 0,
       icon: Palette,
       title: 'Ancestral Lineage & Living Practice',
-      desc: 'We safeguard ancient Tamil wisdom not as passive museum exhibits, but through active daily hands-on practice, brushwork, and tactile carving under hereditary sthapathis.',
+      desc: 'Safeguard ancient Tamil wisdom through active daily tactile carving and brushwork under hereditary sthapathis.',
       metric: '100% Hands-on',
       highlight: 'Direct Living Sthapathi Mentorship',
     },
@@ -26,7 +26,7 @@ export default function About() {
       id: 1,
       icon: BookOpen,
       title: 'Sacred Epigraphical Repository',
-      desc: 'Translating Tamili Brahmi inscriptions, copper plate land grants, and ancient manuscripts into actionable design knowledge for modern architectural and artistic creations.',
+      desc: 'Translate Tamili Brahmi inscriptions and copper plates into actionable design knowledge for modern creations.',
       metric: '2,000+ Inscriptions',
       highlight: 'Deciphering & Archival Studies',
     },
@@ -34,8 +34,8 @@ export default function About() {
       id: 2,
       icon: Hammer,
       title: 'Dignified Livelihood Creation',
-      desc: 'Empowering traditional artisans, architects, and designers to command premium international markets for authentic sacred craftsmanship and luxury temple motifs.',
-      metric: '₹80K - ₹2.5L / Month',
+      desc: 'Empower creators and traditional artisans to command premium markets for authentic sacred craftsmanship.',
+      metric: '₹80K - ₹2.5L / Mo',
       highlight: 'Skill to Sustainable Revenue',
     },
   ];
@@ -166,31 +166,31 @@ export default function About() {
               return (
                 <div
                   key={pillar.id}
-                  className="w-[84vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[80vw] max-w-[290px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                  <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                     <div>
                       {/* Header: Icon & Metric Pill */}
-                      <div className="flex items-center justify-between mb-5">
-                        <div className="w-12 h-12 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                          <IconComponent className="w-6 h-6" />
+                      <div className="flex items-center justify-between mb-3 sm:mb-5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
-                        <span className="text-[11px] font-['DM_Sans'] font-bold text-[#241A16] bg-[#B89555] px-3 py-1 rounded-full shadow-xs">
+                        <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-bold text-[#241A16] bg-[#B89555] px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-xs">
                           {pillar.metric}
                         </span>
                       </div>
 
-                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
+                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16] mb-1.5 sm:mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
                         {pillar.title}
                       </h3>
 
-                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal">
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-snug font-normal">
                         {pillar.desc}
                       </p>
                     </div>
 
-                    <div className="mt-5 pt-3.5 border-t border-[#6B4030]/10 flex items-center gap-2 text-[11px] font-['DM_Sans'] text-[#4A2C20] font-semibold">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                    <div className="mt-3 sm:mt-5 pt-2.5 sm:pt-3.5 border-t border-[#6B4030]/10 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-['DM_Sans'] text-[#4A2C20] font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
                       <span>{pillar.highlight}</span>
                     </div>
                   </div>

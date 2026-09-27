@@ -98,9 +98,9 @@ export default function LearningJourney() {
 
         {/* Serpentine Interactive Roadmap Navigation Track */}
         <Reveal direction="up" delay={150}>
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#6B4030]/15 shadow-sm mb-6 sm:mb-8">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#6B4030]/15 shadow-sm mb-4 sm:mb-8">
             {/* Step Progress Pills Track */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pb-6 border-b border-[#6B4030]/15">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 pb-4 sm:pb-6 border-b border-[#6B4030]/15">
               {steps.map((st, idx) => {
                 const isSelected = activeStep === idx;
                 const Icon = st.icon;
@@ -108,22 +108,22 @@ export default function LearningJourney() {
                   <button
                     key={st.phase}
                     onClick={() => setActiveStep(idx)}
-                    className={`flex flex-col items-start p-3 sm:p-3.5 rounded-xl border text-left transition-all ${
+                    className={`flex flex-col items-start p-2.5 sm:p-3.5 rounded-xl border text-left transition-all ${
                       isSelected
                         ? 'bg-[#4A2C20] text-[#F7F2E8] border-[#B89555] shadow-md scale-[1.02]'
                         : 'bg-[#F7F2E8]/60 text-[#6B4030] border-transparent hover:border-[#B89555]/40 hover:bg-[#F7F2E8]'
                     }`}
                   >
-                    <div className="flex items-center justify-between w-full mb-1.5">
-                      <span className="text-[11px] font-['DM_Sans'] font-semibold text-[#B89555]">
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#B89555]">
                         {st.phase}
                       </span>
-                      <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#B89555]' : 'text-[#6B4030]'}`} />
+                      <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isSelected ? 'text-[#B89555]' : 'text-[#6B4030]'}`} />
                     </div>
-                    <span className="text-xs font-number font-bold leading-tight">
+                    <span className="text-[11px] sm:text-xs font-number font-bold leading-tight">
                       {st.period}
                     </span>
-                    <span className={`text-[11px] font-['DM_Sans'] truncate w-full mt-1 ${isSelected ? 'text-white font-medium' : 'text-[#241A16]/80'}`}>
+                    <span className={`text-[10px] sm:text-[11px] font-['DM_Sans'] truncate w-full mt-0.5 sm:mt-1 ${isSelected ? 'text-white font-medium' : 'text-[#241A16]/80'}`}>
                       {st.title}
                     </span>
                   </button>
@@ -132,36 +132,36 @@ export default function LearningJourney() {
             </div>
 
             {/* Selected Phase Detail Stage */}
-            <div className="pt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-              <div className="lg:col-span-8 space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="px-3.5 py-1 rounded-md text-xs font-number font-bold bg-[#4A2C20] text-[#F7F2E8]">
+            <div className="pt-4 sm:pt-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-center">
+              <div className="lg:col-span-8 space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <span className="px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-number font-bold bg-[#4A2C20] text-[#F7F2E8]">
                     {steps[activeStep].period}
                   </span>
-                  <span className="text-xs font-['DM_Sans'] text-[#6B4030] font-semibold">
+                  <span className="text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030] font-semibold">
                     {steps[activeStep].phase} of 6
                   </span>
                 </div>
-                <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">
+                <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-[#241A16]">
                   {steps[activeStep].title}
                 </h3>
-                <p className="font-['DM_Sans'] text-base text-[#6B4030] font-medium leading-relaxed">
+                <p className="font-['DM_Sans'] text-xs sm:text-base text-[#6B4030] font-medium leading-snug">
                   {steps[activeStep].desc}
                 </p>
-                <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/75 leading-relaxed">
-                  Focus modules: {steps[activeStep].details}
+                <p className="font-['DM_Sans'] text-[11px] sm:text-sm text-[#241A16]/75 leading-snug">
+                  Focus: {steps[activeStep].details}
                 </p>
               </div>
 
-              <div className="lg:col-span-4 bg-[#F7F2E8] rounded-2xl p-5 border border-[#6B4030]/15 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-['DM_Sans'] font-bold text-[#4A2C20] uppercase tracking-wide">
-                  <CheckCircle2 className="w-4 h-4 text-[#B89555]" />
+              <div className="lg:col-span-4 bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-[#6B4030]/15 space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] uppercase tracking-wide">
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
                   <span>Key Milestone Outcome</span>
                 </div>
-                <p className="font-['DM_Sans'] text-sm font-semibold text-[#241A16]">
+                <p className="font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] leading-snug">
                   "{steps[activeStep].outcome}"
                 </p>
-                <div className="flex items-center justify-between pt-2 border-t border-[#6B4030]/15 text-xs text-[#6B4030] font-medium">
+                <div className="flex items-center justify-between pt-1.5 sm:pt-2 border-t border-[#6B4030]/15 text-[10px] sm:text-xs text-[#6B4030] font-medium">
                   <span>Interactive Module</span>
                   <span className="text-[#B89555] font-bold">10-Day Sprint</span>
                 </div>
@@ -171,36 +171,36 @@ export default function LearningJourney() {
         </Reveal>
 
         {/* Serpentine Alternating Roadmap Pathway */}
-        <div className="space-y-4">
-          <div className="text-center mb-6">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="text-center mb-4 sm:mb-6">
             <span className="text-xs font-['DM_Sans'] uppercase tracking-wider font-semibold text-[#6B4030]">
               Full 60-Day Syllabus Breakdown
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {steps.map((step, idx) => {
               const Icon = step.icon;
               return (
                 <Reveal key={step.phase} direction="up" delay={100 + idx * 50}>
-                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5" />
+                  <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex items-start gap-3.5 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-number font-bold text-[#B89555]">
+                        <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555]">
                           {step.period} • {step.phase}
                         </span>
                         <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
                       </div>
-                      <h4 className="font-['Cormorant_Garamond'] text-xl font-bold text-[#241A16]">
+                      <h4 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
                         {step.title}
                       </h4>
-                      <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium">
+                      <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium leading-snug">
                         {step.desc}
                       </p>
-                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 pt-1">
+                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 pt-0.5 leading-snug">
                         {step.details}
                       </p>
                     </div>

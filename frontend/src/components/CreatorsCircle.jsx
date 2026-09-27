@@ -71,20 +71,20 @@ export default function CreatorsCircle() {
           </div>
 
           {/* Right Column: 3 Community Benefit Cards */}
-          <div className="lg:col-span-6 space-y-4">
+          <div className="lg:col-span-6 space-y-2.5 sm:space-y-4">
             {communityFeatures.map((feat, idx) => {
               const Icon = feat.icon;
               return (
                 <Reveal key={feat.title} direction="up" delay={200 + idx * 100}>
-                  <div className="bg-[#4A2C20]/40 p-6 sm:p-7 rounded-2xl border border-white/10 hover:border-[#B89555]/40 transition-all duration-300 flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/30 shadow-sm">
-                      <Icon className="w-6 h-6" />
+                  <div className="bg-[#4A2C20]/40 p-3.5 sm:p-7 rounded-xl sm:rounded-2xl border border-white/10 hover:border-[#B89555]/40 transition-all duration-300 flex items-start gap-3 sm:gap-5">
+                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/30 shadow-sm">
+                      <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="font-['Cormorant_Garamond'] text-xl font-bold text-white">
+                    <div className="space-y-0.5 sm:space-y-1">
+                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-white leading-snug">
                         {feat.title}
                       </h3>
-                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#F7F2E8]/75 leading-relaxed font-normal">
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#F7F2E8]/75 leading-snug font-normal">
                         {feat.desc}
                       </p>
                     </div>

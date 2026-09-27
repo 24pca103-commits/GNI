@@ -82,38 +82,38 @@ export default function Process() {
         </Reveal>
 
         {/* 5-Step Process Timeline / Cards in Title Case */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-5 relative z-10">
           {steps.map((item, index) => {
             const Icon = item.icon;
 
             return (
               <Reveal key={index} direction="up" delay={index * 100}>
-                <div className="bg-[#F7F2E8] rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                   <div>
                     {/* Header: Step Number & Icon */}
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="font-['DM_Sans'] text-2xl font-bold text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors">
+                    <div className="flex items-center justify-between mb-2.5 sm:mb-4">
+                      <span className="font-['DM_Sans'] text-xl sm:text-2xl font-bold text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors">
                         {item.step}
                       </span>
-                      <div className="w-11 h-11 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                        <Icon className="w-5 h-5" />
+                      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                     </div>
 
-                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] mb-2">
+                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] mb-1.5 sm:mb-2">
                       {item.badge}
                     </span>
 
-                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] mb-2 leading-snug group-hover:text-[#4A2C20] transition-colors">
+                    <h3 className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#241A16] mb-1.5 sm:mb-2 leading-snug group-hover:text-[#4A2C20] transition-colors">
                       {item.title}
                     </h3>
 
-                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal">
+                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-snug font-normal">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-5 pt-3 border-t border-[#6B4030]/15 flex items-center gap-1.5 text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20]">
+                  <div className="mt-3 sm:mt-5 pt-2 sm:pt-3 border-t border-[#6B4030]/15 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20]">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
                     <span>Verified Protocol</span>
                   </div>
