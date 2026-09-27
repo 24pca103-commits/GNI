@@ -73,6 +73,8 @@ export default function About() {
               <img
                 src="/artisan/hands-on-studio.jpg"
                 alt="Master artisans and students sculpting and carving sacred Tamil idols at Global Nagas Institute"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
 

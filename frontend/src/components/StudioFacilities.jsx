@@ -353,6 +353,8 @@ export default function StudioFacilities() {
                 <img
                   src={current.image}
                   alt={current.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-[#241A16]/30" />

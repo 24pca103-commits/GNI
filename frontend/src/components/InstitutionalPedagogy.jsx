@@ -96,6 +96,8 @@ export default function InstitutionalPedagogy() {
                   <img
                     src="/artisan/pillar-epigraphy.jpg"
                     alt="Epigraphical study, manuscripts, and temple canons"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-[#241A16]/25" />
@@ -159,6 +161,8 @@ export default function InstitutionalPedagogy() {
                   <img
                     src="/artisan/hands-on-studio.jpg"
                     alt="Hands-on traditional metal sculpture and sacred craft studio apprentices"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                   <div className="absolute inset-0 bg-[#241A16]/25" />

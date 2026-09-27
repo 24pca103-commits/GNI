@@ -53,6 +53,8 @@ export default function WorkshopSection() {
               <img
                 src="/artisan/workshop.jpg"
                 alt="Tamil heritage workshop hands-on experience"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
 
