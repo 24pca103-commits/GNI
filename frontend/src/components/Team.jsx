@@ -72,7 +72,7 @@ export default function Team() {
               The Team Behind Global Nagas Institute
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal sm:text-center sm:mx-auto max-w-2xl">
               Meet the hereditary sthapathis, epigraphists, and master artisans transmitting ancient Tamil mastery.
             </p>
           </div>

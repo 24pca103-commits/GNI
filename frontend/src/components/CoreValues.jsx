@@ -100,7 +100,7 @@ export default function CoreValues() {
               Five Core Values
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-center max-w-2xl mx-auto">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
               The foundational pillars that guide every artisan, discipline, and creation across our repository.
             </p>
           </div>
