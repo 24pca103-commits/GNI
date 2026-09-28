@@ -16,6 +16,26 @@ import {
 } from 'lucide-react';
 
 export default function Register() {
+  const countryList = [
+    { code: 'IN', dial: '+91', name: 'India', flag: '🇮🇳', digits: 10, placeholder: '9876543210' },
+    { code: 'LK', dial: '+94', name: 'Sri Lanka', flag: '🇱🇰', digits: 9, placeholder: '712345678' },
+    { code: 'MY', dial: '+60', name: 'Malaysia', flag: '🇲🇾', digits: 10, placeholder: '123456789' },
+    { code: 'SG', dial: '+65', name: 'Singapore', flag: '🇸🇬', digits: 8, placeholder: '81234567' },
+    { code: 'AE', dial: '+971', name: 'UAE', flag: '🇦🇪', digits: 9, placeholder: '501234567' },
+    { code: 'SA', dial: '+966', name: 'Saudi Arabia', flag: '🇸🇦', digits: 9, placeholder: '501234567' },
+    { code: 'US', dial: '+1', name: 'USA / Canada', flag: '🇺🇸', digits: 10, placeholder: '2025550123' },
+    { code: 'GB', dial: '+44', name: 'UK', flag: '🇬🇧', digits: 10, placeholder: '7911123456' },
+    { code: 'AU', dial: '+61', name: 'Australia', flag: '🇦🇺', digits: 9, placeholder: '412345678' },
+    { code: 'DE', dial: '+49', name: 'Germany', flag: '🇩🇪', digits: 10, placeholder: '1512345678' },
+    { code: 'FR', dial: '+33', name: 'France', flag: '🇫🇷', digits: 9, placeholder: '612345678' },
+    { code: 'QA', dial: '+974', name: 'Qatar', flag: '🇶🇦', digits: 8, placeholder: '33123456' },
+    { code: 'KW', dial: '+965', name: 'Kuwait', flag: '🇰🇼', digits: 8, placeholder: '51234567' },
+    { code: 'OM', dial: '+968', name: 'Oman', flag: '🇴🇲', digits: 8, placeholder: '91234567' },
+  ];
+
+  const [selectedCountryCode, setSelectedCountryCode] = useState('IN');
+  const currentCountry = countryList.find((c) => c.code === selectedCountryCode) || countryList[0];
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -62,6 +82,7 @@ export default function Register() {
   };
 
   // Prevent letters/text from being typed into number fields (Phone / Mobile Number)
+  // Also strictly prevent typing extra digits beyond the selected country's limit
   const handleNumberOnlyKeyDown = (e) => {
     // Allow navigation keys, backspace, delete, tab, copy/paste shortcuts
     if (
@@ -72,18 +93,25 @@ export default function Register() {
     ) {
       return;
     }
-    // Allow '+' only at the very first position
-    if (e.key === '+' && (e.target.value.length === 0 || e.target.selectionStart === 0)) {
+
+    // Strictly block non-digit characters
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
       return;
     }
-    // Strictly block any non-digit
-    if (!/[0-9]/.test(e.key)) {
+
+    // Strictly block typing extra digits if max length for selected country is already reached
+    const input = e.target;
+    const selectionLength = (input.selectionEnd || 0) - (input.selectionStart || 0);
+    const currentLength = (input.value || '').replace(/\D/g, '').length;
+
+    if (currentLength >= currentCountry.digits && selectionLength === 0) {
       e.preventDefault();
     }
   };
 
   // Validate single field
-  const validateField = (name, value) => {
+  const validateField = (name, value, country = currentCountry) => {
     let error = '';
 
     switch (name) {
@@ -106,11 +134,11 @@ export default function Register() {
         break;
 
       case 'phone': {
-        const cleanPhone = value.replace(/[\s\-()]/g, '');
-        if (!value.trim()) {
-          error = 'Phone number is required';
-        } else if (!/^[+]?[0-9]{10,15}$/.test(cleanPhone)) {
-          error = 'Enter a valid 10-digit mobile number (numbers only)';
+        const cleanPhone = (value || '').replace(/\D/g, '');
+        if (!cleanPhone) {
+          error = 'Phone / WhatsApp number is required';
+        } else if (cleanPhone.length !== country.digits) {
+          error = `Enter exactly ${country.digits} digits for ${country.name} (${cleanPhone.length}/${country.digits} entered)`;
         }
         break;
       }
@@ -159,7 +187,6 @@ export default function Register() {
         break;
     }
 
-    return error;
   };
 
   // Validate entire form before submission
@@ -190,12 +217,10 @@ export default function Register() {
     if (name === 'fullName' || name === 'location' || name === 'profession') {
       value = value.replace(/[0-9]/g, '');
     }
-    // Strict sanitization: NO TEXT/LETTERS in number field (phone)
+    // Strict sanitization: NO TEXT/LETTERS in number field (phone) & strictly enforce country digit limit
     else if (name === 'phone') {
-      const hasPlus = value.startsWith('+');
       const digitsOnly = value.replace(/\D/g, '');
-      value = hasPlus ? `+${digitsOnly}` : digitsOnly;
-      value = value.slice(0, 15); // limit to 15 digits
+      value = digitsOnly.slice(0, currentCountry.digits);
     }
     // Strict sanitization: NO SPACES in email
     else if (name === 'email') {
@@ -211,6 +236,23 @@ export default function Register() {
     }
 
     if (errorMessage) setErrorMessage('');
+  };
+
+  const handleCountryChange = (e) => {
+    const newCode = e.target.value;
+    const targetCountry = countryList.find((c) => c.code === newCode) || countryList[0];
+    setSelectedCountryCode(newCode);
+
+    // Trim phone digits if current phone exceeds the new country's allowed length
+    const currentDigits = (formData.phone || '').replace(/\D/g, '');
+    const trimmedPhone = currentDigits.slice(0, targetCountry.digits);
+
+    setFormData((prev) => ({ ...prev, phone: trimmedPhone }));
+
+    if (touched.phone) {
+      const error = validateField('phone', trimmedPhone, targetCountry);
+      setErrors((prev) => ({ ...prev, phone: error }));
+    }
   };
 
   const handleBlur = (e) => {
@@ -231,13 +273,21 @@ export default function Register() {
     setLoading(true);
     setErrorMessage('');
 
+    const submissionPayload = {
+      ...formData,
+      country: currentCountry.name,
+      countryCode: currentCountry.code,
+      countryDial: currentCountry.dial,
+      fullPhone: `${currentCountry.dial} ${formData.phone}`,
+    };
+
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionPayload),
       });
 
       const result = await response.json();
@@ -246,11 +296,11 @@ export default function Register() {
         throw new Error(result.message || 'Registration failed. Please check your details and try again.');
       }
 
-      setRegisteredData(result.data || formData);
+      setRegisteredData(result.data || submissionPayload);
       setIsSuccess(true);
     } catch (err) {
       // Fallback in case of mock environment without live backend: grant friendly instant confirmation
-      setRegisteredData(formData);
+      setRegisteredData(submissionPayload);
       setIsSuccess(true);
     } finally {
       setLoading(false);
@@ -295,6 +345,12 @@ export default function Register() {
                 <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                   <span className="text-[#6B4030] font-medium">Applicant Name:</span>
                   <span className="font-bold text-[#4A2C20]">{registeredData.fullName}</span>
+                </div>
+                <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                  <span className="text-[#6B4030] font-medium">Contact Number:</span>
+                  <span className="font-medium text-[#241A16]">
+                    {registeredData.countryDial || currentCountry.dial} {registeredData.phone}
+                  </span>
                 </div>
                 <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                   <span className="text-[#6B4030] font-medium">Email:</span>
@@ -430,32 +486,60 @@ export default function Register() {
                   )}
                 </div>
 
-                {/* 3. Phone Number (Numbers only - Text/letters blocked) */}
-                <div className="space-y-1 text-left">
-                  <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Mobile / WhatsApp Number <span className="text-red-600">*</span> <span className="text-[10px] text-[#6B4030]/70">(Numbers only)</span>
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
-                    <input
-                      type="tel"
-                      inputMode="numeric"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      onKeyDown={handleNumberOnlyKeyDown}
-                      onBlur={handleBlur}
-                      placeholder="e.g. 9876543210"
-                      maxLength={15}
-                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden ${
-                        touched.phone && errors.phone
-                          ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
-                          : touched.phone && !errors.phone && formData.phone
-                          ? 'border-emerald-500/60 bg-[#F7F2E8]/30 focus:border-[#B89555]'
-                          : 'border-[#6B4030]/20 bg-[#F7F2E8]/40 focus:bg-white focus:border-[#B89555]'
-                      }`}
-                    />
+                {/* 3. Phone / WhatsApp Number with Country Selector & Strict Digit Limit */}
+                <div className="space-y-1 text-left sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                      Mobile / WhatsApp Number <span className="text-red-600">*</span>
+                    </label>
+                    <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]">
+                      {currentCountry.digits} digits ({formData.phone.length}/{currentCountry.digits})
+                    </span>
                   </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    {/* Country Selector Dropdown */}
+                    <div className="sm:col-span-5 relative">
+                      <select
+                        aria-label="Country Code"
+                        value={selectedCountryCode}
+                        onChange={handleCountryChange}
+                        className="w-full h-[42px] px-3 rounded-xl border border-[#6B4030]/20 bg-[#F7F2E8]/40 text-xs font-['DM_Sans'] text-[#241A16] font-medium focus:bg-white focus:border-[#B89555] focus:outline-hidden cursor-pointer"
+                      >
+                        {countryList.map((c) => (
+                          <option key={c.code} value={c.code} className="bg-white text-[#241A16]">
+                            {c.flag} {c.name} ({c.dial}) — {c.digits} Digits
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Phone Number Input */}
+                    <div className="sm:col-span-7 relative">
+                      <span className="absolute left-3.5 top-2.5 text-xs font-semibold text-[#6B4030] pointer-events-none select-none">
+                        {currentCountry.dial}
+                      </span>
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        onKeyDown={handleNumberOnlyKeyDown}
+                        onBlur={handleBlur}
+                        placeholder={`e.g. ${currentCountry.placeholder}`}
+                        maxLength={currentCountry.digits}
+                        className={`w-full pl-14 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] font-medium transition-colors focus:outline-hidden ${
+                          touched.phone && errors.phone
+                            ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
+                            : touched.phone && !errors.phone && formData.phone.length === currentCountry.digits
+                            ? 'border-emerald-500/60 bg-[#F7F2E8]/30 focus:border-[#B89555]'
+                            : 'border-[#6B4030]/20 bg-[#F7F2E8]/40 focus:bg-white focus:border-[#B89555]'
+                        }`}
+                      />
+                    </div>
+                  </div>
+
                   {touched.phone && errors.phone && (
                     <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-center gap-1 pt-0.5">
                       <AlertCircle className="w-3 h-3 shrink-0" />
