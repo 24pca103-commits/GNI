@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Star, MessageSquareQuote, CheckCircle2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Star, MessageSquareQuote, CheckCircle2, Sparkles } from 'lucide-react';
 import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
 export default function Testimonials() {
   const scrollRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftState, setScrollLeftState] = useState(0);
 
   const testimonials = [
     {
@@ -64,16 +66,27 @@ export default function Testimonials() {
     },
   ];
 
-  // Manual scroll nudge buttons for user convenience
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -360 : 360;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
+  const handleMouseDown = (e) => {
+    setIsDown(true);
+    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
+    setScrollLeftState(scrollRef.current?.scrollLeft || 0);
   };
 
-  // Duplicated array for 100% seamless infinite horizontal looping
-  const loopedList = [...testimonials, ...testimonials];
+  const handleMouseLeave = () => {
+    setIsDown(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDown(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDown || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeftState - walk;
+  };
 
   return (
     <section id="testimonials" className="py-8 md:py-16 bg-white relative overflow-hidden border-t border-[#6B4030]/15">
@@ -83,7 +96,7 @@ export default function Testimonials() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>
-          <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
               <MessageSquareQuote className="w-3.5 h-3.5 text-[#B89555]" />
               <span>Artisan Alumni Voices</span>
@@ -98,52 +111,26 @@ export default function Testimonials() {
           </div>
         </Reveal>
 
-        {/* Top Controls: Left / Right navigation */}
-        <Reveal direction="up" delay={120}>
-          <div className="flex items-center justify-end mb-3 sm:mb-4 px-1">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <button
-                onClick={() => scroll('left')}
-                aria-label="Previous Testimonial"
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F7F2E8] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shadow-xs cursor-pointer"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                aria-label="Next Testimonial"
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F7F2E8] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shadow-xs cursor-pointer"
-              >
-                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </button>
-            </div>
-          </div>
-        </Reveal>
-
-        {/* Single Row Horizontal Infinite Scrolling Track */}
+        {/* Smooth Manual Sliding Track with Swipe & Drag Support */}
         <Reveal direction="up" delay={150}>
-          <div
-            className="relative overflow-hidden group py-2"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onTouchStart={() => setIsPaused(true)}
-            onTouchEnd={() => setIsPaused(false)}
-          >
+          <div className="relative py-2">
             {/* Left & Right Soft Fade Gradient Masks */}
             <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
 
-            {/* Scroll Container with marquee animation in a single horizontal row */}
+            {/* Scroll Container with smooth manual scrolling */}
             <div
               ref={scrollRef}
-              className={`flex items-stretch gap-4 sm:gap-6 ${
-                isPaused ? 'overflow-x-auto no-scrollbar' : 'animate-marquee-infinite'
-              }`}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-2 cursor-grab active:cursor-grabbing select-none"
             >
-              {loopedList.map((item, idx) => (
+              {testimonials.map((item, idx) => (
                 <div
                   key={idx}
-                  className="w-[310px] sm:w-[360px] md:w-[380px] shrink-0 flex flex-col"
+                  className="w-[85vw] max-w-[340px] sm:w-[360px] md:w-[380px] shrink-0 snap-center flex flex-col"
                 >
                   <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
                     <div>
@@ -158,7 +145,7 @@ export default function Testimonials() {
                       </div>
 
                       {/* Review Text */}
-                      <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-[13.5px] leading-relaxed italic mb-3 sm:mb-5 font-normal text-justify indent-4 sm:indent-0">
+                      <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-[13.5px] leading-relaxed italic mb-3 sm:mb-5 font-normal text-left">
                         "{item.review}"
                       </p>
                     </div>
@@ -172,7 +159,7 @@ export default function Testimonials() {
                         decoding="async"
                         className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
                       />
-                      <div className="min-w-0">
+                      <div className="min-w-0 text-left">
                         <div className="flex items-center gap-1.5">
                           <h3 className="font-['Cormorant_Garamond'] font-bold text-[#241A16] text-sm sm:text-base leading-tight truncate">
                             {item.name}
