@@ -83,20 +83,15 @@ export default function Team() {
           {teamMembers.map((member, idx) => (
             <Reveal key={idx} direction="up" delay={idx * 100}>
               <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col group h-full">
-                {/* Profile Image */}
-                <div className="relative h-36 sm:h-60 overflow-hidden bg-[#241A16]">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#241A16]/80 via-transparent to-transparent opacity-90" />
+                {/* Empty Profile Placeholder Avatar */}
+                <div className="relative pt-6 pb-3.5 px-4 bg-[#F7F2E8] border-b border-[#6B4030]/15 flex flex-col items-center justify-center text-center">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#4A2C20] border-2 border-[#B89555]/50 flex items-center justify-center shadow-md group-hover:scale-105 group-hover:border-[#B89555] transition-all duration-300">
+                    <Users className="w-7 h-7 sm:w-8 sm:h-8 text-[#B89555]" />
+                  </div>
 
                   {/* Specialty Tag */}
-                  <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-3 sm:left-3 sm:right-3">
-                    <span className="inline-block px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold bg-[#4A2C20] text-[#B89555] border border-[#B89555]/30 shadow-sm">
+                  <div className="mt-2.5">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold bg-[#4A2C20] text-[#B89555] border border-[#B89555]/30 shadow-xs">
                       {member.specialty}
                     </span>
                   </div>
