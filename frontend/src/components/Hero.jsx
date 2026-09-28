@@ -174,11 +174,11 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Action Buttons in Sentence Case */}
-          <div className="pt-1 sm:pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3.5 justify-start">
+          {/* Action Buttons in Sentence Case - Adopt text size on mobile & desktop */}
+          <div className="pt-1 sm:pt-2 flex flex-row flex-wrap items-center gap-2.5 sm:gap-3.5 justify-start">
             <Link
               to="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 sm:px-6 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors border border-[#B89555] shadow-md"
+              className="w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors border border-[#B89555] shadow-md shrink-0"
             >
               <span>{current.primaryBtn}</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#241A16]" />
@@ -186,7 +186,7 @@ export default function Hero() {
 
             <button
               onClick={handleStaticClick}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-default shadow-sm"
+              className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-default shadow-sm shrink-0"
             >
               <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E5B869]" />
               <span>{current.secondaryBtn}</span>

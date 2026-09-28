@@ -183,23 +183,24 @@ export default function LearningJourney() {
               const Icon = step.icon;
               return (
                 <Reveal key={step.phase} direction="up" delay={100 + idx * 50}>
-                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex items-start gap-3.5 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0">
-                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <div className="space-y-1 flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555]">
-                          {step.period} • {step.phase}
-                        </span>
+                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex flex-col items-start gap-3 sm:gap-3.5 text-left">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 shadow-xs">
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
+                      <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555] px-2.5 py-0.5 rounded-full bg-[#4A2C20]/5 border border-[#B89555]/20">
+                        {step.period} • {step.phase}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 w-full">
                       <h4 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
                         {step.title}
                       </h4>
-                      <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium leading-relaxed text-justify indent-3 sm:indent-0">
+                      <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium leading-relaxed">
                         {step.desc}
                       </p>
-                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 pt-0.5 leading-relaxed text-justify indent-3 sm:indent-0">
+                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 pt-0.5 leading-relaxed">
                         {step.details}
                       </p>
                     </div>

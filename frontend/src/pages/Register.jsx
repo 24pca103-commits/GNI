@@ -13,6 +13,7 @@ import {
   HelpCircle,
   Sparkles,
   Loader2,
+  ChevronDown,
 } from 'lucide-react';
 
 export default function Register() {
@@ -486,7 +487,7 @@ export default function Register() {
                   )}
                 </div>
 
-                {/* 3. Phone / WhatsApp Number with Country Selector & Strict Digit Limit */}
+                {/* 3. Phone / WhatsApp Number with Clean Integrated Country Selector */}
                 <div className="space-y-1 text-left sm:col-span-2">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
@@ -497,47 +498,45 @@ export default function Register() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                    {/* Country Selector Dropdown */}
-                    <div className="sm:col-span-5 relative">
+                  <div
+                    className={`flex items-stretch rounded-xl border transition-colors bg-[#F7F2E8]/40 focus-within:bg-white focus-within:border-[#B89555] ${
+                      touched.phone && errors.phone
+                        ? 'border-red-500 bg-red-50/10 focus-within:border-red-600'
+                        : touched.phone && !errors.phone && formData.phone.length === currentCountry.digits
+                        ? 'border-emerald-500/60 bg-[#F7F2E8]/30'
+                        : 'border-[#6B4030]/20'
+                    }`}
+                  >
+                    {/* Clean Country Selector Dropdown */}
+                    <div className="relative border-r border-[#6B4030]/20 shrink-0 flex items-center bg-black/5 rounded-l-xl">
                       <select
                         aria-label="Country Code"
                         value={selectedCountryCode}
                         onChange={handleCountryChange}
-                        className="w-full h-[42px] px-3 rounded-xl border border-[#6B4030]/20 bg-[#F7F2E8]/40 text-xs font-['DM_Sans'] text-[#241A16] font-medium focus:bg-white focus:border-[#B89555] focus:outline-hidden cursor-pointer"
+                        className="h-full pl-3 pr-7 py-2.5 bg-transparent text-xs font-['DM_Sans'] text-[#241A16] font-semibold focus:outline-hidden cursor-pointer appearance-none"
                       >
                         {countryList.map((c) => (
                           <option key={c.code} value={c.code} className="bg-white text-[#241A16]">
-                            {c.flag} {c.name} ({c.dial}) — {c.digits} Digits
+                            {c.flag} {c.name} ({c.dial})
                           </option>
                         ))}
                       </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6B4030] absolute right-2 pointer-events-none" />
                     </div>
 
-                    {/* Phone Number Input */}
-                    <div className="sm:col-span-7 relative">
-                      <span className="absolute left-3.5 top-2.5 text-xs font-semibold text-[#6B4030] pointer-events-none select-none">
-                        {currentCountry.dial}
-                      </span>
-                      <input
-                        type="tel"
-                        inputMode="numeric"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        onKeyDown={handleNumberOnlyKeyDown}
-                        onBlur={handleBlur}
-                        placeholder={`e.g. ${currentCountry.placeholder}`}
-                        maxLength={currentCountry.digits}
-                        className={`w-full pl-14 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] font-medium transition-colors focus:outline-hidden ${
-                          touched.phone && errors.phone
-                            ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
-                            : touched.phone && !errors.phone && formData.phone.length === currentCountry.digits
-                            ? 'border-emerald-500/60 bg-[#F7F2E8]/30 focus:border-[#B89555]'
-                            : 'border-[#6B4030]/20 bg-[#F7F2E8]/40 focus:bg-white focus:border-[#B89555]'
-                        }`}
-                      />
-                    </div>
+                    {/* Clean Phone Number Input */}
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      onKeyDown={handleNumberOnlyKeyDown}
+                      onBlur={handleBlur}
+                      placeholder={`e.g. ${currentCountry.placeholder}`}
+                      maxLength={currentCountry.digits}
+                      className="flex-1 w-full px-3.5 py-2.5 bg-transparent text-sm font-['DM_Sans'] text-[#241A16] font-medium placeholder-[#6B4030]/40 focus:outline-hidden"
+                    />
                   </div>
 
                   {touched.phone && errors.phone && (
