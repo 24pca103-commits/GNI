@@ -120,20 +120,45 @@ export default function StudioFacilities() {
   // Tripled list for infinite looping without jump
   const displayList = [...facilities, ...facilities, ...facilities];
 
-  // Continuous smooth auto-scroll loop for the icon track
+  // Continuous smooth auto-scroll loop with center-icon active detection
   useEffect(() => {
     let animId;
     const speed = 0.5; // gentle smooth auto-scroll speed
 
     const step = () => {
       const el = scrollRef.current;
-      if (el && !isInteractingRef.current) {
-        el.scrollLeft += speed;
-        const oneThird = el.scrollWidth / 3;
-        if (el.scrollLeft >= oneThird * 2) {
-          el.scrollLeft -= oneThird;
-        } else if (el.scrollLeft <= 0) {
-          el.scrollLeft += oneThird;
+      if (el) {
+        if (!isInteractingRef.current) {
+          el.scrollLeft += speed;
+          const oneThird = el.scrollWidth / 3;
+          if (el.scrollLeft >= oneThird * 2) {
+            el.scrollLeft -= oneThird;
+          } else if (el.scrollLeft <= 0) {
+            el.scrollLeft += oneThird;
+          }
+        }
+
+        // Dynamically detect which icon is in the CENTER of the carousel track
+        const containerCenter = el.scrollLeft + el.clientWidth / 2;
+        const items = el.children;
+        let closestId = null;
+        let minDiff = Infinity;
+
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+          const diff = Math.abs(containerCenter - itemCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            const facAttr = item.getAttribute('data-facility-id');
+            if (facAttr !== null) {
+              closestId = parseInt(facAttr, 10);
+            }
+          }
+        }
+
+        if (closestId !== null) {
+          setActiveIndex((prev) => (prev !== closestId ? closestId : prev));
         }
       }
       animId = requestAnimationFrame(step);
@@ -142,16 +167,6 @@ export default function StudioFacilities() {
     animId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(animId);
   }, []);
-
-  // Auto-cycle the active facility card every 5 seconds when not interacting
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!isInteractingRef.current) {
-        setActiveIndex((prev) => (prev + 1) % facilities.length);
-      }
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [facilities.length]);
 
   const touchStartXRef = useRef(0);
   const touchScrollLeftRef = useRef(0);
@@ -214,13 +229,27 @@ export default function StudioFacilities() {
     }, 1500);
   };
 
+  // Direct Click Handler - Centers the clicked icon smoothly
+  const handleItemClick = (e, facId) => {
+    isInteractingRef.current = true;
+    setActiveIndex(facId);
+    const btn = e.currentTarget;
+    const el = scrollRef.current;
+    if (btn && el) {
+      const targetScroll = btn.offsetLeft + btn.offsetWidth / 2 - el.clientWidth / 2;
+      el.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+    setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2000);
+  };
+
   // Slider Button Handlers (Prev / Next)
   const handlePrev = () => {
     isInteractingRef.current = true;
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -160, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: -150, behavior: 'smooth' });
     }
-    setActiveIndex((prev) => (prev === 0 ? facilities.length - 1 : prev - 1));
     setTimeout(() => {
       isInteractingRef.current = false;
     }, 2000);
@@ -229,9 +258,8 @@ export default function StudioFacilities() {
   const handleNext = () => {
     isInteractingRef.current = true;
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 160, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: 150, behavior: 'smooth' });
     }
-    setActiveIndex((prev) => (prev + 1) % facilities.length);
     setTimeout(() => {
       isInteractingRef.current = false;
     }, 2000);
@@ -298,7 +326,8 @@ export default function StudioFacilities() {
                 return (
                   <button
                     key={`${fac.id}-${idx}`}
-                    onClick={() => setActiveIndex(fac.id)}
+                    data-facility-id={fac.id}
+                    onClick={(e) => handleItemClick(e, fac.id)}
                     className="flex flex-col items-center justify-center shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden min-w-[90px] sm:min-w-[120px]"
                   >
                     {/* Round Shape Icon Container */}
