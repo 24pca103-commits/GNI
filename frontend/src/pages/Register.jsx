@@ -44,6 +44,44 @@ export default function Register() {
 
   const experienceOptions = ['Beginner', 'Intermediate', 'Advanced'];
 
+  // Prevent numbers from being typed into text-only fields (Full Name, Location, Profession)
+  const handleTextOnlyKeyDown = (e) => {
+    // Allow navigation keys, backspace, delete, tab, space, enter, copy/paste shortcuts
+    if (
+      e.ctrlKey ||
+      e.metaKey ||
+      e.altKey ||
+      ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Enter', ' '].includes(e.key)
+    ) {
+      return;
+    }
+    // Strictly block digits 0-9
+    if (/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  // Prevent letters/text from being typed into number fields (Phone / Mobile Number)
+  const handleNumberOnlyKeyDown = (e) => {
+    // Allow navigation keys, backspace, delete, tab, copy/paste shortcuts
+    if (
+      e.ctrlKey ||
+      e.metaKey ||
+      e.altKey ||
+      ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Enter'].includes(e.key)
+    ) {
+      return;
+    }
+    // Allow '+' only at the very first position
+    if (e.key === '+' && (e.target.value.length === 0 || e.target.selectionStart === 0)) {
+      return;
+    }
+    // Strictly block any non-digit
+    if (!/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   // Validate single field
   const validateField = (name, value) => {
     let error = '';
@@ -55,7 +93,7 @@ export default function Register() {
         } else if (value.trim().length < 2) {
           error = 'Name must be at least 2 characters';
         } else if (!/^[a-zA-Z\s.'-]+$/.test(value.trim())) {
-          error = 'Name can only contain letters, spaces, and hyphens';
+          error = 'Name can only contain letters, spaces, and hyphens (no numbers)';
         }
         break;
 
@@ -72,7 +110,7 @@ export default function Register() {
         if (!value.trim()) {
           error = 'Phone number is required';
         } else if (!/^[+]?[0-9]{10,15}$/.test(cleanPhone)) {
-          error = 'Enter a valid 10-digit phone number (e.g. 9876543210)';
+          error = 'Enter a valid 10-digit mobile number (numbers only)';
         }
         break;
       }
@@ -81,7 +119,9 @@ export default function Register() {
         if (!value.trim()) {
           error = 'Location (City / State) is required';
         } else if (value.trim().length < 3) {
-          error = 'Please provide a valid location (at least 3 characters)';
+          error = 'Please provide a valid location (at least 3 letters, no numbers)';
+        } else if (/[0-9]/.test(value)) {
+          error = 'Location cannot contain numbers';
         }
         break;
 
@@ -90,6 +130,8 @@ export default function Register() {
           error = 'Profession / Background is required';
         } else if (value.trim().length < 2) {
           error = 'Please specify your background (e.g. Student, Designer, Architect)';
+        } else if (/[0-9]/.test(value)) {
+          error = 'Profession cannot contain numbers';
         }
         break;
 
@@ -139,8 +181,27 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Real-time input change with strict type sanitization
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let { value } = e.target;
+
+    // Strict sanitization: NO NUMBERS in text fields (fullName, location, profession)
+    if (name === 'fullName' || name === 'location' || name === 'profession') {
+      value = value.replace(/[0-9]/g, '');
+    }
+    // Strict sanitization: NO TEXT/LETTERS in number field (phone)
+    else if (name === 'phone') {
+      const hasPlus = value.startsWith('+');
+      const digitsOnly = value.replace(/\D/g, '');
+      value = hasPlus ? `+${digitsOnly}` : digitsOnly;
+      value = value.slice(0, 15); // limit to 15 digits
+    }
+    // Strict sanitization: NO SPACES in email
+    else if (name === 'email') {
+      value = value.replace(/\s/g, '');
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Re-validate field on change if it was already touched
@@ -306,10 +367,10 @@ export default function Register() {
 
             <form onSubmit={handleSubmit} noValidate className="space-y-4 sm:space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                {/* 1. Full Name */}
+                {/* 1. Full Name (Text only - Numbers blocked) */}
                 <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Full Name <span className="text-red-600">*</span>
+                    Full Name <span className="text-red-600">*</span> <span className="text-[10px] text-[#6B4030]/70">(Letters only)</span>
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
@@ -318,6 +379,7 @@ export default function Register() {
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleChange}
+                      onKeyDown={handleTextOnlyKeyDown}
                       onBlur={handleBlur}
                       placeholder="e.g. Kavinraj Selvan"
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden ${
@@ -368,20 +430,23 @@ export default function Register() {
                   )}
                 </div>
 
-                {/* 3. Phone Number */}
+                {/* 3. Phone Number (Numbers only - Text/letters blocked) */}
                 <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Mobile / WhatsApp Number <span className="text-red-600">*</span>
+                    Mobile / WhatsApp Number <span className="text-red-600">*</span> <span className="text-[10px] text-[#6B4030]/70">(Numbers only)</span>
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
                     <input
                       type="tel"
+                      inputMode="numeric"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
+                      onKeyDown={handleNumberOnlyKeyDown}
                       onBlur={handleBlur}
                       placeholder="e.g. 9876543210"
+                      maxLength={15}
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden ${
                         touched.phone && errors.phone
                           ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
@@ -399,10 +464,10 @@ export default function Register() {
                   )}
                 </div>
 
-                {/* 4. Location */}
+                {/* 4. Location (Text only - Numbers blocked) */}
                 <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Location (City, State) <span className="text-red-600">*</span>
+                    Location (City, State) <span className="text-red-600">*</span> <span className="text-[10px] text-[#6B4030]/70">(Letters only)</span>
                   </label>
                   <div className="relative">
                     <MapPin className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
@@ -411,6 +476,7 @@ export default function Register() {
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
+                      onKeyDown={handleTextOnlyKeyDown}
                       onBlur={handleBlur}
                       placeholder="e.g. Madurai, Tamil Nadu"
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden ${
@@ -430,10 +496,10 @@ export default function Register() {
                   )}
                 </div>
 
-                {/* 5. Profession / Background */}
+                {/* 5. Profession / Background (Text only - Numbers blocked) */}
                 <div className="space-y-1 sm:col-span-2 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Current Profession / Background <span className="text-red-600">*</span>
+                    Current Profession / Background <span className="text-red-600">*</span> <span className="text-[10px] text-[#6B4030]/70">(Letters only)</span>
                   </label>
                   <div className="relative">
                     <Briefcase className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
@@ -442,6 +508,7 @@ export default function Register() {
                       name="profession"
                       value={formData.profession}
                       onChange={handleChange}
+                      onKeyDown={handleTextOnlyKeyDown}
                       onBlur={handleBlur}
                       placeholder="e.g. Architecture student, Textile artist, Interior consultant, Heritage researcher"
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden ${
