@@ -89,7 +89,7 @@ export default function WhyJoinUs() {
               Why Join Global Nagas Institute?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
               Not just an academy — a structured repository and living atelier transforming timeless Tamil wisdom into tactile mastery.
             </p>
           </div>
@@ -104,9 +104,9 @@ export default function WhyJoinUs() {
               return (
                 <div
                   key={item.step}
-                  className="w-[80vw] max-w-[290px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[85vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                  <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                     <div>
                       {/* Header: Step Number & Icon */}
                       <div className="flex items-center justify-between mb-3 sm:mb-5">
@@ -126,7 +126,7 @@ export default function WhyJoinUs() {
                         {item.title}
                       </h3>
 
-                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-snug font-normal text-left text-justify">
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal text-justify indent-4 sm:indent-0">
                         {item.desc}
                       </p>
                     </div>

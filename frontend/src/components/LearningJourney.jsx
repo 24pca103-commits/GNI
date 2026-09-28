@@ -90,7 +90,7 @@ export default function LearningJourney() {
               60-Day Heritage Creator Journey
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
               From learning the foundational strokes to launching authentic creations.
             </p>
           </div>
@@ -98,7 +98,7 @@ export default function LearningJourney() {
 
         {/* Serpentine Interactive Roadmap Navigation Track */}
         <Reveal direction="up" delay={150}>
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#6B4030]/15 shadow-sm mb-4 sm:mb-8">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-[#6B4030]/15 shadow-sm mb-4 sm:mb-8">
             {/* Step Progress Pills Track */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 pb-4 sm:pb-6 border-b border-[#6B4030]/15">
               {steps.map((st, idx) => {
@@ -145,15 +145,15 @@ export default function LearningJourney() {
                 <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-[#241A16]">
                   {steps[activeStep].title}
                 </h3>
-                <p className="font-['DM_Sans'] text-xs sm:text-base text-[#6B4030] font-medium leading-snug text-left text-justify">
+                <p className="font-['DM_Sans'] text-xs sm:text-base text-[#6B4030] font-medium leading-relaxed text-justify indent-4 sm:indent-0">
                   {steps[activeStep].desc}
                 </p>
-                <p className="font-['DM_Sans'] text-[11px] sm:text-sm text-[#241A16]/75 leading-snug text-left text-justify">
+                <p className="font-['DM_Sans'] text-[11px] sm:text-sm text-[#241A16]/75 leading-relaxed text-justify indent-4 sm:indent-0">
                   Focus: {steps[activeStep].details}
                 </p>
               </div>
 
-              <div className="lg:col-span-4 bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-[#6B4030]/15 space-y-2 sm:space-y-3">
+              <div className="lg:col-span-4 bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-[#6B4030]/15 space-y-2 sm:space-y-3">
                 <div className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] uppercase tracking-wide">
                   <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                   <span>Key Milestone Outcome</span>
@@ -178,12 +178,12 @@ export default function LearningJourney() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             {steps.map((step, idx) => {
               const Icon = step.icon;
               return (
                 <Reveal key={step.phase} direction="up" delay={100 + idx * 50}>
-                  <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex items-start gap-3.5 sm:gap-4">
+                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex items-start gap-3.5 sm:gap-4">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0">
                       <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
@@ -192,15 +192,15 @@ export default function LearningJourney() {
                         <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555]">
                           {step.period} • {step.phase}
                         </span>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                        <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                       </div>
                       <h4 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
                         {step.title}
                       </h4>
-                      <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium leading-snug">
+                      <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium leading-relaxed text-justify indent-3 sm:indent-0">
                         {step.desc}
                       </p>
-                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 pt-0.5 leading-snug">
+                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 pt-0.5 leading-relaxed text-justify indent-3 sm:indent-0">
                         {step.details}
                       </p>
                     </div>
@@ -213,7 +213,7 @@ export default function LearningJourney() {
 
         {/* Field Visit Highlight Banner - Redesigned to fill whitespace edge-to-edge */}
         <Reveal direction="zoom" delay={300}>
-          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl p-4 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl p-5 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
             <div className="space-y-2 text-left w-full">
               {/* Top Row on Mobile: Icon + Badges */}
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -236,7 +236,7 @@ export default function LearningJourney() {
               </h3>
 
               {/* Description spanning full width and fully justified */}
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/90 max-w-2xl font-normal text-left text-justify leading-relaxed">
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/90 max-w-2xl font-normal text-justify indent-5 sm:indent-0 leading-relaxed">
                 Direct hands-on archaeological exploration of ancient temple rock inscriptions, heritage guilds, and active master artisan workshops across Tamil Nadu.
               </p>
             </div>

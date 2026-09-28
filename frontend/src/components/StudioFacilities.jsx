@@ -204,22 +204,22 @@ export default function StudioFacilities() {
   };
 
   return (
-    <section id="facilities" className="py-4 md:py-12 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
+    <section id="facilities" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
       {/* Floating Animated Bubbles in Background */}
       <FloatingBubbles count={8} color="#B89555" />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>
-          <div className="text-center max-w-3xl mx-auto mb-2 sm:mb-8">
-            <span className="inline-block px-2.5 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[9.5px] sm:text-xs font-['DM_Sans'] font-medium mb-1 sm:mb-2.5">
+          <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-8">
+            <span className="inline-block px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[11px] sm:text-xs font-['DM_Sans'] font-medium mb-1.5 sm:mb-2.5">
               Infrastructure & Studios
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-lg sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
               Repository Studios & Facilities
             </h2>
-            <div className="w-10 sm:w-16 h-0.5 bg-[#B89555] mx-auto mt-1 sm:mt-2.5" />
-            <p className="hidden sm:block font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed">
+            <div className="w-14 sm:w-16 h-0.5 bg-[#B89555] mx-auto mt-1.5 sm:mt-2.5" />
+            <p className="font-['DM_Sans'] mt-2.5 text-xs sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
               Explore our 6 dedicated purpose-built spaces designed for tactile craftsmanship and epigraphical study.
             </p>
           </div>
@@ -228,7 +228,7 @@ export default function StudioFacilities() {
         {/* 3-in-Front Scrolling & Looping Icon Carousel - Visible on Mobile & Desktop */}
         <Reveal direction="up" delay={150}>
             <div
-              className="relative mb-2 sm:mb-8 max-w-3xl mx-auto"
+              className="relative mb-3 sm:mb-8 max-w-3xl mx-auto"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
@@ -239,9 +239,9 @@ export default function StudioFacilities() {
                   onClick={prevSlide}
                   disabled={isTransitioning}
                   aria-label="Previous Studio"
-                  className="w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
+                  className="w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
                 >
-                  <ChevronLeft className="w-3 h-3 sm:w-5 sm:h-5" />
+                  <ChevronLeft className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                 </button>
 
                 {/* Viewport: Shows EXACTLY 3 items in front at a time (Touch Swipeable) */}
@@ -249,7 +249,7 @@ export default function StudioFacilities() {
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
-                  className="flex-1 overflow-hidden py-0.5 px-0.5 sm:py-3"
+                  className="flex-1 overflow-hidden py-1 px-0.5 sm:py-3"
                 >
                   <div
                     style={{
@@ -281,18 +281,18 @@ export default function StudioFacilities() {
                           >
                             {/* Round Shape Icon Container */}
                             <div
-                              className={`w-9 h-9 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                              className={`w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
                                 isCenter
                                   ? 'bg-[#4A2C20] text-[#B89555] ring-2 sm:ring-4 ring-[#B89555]/40 shadow-md scale-105 sm:scale-110'
                                   : 'bg-white border border-[#6B4030]/20 text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105 shadow-xs opacity-80 group-hover:opacity-100'
                               }`}
                             >
-                              <Icon className="w-3.5 h-3.5 sm:w-6 sm:h-6" />
+                              <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
                             </div>
 
                             {/* Name Mentioned Below Icon */}
                             <span
-                              className={`text-[9px] sm:text-xs font-['DM_Sans'] mt-0.5 sm:mt-2.5 max-w-[80px] sm:max-w-[120px] leading-tight line-clamp-1 sm:line-clamp-2 transition-colors ${
+                              className={`text-[9.5px] sm:text-xs font-['DM_Sans'] mt-1 sm:mt-2.5 max-w-[85px] sm:max-w-[120px] leading-tight line-clamp-1 sm:line-clamp-2 transition-colors ${
                                 isCenter ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
                               }`}
                             >
@@ -301,7 +301,7 @@ export default function StudioFacilities() {
 
                             {/* Center Active Indicator Dot/Bar */}
                             {isCenter ? (
-                              <span className="w-3 h-0.5 sm:w-6 sm:h-1 rounded-full bg-[#B89555] mt-0.5 sm:mt-1.5 transition-all" />
+                              <span className="w-3.5 h-0.5 sm:w-6 sm:h-1 rounded-full bg-[#B89555] mt-0.5 sm:mt-1.5 transition-all" />
                             ) : (
                               <span className="w-1 h-0.5 rounded-full bg-transparent mt-0.5 sm:mt-1.5" />
                             )}
@@ -317,9 +317,9 @@ export default function StudioFacilities() {
                   onClick={nextSlide}
                   disabled={isTransitioning}
                   aria-label="Next Studio"
-                  className="w-6 h-6 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
+                  className="w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
                 >
-                  <ChevronRight className="w-3 h-3 sm:w-5 sm:h-5" />
+                  <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
                 </button>
               </div>
 
@@ -346,10 +346,10 @@ export default function StudioFacilities() {
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              className="bg-white rounded-xl sm:rounded-3xl p-2.5 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-2 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
+              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-4 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
             >
               {/* Left Column: Authentic Studio Visual with Details */}
-              <div className="lg:col-span-6 relative rounded-lg sm:rounded-2xl overflow-hidden bg-[#241A16] h-36 sm:h-[340px] md:h-[420px] group">
+              <div className="lg:col-span-6 relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#241A16] h-48 sm:h-[340px] md:h-[420px] group">
                 <img
                   src={current.image}
                   alt={current.title}
@@ -360,7 +360,7 @@ export default function StudioFacilities() {
                 <div className="absolute inset-0 bg-[#241A16]/20" />
 
                 {/* Top Category Tag */}
-                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2 py-0.5 sm:px-3.5 sm:py-1.5 rounded-md sm:rounded-xl border border-[#B89555]/30 text-[#B89555] text-[9px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-md sm:rounded-xl border border-[#B89555]/30 text-[#B89555] text-[9.5px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm">
                   <CurrentIcon className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#B89555]" />
                   <span className="text-[#F7F2E8]">{current.category}</span>
                 </div>
@@ -380,16 +380,16 @@ export default function StudioFacilities() {
               </div>
 
               {/* Right Column: Clean Workbench Specifications */}
-              <div className="lg:col-span-6 space-y-2 sm:space-y-6 text-left">
+              <div className="lg:col-span-6 space-y-3 sm:space-y-6 text-left">
                 <div className="space-y-1 sm:space-y-2">
-                  <div className="flex items-center gap-1.5 text-[9.5px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
                     <CurrentIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#B89555]" />
                     <span>Facility Specification <span className="font-number font-bold text-[#B89555]">{activeIndex + 1}</span></span>
                   </div>
-                  <h3 className="font-['Cormorant_Garamond'] text-base sm:text-4xl font-bold text-[#241A16] tracking-tight leading-tight">
+                  <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-4xl font-bold text-[#241A16] tracking-tight leading-tight">
                     {current.title}
                   </h3>
-                  <p className="font-['DM_Sans'] text-[11px] sm:text-[14.5px] text-[#241A16]/85 leading-relaxed font-normal text-left text-justify">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[14.5px] text-[#241A16]/85 leading-relaxed font-normal text-justify indent-4 sm:indent-0">
                     {current.desc}
                   </p>
                 </div>

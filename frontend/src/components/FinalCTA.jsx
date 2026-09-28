@@ -25,7 +25,7 @@ export default function FinalCTA() {
               </p>
 
               {/* Sub-content with Text Justification & Clean Start Alignment on mobile */}
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed max-w-lg mx-auto font-normal text-left text-justify sm:text-center">
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed max-w-lg mx-auto font-normal text-justify indent-5 sm:indent-0 sm:text-center">
                 Join our upcoming cohort to uncover ancient Tamil knowledge, master traditional craftsmanship,
                 and transform cultural wisdom into a sustainable, modern creative career.
               </p>

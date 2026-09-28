@@ -74,7 +74,7 @@ export default function Process() {
               <span className="block sm:inline">Heritage Preservation</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
               How Global Nagas Institute systematically preserves, safeguards, and transmits unbroken ancient Tamil
               wisdom from historical field archives into living modern craftsmanship.
             </p>
@@ -82,13 +82,13 @@ export default function Process() {
         </Reveal>
 
         {/* 5-Step Process Timeline / Cards in Title Case */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-5 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 relative z-10">
           {steps.map((item, index) => {
             const Icon = item.icon;
 
             return (
               <Reveal key={index} direction="up" delay={index * 100}>
-                <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                   <div>
                     {/* Header: Step Number & Icon */}
                     <div className="flex items-center justify-between mb-2.5 sm:mb-4">
@@ -108,7 +108,7 @@ export default function Process() {
                       {item.title}
                     </h3>
 
-                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-snug font-normal text-left text-justify">
+                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal text-justify indent-4 sm:indent-0">
                       {item.description}
                     </p>
                   </div>

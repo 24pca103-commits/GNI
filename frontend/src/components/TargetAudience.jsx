@@ -59,7 +59,7 @@ export default function TargetAudience() {
               Find 3 Types of People
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
               Curated for three distinct pathways of creativity, design, and livelihood.
             </p>
           </div>
@@ -74,11 +74,11 @@ export default function TargetAudience() {
               return (
                 <div
                   key={item.num}
-                  className="w-[82vw] max-w-[310px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[86vw] max-w-[340px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
                   <div className="group relative rounded-2xl overflow-hidden bg-white border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_20px_45px_-10px_rgba(74,44,32,0.18)] hover:shadow-[0_30px_60px_-12px_rgba(74,44,32,0.28)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full select-none">
                     {/* Card Top: Distinct Featured Image Header */}
-                    <div className="relative h-32 sm:h-48 overflow-hidden bg-[#241A16]">
+                    <div className="relative h-44 sm:h-48 overflow-hidden bg-[#241A16]">
                       <img
                         src={item.image}
                         alt={item.title}
@@ -91,39 +91,39 @@ export default function TargetAudience() {
                       <div className="absolute inset-0 bg-[#241A16]/20" />
 
                       {/* Top Tag */}
-                      <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#241A16]/85 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[9.5px] sm:text-[11px] font-['DM_Sans'] font-medium">
+                      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#241A16]/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium">
                         {item.tag}
                       </div>
                     </div>
 
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
-                    <div className="p-3.5 sm:p-6 flex flex-col justify-between flex-1 space-y-2.5 sm:space-y-4 text-[#241A16] text-left">
+                    <div className="p-4.5 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
                         {/* Icon & Category Header */}
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/30 shadow-sm">
-                            <Icon className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/30 shadow-sm">
+                            <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                           </div>
                           <div>
-                            <p className="font-['DM_Sans'] text-[10.5px] sm:text-xs font-semibold text-[#6B4030]">
+                            <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-semibold text-[#6B4030]">
                               {item.category}
                             </p>
-                            <span className="text-[9.5px] sm:text-[11px] text-[#241A16]/60 font-['DM_Sans']">
+                            <span className="text-[10px] sm:text-[11px] text-[#241A16]/60 font-['DM_Sans']">
                               Heritage Pathway
                             </span>
                           </div>
                         </div>
 
-                        <h3 className="font-['Cormorant_Garamond'] text-base sm:text-2xl font-bold text-[#241A16] mb-1 leading-snug">
+                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16] mb-1.5 leading-snug">
                           {item.title}
                         </h3>
 
-                        <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug font-normal mb-2.5 text-left">
+                        <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-relaxed font-normal mb-3 text-justify indent-4 sm:indent-0">
                           {item.desc}
                         </p>
 
                         {/* Key Highlights */}
-                        <div className="space-y-1 pt-2 border-t border-[#6B4030]/15 text-left">
+                        <div className="space-y-1.5 pt-2 border-t border-[#6B4030]/15 text-left">
                           {item.highlights.map((h, i) => (
                             <div key={i} className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#241A16]/85">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
@@ -134,7 +134,7 @@ export default function TargetAudience() {
                       </div>
 
                       {/* Card Bottom Category Bar */}
-                      <div className="pt-2 border-t border-[#6B4030]/15 flex items-center justify-between text-[10.5px] sm:text-xs font-['DM_Sans'] font-medium text-[#6B4030]">
+                      <div className="pt-2.5 border-t border-[#6B4030]/15 flex items-center justify-between text-[10.5px] sm:text-xs font-['DM_Sans'] font-medium text-[#6B4030]">
                         <span>Learner Profile</span>
                         <span className="text-[#B89555] font-semibold">
                           Core Track

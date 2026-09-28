@@ -73,7 +73,7 @@ export default function CoreValues() {
               Five Core Values
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
               The foundational pillars that guide every artisan, discipline, and creation across our repository.
             </p>
           </div>
@@ -91,7 +91,7 @@ export default function CoreValues() {
             <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-3xl text-white font-bold leading-snug">
               "Knowledge that remains untouched turns to memory; knowledge that creates turns to legacy."
             </p>
-            <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-1.5 sm:mt-2 font-normal text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-1.5 sm:mt-2 font-normal text-justify indent-5 sm:indent-0 sm:text-center">
               Hover over any of the five pillars to explore its craft significance and studio standard.
             </p>
           </div>
@@ -106,12 +106,12 @@ export default function CoreValues() {
               return (
                 <div
                   key={v.num}
-                  className="w-[76vw] max-w-[260px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[82vw] max-w-[300px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
                 >
                 <div
-                  className="group h-full rounded-2xl p-4 sm:p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#B89555] hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-[#B89555]/40"
+                  className="group h-full rounded-2xl p-5 sm:p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#B89555] hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-[#B89555]/40"
                 >
-                  <div className="space-y-2.5 sm:space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {/* Top Row: Number & Icon */}
                     <div className="flex items-center justify-between">
                       <span className="font-number text-xl sm:text-2xl font-bold leading-none text-[#4A2C20] group-hover:text-[#B89555] transition-colors">
@@ -133,7 +133,7 @@ export default function CoreValues() {
                     </div>
 
                     {/* Detail Description */}
-                    <p className="font-['DM_Sans'] text-xs leading-snug font-normal pt-1.5 sm:pt-2 border-t border-[#6B4030]/10 text-[#241A16]/75 group-hover:border-white/10 group-hover:text-[#F7F2E8]/85 transition-colors text-left text-justify">
+                    <p className="font-['DM_Sans'] text-xs leading-relaxed font-normal pt-1.5 sm:pt-2 border-t border-[#6B4030]/10 text-[#241A16]/75 group-hover:border-white/10 group-hover:text-[#F7F2E8]/85 transition-colors text-justify indent-4 sm:indent-0">
                       {v.detail}
                     </p>
 

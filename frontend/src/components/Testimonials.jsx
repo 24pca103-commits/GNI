@@ -92,7 +92,7 @@ export default function Testimonials() {
               Words From Our Heritage Creators
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
               Real feedback from architects, designers, and artisans whose skills and livelihoods were transformed.
             </p>
           </div>
@@ -143,9 +143,9 @@ export default function Testimonials() {
               {loopedList.map((item, idx) => (
                 <div
                   key={idx}
-                  className="w-[285px] sm:w-[350px] md:w-[380px] shrink-0 flex flex-col"
+                  className="w-[310px] sm:w-[360px] md:w-[380px] shrink-0 flex flex-col"
                 >
-                  <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
+                  <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
                     <div>
                       {/* Rating Stars in Antique Gold #B89555 & Quote Icon */}
                       <div className="flex items-center justify-between mb-2.5 sm:mb-4">
@@ -158,7 +158,7 @@ export default function Testimonials() {
                       </div>
 
                       {/* Review Text */}
-                      <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-[13.5px] leading-snug sm:leading-relaxed italic mb-3 sm:mb-5 font-normal text-left text-justify">
+                      <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-[13.5px] leading-relaxed italic mb-3 sm:mb-5 font-normal text-justify indent-4 sm:indent-0">
                         "{item.review}"
                       </p>
                     </div>
@@ -170,14 +170,14 @@ export default function Testimonials() {
                         alt={item.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
                       />
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1 sm:gap-1.5">
+                        <div className="flex items-center gap-1.5">
                           <h3 className="font-['Cormorant_Garamond'] font-bold text-[#241A16] text-sm sm:text-base leading-tight truncate">
                             {item.name}
                           </h3>
-                          <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" title="Verified Cohort Graduate" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" title="Verified Cohort Graduate" />
                         </div>
                         <p className="font-['DM_Sans'] text-[10px] sm:text-xs font-semibold text-[#6B4030] truncate">
                           {item.role}

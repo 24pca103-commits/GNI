@@ -31,7 +31,7 @@ export default function TransformationSection() {
               What Can a Heritage Creator Become?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed text-left text-justify sm:text-center">
+            <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed text-justify indent-5 sm:indent-0">
               "A heritage creator who understands Tamil culture and transforms it into art, jewellery,
               interiors, textile design and livelihood."
             </p>
@@ -40,7 +40,7 @@ export default function TransformationSection() {
 
         {/* Visual Progression Line: Learn → Practice → Create → Showcase → Connect → Build Livelihood */}
         <Reveal direction="up" delay={200}>
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#6B4030]/15 shadow-sm relative">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-[#6B4030]/15 shadow-sm relative">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 relative">
               {steps.map((st, idx) => {
                 const Icon = st.icon;

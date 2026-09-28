@@ -8,7 +8,7 @@ export default function SacredDisconnect() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Master Centerpiece Frame with Heritage Double Gold Border */}
         <Reveal direction="zoom" delay={150}>
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
             {/* Corner Decorative Ornaments */}
             <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2 border-[#B89555]" />
             <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2 border-[#B89555]" />
@@ -32,35 +32,35 @@ export default function SacredDisconnect() {
               </div>
 
               {/* Main Emotive Statement */}
-              <p className="font-['Cormorant_Garamond'] italic text-sm sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-left text-justify sm:text-center">
+              <p className="font-['Cormorant_Garamond'] italic text-sm sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-justify indent-5 sm:indent-0">
                 "Modern life has created a sacred disconnect — where people may be successful
                 externally, yet feel disconnected from peace, purpose, creativity and roots."
               </p>
 
               {/* Two-Column Contrast Bridge: The Disconnect vs The Heritage Bridge */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 pt-3 sm:pt-6 text-left">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5 pt-3 sm:pt-6 text-left">
                 {/* The Modern Disconnect */}
-                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#F7F2E8] border border-[#6B4030]/20 space-y-1 sm:space-y-2">
+                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#F7F2E8] border border-[#6B4030]/20 space-y-1.5 sm:space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#6B4030]" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#4A2C20]">
                       The Modern Dilemma
                     </h3>
                   </div>
-                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug sm:leading-relaxed text-left text-justify">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-relaxed text-justify indent-4 sm:indent-0">
                     Fast-paced routine, purely digital interactions, and alienation from tactile creation leave people longing for deeper purpose.
                   </p>
                 </div>
 
                 {/* The Heritage Bridge */}
-                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#4A2C20]/5 border border-[#B89555]/40 space-y-1 sm:space-y-2">
+                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#4A2C20]/5 border border-[#B89555]/40 space-y-1.5 sm:space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#B89555]" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Heritage Remedy
                     </h3>
                   </div>
-                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug sm:leading-relaxed text-left text-justify">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-relaxed text-justify indent-4 sm:indent-0">
                     Engaging with ancient stone epigraphy, hand-forged metals, and sacred painting restores stillness and artistic mastery.
                   </p>
                 </div>

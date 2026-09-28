@@ -70,7 +70,7 @@ export default function HeritageFramework() {
               <span className="block sm:inline">Heritage & Industry Needs</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3 text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3 text-justify indent-5 sm:indent-0">
               Four comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship.
             </p>
 
@@ -94,11 +94,11 @@ export default function HeritageFramework() {
               return (
                 <div
                   key={pillar.number}
-                  className="w-[82vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+                  className="w-[86vw] max-w-[340px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
                   <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_18px_40px_-8px_rgba(74,44,32,0.16)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.26)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
                     {/* Card Featured Image */}
-                    <div className="relative h-32 sm:h-64 overflow-hidden bg-[#241A16]">
+                    <div className="relative h-44 sm:h-64 overflow-hidden bg-[#241A16]">
                       <img
                         src={pillar.image}
                         alt={pillar.title}
@@ -108,30 +108,30 @@ export default function HeritageFramework() {
                       />
 
                       {/* Category Pill with Bookmark Icon */}
-                      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[9.5px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm z-10">
+                      <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm z-10">
                         <Bookmark className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#B89555]" />
                         <span>{pillar.badge}</span>
                       </div>
 
                       {/* Bottom Dark Panel for Title */}
-                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/85 p-2.5 sm:p-5 text-[#F7F2E8] z-10">
-                        <p className="font-['DM_Sans'] text-[9px] sm:text-xs text-[#B89555] font-medium mb-0.5">
+                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/85 p-3 sm:p-5 text-[#F7F2E8] z-10">
+                        <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#B89555] font-medium mb-0.5">
                           {pillar.category}
                         </p>
-                        <h3 className="font-['Cormorant_Garamond'] text-base sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-snug">
+                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-snug">
                           {pillar.title}
                         </h3>
                       </div>
                     </div>
 
                     {/* Card Content Body */}
-                    <div className="p-3 sm:p-6 flex flex-col justify-between flex-1 space-y-2 sm:space-y-4 text-left">
-                      <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/85 leading-snug font-normal text-left">
+                    <div className="p-4 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-left">
+                      <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/85 leading-relaxed font-normal text-justify indent-4 sm:indent-0">
                         {pillar.description}
                       </p>
 
-                      {/* Subject Curriculum Overview - Visible on Desktop, Hidden on mobile to keep card compact */}
-                      <div className="hidden sm:block p-2.5 sm:p-3 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-0.5 sm:space-y-1">
+                      {/* Subject Curriculum Overview */}
+                      <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-0.5 sm:space-y-1">
                         <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
                           Modules & Practicals:
                         </span>
@@ -141,11 +141,11 @@ export default function HeritageFramework() {
                       </div>
 
                       {/* Tags */}
-                      <div className="flex flex-wrap gap-1 sm:gap-1.5 pt-0.5">
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
                         {pillar.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-md text-[9.5px] sm:text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20"
+                            className="px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-md text-[10px] sm:text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20"
                           >
                             {tag}
                           </span>
@@ -153,7 +153,7 @@ export default function HeritageFramework() {
                       </div>
 
                       {/* Know More Pill Button */}
-                      <div className="pt-2 sm:pt-4 border-t border-[#6B4030]/15 flex items-center justify-between">
+                      <div className="pt-2.5 sm:pt-4 border-t border-[#6B4030]/15 flex items-center justify-between">
                         <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] font-semibold text-[#6B4030]">
                           Cohort Track
                         </span>

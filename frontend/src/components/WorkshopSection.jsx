@@ -39,7 +39,7 @@ export default function WorkshopSection() {
               <span className="block sm:inline">Heritage Experience Workshop</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
               A one-day hands-on introduction to Tamil heritage, art and craftsmanship.
             </p>
           </div>
@@ -66,14 +66,14 @@ export default function WorkshopSection() {
                 <p className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-white leading-tight">
                   Introductory Fee: <span className="font-number text-[#B89555]">₹4,999</span>
                 </p>
-                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#F7F2E8]/80 leading-snug text-left text-justify">
+                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#F7F2E8]/80 leading-relaxed text-justify indent-4 sm:indent-0">
                   Includes raw materials, inscription plate, and craft kit.
                 </p>
               </div>
             </div>
 
             {/* Right Column: Workshop Details, Activities & Working Register Button */}
-            <div className="lg:col-span-7 p-4 sm:p-10 lg:p-12 flex flex-col justify-between space-y-4 sm:space-y-8">
+            <div className="lg:col-span-7 p-5 sm:p-10 lg:p-12 flex flex-col justify-between space-y-4 sm:space-y-8">
               {/* 4 Feature Badges */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 {highlights.map((item, idx) => {
