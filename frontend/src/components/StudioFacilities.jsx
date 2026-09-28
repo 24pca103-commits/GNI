@@ -214,6 +214,29 @@ export default function StudioFacilities() {
     }, 1500);
   };
 
+  // Slider Button Handlers (Prev / Next)
+  const handlePrev = () => {
+    isInteractingRef.current = true;
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -160, behavior: 'smooth' });
+    }
+    setActiveIndex((prev) => (prev === 0 ? facilities.length - 1 : prev - 1));
+    setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2000);
+  };
+
+  const handleNext = () => {
+    isInteractingRef.current = true;
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 160, behavior: 'smooth' });
+    }
+    setActiveIndex((prev) => (prev + 1) % facilities.length);
+    setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2000);
+  };
+
   const current = facilities[activeIndex] || facilities[0];
   const CurrentIcon = current ? current.icon : facilities[0].icon;
 
@@ -239,12 +262,21 @@ export default function StudioFacilities() {
           </div>
         </Reveal>
 
-        {/* Auto-Scrolling & Manual Drag/Swipe Icon Carousel */}
+        {/* Auto-Scrolling & Manual Drag/Swipe Icon Carousel with Slider Controls */}
         <Reveal direction="up" delay={150}>
-          <div className="relative mb-4 sm:mb-8 max-w-4xl mx-auto py-2">
+          <div className="relative mb-4 sm:mb-8 max-w-4xl mx-auto py-2 flex items-center">
+            {/* Left Prev Slider Button */}
+            <button
+              onClick={handlePrev}
+              className="absolute left-0 sm:-left-3 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              aria-label="Previous facility"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+
             {/* Soft fade masks on left and right edges */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-r from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-l from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
 
             {/* Scrollable Icon Container */}
             <div
@@ -257,7 +289,7 @@ export default function StudioFacilities() {
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              className="flex items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-3 px-6 cursor-grab active:cursor-grabbing select-none"
+              className="flex items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-3 px-8 sm:px-12 cursor-grab active:cursor-grabbing select-none w-full"
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
@@ -299,6 +331,15 @@ export default function StudioFacilities() {
                 );
               })}
             </div>
+
+            {/* Right Next Slider Button */}
+            <button
+              onClick={handleNext}
+              className="absolute right-0 sm:-right-3 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              aria-label="Next facility"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
           </div>
         </Reveal>
 
