@@ -4,9 +4,6 @@ import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
 export default function CoreValues() {
-  const [activeCard, setActiveCard] = useState(null);
-  const scrollRef = useRef(null);
-
   const values = [
     {
       num: '1',
@@ -60,23 +57,22 @@ export default function CoreValues() {
     },
   ];
 
+  const [activeDot, setActiveDot] = useState(0);
+  const scrollRef = useRef(null);
+
   // Detect card in view while scrolling on mobile
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const container = scrollRef.current;
-    const scrollLeft = container.scrollLeft;
-    if (scrollLeft <= 5 && activeCard === null) return;
-    const card = container.querySelector('[data-card-index]');
+  const handleScroll = (e) => {
+    const el = e.currentTarget;
+    if (!el) return;
+    const card = el.querySelector('[data-card-index]');
     if (!card) return;
     const cardWidth = card.offsetWidth + 16; // width + gap
-    const activeIndex = Math.round(scrollLeft / cardWidth);
-    if (activeIndex >= 0 && activeIndex < values.length && activeIndex !== activeCard) {
-      setActiveCard(activeIndex);
-    }
+    const activeIndex = Math.round(el.scrollLeft / cardWidth);
+    setActiveDot(Math.min(Math.max(activeIndex, 0), values.length - 1));
   };
 
   const scrollToCard = (idx) => {
-    setActiveCard(idx);
+    setActiveDot(idx);
     if (!scrollRef.current) return;
     const container = scrollRef.current;
     const card = container.querySelector(`[data-card-index="${idx}"]`);
@@ -120,7 +116,7 @@ export default function CoreValues() {
               "Knowledge that remains untouched turns to memory; knowledge that creates turns to legacy."
             </p>
             <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-1.5 sm:mt-2 font-normal text-justify indent-5 sm:indent-0 sm:text-center">
-              Click or scroll over any of the five pillars to explore its craft significance and studio standard.
+              Explore each of the five pillars representing our craft significance and studio standards.
             </p>
           </div>
         </Reveal>
@@ -134,78 +130,42 @@ export default function CoreValues() {
           >
             {values.map((v, idx) => {
               const Icon = v.icon;
-              const isActive = activeCard === idx;
 
               return (
                 <div
                   key={v.num}
                   data-card-index={idx}
-                  onClick={() => setActiveCard((prev) => (prev === idx ? null : idx))}
                   className="w-[82vw] max-w-[300px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div
-                    className={`group h-full rounded-2xl p-5 sm:p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between select-none ${
-                      isActive
-                        ? 'bg-[#4A2C20] text-[#F7F2E8] border-[#B89555] shadow-xl ring-2 ring-[#B89555]/50 -translate-y-1'
-                        : 'bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#B89555] hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-[#B89555]/40'
-                    }`}
-                  >
+                  <div className="group h-full rounded-2xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555]/50 hover:shadow-lg">
                     <div className="space-y-3 sm:space-y-4">
                       {/* Top Row: Number & Icon */}
                       <div className="flex items-center justify-between">
-                        <span
-                          className={`font-number text-xl sm:text-2xl font-bold leading-none transition-colors ${
-                            isActive ? 'text-[#B89555]' : 'text-[#4A2C20] group-hover:text-[#B89555]'
-                          }`}
-                        >
+                        <span className="font-number text-xl sm:text-2xl font-bold leading-none text-[#4A2C20] group-hover:text-[#B89555] transition-colors">
                           {v.num}
                         </span>
-                        <div
-                          className={`w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-all ${
-                            isActive
-                              ? 'bg-[#241A16] text-[#B89555] border border-[#B89555]/40 shadow-sm'
-                              : 'bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#241A16] group-hover:text-[#B89555] group-hover:border group-hover:border-[#B89555]/40 group-hover:shadow-sm'
-                          }`}
-                        >
+                        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-all bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] shadow-xs">
                           <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                       </div>
 
                       {/* Value Title */}
                       <div>
-                        <h3
-                          className={`font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold leading-tight transition-colors text-left ${
-                            isActive ? 'text-white' : 'text-[#241A16] group-hover:text-white'
-                          }`}
-                        >
+                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold leading-tight text-[#241A16] text-left">
                           {v.title}
                         </h3>
-                        <p
-                          className={`font-['DM_Sans'] text-[11px] sm:text-xs font-semibold mt-1 leading-snug transition-colors text-left ${
-                            isActive ? 'text-[#B89555]' : 'text-[#6B4030] group-hover:text-[#B89555]'
-                          }`}
-                        >
+                        <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-semibold mt-1 leading-snug text-[#6B4030] text-left">
                           {v.statement}
                         </p>
                       </div>
 
                       {/* Detail Description */}
-                      <p
-                        className={`font-['DM_Sans'] text-xs leading-relaxed font-normal pt-1.5 sm:pt-2 border-t transition-colors text-justify indent-4 sm:indent-0 ${
-                          isActive
-                            ? 'border-white/10 text-[#F7F2E8]/85'
-                            : 'border-[#6B4030]/10 text-[#241A16]/75 group-hover:border-white/10 group-hover:text-[#F7F2E8]/85'
-                        }`}
-                      >
+                      <p className="font-['DM_Sans'] text-xs leading-relaxed font-normal pt-1.5 sm:pt-2 border-t border-[#6B4030]/10 text-[#241A16]/80 text-justify indent-4 sm:indent-0">
                         {v.detail}
                       </p>
 
                       {/* Benchmark Metric Tag */}
-                      <div
-                        className={`flex items-center gap-2 pt-0.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium transition-colors ${
-                          isActive ? 'text-[#B89555]' : 'text-[#6B4030] group-hover:text-[#B89555]'
-                        }`}
-                      >
+                      <div className="flex items-center gap-2 pt-0.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                         <span>{v.metric}</span>
                       </div>
@@ -213,13 +173,7 @@ export default function CoreValues() {
 
                     {/* Bottom Highlight Pill */}
                     <div className="pt-2.5 mt-2.5 sm:pt-4 sm:mt-4">
-                      <span
-                        className={`inline-block w-full text-center text-[10px] sm:text-[11px] font-['DM_Sans'] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border transition-all ${
-                          isActive
-                            ? 'bg-[#B89555] text-[#241A16] font-semibold border-[#B89555]'
-                            : 'border-[#6B4030]/15 bg-[#F7F2E8] text-[#6B4030] font-medium group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:font-semibold group-hover:border-[#B89555]'
-                        }`}
-                      >
+                      <span className="inline-block w-full text-center text-[10px] sm:text-[11px] font-['DM_Sans'] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#6B4030]/15 bg-[#F7F2E8] text-[#6B4030] font-medium group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:font-semibold group-hover:border-[#B89555] transition-all">
                         {v.highlight}
                       </span>
                     </div>
@@ -229,21 +183,20 @@ export default function CoreValues() {
             })}
           </div>
 
-          {/* Interactive Mobile Indicator Dots */}
+          {/* Interactive Mobile Indicator Dots (Dynamic color change on manual scroll) */}
           <div className="flex sm:hidden items-center justify-center gap-2 mt-3">
             {values.map((_, i) => (
               <button
                 key={i}
                 onClick={() => scrollToCard(i)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  activeCard === i ? 'w-6 bg-[#B89555]' : 'w-2 bg-[#6B4030]/30 hover:bg-[#6B4030]/60'
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  activeDot === i
+                    ? 'w-6 bg-[#B89555]'
+                    : 'w-2 bg-[#6B4030]/30 hover:bg-[#6B4030]/60'
                 }`}
                 aria-label={`View value ${i + 1}`}
               />
             ))}
-            <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/80 ml-1.5">
-              Tap or scroll
-            </span>
           </div>
         </Reveal>
       </div>

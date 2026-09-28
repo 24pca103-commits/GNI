@@ -1,8 +1,32 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Bookmark, ArrowRight } from 'lucide-react';
 import Reveal from './Reveal';
 
 export default function HeritageFramework() {
+  const [activeDot, setActiveDot] = useState(0);
+  const scrollRef = useRef(null);
+
+  const handleScroll = (e) => {
+    const el = e.currentTarget;
+    if (!el) return;
+    const cardWidth = el.firstElementChild?.offsetWidth || 1;
+    const gap = 16;
+    const scrollPosition = el.scrollLeft;
+    const newIndex = Math.round(scrollPosition / (cardWidth + gap));
+    setActiveDot(Math.min(Math.max(newIndex, 0), pillars.length - 1));
+  };
+
+  const scrollToCard = (index) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth = el.firstElementChild?.offsetWidth || 1;
+    const gap = 16;
+    el.scrollTo({
+      left: index * (cardWidth + gap),
+      behavior: 'smooth',
+    });
+    setActiveDot(index);
+  };
   const pillars = [
     {
       number: '1',
@@ -89,7 +113,11 @@ export default function HeritageFramework() {
 
         {/* 4 Cards Grid - Sliding on Mobile */}
         <Reveal direction="up" delay={150}>
-          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8 lg:gap-10">
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8 lg:gap-10"
+          >
             {pillars.map((pillar) => {
               return (
                 <div
@@ -172,12 +200,20 @@ export default function HeritageFramework() {
             })}
           </div>
 
-          {/* Mobile Swipe Hint Dots */}
-          <div className="flex md:hidden items-center justify-center gap-1.5 mt-3">
+          {/* Mobile Interactive Indicator Dots (Dynamic color change on manual scroll) */}
+          <div className="flex md:hidden items-center justify-center gap-2 mt-3">
             {pillars.map((_, i) => (
-              <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
+              <button
+                key={i}
+                onClick={() => scrollToCard(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  activeDot === i
+                    ? 'w-6 bg-[#B89555]'
+                    : 'w-2 bg-[#6B4030]/30 hover:bg-[#6B4030]/60'
+                }`}
+                aria-label={`Go to track ${i + 1}`}
+              />
             ))}
-            <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view more</span>
           </div>
         </Reveal>
       </div>
