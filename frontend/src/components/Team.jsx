@@ -8,7 +8,7 @@ export default function Team() {
     {
       name: 'Dr. S. Thirugnanam, Ph.D.',
       designation: 'Director & Chief Epigraphist',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+      image: '',
       description:
         '28+ years documenting Southern Indian stone inscriptions and Tamili Brahmi scripts.',
       specialty: 'Tamili Script & Epigraphy',
@@ -16,7 +16,7 @@ export default function Team() {
     {
       name: 'Shilpi R. Balasubramanian',
       designation: 'Principal Sthapathi & Master Sculptor',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
+      image: '',
       description:
         'Hereditary sthapathi with 30+ temple installations and lost-wax bronze casting mastery.',
       specialty: 'Temple Canons & Metallurgy',
@@ -24,7 +24,7 @@ export default function Team() {
     {
       name: 'Meenakshi Sundaram',
       designation: 'Head of Traditional Painting Studio',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
+      image: '',
       description:
         'Specialist in prehistoric rock art pigments, mineral ores, and temple murals.',
       specialty: 'Rock Art & Natural Pigments',
@@ -32,7 +32,7 @@ export default function Team() {
     {
       name: 'Ananya V. Raja, M.Des',
       designation: 'Curator of Heritage Applications',
-      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80',
+      image: '',
       description:
         'Transforms sacred motifs into contemporary high-fashion bridal wear and luxury interiors.',
       specialty: 'Blouse Design & Interiors',
@@ -40,7 +40,7 @@ export default function Team() {
     {
       name: 'K. Senthil Kumar',
       designation: 'Master Artisan & Repoussé Craftsman',
-      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80',
+      image: '',
       description:
         'Fourth-generation brass and copper repoussé master leading intensive studio hammer work.',
       specialty: 'Naga Metal Craft & Repoussé',
@@ -48,7 +48,7 @@ export default function Team() {
     {
       name: 'Dr. Radhika Natarajan',
       designation: 'Research Dean & Manuscript Archivist',
-      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
+      image: '',
       description:
         'Deciphers medieval copper plates and manuscripts, connecting Sangam lore to art.',
       specialty: 'Copper Plates & Sangam Lore',

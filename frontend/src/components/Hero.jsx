@@ -88,7 +88,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative pt-36 pb-12 sm:pt-36 sm:pb-12 md:pt-40 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
+      className="relative pt-28 pb-8 sm:pt-36 sm:pb-12 md:pt-40 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
     >
       {/* Background Auto-Sliding Carousel with Solid Color Overlay (No Gradients) */}
       <div className="absolute inset-0 z-0">
@@ -134,15 +134,15 @@ export default function Hero() {
 
       {/* Main Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-12">
-        <div className="max-w-3xl space-y-3.5 sm:space-y-5 text-left mx-0">
+        <div className="max-w-3xl space-y-2.5 sm:space-y-5 text-left mx-0">
           {/* Tag Badge in Sentence Case */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#4A2C20] border border-[#B89555]/40 text-[#B89555] text-xs font-['DM_Sans'] self-start">
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#4A2C20] border border-[#B89555]/40 text-[#B89555] text-[11px] sm:text-xs font-['DM_Sans'] self-start">
             <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] animate-pulse" />
             <span>{current.tag}</span>
           </div>
 
           {/* Heading in Cormorant Garamond - Sentence Case */}
-          <h1 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[#F7F2E8] tracking-tight leading-[1.15] text-left">
+          <h1 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[#F7F2E8] tracking-tight leading-tight text-left">
             <span className="block sm:inline">{current.headingMain}</span>{' '}
             <span className="text-[#B89555] italic block sm:inline">
               {current.headingAccent}
@@ -150,24 +150,24 @@ export default function Hero() {
           </h1>
 
           {/* Subtitle in DM Sans - Sentence Case */}
-          <p className="font-['Cormorant_Garamond'] text-base sm:text-2xl text-[#F7F2E8]/90 font-medium text-left">
+          <p className="font-['Cormorant_Garamond'] text-sm sm:text-2xl text-[#F7F2E8]/90 font-medium text-left leading-snug">
             {current.subtitle}
           </p>
 
           {/* Description in DM Sans - Sentence Case */}
-          <p className="font-['DM_Sans'] text-xs sm:text-[14.5px] text-[#F7F2E8]/85 max-w-2xl leading-relaxed font-normal text-left">
+          <p className="font-['DM_Sans'] text-[11.5px] sm:text-[14.5px] text-[#F7F2E8]/85 max-w-2xl leading-snug sm:leading-relaxed font-normal text-left">
             {current.desc}
           </p>
 
           {/* Heritage Quote Card (Solid flat background, NO gradients) */}
-          <div className="bg-[#4A2C20]/90 border border-[#B89555]/30 p-3 sm:p-4 rounded-xl max-w-2xl text-left">
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <Quote className="w-4 h-4 sm:w-5 sm:h-5 text-[#B89555] shrink-0 mt-0.5" />
+          <div className="bg-[#4A2C20]/90 border border-[#B89555]/30 p-2 sm:p-4 rounded-lg sm:rounded-xl max-w-2xl text-left">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <Quote className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#B89555] shrink-0 mt-0.5" />
               <div className="space-y-0.5 sm:space-y-1">
-                <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-base text-[#F7F2E8] leading-snug sm:leading-relaxed font-normal">
+                <p className="font-['Cormorant_Garamond'] italic text-[11px] sm:text-base text-[#F7F2E8] leading-snug sm:leading-relaxed font-normal">
                   "{current.quote}"
                 </p>
-                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#B89555] font-semibold">
+                <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#B89555] font-semibold">
                   — {current.author}
                 </p>
               </div>
@@ -175,38 +175,38 @@ export default function Hero() {
           </div>
 
           {/* Action Buttons in Sentence Case */}
-          <div className="pt-1.5 sm:pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 justify-start">
+          <div className="pt-1 sm:pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3.5 justify-start">
             <Link
               to="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors border border-[#B89555]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 sm:px-6 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors border border-[#B89555]"
             >
               <span>{current.primaryBtn}</span>
-              <ArrowRight className="w-4 h-4 text-[#241A16]" />
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#241A16]" />
             </Link>
 
             <button
               onClick={handleStaticClick}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-default"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-default"
             >
-              <BookOpen className="w-4 h-4 text-[#B89555]" />
+              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
               <span>{current.secondaryBtn}</span>
             </button>
           </div>
 
           {/* Core Highlights Placed Directly Below Register Button - Strictly Single Line on Mobile */}
-          <div className="pt-2 sm:pt-3 flex flex-nowrap items-center justify-start gap-2.5 sm:gap-6 text-[10.5px] sm:text-sm font-['DM_Sans'] text-[#F7F2E8]/90 w-full sm:w-auto">
+          <div className="pt-1.5 sm:pt-3 flex flex-nowrap items-center justify-start gap-2 sm:gap-6 text-[10px] sm:text-sm font-['DM_Sans'] text-[#F7F2E8]/90 w-full sm:w-auto">
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <span className="font-number text-sm sm:text-lg font-bold text-[#B89555]">4</span>
+              <span className="font-number text-xs sm:text-lg font-bold text-[#B89555]">4</span>
               <span className="whitespace-nowrap">Heritage Pillars</span>
             </div>
-            <div className="h-3 w-px bg-white/20 shrink-0" />
+            <div className="h-2.5 sm:h-3 w-px bg-white/20 shrink-0" />
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <span className="font-number text-sm sm:text-lg font-bold text-[#B89555]">60</span>
+              <span className="font-number text-xs sm:text-lg font-bold text-[#B89555]">60</span>
               <span className="whitespace-nowrap">Days <span className="hidden sm:inline">Creator </span>Journey</span>
             </div>
-            <div className="h-3 w-px bg-white/20 shrink-0" />
+            <div className="h-2.5 sm:h-3 w-px bg-white/20 shrink-0" />
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" />
               <span className="whitespace-nowrap">Hands-on Livelihood</span>
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function Hero() {
       </div>
 
       {/* Banner Bottom Center Alignment for Indicator Dots & Mobile Controls */}
-      <div className="absolute bottom-3.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5">
+      <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5">
         <button
           onClick={prevSlide}
           className="sm:hidden w-7 h-7 rounded-full bg-[#241A16]/90 border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-center shadow-xs"
