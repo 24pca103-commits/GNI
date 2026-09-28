@@ -46,7 +46,7 @@ export default function TargetAudience() {
   ];
 
   return (
-    <section id="about" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden">
+    <section id="target-audience" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>

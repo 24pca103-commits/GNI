@@ -29,12 +29,12 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Home', href: '#home', icon: Home, shortLabel: 'Home' },
+    { label: 'About', href: '#about', icon: Compass, shortLabel: 'About' },
     { label: 'Heritage Pillars', href: '#heritage-skills', icon: Bookmark, shortLabel: 'Pillars' },
-    { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles, shortLabel: 'Journey' },
     { label: 'Studios', href: '#facilities', icon: Palette, shortLabel: 'Studios' },
+    { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles, shortLabel: 'Journey' },
     { label: 'Workshops', href: '#workshop', icon: Hammer, shortLabel: 'Workshop' },
     { label: 'Creators Circle', href: '#community', icon: Users, shortLabel: 'Circle' },
-    { label: 'About', href: '#about', icon: Compass, shortLabel: 'About' },
   ];
 
   const handleNavClick = (e, href) => {
