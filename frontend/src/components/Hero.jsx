@@ -44,7 +44,7 @@ export default function Hero() {
     },
     {
       id: 3,
-      image: '/artisan/workshop.jpg',
+      image: '/artisan/slide-collaborate.jpg',
       tag: 'Epigraphy, Rock Art & Community',
       headingMain: 'Preserve the Past,',
       headingAccent: 'Shape Tomorrow’s Legacy',
