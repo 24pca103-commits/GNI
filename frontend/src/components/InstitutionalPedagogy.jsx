@@ -94,7 +94,7 @@ export default function InstitutionalPedagogy() {
                 {/* Header Image Frame */}
                 <div className="relative h-32 sm:h-72 overflow-hidden bg-[#241A16]">
                   <img
-                    src="/artisan/pillar-epigraphy.jpg"
+                    src="/artisan/pedagogy-theory.jpg"
                     alt="Epigraphical study, manuscripts, and temple canons"
                     loading="lazy"
                     decoding="async"
@@ -159,7 +159,7 @@ export default function InstitutionalPedagogy() {
                 {/* Header Image Frame */}
                 <div className="relative h-32 sm:h-72 overflow-hidden bg-[#241A16]">
                   <img
-                    src="/artisan/hands-on-studio.jpg"
+                    src="/artisan/pedagogy-practice.jpg"
                     alt="Hands-on traditional metal sculpture and sacred craft studio apprentices"
                     loading="lazy"
                     decoding="async"
