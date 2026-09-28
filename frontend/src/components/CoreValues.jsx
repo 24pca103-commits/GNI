@@ -4,7 +4,7 @@ import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
 export default function CoreValues() {
-  const [activeCard, setActiveCard] = useState(0);
+  const [activeCard, setActiveCard] = useState(null);
   const scrollRef = useRef(null);
 
   const values = [
@@ -65,6 +65,7 @@ export default function CoreValues() {
     if (!scrollRef.current) return;
     const container = scrollRef.current;
     const scrollLeft = container.scrollLeft;
+    if (scrollLeft <= 5 && activeCard === null) return;
     const card = container.querySelector('[data-card-index]');
     if (!card) return;
     const cardWidth = card.offsetWidth + 16; // width + gap
@@ -139,7 +140,7 @@ export default function CoreValues() {
                 <div
                   key={v.num}
                   data-card-index={idx}
-                  onClick={() => setActiveCard(idx)}
+                  onClick={() => setActiveCard((prev) => (prev === idx ? null : idx))}
                   className="w-[82vw] max-w-[300px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
                 >
                   <div
