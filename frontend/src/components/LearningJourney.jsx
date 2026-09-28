@@ -192,7 +192,6 @@ export default function LearningJourney() {
                         <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555]">
                           {step.period} • {step.phase}
                         </span>
-                        <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                       </div>
                       <h4 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
                         {step.title}

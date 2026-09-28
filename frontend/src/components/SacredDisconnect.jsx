@@ -42,8 +42,8 @@ export default function SacredDisconnect() {
                 {/* The Modern Disconnect */}
                 <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#F7F2E8] border border-[#6B4030]/20 space-y-1.5 sm:space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#6B4030]" />
-                    <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#4A2C20]">
+                    <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
+                    <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Modern Dilemma
                     </h3>
                   </div>
@@ -53,9 +53,9 @@ export default function SacredDisconnect() {
                 </div>
 
                 {/* The Heritage Bridge */}
-                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#4A2C20]/5 border border-[#B89555]/40 space-y-1.5 sm:space-y-2">
+                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#F7F2E8] border border-[#6B4030]/20 space-y-1.5 sm:space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#B89555]" />
+                    <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Heritage Remedy
                     </h3>

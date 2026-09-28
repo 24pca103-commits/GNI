@@ -90,11 +90,8 @@ export default function Process() {
               <Reveal key={index} direction="up" delay={index * 100}>
                 <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                   <div>
-                    {/* Header: Step Number & Icon */}
-                    <div className="flex items-center justify-between mb-2.5 sm:mb-4">
-                      <span className="font-['DM_Sans'] text-xl sm:text-2xl font-bold text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors">
-                        {item.step}
-                      </span>
+                    {/* Header: Icon */}
+                    <div className="flex items-center justify-start mb-2.5 sm:mb-4">
                       <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
