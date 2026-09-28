@@ -155,7 +155,7 @@ export default function Hero() {
           </p>
 
           {/* Description in DM Sans - Sentence Case */}
-          <p className="font-['DM_Sans'] text-[11.5px] sm:text-[14.5px] text-[#F7F2E8] max-w-2xl leading-relaxed font-normal text-justify indent-5 sm:indent-0 drop-shadow-xs">
+          <p className="font-['DM_Sans'] text-[11.5px] sm:text-[14.5px] text-[#F7F2E8] max-w-2xl leading-relaxed font-normal text-left drop-shadow-xs">
             {current.desc}
           </p>
 
@@ -163,11 +163,11 @@ export default function Hero() {
           <div className="bg-[#241A16]/95 border border-[#B89555]/40 p-3.5 sm:p-4 rounded-xl max-w-2xl text-left shadow-md">
             <div className="flex items-start gap-2.5 sm:gap-3">
               <Quote className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#E5B869] shrink-0 mt-0.5" />
-              <div className="space-y-0.5 sm:space-y-1">
-                <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-base text-white leading-relaxed font-normal text-justify indent-4 sm:indent-0">
+              <div className="space-y-0.5 sm:space-y-1 text-left">
+                <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-base text-white leading-relaxed font-normal text-left">
                   "{current.quote}"
                 </p>
-                <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#E5B869] font-semibold">
+                <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#E5B869] font-semibold text-left">
                   — {current.author}
                 </p>
               </div>
