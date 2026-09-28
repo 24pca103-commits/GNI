@@ -110,98 +110,96 @@ export default function StudioFacilities() {
     },
   ];
 
-  // 3-in-Front Smooth Infinite Carousel State (100% Stuck-Proof)
   const [activeIndex, setActiveIndex] = useState(0);
-  const [slideDirection, setSlideDirection] = useState(null); // 'next' | 'prev' | null
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const scrollRef = useRef(null);
+  const isInteractingRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
 
-  const current = facilities[activeIndex] || facilities[0];
-  const CurrentIcon = current ? current.icon : facilities[0].icon;
+  // Tripled list for infinite looping without jump
+  const displayList = [...facilities, ...facilities, ...facilities];
 
-  const nextSlide = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setSlideDirection('next');
+  // Continuous smooth auto-scroll loop for the icon track
+  useEffect(() => {
+    let animId;
+    const speed = 0.5; // gentle smooth auto-scroll speed
+
+    const step = () => {
+      const el = scrollRef.current;
+      if (el && !isInteractingRef.current) {
+        el.scrollLeft += speed;
+        const oneThird = el.scrollWidth / 3;
+        if (el.scrollLeft >= oneThird * 2) {
+          el.scrollLeft -= oneThird;
+        } else if (el.scrollLeft <= 0) {
+          el.scrollLeft += oneThird;
+        }
+      }
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
+  // Auto-cycle the active facility card every 5 seconds when not interacting
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isInteractingRef.current) {
+        setActiveIndex((prev) => (prev + 1) % facilities.length);
+      }
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [facilities.length]);
+
+  // Mouse Drag Handlers
+  const handleMouseDown = (e) => {
+    isDraggingRef.current = true;
+    isInteractingRef.current = true;
+    startXRef.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    scrollLeftRef.current = scrollRef.current?.scrollLeft || 0;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDraggingRef.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeftRef.current - walk;
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
     setTimeout(() => {
-      setActiveIndex((prev) => (prev + 1) % facilities.length);
-      setSlideDirection(null);
-      setIsTransitioning(false);
-    }, 380);
+      if (!isDraggingRef.current) {
+        isInteractingRef.current = false;
+      }
+    }, 1500);
   };
 
-  const prevSlide = () => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setSlideDirection('prev');
-    setTimeout(() => {
-      setActiveIndex((prev) => (prev - 1 + facilities.length) % facilities.length);
-      setSlideDirection(null);
-      setIsTransitioning(false);
-    }, 380);
+  const handleMouseEnter = () => {
+    isInteractingRef.current = true;
   };
 
-  const goToSlide = (idx) => {
-    if (isTransitioning || idx === activeIndex) return;
-    setIsTransitioning(true);
-    setSlideDirection(idx > activeIndex ? 'next' : 'prev');
-    setTimeout(() => {
-      setActiveIndex(idx);
-      setSlideDirection(null);
-      setIsTransitioning(false);
-    }, 380);
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+    isInteractingRef.current = false;
   };
 
-  // Touch handlers for mobile swipe
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-
-  const handleTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+  // Touch Handlers
+  const handleTouchStart = () => {
+    isInteractingRef.current = true;
   };
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > 40) {
-      nextSlide();
-    } else if (distance < -40) {
-      prevSlide();
-    }
+    setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 1500);
   };
 
-  // Auto-slide every 4.5 seconds (pauses on hover)
-  useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(() => {
-      nextSlide();
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [activeIndex, isTransitioning, isPaused]);
-
-  // Dynamic 5-item window: guarantees previous, current, next, and transition buffers are always valid
-  const visibleFacilities = [
-    facilities[(activeIndex - 2 + facilities.length) % facilities.length],
-    facilities[(activeIndex - 1 + facilities.length) % facilities.length],
-    facilities[activeIndex],
-    facilities[(activeIndex + 1) % facilities.length],
-    facilities[(activeIndex + 2 + facilities.length) % facilities.length],
-  ];
-
-  // Track transform calculation:
-  // At rest: -20% (items 1, 2, 3 in view, with item 2 in center)
-  // On 'next': -40%
-  // On 'prev': 0%
-  const getTrackTransform = () => {
-    if (slideDirection === 'next') return 'translateX(-40%)';
-    if (slideDirection === 'prev') return 'translateX(0%)';
-    return 'translateX(-20%)';
-  };
+  const current = facilities[activeIndex] || facilities[0];
+  const CurrentIcon = current ? current.icon : facilities[0].icon;
 
   return (
     <section id="facilities" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
@@ -225,119 +223,67 @@ export default function StudioFacilities() {
           </div>
         </Reveal>
 
-        {/* 3-in-Front Scrolling & Looping Icon Carousel - Visible on Mobile & Desktop */}
+        {/* Auto-Scrolling & Manual Drag/Swipe Icon Carousel */}
         <Reveal direction="up" delay={150}>
+          <div className="relative mb-4 sm:mb-8 max-w-4xl mx-auto py-2">
+            {/* Soft fade masks on left and right edges */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
+
+            {/* Scrollable Icon Container */}
             <div
-              className="relative mb-3 sm:mb-8 max-w-3xl mx-auto"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
+              ref={scrollRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              className="flex items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-3 px-6 cursor-grab active:cursor-grabbing select-none"
             >
-              {/* Carousel Container with Arrows and Viewport */}
-              <div className="flex items-center justify-between gap-1 sm:gap-4">
-                {/* Prev Button */}
-                <button
-                  onClick={prevSlide}
-                  disabled={isTransitioning}
-                  aria-label="Previous Studio"
-                  className="w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-                </button>
+              {displayList.map((fac, idx) => {
+                const Icon = fac.icon;
+                const isSelected = activeIndex === fac.id;
 
-                {/* Viewport: Shows EXACTLY 3 items in front at a time (Touch Swipeable) */}
-                <div
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  className="flex-1 overflow-hidden py-1 px-0.5 sm:py-3"
-                >
-                  <div
-                    style={{
-                      width: '166.666667%',
-                      transform: getTrackTransform(),
-                      transition: isTransitioning ? 'transform 380ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none',
-                    }}
-                    className="flex items-start"
-                  >
-                    {visibleFacilities.map((fac, slotIdx) => {
-                      const Icon = fac.icon;
-                      // Slot index 2 is always the center active item
-                      const isCenter = slotIdx === 2;
-
-                      return (
-                        <div
-                          key={`${fac.id}-${slotIdx}`}
-                          style={{ width: '20%' }}
-                          className="shrink-0 px-0.5 sm:px-2 flex flex-col items-center justify-center text-center"
-                        >
-                          <button
-                            onClick={() => {
-                              if (slotIdx === 1) prevSlide();
-                              else if (slotIdx === 3) nextSlide();
-                              else if (slotIdx === 0) prevSlide();
-                              else if (slotIdx === 4) nextSlide();
-                            }}
-                            className="flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group focus:outline-hidden w-full"
-                          >
-                            {/* Round Shape Icon Container */}
-                            <div
-                              className={`w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
-                                isCenter
-                                  ? 'bg-[#4A2C20] text-[#B89555] ring-2 sm:ring-4 ring-[#B89555]/40 shadow-md scale-105 sm:scale-110'
-                                  : 'bg-white border border-[#6B4030]/20 text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105 shadow-xs opacity-80 group-hover:opacity-100'
-                              }`}
-                            >
-                              <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
-                            </div>
-
-                            {/* Name Mentioned Below Icon */}
-                            <span
-                              className={`text-[9.5px] sm:text-xs font-['DM_Sans'] mt-1 sm:mt-2.5 max-w-[85px] sm:max-w-[120px] leading-tight line-clamp-1 sm:line-clamp-2 transition-colors ${
-                                isCenter ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
-                              }`}
-                            >
-                              {fac.title}
-                            </span>
-
-                            {/* Center Active Indicator Dot/Bar */}
-                            {isCenter ? (
-                              <span className="w-3.5 h-0.5 sm:w-6 sm:h-1 rounded-full bg-[#B89555] mt-0.5 sm:mt-1.5 transition-all" />
-                            ) : (
-                              <span className="w-1 h-0.5 rounded-full bg-transparent mt-0.5 sm:mt-1.5" />
-                            )}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Next Button */}
-                <button
-                  onClick={nextSlide}
-                  disabled={isTransitioning}
-                  aria-label="Next Studio"
-                  className="w-7 h-7 sm:w-11 sm:h-11 rounded-full bg-white border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shrink-0 shadow-sm cursor-pointer z-20 disabled:opacity-50"
-                >
-                  <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-                </button>
-              </div>
-
-              {/* Loop Progress Dots on Desktop */}
-              <div className="hidden sm:flex items-center justify-center gap-1.5 sm:gap-2 mt-4">
-                {facilities.map((fac, idx) => (
+                return (
                   <button
-                    key={fac.id}
-                    onClick={() => goToSlide(idx)}
-                    aria-label={`Slide to ${fac.title}`}
-                    className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      idx === activeIndex ? 'w-6 sm:w-8 bg-[#B89555]' : 'w-1.5 sm:w-2 bg-[#6B4030]/25 hover:bg-[#6B4030]/50'
-                    }`}
-                  />
-                ))}
-              </div>
+                    key={`${fac.id}-${idx}`}
+                    onClick={() => setActiveIndex(fac.id)}
+                    className="flex flex-col items-center justify-center shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden min-w-[90px] sm:min-w-[120px]"
+                  >
+                    {/* Round Shape Icon Container */}
+                    <div
+                      className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        isSelected
+                          ? 'bg-[#4A2C20] text-[#B89555] ring-2 sm:ring-4 ring-[#B89555]/50 shadow-md scale-105 sm:scale-110'
+                          : 'bg-white border border-[#6B4030]/20 text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105 shadow-xs opacity-80 group-hover:opacity-100'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 sm:w-7 sm:h-7" />
+                    </div>
+
+                    {/* Title Below Icon */}
+                    <span
+                      className={`text-[10px] sm:text-xs font-['DM_Sans'] mt-1.5 sm:mt-2.5 max-w-[90px] sm:max-w-[120px] text-center leading-tight line-clamp-1 transition-colors ${
+                        isSelected ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
+                      }`}
+                    >
+                      {fac.title}
+                    </span>
+
+                    {/* Active Dot/Bar */}
+                    {isSelected ? (
+                      <span className="w-4 h-1 sm:w-6 sm:h-1 rounded-full bg-[#B89555] mt-1 transition-all" />
+                    ) : (
+                      <span className="w-1 h-1 rounded-full bg-transparent mt-1" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
-          </Reveal>
+          </div>
+        </Reveal>
 
           {/* Dynamic Studio Showcase Stage - Split Visual & Workbench */}
           <Reveal direction="up" delay={200}>
