@@ -1,9 +1,12 @@
-import React from 'react';
-import { Star, MessageSquareQuote, CheckCircle2, Sparkles } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Star, MessageSquareQuote, CheckCircle2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
 export default function Testimonials() {
+  const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
+
   const testimonials = [
     {
       name: 'Ananthi Selvaraj',
@@ -41,17 +44,46 @@ export default function Testimonials() {
         'Clients gladly pay a high premium for hand-beaten sacred brass panels and pooja sanctums. GNI taught me the commercial framework of sacred craft.',
       rating: 5,
     },
+    {
+      name: 'Kavinraj Thirunavukkarasu',
+      role: 'Temple Muralist & Calligrapher, Thanjavur',
+      batch: 'Cohort Alumni • Epigraphical Arts',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+      review:
+        'The rare palm-leaf manuscript preservation techniques and natural binder recipes gave my temple restoration work unprecedented authenticity and acclaim.',
+      rating: 5,
+    },
+    {
+      name: 'Meenakshi Sundaram',
+      role: 'Sacred Bronze Sculptor, Kumbakonam',
+      batch: 'Cohort Alumni • Lost Wax Metallurgy',
+      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+      review:
+        'Understanding the Dhyana Shlokas and Shilpa Shastras allowed me to create museum-grade icons. GNI connects timeless traditions with global connoisseurs.',
+      rating: 5,
+    },
   ];
 
+  // Manual scroll nudge buttons for user convenience
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = direction === 'left' ? -360 : 360;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  // Duplicated array for 100% seamless infinite horizontal looping
+  const loopedList = [...testimonials, ...testimonials];
+
   return (
-    <section id="testimonials" className="py-8 md:py-20 bg-white relative overflow-hidden border-t border-[#6B4030]/15">
+    <section id="testimonials" className="py-8 md:py-16 bg-white relative overflow-hidden border-t border-[#6B4030]/15">
       {/* Floating Animated Bubbles */}
       <FloatingBubbles count={8} color="#B89555" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>
-          <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-12">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
               <MessageSquareQuote className="w-3.5 h-3.5 text-[#B89555]" />
               <span>Artisan Alumni Voices</span>
@@ -66,67 +98,104 @@ export default function Testimonials() {
           </div>
         </Reveal>
 
-        {/* Testimonials Grid: Sliding on Mobile, Grid on Larger Screens */}
-        <Reveal direction="up" delay={150}>
-          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8">
-            {testimonials.map((item, idx) => (
-              <div
-                key={idx}
-                className="w-[80vw] max-w-[290px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
+        {/* Top Controls: Left / Right navigation & Auto-scroll indicator */}
+        <Reveal direction="up" delay={120}>
+          <div className="flex items-center justify-between mb-3 sm:mb-4 px-1">
+            <div className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
+              <span className="w-2 h-2 rounded-full bg-[#B89555] animate-pulse" />
+              <span>Continuous Auto-Scrolling Strip (Hover / Touch to Pause)</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button
+                onClick={() => scroll('left')}
+                aria-label="Previous Testimonial"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F7F2E8] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shadow-xs cursor-pointer"
               >
-                <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
-                  <div>
-                    {/* Rating Stars in Antique Gold #B89555 & Quote Icon */}
-                    <div className="flex items-center justify-between mb-2.5 sm:mb-4">
-                      <div className="flex items-center gap-1">
-                        {[...Array(item.rating)].map((_, i) => (
-                          <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#B89555] text-[#B89555]" />
-                        ))}
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                aria-label="Next Testimonial"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F7F2E8] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#4A2C20] hover:text-[#B89555] hover:border-[#B89555] transition-all flex items-center justify-center shadow-xs cursor-pointer"
+              >
+                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* Single Row Horizontal Infinite Scrolling Track */}
+        <Reveal direction="up" delay={150}>
+          <div
+            className="relative overflow-hidden group py-2"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
+          >
+            {/* Left & Right Soft Fade Gradient Masks */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
+
+            {/* Scroll Container with marquee animation in a single horizontal row */}
+            <div
+              ref={scrollRef}
+              className={`flex items-stretch gap-4 sm:gap-6 ${
+                isPaused ? 'overflow-x-auto no-scrollbar' : 'animate-marquee-infinite'
+              }`}
+            >
+              {loopedList.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="w-[285px] sm:w-[350px] md:w-[380px] shrink-0 flex flex-col"
+                >
+                  <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
+                    <div>
+                      {/* Rating Stars in Antique Gold #B89555 & Quote Icon */}
+                      <div className="flex items-center justify-between mb-2.5 sm:mb-4">
+                        <div className="flex items-center gap-1">
+                          {[...Array(item.rating)].map((_, i) => (
+                            <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#B89555] text-[#B89555]" />
+                          ))}
+                        </div>
+                        <MessageSquareQuote className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B4030]/30 group-hover/card:text-[#B89555] transition-colors" />
                       </div>
-                      <MessageSquareQuote className="w-5 h-5 sm:w-6 sm:h-6 text-[#6B4030]/30 group-hover:text-[#B89555] transition-colors" />
+
+                      {/* Review Text */}
+                      <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-[13.5px] leading-snug sm:leading-relaxed italic mb-3 sm:mb-5 font-normal text-left text-justify">
+                        "{item.review}"
+                      </p>
                     </div>
 
-                    {/* Review Text */}
-                    <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-sm leading-snug italic mb-3 sm:mb-6 font-normal text-left text-justify">
-                      "{item.review}"
-                    </p>
-                  </div>
-
-                  {/* Author Info */}
-                  <div className="pt-2.5 sm:pt-4 border-t border-[#6B4030]/15 flex items-center gap-3 sm:gap-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
-                    />
-                    <div>
-                      <div className="flex items-center gap-1.5 sm:gap-2">
-                        <h3 className="font-['Cormorant_Garamond'] font-bold text-[#241A16] text-base sm:text-lg leading-tight">
-                          {item.name}
-                        </h3>
-                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555] shrink-0" title="Verified Cohort Graduate" />
+                    {/* Author Info */}
+                    <div className="pt-2.5 sm:pt-4 border-t border-[#6B4030]/15 flex items-center gap-2.5 sm:gap-3.5">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl object-cover border border-[#6B4030]/20 shadow-xs shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          <h3 className="font-['Cormorant_Garamond'] font-bold text-[#241A16] text-sm sm:text-base leading-tight truncate">
+                            {item.name}
+                          </h3>
+                          <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" title="Verified Cohort Graduate" />
+                        </div>
+                        <p className="font-['DM_Sans'] text-[10px] sm:text-xs font-semibold text-[#6B4030] truncate">
+                          {item.role}
+                        </p>
+                        <p className="font-['DM_Sans'] text-[9px] sm:text-[10.5px] text-[#B89555] font-medium mt-0.5 truncate">
+                          {item.batch}
+                        </p>
                       </div>
-                      <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-semibold text-[#6B4030]">
-                        {item.role}
-                      </p>
-                      <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#B89555] font-medium mt-0.5">
-                        {item.batch}
-                      </p>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Mobile Swipe Hint Dots */}
-          <div className="flex md:hidden items-center justify-center gap-1.5 mt-3">
-            {testimonials.map((_, i) => (
-              <span key={i} className="w-2 h-1.5 rounded-full bg-[#B89555]/50" />
-            ))}
-            <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]/70 ml-1">Swipe to view reviews</span>
+              ))}
+            </div>
           </div>
         </Reveal>
       </div>

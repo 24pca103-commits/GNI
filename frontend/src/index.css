@@ -114,3 +114,24 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Smooth Infinite Marquee for Horizontal Auto-looping Single Row */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-infinite {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 45s linear infinite;
+}
+
+.animate-marquee-infinite:hover,
+.animate-marquee-infinite:active {
+  animation-play-state: paused;
+}
