@@ -92,7 +92,7 @@ export default function Testimonials() {
               Words From Our Heritage Creators
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-center max-w-2xl mx-auto">
               Real feedback from architects, designers, and artisans whose skills and livelihoods were transformed.
             </p>
           </div>

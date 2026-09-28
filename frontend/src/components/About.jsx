@@ -58,7 +58,7 @@ export default function About() {
               <span className="block sm:inline">Through Living Craftsmanship</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
+            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-center max-w-2xl mx-auto">
               Global Nagas Institute is a specialized repository and pedagogical sanctuary bridging
               ancient rock art, Tamili epigraphy, and sacred metallurgy with contemporary design and sustainable livelihoods.
             </p>

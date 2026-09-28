@@ -74,7 +74,7 @@ export default function Process() {
               <span className="block sm:inline">Heritage Preservation</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
+            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-center max-w-2xl mx-auto">
               How Global Nagas Institute systematically preserves, safeguards, and transmits unbroken ancient Tamil
               wisdom from historical field archives into living modern craftsmanship.
             </p>

@@ -89,7 +89,7 @@ export default function WhyJoinUs() {
               Why Join Global Nagas Institute?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-center max-w-2xl mx-auto">
               Not just an academy — a structured repository and living atelier transforming timeless Tamil wisdom into tactile mastery.
             </p>
           </div>

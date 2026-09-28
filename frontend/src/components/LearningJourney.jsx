@@ -90,7 +90,7 @@ export default function LearningJourney() {
               60-Day Heritage Creator Journey
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-center max-w-2xl mx-auto">
               From learning the foundational strokes to launching authentic creations.
             </p>
           </div>
@@ -183,17 +183,18 @@ export default function LearningJourney() {
               const Icon = step.icon;
               return (
                 <Reveal key={step.phase} direction="up" delay={100 + idx * 50}>
-                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex flex-col items-start gap-3 sm:gap-3.5 text-left">
-                    <div className="flex items-center justify-between w-full">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 shadow-xs">
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                      <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555] px-2.5 py-0.5 rounded-full bg-[#4A2C20]/5 border border-[#B89555]/20">
-                        {step.period} • {step.phase}
-                      </span>
+                  <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] transition-all flex items-start gap-3.5 sm:gap-4 text-left">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 shadow-xs mt-0.5">
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
 
-                    <div className="space-y-1 w-full">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] sm:text-xs font-number font-bold text-[#B89555] px-2.5 py-0.5 rounded-full bg-[#4A2C20]/5 border border-[#B89555]/20">
+                          {step.period} • {step.phase}
+                        </span>
+                      </div>
+
                       <h4 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
                         {step.title}
                       </h4>

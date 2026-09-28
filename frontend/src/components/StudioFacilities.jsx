@@ -219,7 +219,7 @@ export default function StudioFacilities() {
               Repository Studios & Facilities
             </h2>
             <div className="w-14 sm:w-16 h-0.5 bg-[#B89555] mx-auto mt-1.5 sm:mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-xs sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0">
+            <p className="font-['DM_Sans'] mt-2.5 text-xs sm:text-base text-[#6B4030] font-normal leading-relaxed text-center max-w-2xl mx-auto">
               Explore our 6 dedicated purpose-built spaces designed for tactile craftsmanship and epigraphical study.
             </p>
           </div>

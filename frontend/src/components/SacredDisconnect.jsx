@@ -32,7 +32,7 @@ export default function SacredDisconnect() {
               </div>
 
               {/* Main Emotive Statement */}
-              <p className="font-['Cormorant_Garamond'] italic text-sm sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-justify indent-5 sm:indent-0">
+              <p className="font-['Cormorant_Garamond'] italic text-sm sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-center max-w-3xl mx-auto">
                 "Modern life has created a sacred disconnect — where people may be successful
                 externally, yet feel disconnected from peace, purpose, creativity and roots."
               </p>
