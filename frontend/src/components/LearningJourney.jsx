@@ -90,7 +90,7 @@ export default function LearningJourney() {
               60-Day Heritage Creator Journey
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
               From learning the foundational strokes to launching authentic creations.
             </p>
           </div>
@@ -211,28 +211,34 @@ export default function LearningJourney() {
           </div>
         </div>
 
-        {/* Field Visit Highlight Banner - Solid Deep Brown (No Gradients) */}
+        {/* Field Visit Highlight Banner - Redesigned to fill whitespace edge-to-edge */}
         <Reveal direction="zoom" delay={300}>
-          <div className="mt-10 sm:mt-12 bg-[#4A2C20] rounded-2xl p-5 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-6">
-            <div className="flex items-start gap-3.5 sm:gap-4 text-left w-full sm:w-auto">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                <MapPin className="w-5 h-5 text-[#241A16]" />
+          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl p-4 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+            <div className="space-y-2 text-left w-full">
+              {/* Top Row on Mobile: Icon + Badges */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#241A16]" />
+                  </div>
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-medium">
+                    Immersive Experience
+                  </span>
+                </div>
+                <div className="shrink-0 px-3 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/10 border border-[#B89555]/30 text-[10px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-medium">
+                  ★ Guided by historians
+                </div>
               </div>
-              <div className="space-y-1.5 flex-1 text-left">
-                <span className="inline-block px-3 py-0.5 rounded-full text-[11px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-medium">
-                  Immersive Experience
-                </span>
-                <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-white leading-tight">
-                  Includes an On-Site Field Visit
-                </h3>
-                <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/90 max-w-xl font-normal text-justify leading-relaxed pt-1 indent-2 sm:indent-0">
-                  Direct hands-on archaeological exploration of ancient temple rock inscriptions, heritage
-                  guilds, and active master artisan workshops across Tamil Nadu.
-                </p>
-              </div>
-            </div>
-            <div className="shrink-0 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-white/10 border border-[#B89555]/30 text-xs font-['DM_Sans'] text-[#B89555] font-medium self-start sm:self-center">
-              ★ Guided by historians
+
+              {/* Title spanning full width */}
+              <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-white leading-tight pt-1">
+                Includes an On-Site Field Visit
+              </h3>
+
+              {/* Description spanning full width and fully justified */}
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/90 max-w-2xl font-normal text-left text-justify leading-relaxed">
+                Direct hands-on archaeological exploration of ancient temple rock inscriptions, heritage guilds, and active master artisan workshops across Tamil Nadu.
+              </p>
             </div>
           </div>
         </Reveal>

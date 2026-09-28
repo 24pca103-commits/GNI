@@ -41,7 +41,7 @@ export default function InstitutionalPedagogy() {
               Timeless Wisdom. Hands-on Mastery.
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
               Experiencing the structured curriculum at the Global Nagas Institute repository is truly transformative.
               We combine classical historical literature with intensive, daily tactile craftsmanship to prepare
               learners for dignified sustainable careers.
@@ -229,7 +229,7 @@ export default function InstitutionalPedagogy() {
                 <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-semibold uppercase tracking-wider block">
                   Guild certified pedagogy
                 </span>
-                <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-white text-left text-justify indent-2 sm:indent-0 md:text-left">
+                <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-white text-left text-justify md:text-left">
                   Mentored directly by traditional temple sthapatis and master artisans.
                 </p>
               </div>

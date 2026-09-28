@@ -74,7 +74,7 @@ export default function Process() {
               <span className="block sm:inline">Heritage Preservation</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
               How Global Nagas Institute systematically preserves, safeguards, and transmits unbroken ancient Tamil
               wisdom from historical field archives into living modern craftsmanship.
             </p>
@@ -131,12 +131,9 @@ export default function Process() {
                 <ShieldCheck className="w-4 h-4 text-[#B89555] shrink-0" />
                 <span>Uncompromising Preservation Standards</span>
               </span>
-              <span className="hidden sm:inline text-[#B89555]/40">•</span>
-              <span className="indent-2 sm:indent-0">✓ 100% Traditional Hand Tools</span>
-              <span className="hidden sm:inline text-[#B89555]/40">•</span>
-              <span className="indent-2 sm:indent-0">✓ Agamic Iconometrical Authenticity</span>
-              <span className="hidden sm:inline text-[#B89555]/40">•</span>
-              <span className="indent-2 sm:indent-0">✓ Direct Master Sthapathi Certification</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#B89555]">✓</span> 100% Traditional Hand Tools</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#B89555]">✓</span> Agamic Iconometrical Authenticity</span>
+              <span className="flex items-center gap-1.5"><span className="text-[#B89555]">✓</span> Direct Master Sthapathi Certification</span>
             </div>
           </div>
         </Reveal>

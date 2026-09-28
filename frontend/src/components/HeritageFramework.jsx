@@ -70,7 +70,7 @@ export default function HeritageFramework() {
               <span className="block sm:inline">Heritage & Industry Needs</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3 text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3 text-left text-justify sm:text-center">
               Four comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship.
             </p>
 

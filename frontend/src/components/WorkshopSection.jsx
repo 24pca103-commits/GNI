@@ -39,7 +39,7 @@ export default function WorkshopSection() {
               <span className="block sm:inline">Heritage Experience Workshop</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
               A one-day hands-on introduction to Tamil heritage, art and craftsmanship.
             </p>
           </div>

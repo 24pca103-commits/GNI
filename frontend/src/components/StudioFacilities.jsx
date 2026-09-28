@@ -349,7 +349,7 @@ export default function StudioFacilities() {
               className="bg-white rounded-xl sm:rounded-3xl p-2.5 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-2 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
             >
               {/* Left Column: Authentic Studio Visual with Details */}
-              <div className="lg:col-span-6 relative rounded-lg sm:rounded-2xl overflow-hidden bg-[#241A16] h-[90px] sm:h-[340px] md:h-[420px] group">
+              <div className="lg:col-span-6 relative rounded-lg sm:rounded-2xl overflow-hidden bg-[#241A16] h-36 sm:h-[340px] md:h-[420px] group">
                 <img
                   src={current.image}
                   alt={current.title}
@@ -357,10 +357,10 @@ export default function StudioFacilities() {
                   decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-[#241A16]/30" />
+                <div className="absolute inset-0 bg-[#241A16]/20" />
 
                 {/* Top Category Tag */}
-                <div className="absolute top-1.5 left-1.5 sm:top-4 sm:left-4 bg-[#241A16]/90 px-1.5 py-0.5 sm:px-3.5 sm:py-1.5 rounded-sm sm:rounded-xl border border-[#B89555]/30 text-[#B89555] text-[8.5px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2 py-0.5 sm:px-3.5 sm:py-1.5 rounded-md sm:rounded-xl border border-[#B89555]/30 text-[#B89555] text-[9px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm">
                   <CurrentIcon className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#B89555]" />
                   <span className="text-[#F7F2E8]">{current.category}</span>
                 </div>
@@ -379,32 +379,32 @@ export default function StudioFacilities() {
                 </div>
               </div>
 
-              {/* Right Column: Workbench Specifications & Tools */}
-              <div className="lg:col-span-6 space-y-1.5 sm:space-y-6 text-left">
-                <div className="space-y-0.5 sm:space-y-2">
-                  <div className="flex items-center gap-1.5 text-[9px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
-                    <CurrentIcon className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-[#B89555]" />
+              {/* Right Column: Clean Workbench Specifications */}
+              <div className="lg:col-span-6 space-y-2 sm:space-y-6 text-left">
+                <div className="space-y-1 sm:space-y-2">
+                  <div className="flex items-center gap-1.5 text-[9.5px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
+                    <CurrentIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#B89555]" />
                     <span>Facility Specification <span className="font-number font-bold text-[#B89555]">{activeIndex + 1}</span></span>
                   </div>
-                  <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-4xl font-bold text-[#241A16] tracking-tight leading-tight">
+                  <h3 className="font-['Cormorant_Garamond'] text-base sm:text-4xl font-bold text-[#241A16] tracking-tight leading-tight">
                     {current.title}
                   </h3>
-                  <p className="font-['DM_Sans'] text-[10px] sm:text-[14.5px] text-[#241A16]/80 leading-tight sm:leading-snug font-normal line-clamp-1 sm:line-clamp-none text-left text-justify">
+                  <p className="font-['DM_Sans'] text-[11px] sm:text-[14.5px] text-[#241A16]/85 leading-relaxed font-normal text-left text-justify">
                     {current.desc}
                   </p>
                 </div>
 
-                {/* Studio Equipment & Tools Grid */}
-                <div className="space-y-0.5 sm:space-y-2.5">
-                  <h4 className="font-['DM_Sans'] text-[9px] sm:text-xs font-bold text-[#6B4030] flex items-center gap-1">
-                    <Wrench className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#B89555]" />
+                {/* Studio Equipment & Tools Grid (Desktop / Tablet only to prevent mobile clutter) */}
+                <div className="hidden sm:block space-y-2.5">
+                  <h4 className="font-['DM_Sans'] text-xs font-bold text-[#6B4030] flex items-center gap-1">
+                    <Wrench className="w-3.5 h-3.5 text-[#B89555]" />
                     <span>Tools & Equipment:</span>
                   </h4>
-                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {current.tools.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-1 py-0.5 sm:px-3 sm:py-1 rounded-xs sm:rounded-lg text-[8px] sm:text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/20 leading-tight"
+                        className="px-3 py-1 rounded-lg text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#241A16] border border-[#6B4030]/20 leading-tight"
                       >
                         {t}
                       </span>
@@ -413,15 +413,15 @@ export default function StudioFacilities() {
                 </div>
 
                 {/* Practical Capabilities List */}
-                <div className="space-y-0.5 sm:space-y-2 pt-0.5 sm:pt-2 border-t border-[#6B4030]/15">
-                  <h4 className="font-['DM_Sans'] text-[9px] sm:text-xs font-bold text-[#6B4030]">
+                <div className="space-y-1 sm:space-y-2 pt-1.5 sm:pt-2 border-t border-[#6B4030]/15">
+                  <h4 className="font-['DM_Sans'] text-[10px] sm:text-xs font-bold text-[#6B4030]">
                     Key Learning Outcomes:
                   </h4>
-                  <div className="space-y-0.5 sm:space-y-1.5">
+                  <div className="space-y-1 sm:space-y-1.5">
                     {current.capabilities.slice(0, 2).map((c, idx) => (
-                      <div key={idx} className="flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs font-['DM_Sans'] text-[#241A16]/85">
-                        <CheckCircle2 className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" />
-                        <span className="leading-tight">{c}</span>
+                      <div key={idx} className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#241A16]/85">
+                        <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" />
+                        <span className="leading-snug">{c}</span>
                       </div>
                     ))}
                     {current.capabilities.slice(2).map((c, idx) => (
@@ -433,10 +433,10 @@ export default function StudioFacilities() {
                   </div>
                 </div>
 
-                {/* Studio Bottom Bar */}
-                <div className="pt-1 sm:pt-4 border-t border-[#6B4030]/15 flex items-center justify-between text-[8.5px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
-                  <span className="flex items-center gap-1 sm:gap-1.5">
-                    <Users className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#B89555]" />
+                {/* Studio Bottom Bar (Desktop Only) */}
+                <div className="hidden sm:flex pt-4 border-t border-[#6B4030]/15 items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
+                  <span className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-[#B89555]" />
                     <span>30–50 Students Batch</span>
                   </span>
                   <span className="font-semibold text-[#B89555]">

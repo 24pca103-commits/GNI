@@ -92,20 +92,15 @@ export default function Testimonials() {
               Words From Our Heritage Creators
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
               Real feedback from architects, designers, and artisans whose skills and livelihoods were transformed.
             </p>
           </div>
         </Reveal>
 
-        {/* Top Controls: Left / Right navigation & Auto-scroll indicator */}
+        {/* Top Controls: Left / Right navigation */}
         <Reveal direction="up" delay={120}>
-          <div className="flex items-center justify-between mb-3 sm:mb-4 px-1">
-            <div className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
-              <span className="w-2 h-2 rounded-full bg-[#B89555] animate-pulse" />
-              <span>Continuous Auto-Scrolling Strip (Hover / Touch to Pause)</span>
-            </div>
-
+          <div className="flex items-center justify-end mb-3 sm:mb-4 px-1">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => scroll('left')}

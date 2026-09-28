@@ -73,7 +73,7 @@ export default function CoreValues() {
               Five Core Values
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-left text-justify sm:text-center">
               The foundational pillars that guide every artisan, discipline, and creation across our repository.
             </p>
           </div>
@@ -91,7 +91,7 @@ export default function CoreValues() {
             <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-3xl text-white font-bold leading-snug">
               "Knowledge that remains untouched turns to memory; knowledge that creates turns to legacy."
             </p>
-            <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-1.5 sm:mt-2 font-normal text-left text-justify indent-2 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] text-xs text-[#F7F2E8]/75 mt-1.5 sm:mt-2 font-normal text-left text-justify sm:text-center">
               Hover over any of the five pillars to explore its craft significance and studio standard.
             </p>
           </div>

@@ -24,8 +24,8 @@ export default function FinalCTA() {
                 Learn Heritage. Create Art. Build Livelihood.
               </p>
 
-              {/* Sub-content with Start Alignment & Left Tab/Border Indent on mobile */}
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed max-w-lg mx-auto font-normal text-left sm:text-center pl-3 sm:pl-0 border-l-2 border-[#B89555]/40 sm:border-l-0">
+              {/* Sub-content with Text Justification & Clean Start Alignment on mobile */}
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed max-w-lg mx-auto font-normal text-left text-justify sm:text-center">
                 Join our upcoming cohort to uncover ancient Tamil knowledge, master traditional craftsmanship,
                 and transform cultural wisdom into a sustainable, modern creative career.
               </p>
@@ -41,18 +41,16 @@ export default function FinalCTA() {
                 </Link>
               </div>
 
-              {/* Strictly single-line centered 3 highlights */}
-              <div className="pt-3 sm:pt-6 border-t border-white/10 flex flex-nowrap items-center justify-center gap-2 sm:gap-6 text-[10px] sm:text-xs font-['DM_Sans'] text-[#F7F2E8]/85 w-full overflow-hidden">
+              {/* Strictly single-line centered 3 highlights with clean icons (no double dots) */}
+              <div className="pt-3 sm:pt-6 border-t border-white/10 flex flex-nowrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs font-['DM_Sans'] text-[#F7F2E8]/90 w-full overflow-hidden">
                 <span className="flex items-center gap-1 shrink-0">
                   <span className="text-[#B89555]">✓</span>
                   <span><span className="font-number font-semibold">4</span> Skill Pillars</span>
                 </span>
-                <span className="text-white/30 shrink-0">•</span>
                 <span className="flex items-center gap-1 shrink-0">
                   <span className="text-[#B89555]">✓</span>
                   <span><span className="font-number font-semibold">60</span>-Day <span className="hidden sm:inline">Cohort </span>Journey</span>
                 </span>
-                <span className="text-white/30 shrink-0">•</span>
                 <span className="flex items-center gap-1 shrink-0">
                   <span className="text-[#B89555]">✓</span>
                   <span><span className="hidden sm:inline">Materials & </span>Kit Included</span>

@@ -89,7 +89,7 @@ export default function WhyJoinUs() {
               Why Join Global Nagas Institute?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 sm:text-center">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
               Not just an academy — a structured repository and living atelier transforming timeless Tamil wisdom into tactile mastery.
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function WhyJoinUs() {
               <h4 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] text-left">
                 Begin Your 60-Day Heritage Creator Journey
               </h4>
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030] text-left text-justify indent-2 sm:indent-0">
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030] text-left text-justify">
                 Limited cohort size: 25 participants per batch to guarantee personal master artisan attention.
               </p>
             </div>

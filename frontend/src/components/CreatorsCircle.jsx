@@ -50,7 +50,7 @@ export default function CreatorsCircle() {
             </Reveal>
 
             <Reveal direction="up" delay={400}>
-              <p className="font-['DM_Sans'] text-sm sm:text-base text-[#F7F2E8]/80 leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 lg:text-left">
+              <p className="font-['DM_Sans'] text-sm sm:text-base text-[#F7F2E8]/80 leading-relaxed font-normal text-left text-justify lg:text-left">
                 Join our dedicated WhatsApp group and creator guild — not just students, but a thriving community where
                 heritage learners share ideas, showcase work, get master feedback, and collaborate on commercial projects.
               </p>
