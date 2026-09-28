@@ -1,13 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { Star, MessageSquareQuote, CheckCircle2, Sparkles } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Star, MessageSquareQuote } from 'lucide-react';
 import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
 export default function Testimonials() {
   const scrollRef = useRef(null);
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeftState, setScrollLeftState] = useState(0);
+  const isInteractingRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
 
   const testimonials = [
     {
@@ -66,26 +67,75 @@ export default function Testimonials() {
     },
   ];
 
+  // Tripled list for infinite looping without jump
+  const displayList = [...testimonials, ...testimonials, ...testimonials];
+
+  // Continuous smooth auto-scroll loop
+  useEffect(() => {
+    let animId;
+    const speed = 0.6; // gentle smooth auto-scroll speed
+
+    const step = () => {
+      const el = scrollRef.current;
+      if (el && !isInteractingRef.current) {
+        el.scrollLeft += speed;
+        const oneThird = el.scrollWidth / 3;
+        if (el.scrollLeft >= oneThird * 2) {
+          el.scrollLeft -= oneThird;
+        } else if (el.scrollLeft <= 0) {
+          el.scrollLeft += oneThird;
+        }
+      }
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, []);
+
+  // Mouse Drag Handlers
   const handleMouseDown = (e) => {
-    setIsDown(true);
-    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
-    setScrollLeftState(scrollRef.current?.scrollLeft || 0);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDown(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDown(false);
+    isDraggingRef.current = true;
+    isInteractingRef.current = true;
+    startXRef.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    scrollLeftRef.current = scrollRef.current?.scrollLeft || 0;
   };
 
   const handleMouseMove = (e) => {
-    if (!isDown || !scrollRef.current) return;
+    if (!isDraggingRef.current || !scrollRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    scrollRef.current.scrollLeft = scrollLeftState - walk;
+    const walk = (x - startXRef.current) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeftRef.current - walk;
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+    setTimeout(() => {
+      if (!isDraggingRef.current) {
+        isInteractingRef.current = false;
+      }
+    }, 1500);
+  };
+
+  const handleMouseEnter = () => {
+    isInteractingRef.current = true;
+  };
+
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+    isInteractingRef.current = false;
+  };
+
+  // Touch Handlers
+  const handleTouchStart = () => {
+    isInteractingRef.current = true;
+  };
+
+  const handleTouchEnd = () => {
+    setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 1500);
   };
 
   return (
@@ -111,26 +161,29 @@ export default function Testimonials() {
           </div>
         </Reveal>
 
-        {/* Smooth Manual Sliding Track with Swipe & Drag Support */}
+        {/* Auto-Scrolling & Manual Drag/Swipe Track */}
         <Reveal direction="up" delay={150}>
           <div className="relative py-2">
             {/* Left & Right Soft Fade Gradient Masks */}
             <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
 
-            {/* Scroll Container with smooth manual scrolling */}
+            {/* Scroll Container with combined auto-scroll and manual swipe/drag */}
             <div
               ref={scrollRef}
-              onMouseDown={handleMouseDown}
+              onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
-              className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-2 cursor-grab active:cursor-grabbing select-none"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-2 cursor-grab active:cursor-grabbing select-none"
             >
-              {testimonials.map((item, idx) => (
+              {displayList.map((item, idx) => (
                 <div
                   key={idx}
-                  className="w-[85vw] max-w-[340px] sm:w-[360px] md:w-[380px] shrink-0 snap-center flex flex-col"
+                  className="w-[85vw] max-w-[340px] sm:w-[360px] md:w-[380px] shrink-0 flex flex-col"
                 >
                   <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
                     <div>
