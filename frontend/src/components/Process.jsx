@@ -114,7 +114,7 @@ export default function Process() {
                   </div>
 
                   <div className="mt-3 sm:mt-5 pt-2 sm:pt-3 border-t border-[#6B4030]/15 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B89555]" />
                     <span>Verified Protocol</span>
                   </div>
                 </div>
@@ -131,9 +131,9 @@ export default function Process() {
                 <ShieldCheck className="w-4 h-4 text-[#B89555] shrink-0" />
                 <span>Uncompromising Preservation Standards</span>
               </span>
-              <span className="flex items-center gap-1.5"><span className="text-[#B89555]">✓</span> 100% Traditional Hand Tools</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#B89555]">✓</span> Agamic Iconometrical Authenticity</span>
-              <span className="flex items-center gap-1.5"><span className="text-[#B89555]">✓</span> Direct Master Sthapathi Certification</span>
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> 100% Traditional Hand Tools</span>
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> Agamic Iconometrical Authenticity</span>
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> Direct Master Sthapathi Certification</span>
             </div>
           </div>
         </Reveal>

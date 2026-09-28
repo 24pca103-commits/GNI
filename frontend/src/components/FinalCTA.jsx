@@ -41,18 +41,18 @@ export default function FinalCTA() {
                 </Link>
               </div>
 
-              {/* Strictly single-line centered 3 highlights with clean icons (no double dots) */}
+              {/* Strictly single-line centered 3 highlights with clean dots */}
               <div className="pt-3 sm:pt-6 border-t border-white/10 flex flex-nowrap items-center justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs font-['DM_Sans'] text-[#F7F2E8]/90 w-full overflow-hidden">
-                <span className="flex items-center gap-1 shrink-0">
-                  <span className="text-[#B89555]">✓</span>
+                <span className="flex items-center gap-1.5 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                   <span><span className="font-number font-semibold">4</span> Skill Pillars</span>
                 </span>
-                <span className="flex items-center gap-1 shrink-0">
-                  <span className="text-[#B89555]">✓</span>
+                <span className="flex items-center gap-1.5 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                   <span><span className="font-number font-semibold">60</span>-Day <span className="hidden sm:inline">Cohort </span>Journey</span>
                 </span>
-                <span className="flex items-center gap-1 shrink-0">
-                  <span className="text-[#B89555]">✓</span>
+                <span className="flex items-center gap-1.5 shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                   <span><span className="hidden sm:inline">Materials & </span>Kit Included</span>
                 </span>
               </div>

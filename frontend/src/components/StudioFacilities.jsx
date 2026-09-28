@@ -419,14 +419,14 @@ export default function StudioFacilities() {
                   </h4>
                   <div className="space-y-1 sm:space-y-1.5">
                     {current.capabilities.slice(0, 2).map((c, idx) => (
-                      <div key={idx} className="flex items-center gap-1.5 sm:gap-2 text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#241A16]/85">
-                        <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B89555] shrink-0" />
+                      <div key={idx} className="flex items-center gap-2 text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#241A16]/85">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                         <span className="leading-snug">{c}</span>
                       </div>
                     ))}
                     {current.capabilities.slice(2).map((c, idx) => (
                       <div key={idx + 2} className="hidden sm:flex items-center gap-2 text-xs font-['DM_Sans'] text-[#241A16]/85">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                         <span className="leading-snug">{c}</span>
                       </div>
                     ))}

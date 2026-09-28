@@ -191,8 +191,8 @@ export default function About() {
                       </p>
                     </div>
 
-                    <div className="mt-3 sm:mt-5 pt-2.5 sm:pt-3.5 border-t border-[#6B4030]/10 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-['DM_Sans'] text-[#4A2C20] font-semibold">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+                    <div className="mt-3 sm:mt-5 pt-2.5 sm:pt-3.5 border-t border-[#6B4030]/10 flex items-center gap-2 text-[10px] sm:text-[11px] font-['DM_Sans'] text-[#4A2C20] font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                       <span>{pillar.highlight}</span>
                     </div>
                   </div>

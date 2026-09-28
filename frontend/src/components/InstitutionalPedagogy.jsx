@@ -135,8 +135,8 @@ export default function InstitutionalPedagogy() {
                       Core Learning Modules:
                     </span>
                     {theoryPoints.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#6B4030] shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#6B4030] shrink-0" />
                         <span className="leading-snug">{item}</span>
                       </div>
                     ))}
@@ -200,8 +200,8 @@ export default function InstitutionalPedagogy() {
                       Core Learning Modules:
                     </span>
                     {practicePoints.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                         <span className="leading-snug">{item}</span>
                       </div>
                     ))}

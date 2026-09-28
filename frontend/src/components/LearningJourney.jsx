@@ -154,8 +154,8 @@ export default function LearningJourney() {
               </div>
 
               <div className="lg:col-span-4 bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-[#6B4030]/15 space-y-2 sm:space-y-3">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] uppercase tracking-wide">
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
+                <div className="flex items-center gap-2 text-[11px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] uppercase tracking-wide">
+                  <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                   <span>Key Milestone Outcome</span>
                 </div>
                 <p className="font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] leading-snug">

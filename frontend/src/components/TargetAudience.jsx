@@ -125,8 +125,8 @@ export default function TargetAudience() {
                         {/* Key Highlights */}
                         <div className="space-y-1 pt-2 border-t border-[#6B4030]/15 text-left">
                           {item.highlights.map((h, i) => (
-                            <div key={i} className="flex items-start gap-1.5 text-xs font-['DM_Sans'] text-[#241A16]/85">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0 mt-0.5" />
+                            <div key={i} className="flex items-center gap-2 text-xs font-['DM_Sans'] text-[#241A16]/85">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                               <span className="leading-snug text-[11px] sm:text-xs">{h}</span>
                             </div>
                           ))}

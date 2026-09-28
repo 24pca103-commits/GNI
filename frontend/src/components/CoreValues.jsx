@@ -138,8 +138,8 @@ export default function CoreValues() {
                     </p>
 
                     {/* Benchmark Metric Tag */}
-                    <div className="flex items-center gap-1.5 pt-0.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030] group-hover:text-[#B89555] transition-colors">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+                    <div className="flex items-center gap-2 pt-0.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030] group-hover:text-[#B89555] transition-colors">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                       <span>{v.metric}</span>
                     </div>
                   </div>
