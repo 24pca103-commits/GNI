@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   BookOpen,
   Quote,
@@ -115,23 +113,6 @@ export default function Hero() {
         })}
       </div>
 
-      {/* Banner Left and Right Slider Arrows on Desktop Only (Hidden on mobile so they never cover text) */}
-      <button
-        onClick={prevSlide}
-        className="hidden sm:flex absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#241A16]/90 hover:bg-[#B89555] hover:text-[#241A16] text-[#F7F2E8] border border-[#B89555]/40 items-center justify-center transition-all duration-200 shadow-md cursor-pointer group"
-        aria-label="Previous slide"
-      >
-        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-0.5 transition-transform" />
-      </button>
-
-      <button
-        onClick={nextSlide}
-        className="hidden sm:flex absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#241A16]/90 hover:bg-[#B89555] hover:text-[#241A16] text-[#F7F2E8] border border-[#B89555]/40 items-center justify-center transition-all duration-200 shadow-md cursor-pointer group"
-        aria-label="Next slide"
-      >
-        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition-transform" />
-      </button>
-
       {/* Main Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-12">
         <div className="max-w-3xl space-y-2.5 sm:space-y-5 text-left mx-0">
@@ -213,16 +194,8 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Banner Bottom Center Alignment for Indicator Dots & Mobile Controls */}
+      {/* Banner Bottom Center Alignment for Indicator Dots */}
       <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5">
-        <button
-          onClick={prevSlide}
-          className="sm:hidden w-7 h-7 rounded-full bg-[#241A16]/90 border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-center shadow-xs"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-        </button>
-
         {slides.map((_, idx) => (
           <button
             key={idx}
@@ -235,14 +208,6 @@ export default function Hero() {
             aria-label={`Go to slide ${idx + 1}`}
           />
         ))}
-
-        <button
-          onClick={nextSlide}
-          className="sm:hidden w-7 h-7 rounded-full bg-[#241A16]/90 border border-[#B89555]/40 text-[#F7F2E8] flex items-center justify-center shadow-xs"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
       </div>
     </section>
   );
