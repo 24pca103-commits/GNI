@@ -98,7 +98,7 @@ export default function HeritageFramework() {
                 >
                   <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_18px_40px_-8px_rgba(74,44,32,0.16)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.26)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
                     {/* Card Featured Image */}
-                    <div className="relative h-44 sm:h-64 overflow-hidden bg-[#241A16]">
+                    <div className="relative h-48 sm:h-64 overflow-hidden bg-[#241A16]">
                       <img
                         src={pillar.image}
                         alt={pillar.title}
@@ -113,12 +113,12 @@ export default function HeritageFramework() {
                         <span>{pillar.badge}</span>
                       </div>
 
-                      {/* Bottom Dark Panel for Title */}
-                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/85 p-3 sm:p-5 text-[#F7F2E8] z-10">
-                        <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#B89555] font-medium mb-0.5">
+                      {/* Bottom Dark Panel for Title - Sleek & Compact Low-Height Overlay */}
+                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/90 px-3 py-1.5 sm:px-4 sm:py-2 text-[#F7F2E8] z-10 border-t border-[#B89555]/20">
+                        <p className="font-['DM_Sans'] text-[9px] sm:text-[11px] text-[#B89555] font-medium leading-none mb-0.5">
                           {pillar.category}
                         </p>
-                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-snug">
+                        <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-lg lg:text-xl font-bold text-white tracking-tight leading-tight line-clamp-1">
                           {pillar.title}
                         </h3>
                       </div>
