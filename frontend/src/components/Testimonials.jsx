@@ -60,7 +60,7 @@ export default function Testimonials() {
               Words From Our Heritage Creators
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 sm:text-center">
               Real feedback from architects, designers, and artisans whose skills and livelihoods were transformed.
             </p>
           </div>
@@ -87,7 +87,7 @@ export default function Testimonials() {
                     </div>
 
                     {/* Review Text */}
-                    <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-sm leading-snug italic mb-3 sm:mb-6 font-normal">
+                    <p className="font-['DM_Sans'] text-[#241A16] text-xs sm:text-sm leading-snug italic mb-3 sm:mb-6 font-normal text-left text-justify">
                       "{item.review}"
                     </p>
                   </div>

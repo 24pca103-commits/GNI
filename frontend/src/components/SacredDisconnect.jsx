@@ -32,7 +32,7 @@ export default function SacredDisconnect() {
               </div>
 
               {/* Main Emotive Statement */}
-              <p className="font-['Cormorant_Garamond'] italic text-base sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2">
+              <p className="font-['Cormorant_Garamond'] italic text-sm sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-left text-justify indent-3 sm:indent-0 sm:text-center">
                 "Modern life has created a sacred disconnect — where people may be successful
                 externally, yet feel disconnected from peace, purpose, creativity and roots."
               </p>
@@ -47,7 +47,7 @@ export default function SacredDisconnect() {
                       The Modern Dilemma
                     </h3>
                   </div>
-                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug sm:leading-relaxed">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug sm:leading-relaxed text-left text-justify">
                     Fast-paced routine, purely digital interactions, and alienation from tactile creation leave people longing for deeper purpose.
                   </p>
                 </div>
@@ -60,7 +60,7 @@ export default function SacredDisconnect() {
                       The Heritage Remedy
                     </h3>
                   </div>
-                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug sm:leading-relaxed">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-snug sm:leading-relaxed text-left text-justify">
                     Engaging with ancient stone epigraphy, hand-forged metals, and sacred painting restores stillness and artistic mastery.
                   </p>
                 </div>

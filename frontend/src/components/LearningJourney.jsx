@@ -90,7 +90,7 @@ export default function LearningJourney() {
               60-Day Heritage Creator Journey
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-base sm:text-lg text-[#6B4030] font-normal leading-relaxed">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
               From learning the foundational strokes to launching authentic creations.
             </p>
           </div>
@@ -145,10 +145,10 @@ export default function LearningJourney() {
                 <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-[#241A16]">
                   {steps[activeStep].title}
                 </h3>
-                <p className="font-['DM_Sans'] text-xs sm:text-base text-[#6B4030] font-medium leading-snug">
+                <p className="font-['DM_Sans'] text-xs sm:text-base text-[#6B4030] font-medium leading-snug text-left text-justify">
                   {steps[activeStep].desc}
                 </p>
-                <p className="font-['DM_Sans'] text-[11px] sm:text-sm text-[#241A16]/75 leading-snug">
+                <p className="font-['DM_Sans'] text-[11px] sm:text-sm text-[#241A16]/75 leading-snug text-left text-justify">
                   Focus: {steps[activeStep].details}
                 </p>
               </div>

@@ -31,7 +31,7 @@ export default function TransformationSection() {
               What Can a Heritage Creator Become?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['Cormorant_Garamond'] text-xl sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed">
+            <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
               "A heritage creator who understands Tamil culture and transforms it into art, jewellery,
               interiors, textile design and livelihood."
             </p>

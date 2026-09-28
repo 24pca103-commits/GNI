@@ -389,7 +389,7 @@ export default function StudioFacilities() {
                   <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-4xl font-bold text-[#241A16] tracking-tight leading-tight">
                     {current.title}
                   </h3>
-                  <p className="font-['DM_Sans'] text-[10px] sm:text-[14.5px] text-[#241A16]/80 leading-tight sm:leading-snug font-normal line-clamp-1 sm:line-clamp-none text-left">
+                  <p className="font-['DM_Sans'] text-[10px] sm:text-[14.5px] text-[#241A16]/80 leading-tight sm:leading-snug font-normal line-clamp-1 sm:line-clamp-none text-left text-justify">
                     {current.desc}
                   </p>
                 </div>

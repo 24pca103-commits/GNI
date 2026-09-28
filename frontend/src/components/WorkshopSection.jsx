@@ -39,7 +39,7 @@ export default function WorkshopSection() {
               <span className="block sm:inline">Heritage Experience Workshop</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-base sm:text-lg text-[#6B4030] font-normal leading-relaxed">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
               A one-day hands-on introduction to Tamil heritage, art and craftsmanship.
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function WorkshopSection() {
                 <p className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-white leading-tight">
                   Introductory Fee: <span className="font-number text-[#B89555]">₹4,999</span>
                 </p>
-                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#F7F2E8]/80 leading-snug">
+                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#F7F2E8]/80 leading-snug text-left text-justify">
                   Includes raw materials, inscription plate, and craft kit.
                 </p>
               </div>

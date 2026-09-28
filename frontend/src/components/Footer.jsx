@@ -50,7 +50,7 @@ export default function Footer() {
               From Ancient Tamil Wisdom to Modern Creation
             </p>
 
-            <p className="font-['DM_Sans'] text-xs text-[#241A16]/80 max-w-md leading-relaxed">
+            <p className="font-['DM_Sans'] text-xs text-[#241A16]/80 max-w-md leading-relaxed text-left text-justify">
               A structured heritage learning experience transforming ancient Tamil knowledge into
               practical creativity, craftsmanship and modern applications.
             </p>
