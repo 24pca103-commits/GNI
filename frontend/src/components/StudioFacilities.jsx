@@ -153,6 +153,9 @@ export default function StudioFacilities() {
     return () => clearInterval(timer);
   }, [facilities.length]);
 
+  const touchStartXRef = useRef(0);
+  const touchScrollLeftRef = useRef(0);
+
   // Mouse Drag Handlers
   const handleMouseDown = (e) => {
     isDraggingRef.current = true;
@@ -187,9 +190,22 @@ export default function StudioFacilities() {
     isInteractingRef.current = false;
   };
 
-  // Touch Handlers
-  const handleTouchStart = () => {
+  // Touch Handlers for Smooth Mobile Dragging
+  const handleTouchStart = (e) => {
     isInteractingRef.current = true;
+    if (e.touches && e.touches[0] && scrollRef.current) {
+      touchStartXRef.current = e.touches[0].pageX;
+      touchScrollLeftRef.current = scrollRef.current.scrollLeft;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    isInteractingRef.current = true;
+    if (e.touches && e.touches[0] && scrollRef.current) {
+      const x = e.touches[0].pageX;
+      const walk = (x - touchStartXRef.current) * 1.2;
+      scrollRef.current.scrollLeft = touchScrollLeftRef.current - walk;
+    }
   };
 
   const handleTouchEnd = () => {
@@ -239,6 +255,7 @@ export default function StudioFacilities() {
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
               onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               className="flex items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-3 px-6 cursor-grab active:cursor-grabbing select-none"
             >
@@ -285,16 +302,13 @@ export default function StudioFacilities() {
           </div>
         </Reveal>
 
-          {/* Dynamic Studio Showcase Stage - Split Visual & Workbench */}
-          <Reveal direction="up" delay={200}>
-            <div
-              key={current.id}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-4 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
-            >
-              {/* Left Column: Authentic Studio Visual with Details */}
+        {/* Dynamic Studio Showcase Stage - Split Visual & Workbench */}
+        <Reveal direction="up" delay={200}>
+          <div
+            key={current.id}
+            className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-4 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
+          >
+            {/* Left Column: Authentic Studio Visual with Details */}
               <div className="lg:col-span-6 relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#241A16] h-48 sm:h-[340px] md:h-[420px] group">
                 <img
                   src={current.image}
