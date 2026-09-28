@@ -41,7 +41,7 @@ export default function InstitutionalPedagogy() {
               Timeless Wisdom. Hands-on Mastery.
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
               Experiencing the structured curriculum at the Global Nagas Institute repository is truly transformative.
               We combine classical historical literature with intensive, daily tactile craftsmanship to prepare
               learners for dignified sustainable careers.
@@ -125,7 +125,7 @@ export default function InstitutionalPedagogy() {
                     </h3>
                   </div>
 
-                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-snug font-normal text-left">
+                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-snug font-normal text-left text-justify">
                     Explore Sangam heritage literature, temple geometry, Tamili Brahmi epigraphical records, and philosophical canons.
                   </p>
 
@@ -190,7 +190,7 @@ export default function InstitutionalPedagogy() {
                     </h3>
                   </div>
 
-                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-snug font-normal text-left">
+                  <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/80 leading-snug font-normal text-left text-justify">
                     Hands-on stone scribing, natural mineral pigments, antique brass repoussé, and commercial creations for luxury interiors.
                   </p>
 
@@ -220,23 +220,23 @@ export default function InstitutionalPedagogy() {
 
         {/* Anchored Institutional Master Bar */}
         <Reveal direction="up" delay={300}>
-          <div className="bg-[#4A2C20] rounded-2xl p-6 sm:p-8 text-[#F7F2E8] border border-[#B89555]/30 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4 text-center md:text-left">
-              <div className="w-12 h-12 rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
-                <ShieldCheck className="w-6 h-6" />
+          <div className="bg-[#4A2C20] rounded-2xl p-5 sm:p-8 text-[#F7F2E8] border border-[#B89555]/30 shadow-md flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-4 text-left md:text-left w-full md:w-auto">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
+                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div className="space-y-1">
-                <span className="text-xs font-['DM_Sans'] text-[#B89555] font-semibold uppercase tracking-wider block">
+              <div className="space-y-0.5 sm:space-y-1">
+                <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-semibold uppercase tracking-wider block">
                   Guild certified pedagogy
                 </span>
-                <p className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-white">
+                <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-white text-left text-justify indent-2 sm:indent-0 md:text-left">
                   Mentored directly by traditional temple sthapatis and master artisans.
                 </p>
               </div>
             </div>
 
-            <div className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 border border-[#B89555]/30 text-xs font-['DM_Sans'] text-[#B89555] font-medium">
-              <Award className="w-4 h-4 text-[#B89555]" />
+            <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white/10 border border-[#B89555]/30 text-[11px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-medium self-start sm:self-auto">
+              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#B89555]" />
               <span>Ancestral wisdom → Modern economy</span>
             </div>
           </div>

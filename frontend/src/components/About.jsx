@@ -58,7 +58,7 @@ export default function About() {
               <span className="block sm:inline">Through Living Craftsmanship</span>
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">
+            <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 sm:text-center">
               Global Nagas Institute is a specialized repository and pedagogical sanctuary bridging
               ancient rock art, Tamili epigraphy, and sacred metallurgy with contemporary design and sustainable livelihoods.
             </p>
@@ -114,10 +114,10 @@ export default function About() {
                 <span className="inline-block px-3 py-1 rounded-full bg-[#4A2C20]/10 text-[#6B4030] text-xs font-['DM_Sans'] font-medium">
                   Our Mission & Pedagogical Ethos
                 </span>
-                <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl lg:text-4xl font-bold text-[#241A16] leading-tight">
+                <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl lg:text-4xl font-bold text-[#241A16] leading-tight text-left">
                   From Ancient Temple Wisdom to Dignified Modern Creation
                 </h3>
-                <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030] leading-relaxed font-normal">
+                <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0">
                   Ancient Tamil craftsmanship was never an isolated art — it was a complete spiritual, mathematical,
                   and architectural science. Global Nagas Institute brings this timeless tradition into hands-on
                   studios, giving every learner the tools to preserve cultural memory while building a thriving livelihood.

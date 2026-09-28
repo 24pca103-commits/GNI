@@ -89,7 +89,7 @@ export default function WhyJoinUs() {
               Why Join Global Nagas Institute?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-left text-justify indent-3 sm:indent-0 sm:text-center">
               Not just an academy — a structured repository and living atelier transforming timeless Tamil wisdom into tactile mastery.
             </p>
           </div>
@@ -122,11 +122,11 @@ export default function WhyJoinUs() {
                         {item.tag}
                       </span>
 
-                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16] mb-1.5 sm:mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
+                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16] mb-1.5 sm:mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors text-left">
                         {item.title}
                       </h3>
 
-                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-snug font-normal">
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-snug font-normal text-left text-justify">
                         {item.desc}
                       </p>
                     </div>
@@ -157,18 +157,18 @@ export default function WhyJoinUs() {
 
         {/* Bottom Call to Action Card */}
         <Reveal direction="up" delay={650}>
-          <div className="mt-12 bg-white rounded-3xl p-6 sm:p-8 border border-[#6B4030]/15 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-1 text-center md:text-left">
-              <h4 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#241A16]">
+          <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-[#6B4030]/15 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+            <div className="space-y-1 text-left">
+              <h4 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] text-left">
                 Begin Your 60-Day Heritage Creator Journey
               </h4>
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030]">
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030] text-left text-justify indent-2 sm:indent-0">
                 Limited cohort size: 25 participants per batch to guarantee personal master artisan attention.
               </p>
             </div>
             <a
               href="#register"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-['DM_Sans'] font-semibold text-xs text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-sm shrink-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-['DM_Sans'] font-semibold text-xs text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-sm shrink-0 self-stretch sm:self-auto justify-center"
             >
               <span>Enroll In Next Cohort</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#B89555]" />

@@ -59,7 +59,7 @@ export default function TargetAudience() {
               Find 3 Types of People
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-left text-justify indent-3 sm:indent-0 sm:text-center">
               Curated for three distinct pathways of creativity, design, and livelihood.
             </p>
           </div>
