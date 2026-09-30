@@ -188,7 +188,7 @@ export default function Hero() {
             <div className="h-2.5 sm:h-3 w-px bg-white/30 shrink-0" />
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#E5B869] shrink-0" />
-              <span className="whitespace-nowrap">Hands-on Livelihood</span>
+              <span className="whitespace-nowrap">Hands-on Experience</span>
             </div>
           </div>
         </div>
