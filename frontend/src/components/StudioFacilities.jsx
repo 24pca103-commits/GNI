@@ -115,6 +115,7 @@ export default function StudioFacilities() {
   const isHoveredRef = useRef(false);
   const isDraggingRef = useRef(false);
   const isTouchingRef = useRef(false);
+  const isAnimatingRef = useRef(false);
   const hasDraggedRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
@@ -132,7 +133,12 @@ export default function StudioFacilities() {
     const step = () => {
       const el = scrollRef.current;
       if (el) {
-        const isPaused = isHoveredRef.current || isDraggingRef.current || isTouchingRef.current;
+        const isPaused =
+          isHoveredRef.current ||
+          isDraggingRef.current ||
+          isTouchingRef.current ||
+          isAnimatingRef.current;
+
         if (!isPaused) {
           el.scrollLeft += speed;
           const oneThird = el.scrollWidth / 3;
@@ -285,22 +291,46 @@ export default function StudioFacilities() {
     const btn = e.currentTarget;
     const el = scrollRef.current;
     if (btn && el) {
+      isAnimatingRef.current = true;
       const targetScroll = btn.offsetLeft + btn.offsetWidth / 2 - el.clientWidth / 2;
       el.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      setTimeout(() => {
+        isAnimatingRef.current = false;
+      }, 500);
     }
   };
 
-  // Slider Button Handlers (Prev / Next)
-  const handlePrev = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -150, behavior: 'smooth' });
-    }
+  // Slider Button Handlers (Prev / Next) with Smooth Step & Auto-Wrap
+  const handlePrev = (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const el = scrollRef.current;
+    if (!el) return;
+    isAnimatingRef.current = true;
+    el.scrollBy({ left: -160, behavior: 'smooth' });
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+      const oneThird = el.scrollWidth / 3;
+      if (el.scrollLeft <= 0) {
+        el.scrollLeft += oneThird;
+      }
+    }, 500);
   };
 
-  const handleNext = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 150, behavior: 'smooth' });
-    }
+  const handleNext = (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const el = scrollRef.current;
+    if (!el) return;
+    isAnimatingRef.current = true;
+    el.scrollBy({ left: 160, behavior: 'smooth' });
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+      const oneThird = el.scrollWidth / 3;
+      if (el.scrollLeft >= oneThird * 2) {
+        el.scrollLeft -= oneThird;
+      }
+    }, 500);
   };
 
   const current = facilities[activeIndex] || facilities[0];
@@ -333,8 +363,11 @@ export default function StudioFacilities() {
           <div className="relative mb-4 sm:mb-8 max-w-4xl mx-auto py-2 flex items-center">
             {/* Left Prev Slider Button */}
             <button
+              type="button"
               onClick={handlePrev}
-              className="absolute left-0 sm:-left-3 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="absolute left-0 sm:-left-3 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
               aria-label="Previous facility"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -401,8 +434,11 @@ export default function StudioFacilities() {
 
             {/* Right Next Slider Button */}
             <button
+              type="button"
               onClick={handleNext}
-              className="absolute right-0 sm:-right-3 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="absolute right-0 sm:-right-3 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
               aria-label="Next facility"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
