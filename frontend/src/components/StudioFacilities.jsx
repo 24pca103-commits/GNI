@@ -222,6 +222,15 @@ export default function StudioFacilities() {
     scrollLeftRef.current = scrollRef.current?.scrollLeft || 0;
   };
 
+  const handleMouseUp = () => {
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      setTimeout(() => {
+        hasDraggedRef.current = false;
+      }, 50);
+    }
+  };
+
   const handleMouseEnter = () => {
     isHoveredRef.current = true;
   };
@@ -342,7 +351,6 @@ export default function StudioFacilities() {
               onMouseLeave={handleMouseLeave}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
