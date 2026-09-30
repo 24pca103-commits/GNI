@@ -54,7 +54,7 @@ export default function WhyJoinUs() {
       icon: Hammer,
       title: '1:3 Harmonic Theory To Practice Ratio',
       tag: 'Skill Over Theory',
-      desc: '75% tactile physical execution in dedicated studios: brass repoussé, stone chiseling, and mineral pigments.',
+      desc: '75% hands-on studio practice: brass repoussé, stone chiseling, and mineral pigments.',
       metric: '75% Studio Practice',
       badge: 'Chisel & Hammer Work',
     },
@@ -114,7 +114,7 @@ export default function WhyJoinUs() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              Not just an academy — a structured repository and living atelier transforming timeless Tamil wisdom into tactile mastery.
+              Not just an academy — a structured repository and living atelier transforming timeless Tamil wisdom into authentic hands-on craftsmanship.
             </p>
           </div>
         </Reveal>

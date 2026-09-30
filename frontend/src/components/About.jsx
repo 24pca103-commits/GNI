@@ -42,7 +42,7 @@ export default function About() {
       id: 0,
       icon: Palette,
       title: 'Ancestral Lineage & Living Practice',
-      desc: 'Safeguard ancient Tamil wisdom through active daily tactile carving and brushwork under hereditary sthapathis.',
+      desc: 'Safeguard ancient Tamil wisdom through active daily hands-on carving and brushwork under hereditary sthapathis.',
       metric: '100% Hands-on',
       highlight: 'Direct Living Sthapathi Mentorship',
     },

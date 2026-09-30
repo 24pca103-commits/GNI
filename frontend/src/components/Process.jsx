@@ -32,7 +32,7 @@ export default function Process() {
     },
     {
       step: '3',
-      title: 'Tactile Lineage Transmission',
+      title: 'Hands-on Lineage Transmission',
       icon: Users,
       description:
         'Intensive hands-on studio coaching under hereditary master sthapathis to instill correct muscle memory, striking rhythm, and sacred iconography.',

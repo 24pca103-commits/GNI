@@ -19,7 +19,7 @@ export default function InstitutionalPedagogy() {
   ];
 
   const practicePoints = [
-    'Tactile brass sheet forming & antique repoussé',
+    'Hands-on brass sheet forming & antique repoussé',
     'Natural mineral pigment grinding & rock art techniques',
     'Commercial craftsmanship for modern luxury interiors',
   ];
@@ -42,9 +42,9 @@ export default function InstitutionalPedagogy() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              Experiencing the structured curriculum at the Global Nagas Institute repository is truly transformative.
-              We combine classical historical literature with intensive, daily tactile craftsmanship to prepare
-              learners for dignified sustainable careers.
+              Experiencing the structured curriculum at Global Nagas Institute is truly transformative.
+              We combine classical historical knowledge with intensive hands-on craft practice to prepare
+              learners for dignified creative careers.
             </p>
           </div>
         </Reveal>
@@ -183,10 +183,10 @@ export default function InstitutionalPedagogy() {
                 <div className="p-5 sm:p-8 space-y-3 sm:space-y-4 text-left">
                   <div className="space-y-0.5 sm:space-y-1">
                     <span className="text-[10px] sm:text-xs font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555]">
-                      Tactile Craft & Living Practice
+                      Skill Over Theory, Learn by Doing
                     </span>
                     <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-3xl font-bold text-[#241A16] leading-snug">
-                      Tactile Craftsmanship & Living Practice
+                      Create with Hands: Learn by Doing
                     </h3>
                   </div>
 
@@ -212,7 +212,7 @@ export default function InstitutionalPedagogy() {
               {/* Bottom Card Footer Meta */}
               <div className="px-5 sm:px-8 py-2.5 sm:py-4 bg-[#F7F2E8]/60 border-t border-[#6B4030]/15 flex items-center justify-between text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
                 <span>45 hours per module</span>
-                <span className="font-semibold text-[#B89555]">Tactile Mastery</span>
+                <span className="font-semibold text-[#B89555]">Hands-on Experience</span>
               </div>
             </div>
           </Reveal>
