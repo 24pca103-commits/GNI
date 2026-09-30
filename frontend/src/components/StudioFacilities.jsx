@@ -111,6 +111,7 @@ export default function StudioFacilities() {
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeCenterIndex, setActiveCenterIndex] = useState(0);
   const scrollRef = useRef(null);
   const isHoveredRef = useRef(false);
   const isDraggingRef = useRef(false);
@@ -149,10 +150,11 @@ export default function StudioFacilities() {
           }
         }
 
-        // Dynamically detect which icon is in the CENTER of the carousel track
+        // Dynamically detect which EXACT icon is in the CENTER of the carousel track
         const containerCenter = el.scrollLeft + el.clientWidth / 2;
         const items = el.children;
-        let closestId = null;
+        let closestIdx = -1;
+        let closestFacId = null;
         let minDiff = Infinity;
 
         for (let i = 0; i < items.length; i++) {
@@ -161,15 +163,19 @@ export default function StudioFacilities() {
           const diff = Math.abs(containerCenter - itemCenter);
           if (diff < minDiff) {
             minDiff = diff;
+            closestIdx = i;
             const facAttr = item.getAttribute('data-facility-id');
             if (facAttr !== null) {
-              closestId = parseInt(facAttr, 10);
+              closestFacId = parseInt(facAttr, 10);
             }
           }
         }
 
-        if (closestId !== null) {
-          setActiveIndex((prev) => (prev !== closestId ? closestId : prev));
+        if (closestIdx !== -1) {
+          setActiveCenterIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
+        }
+        if (closestFacId !== null) {
+          setActiveIndex((prev) => (prev !== closestFacId ? closestFacId : prev));
         }
       }
       animId = requestAnimationFrame(step);
@@ -285,8 +291,9 @@ export default function StudioFacilities() {
   };
 
   // Direct Click Handler - Centers the clicked icon smoothly if not dragging
-  const handleItemClick = (e, facId) => {
+  const handleItemClick = (e, trackIdx, facId) => {
     if (hasDraggedRef.current) return;
+    setActiveCenterIndex(trackIdx);
     setActiveIndex(facId);
     const btn = e.currentTarget;
     const el = scrollRef.current;
@@ -392,13 +399,13 @@ export default function StudioFacilities() {
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
-                const isSelected = activeIndex === fac.id;
+                const isSelected = activeCenterIndex === idx;
 
                 return (
                   <button
                     key={`${fac.id}-${idx}`}
                     data-facility-id={fac.id}
-                    onClick={(e) => handleItemClick(e, fac.id)}
+                    onClick={(e) => handleItemClick(e, idx, fac.id)}
                     className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[125px] min-w-[125px] sm:w-[150px] sm:min-w-[150px] py-1"
                   >
                     {/* Round Shape Icon Container */}
