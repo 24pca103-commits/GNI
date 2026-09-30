@@ -60,8 +60,8 @@ export default function LearningJourney() {
       title: 'Naga Jewellery & Metal Basics',
       desc: 'Introduction to traditional metal craftsmanship.',
       icon: Flame,
-      details: 'Brass sheet forming, repoussé, sacred naga ornamental motifs.',
-      outcome: 'Form Authentic Metal Repoussé Motifs',
+      details: 'Brass sheet forming, repousse, sacred naga ornamental motifs.',
+      outcome: 'Form Authentic Metal Repousse Motifs',
     },
     {
       period: 'Day 51–60',
@@ -69,7 +69,7 @@ export default function LearningJourney() {
       title: 'Real-World Applications + 1 Field Visit',
       desc: 'Apply heritage knowledge to modern creative fields + 1 immersive field visit.',
       icon: Briefcase,
-      details: 'Textiles, interior design, branding, pooja decor + 1 immersive field visit.',
+      details: 'Textiles, interior design, branding, pooja decor, livelihood + 1 field visit.',
       outcome: 'Produce Commercial Portfolio & Complete 1 Field Visit',
     },
   ];

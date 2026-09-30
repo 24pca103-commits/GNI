@@ -39,11 +39,11 @@ export default function Team() {
     },
     {
       name: 'K. Senthil Kumar',
-      designation: 'Master Artisan & Repoussé Craftsman',
+      designation: 'Master Artisan & Repousse Craftsman',
       image: '',
       description:
-        'Fourth-generation brass and copper repoussé master leading intensive studio hammer work.',
-      specialty: 'Naga Metal Craft & Repoussé',
+        'Fourth-generation brass and copper repousse master leading intensive studio hammer work.',
+      specialty: 'Naga Metal Craft & Repousse',
     },
     {
       name: 'Dr. Radhika Natarajan',

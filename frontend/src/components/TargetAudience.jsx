@@ -47,7 +47,7 @@ export default function TargetAudience() {
       category: 'Ornamental Metallurgy & Art',
       image: '/artisan/audience-jewellery.jpg',
       icon: Palette,
-      desc: 'Master ancient naga jewellery, copper/brass repoussé, Tanjore gold-leaf painting, and authentic heritage iconography.',
+      desc: 'Master ancient naga jewellery, copper/brass repousse, Tanjore gold-leaf painting, and authentic heritage iconography.',
       highlights: [
         'Sacred naga motifs & metal casting',
         'Tanjore painting & temple fresco craft',
@@ -57,15 +57,15 @@ export default function TargetAudience() {
     {
       num: '3',
       title: 'History Lovers / Students / Homemakers',
-      category: 'Cultural Identity & Passion',
+      category: 'Cultural Identity & Livelihood',
       image: '/artisan/audience-history.jpg',
       icon: BookOpen,
-      desc: 'Learn ancient Tamili epigraphy and rock inscriptions, master handmade craft skills, and connect with timeless cultural roots.',
+      desc: 'Learn ancient Tamili epigraphy and rock inscriptions, master handmade craft skills, and build self-reliant creative livelihoods.',
       highlights: [
         'Tamili Brahmi & stone epigraphy basics',
         'Clay, rock art & copper scribing',
       ],
-      tag: 'Roots & Heritage',
+      tag: 'Roots & Livelihood',
     },
   ];
 
@@ -84,7 +84,7 @@ export default function TargetAudience() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              Curated for three distinct pathways of creativity, design, and cultural exploration.
+              Curated for three distinct pathways of creativity, design, and livelihood.
             </p>
           </div>
         </Reveal>

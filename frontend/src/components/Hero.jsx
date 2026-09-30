@@ -32,8 +32,8 @@ export default function Hero() {
       tag: 'Sacred Metallurgy & Naga Jewelry',
       headingMain: 'Skill in the Hands,',
       headingAccent: 'Reverence in the Heart',
-      subtitle: 'Where Traditional Metallurgy Meets Enduring Craftsmanship.',
-      desc: 'Master the timeless techniques of handmade naga jewelry, copper and brass repoussé, and sacred iconography under veteran artisan guilds.',
+      subtitle: 'Where Traditional Metallurgy Meets Enduring Livelihood.',
+      desc: 'Master the timeless techniques of handmade naga jewelry, copper and brass repousse, and sacred iconography under veteran artisan guilds.',
       quote:
         'Of all pursuits, craftsmanship born from one’s own hands holds the truest dignity, enduring value, and creative sovereignty.',
       author: 'Traditional Artisan Creed',

@@ -48,7 +48,7 @@ export default function SacredDisconnect() {
                     </h3>
                   </div>
                   <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-relaxed text-justify indent-4 sm:indent-0">
-                    Fast-paced routine, purely digital interactions, and disconnection from creating with hands leave people longing for deeper purpose.
+                    Fast-paced routine, purely digital interactions, and alienation from tactile creation leave people longing for deeper purpose.
                   </p>
                 </div>
 

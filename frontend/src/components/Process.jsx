@@ -32,7 +32,7 @@ export default function Process() {
     },
     {
       step: '3',
-      title: 'Hands-on Lineage Transmission',
+      title: 'Tactile Lineage Transmission',
       icon: Users,
       description:
         'Intensive hands-on studio coaching under hereditary master sthapathis to instill correct muscle memory, striking rhythm, and sacred iconography.',
@@ -48,11 +48,11 @@ export default function Process() {
     },
     {
       step: '5',
-      title: 'Repository Archiving & Modern Application',
+      title: 'Repository Archiving & Livelihood Release',
       icon: Archive,
       description:
         'Approved works enter the physical repository gallery and catalog, while creators are connected with architectural clients, fashion houses, and collectors.',
-      badge: 'Step 5: Catalog & Industry Connection',
+      badge: 'Step 5: Catalog & Livelihood',
     },
   ];
 

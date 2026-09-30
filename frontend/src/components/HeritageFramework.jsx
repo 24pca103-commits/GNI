@@ -57,14 +57,14 @@ export default function HeritageFramework() {
       badge: 'Work Integrated Guild',
       image: '/artisan/pillar-metal.jpg',
       description:
-        'Handmade naga jewellery, copper/brass repoussé, and sacred metal casting traditions.',
-      subjects: 'Naga jewellery, repoussé & metal casting',
+        'Handmade naga jewellery, copper/brass repousse, and sacred metal casting traditions.',
+      subjects: 'Naga jewellery, repousse & metal casting',
       tags: ['Naga Jewellery', 'Copper/Brass', 'Metal Casting'],
     },
     {
       number: '4',
       title: 'Heritage Applications',
-      category: 'Modern Design & Architecture',
+      category: 'Design & Livelihood',
       badge: 'Industry Incubation Track',
       image: '/artisan/pillar-applications.jpg',
       description:
@@ -95,7 +95,7 @@ export default function HeritageFramework() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-lg text-[#6B4030] font-normal leading-relaxed mb-3 text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              Four comprehensive disciplines bridging ancient Tamil wisdom with practical application and craftsmanship.
+              Four comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship.
             </p>
 
             {/* Centered Repository Action Button */}

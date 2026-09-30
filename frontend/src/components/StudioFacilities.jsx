@@ -54,11 +54,11 @@ export default function StudioFacilities() {
       category: 'Jewellery & Metal Crafts',
       image: '/artisan/pillar-metal.jpg',
       icon: Hammer,
-      desc: 'Dedicated artisanal benches for hand-forging, copper and brass repoussé, antique naga jewelry fabrication, and precision metal chasing.',
+      desc: 'Dedicated artisanal benches for hand-forging, copper and brass repousse, antique naga jewelry fabrication, and precision metal chasing.',
       tools: ['Pitch bowls & chasing hammers', 'Shaping stakes & planishers', 'Charcoal mini-hearth', 'Jewellery casting crucibles'],
       capabilities: [
         'Traditional naga serpent necklace forming',
-        'Copper plate sacred repoussé relief',
+        'Copper plate sacred repousse relief',
         'Brass temple vessel fabrication',
       ],
       curator: 'Master Metal Craft Artisan Guild',
@@ -360,7 +360,7 @@ export default function StudioFacilities() {
             </h2>
             <div className="w-14 sm:w-16 h-0.5 bg-[#B89555] mx-auto mt-1.5 sm:mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-xs sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              Explore our 6 dedicated purpose-built spaces designed for hands-on craftsmanship and epigraphical study.
+              Explore our 6 dedicated purpose-built spaces designed for tactile craftsmanship and epigraphical study.
             </p>
           </div>
         </Reveal>
