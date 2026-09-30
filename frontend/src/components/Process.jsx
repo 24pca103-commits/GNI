@@ -88,30 +88,30 @@ export default function Process() {
 
             return (
               <Reveal key={index} direction="up" delay={index * 100}>
-                <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                <div className="bg-[#F7F2E8] hover:bg-[#4A2C20] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer select-none">
                   <div>
                     {/* Header: Icon */}
                     <div className="flex items-center justify-start mb-2.5 sm:mb-4">
-                      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] group-hover:bg-[#241A16] group-hover:text-[#E5B869] group-hover:border group-hover:border-[#B89555]/40 flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                     </div>
 
-                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] mb-1.5 sm:mb-2">
+                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] group-hover:text-[#E5B869] mb-1.5 sm:mb-2 transition-colors">
                       {item.badge}
                     </span>
 
-                    <h3 className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#241A16] mb-1.5 sm:mb-2 leading-snug group-hover:text-[#4A2C20] transition-colors">
+                    <h3 className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#241A16] group-hover:text-white mb-1.5 sm:mb-2 leading-snug transition-colors text-left">
                       {item.title}
                     </h3>
 
-                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal text-justify indent-4 sm:indent-0">
+                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] group-hover:text-[#F7F2E8]/90 leading-relaxed font-normal text-justify indent-4 sm:indent-0 transition-colors">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-3 sm:mt-5 pt-2 sm:pt-3 border-t border-[#6B4030]/15 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B89555]" />
+                  <div className="mt-3 sm:mt-5 pt-2 sm:pt-3 border-t border-[#6B4030]/15 group-hover:border-[#B89555]/30 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20] group-hover:text-[#E5B869] transition-colors">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] group-hover:bg-[#E5B869] transition-colors" />
                     <span>Verified Protocol</span>
                   </div>
                 </div>
