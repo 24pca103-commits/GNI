@@ -35,7 +35,7 @@ export default function Testimonials() {
       batch: 'Cohort Alumni • Rock Art & Painting',
       image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=300&q=80',
       review:
-        'I learned to grind natural mineral pigments and transcribe ancient temple motifs into custom bridal blouses. A dignified six-figure monthly livelihood.',
+        'I learned to grind natural mineral pigments and transcribe ancient temple motifs into custom bridal blouses. A thriving creative practice.',
       rating: 5,
     },
     {
@@ -156,7 +156,7 @@ export default function Testimonials() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              Real feedback from architects, designers, and artisans whose skills and livelihoods were transformed.
+              Real feedback from architects, designers, and artisans whose craft and careers were transformed.
             </p>
           </div>
         </Reveal>

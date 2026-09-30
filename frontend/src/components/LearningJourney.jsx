@@ -69,7 +69,7 @@ export default function LearningJourney() {
       title: 'Real-World Applications + 1 Field Visit',
       desc: 'Apply heritage knowledge to modern creative fields + 1 immersive field visit.',
       icon: Briefcase,
-      details: 'Textiles, interior design, branding, pooja decor, livelihood + 1 field visit.',
+      details: 'Textiles, interior design, branding, pooja decor + 1 immersive field visit.',
       outcome: 'Produce Commercial Portfolio & Complete 1 Field Visit',
     },
   ];

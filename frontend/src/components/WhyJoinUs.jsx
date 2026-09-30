@@ -61,7 +61,7 @@ export default function WhyJoinUs() {
     {
       step: '3',
       icon: Compass,
-      title: 'Livelihood Creation & Revenue Pathways',
+      title: 'Skill to Income & Commercial Pathways',
       tag: 'Skill To Income',
       desc: 'Translate rock art and sacred metalwork into lucrative applications: pooja sanctums, jewellery, and luxury interiors.',
       metric: '₹80K - ₹2.5L / Mo',

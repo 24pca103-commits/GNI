@@ -183,10 +183,10 @@ export default function InstitutionalPedagogy() {
                 <div className="p-5 sm:p-8 space-y-3 sm:space-y-4 text-left">
                   <div className="space-y-0.5 sm:space-y-1">
                     <span className="text-[10px] sm:text-xs font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555]">
-                      Tactile Craft & Livelihood Creation
+                      Tactile Craft & Living Practice
                     </span>
                     <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-3xl font-bold text-[#241A16] leading-snug">
-                      Tactile Craftsmanship & Modern Livelihood
+                      Tactile Craftsmanship & Living Practice
                     </h3>
                   </div>
 
@@ -212,7 +212,7 @@ export default function InstitutionalPedagogy() {
               {/* Bottom Card Footer Meta */}
               <div className="px-5 sm:px-8 py-2.5 sm:py-4 bg-[#F7F2E8]/60 border-t border-[#6B4030]/15 flex items-center justify-between text-[11px] sm:text-xs font-['DM_Sans'] text-[#6B4030]">
                 <span>45 hours per module</span>
-                <span className="font-semibold text-[#B89555]">Tactile Livelihood</span>
+                <span className="font-semibold text-[#B89555]">Tactile Mastery</span>
               </div>
             </div>
           </Reveal>

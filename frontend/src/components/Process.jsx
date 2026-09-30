@@ -48,11 +48,11 @@ export default function Process() {
     },
     {
       step: '5',
-      title: 'Repository Archiving & Livelihood Release',
+      title: 'Repository Archiving & Modern Application',
       icon: Archive,
       description:
         'Approved works enter the physical repository gallery and catalog, while creators are connected with architectural clients, fashion houses, and collectors.',
-      badge: 'Step 5: Catalog & Livelihood',
+      badge: 'Step 5: Catalog & Industry Connection',
     },
   ];
 
