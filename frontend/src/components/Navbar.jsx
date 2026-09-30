@@ -105,6 +105,7 @@ export default function Navbar() {
                     Global Nagas Institute
                   </span>
                 </div>
+                {/* Subtitle under logo commented out as requested
                 <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
                   <span className="h-px w-2 bg-[#B89555] shrink-0" />
                   <span className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#6B4030] font-medium truncate">
@@ -112,6 +113,7 @@ export default function Navbar() {
                   </span>
                   <span className="h-px w-2 bg-[#B89555] shrink-0" />
                 </div>
+                */}
               </div>
             </Link>
 

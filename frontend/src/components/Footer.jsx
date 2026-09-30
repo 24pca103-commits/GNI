@@ -36,6 +36,7 @@ export default function Footer() {
                     Global Nagas Institute
                   </span>
                 </div>
+                {/* Subtitle under logo commented out as requested
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="h-px w-3 bg-[#B89555]" />
                   <span className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#6B4030] font-medium">
@@ -43,6 +44,7 @@ export default function Footer() {
                   </span>
                   <span className="h-px w-3 bg-[#B89555]" />
                 </div>
+                */}
               </div>
             </div>
 
