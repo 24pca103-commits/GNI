@@ -388,7 +388,7 @@ export default function StudioFacilities() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-3 px-8 sm:px-12 cursor-grab active:cursor-grabbing select-none w-full"
+              className="flex items-start gap-3 sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-8 sm:px-12 cursor-grab active:cursor-grabbing select-none w-full"
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
@@ -399,7 +399,7 @@ export default function StudioFacilities() {
                     key={`${fac.id}-${idx}`}
                     data-facility-id={fac.id}
                     onClick={(e) => handleItemClick(e, fac.id)}
-                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden min-w-[110px] max-w-[125px] sm:min-w-[140px] sm:max-w-[160px]"
+                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[125px] min-w-[125px] sm:w-[150px] sm:min-w-[150px] py-1"
                   >
                     {/* Round Shape Icon Container */}
                     <div
@@ -412,21 +412,25 @@ export default function StudioFacilities() {
                       <Icon className="w-5 h-5 sm:w-7 sm:h-7" />
                     </div>
 
-                    {/* Full Facility Name Below Icon (Without Truncation) */}
-                    <span
-                      className={`text-[10px] sm:text-xs font-['DM_Sans'] mt-1.5 sm:mt-2.5 text-center leading-snug transition-colors break-words px-1 ${
-                        isSelected ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
-                      }`}
-                    >
-                      {fac.title}
-                    </span>
+                    {/* Full Facility Name Below Icon - Optimized for Mobile & Desktop */}
+                    <div className="h-[34px] sm:h-[38px] flex items-center justify-center text-center mt-1.5 sm:mt-2 px-1 w-full">
+                      <span
+                        className={`text-[10.5px] sm:text-xs font-['DM_Sans'] text-center leading-tight transition-colors break-words ${
+                          isSelected ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
+                        }`}
+                      >
+                        {fac.title}
+                      </span>
+                    </div>
 
                     {/* Active Dot/Bar */}
-                    {isSelected ? (
-                      <span className="w-4 h-1 sm:w-6 sm:h-1 rounded-full bg-[#B89555] mt-1.5 transition-all shrink-0" />
-                    ) : (
-                      <span className="w-1 h-1 rounded-full bg-transparent mt-1.5 shrink-0" />
-                    )}
+                    <div className="h-2 flex items-center justify-center mt-0.5">
+                      {isSelected ? (
+                        <span className="w-5 h-1 sm:w-6 sm:h-1 rounded-full bg-[#B89555] transition-all" />
+                      ) : (
+                        <span className="w-1 h-1 rounded-full bg-transparent" />
+                      )}
+                    </div>
                   </button>
                 );
               })}
