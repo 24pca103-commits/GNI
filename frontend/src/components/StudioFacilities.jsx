@@ -112,24 +112,14 @@ export default function StudioFacilities() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
-  const isInteractingRef = useRef(false);
+  const isHoveredRef = useRef(false);
   const isDraggingRef = useRef(false);
+  const isTouchingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
-  const resumeTimeoutRef = useRef(null);
 
   // Tripled list for infinite looping without jump
   const displayList = [...facilities, ...facilities, ...facilities];
-
-  // Helper to schedule auto-scroll resumption after user interaction
-  const triggerResume = (delay = 2000) => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    resumeTimeoutRef.current = setTimeout(() => {
-      if (!isDraggingRef.current) {
-        isInteractingRef.current = false;
-      }
-    }, delay);
-  };
 
   // Continuous smooth auto-scroll loop with center-icon active detection
   useEffect(() => {
@@ -139,14 +129,10 @@ export default function StudioFacilities() {
     const step = () => {
       const el = scrollRef.current;
       if (el) {
-        // Auto scroll when user is NOT touching or dragging
-        if (!isInteractingRef.current) {
+        const isPaused = isHoveredRef.current || isDraggingRef.current || isTouchingRef.current;
+        if (!isPaused) {
           el.scrollLeft += speed;
-        }
-
-        // Loop boundary wrap check (infinite endless scrolling)
-        const oneThird = el.scrollWidth / 3;
-        if (oneThird > 0) {
+          const oneThird = el.scrollWidth / 3;
           if (el.scrollLeft >= oneThird * 2) {
             el.scrollLeft -= oneThird;
           } else if (el.scrollLeft <= 0) {
@@ -181,28 +167,16 @@ export default function StudioFacilities() {
     };
 
     animId = requestAnimationFrame(step);
-    return () => {
-      cancelAnimationFrame(animId);
-      if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    };
+    return () => cancelAnimationFrame(animId);
   }, []);
 
-  // Set initial scroll position to middle third on mount
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      const oneThird = el.scrollWidth / 3;
-      if (oneThird > 0) {
-        el.scrollLeft = oneThird;
-      }
-    }
-  }, []);
+  const touchStartXRef = useRef(0);
+  const touchScrollLeftRef = useRef(0);
 
-  // Desktop Mouse Drag Handlers
+  // Mouse Drag Handlers
   const handleMouseDown = (e) => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
     isDraggingRef.current = true;
-    isInteractingRef.current = true;
+    isHoveredRef.current = true;
     startXRef.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
     scrollLeftRef.current = scrollRef.current?.scrollLeft || 0;
   };
@@ -217,40 +191,41 @@ export default function StudioFacilities() {
 
   const handleMouseUp = () => {
     isDraggingRef.current = false;
-    triggerResume(1500);
   };
 
   const handleMouseEnter = () => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    isInteractingRef.current = true;
+    isHoveredRef.current = true;
   };
 
   const handleMouseLeave = () => {
     isDraggingRef.current = false;
-    triggerResume(1000);
+    isHoveredRef.current = false;
   };
 
-  // Mobile Touch Handlers - Native smooth touch without auto-scroll conflict
-  const handleTouchStart = () => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    isInteractingRef.current = true;
+  // Touch Handlers for Smooth Mobile Dragging
+  const handleTouchStart = (e) => {
+    isTouchingRef.current = true;
+    if (e.touches && e.touches[0] && scrollRef.current) {
+      touchStartXRef.current = e.touches[0].pageX;
+      touchScrollLeftRef.current = scrollRef.current.scrollLeft;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    isTouchingRef.current = true;
+    if (e.touches && e.touches[0] && scrollRef.current) {
+      const x = e.touches[0].pageX;
+      const walk = (x - touchStartXRef.current) * 1.2;
+      scrollRef.current.scrollLeft = touchScrollLeftRef.current - walk;
+    }
   };
 
   const handleTouchEnd = () => {
-    triggerResume(2000);
-  };
-
-  const handleScroll = () => {
-    // When user manually scrolls, refresh resume timer so auto-scroll doesn't fight active swipe
-    if (isInteractingRef.current) {
-      triggerResume(2000);
-    }
+    isTouchingRef.current = false;
   };
 
   // Direct Click Handler - Centers the clicked icon smoothly
   const handleItemClick = (e, facId) => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    isInteractingRef.current = true;
     setActiveIndex(facId);
     const btn = e.currentTarget;
     const el = scrollRef.current;
@@ -258,26 +233,19 @@ export default function StudioFacilities() {
       const targetScroll = btn.offsetLeft + btn.offsetWidth / 2 - el.clientWidth / 2;
       el.scrollTo({ left: targetScroll, behavior: 'smooth' });
     }
-    triggerResume(2000);
   };
 
   // Slider Button Handlers (Prev / Next)
   const handlePrev = () => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    isInteractingRef.current = true;
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -150, behavior: 'smooth' });
     }
-    triggerResume(2000);
   };
 
   const handleNext = () => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    isInteractingRef.current = true;
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 150, behavior: 'smooth' });
     }
-    triggerResume(2000);
   };
 
   const current = facilities[activeIndex] || facilities[0];
@@ -324,13 +292,13 @@ export default function StudioFacilities() {
             {/* Scrollable Icon Container */}
             <div
               ref={scrollRef}
-              onScroll={handleScroll}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseMove={handleMouseMove}
               onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
               className="flex items-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar py-3 px-8 sm:px-12 cursor-grab active:cursor-grabbing select-none w-full"
