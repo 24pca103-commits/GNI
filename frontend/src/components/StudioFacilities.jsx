@@ -115,8 +115,11 @@ export default function StudioFacilities() {
   const isHoveredRef = useRef(false);
   const isDraggingRef = useRef(false);
   const isTouchingRef = useRef(false);
+  const hasDraggedRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+  const touchStartXRef = useRef(0);
+  const touchScrollLeftRef = useRef(0);
 
   // Tripled list for infinite looping without jump
   const displayList = [...facilities, ...facilities, ...facilities];
@@ -170,27 +173,53 @@ export default function StudioFacilities() {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  const touchStartXRef = useRef(0);
-  const touchScrollLeftRef = useRef(0);
+  // Global Mouse Move and Up Handlers for smooth manual dragging across entire viewport
+  useEffect(() => {
+    const handleGlobalMouseMove = (e) => {
+      if (!isDraggingRef.current || !scrollRef.current) return;
+      e.preventDefault();
+      const el = scrollRef.current;
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startXRef.current) * 1.5;
+      if (Math.abs(walk) > 4) {
+        hasDraggedRef.current = true;
+      }
+      el.scrollLeft = scrollLeftRef.current - walk;
 
-  // Mouse Drag Handlers
+      const oneThird = el.scrollWidth / 3;
+      if (el.scrollLeft >= oneThird * 2) {
+        el.scrollLeft -= oneThird;
+        scrollLeftRef.current -= oneThird;
+      } else if (el.scrollLeft <= 0) {
+        el.scrollLeft += oneThird;
+        scrollLeftRef.current += oneThird;
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        setTimeout(() => {
+          hasDraggedRef.current = false;
+        }, 50);
+      }
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, []);
+
+  // Mouse Drag Initiator
   const handleMouseDown = (e) => {
     isDraggingRef.current = true;
     isHoveredRef.current = true;
+    hasDraggedRef.current = false;
     startXRef.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
     scrollLeftRef.current = scrollRef.current?.scrollLeft || 0;
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDraggingRef.current || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.5;
-    scrollRef.current.scrollLeft = scrollLeftRef.current - walk;
-  };
-
-  const handleMouseUp = () => {
-    isDraggingRef.current = false;
   };
 
   const handleMouseEnter = () => {
@@ -198,13 +227,13 @@ export default function StudioFacilities() {
   };
 
   const handleMouseLeave = () => {
-    isDraggingRef.current = false;
     isHoveredRef.current = false;
   };
 
   // Touch Handlers for Smooth Mobile Dragging
   const handleTouchStart = (e) => {
     isTouchingRef.current = true;
+    hasDraggedRef.current = false;
     if (e.touches && e.touches[0] && scrollRef.current) {
       touchStartXRef.current = e.touches[0].pageX;
       touchScrollLeftRef.current = scrollRef.current.scrollLeft;
@@ -215,17 +244,34 @@ export default function StudioFacilities() {
     isTouchingRef.current = true;
     if (e.touches && e.touches[0] && scrollRef.current) {
       const x = e.touches[0].pageX;
-      const walk = (x - touchStartXRef.current) * 1.2;
-      scrollRef.current.scrollLeft = touchScrollLeftRef.current - walk;
+      const walk = (x - touchStartXRef.current) * 1.3;
+      if (Math.abs(walk) > 4) {
+        hasDraggedRef.current = true;
+      }
+      const el = scrollRef.current;
+      el.scrollLeft = touchScrollLeftRef.current - walk;
+
+      const oneThird = el.scrollWidth / 3;
+      if (el.scrollLeft >= oneThird * 2) {
+        el.scrollLeft -= oneThird;
+        touchScrollLeftRef.current -= oneThird;
+      } else if (el.scrollLeft <= 0) {
+        el.scrollLeft += oneThird;
+        touchScrollLeftRef.current += oneThird;
+      }
     }
   };
 
   const handleTouchEnd = () => {
     isTouchingRef.current = false;
+    setTimeout(() => {
+      hasDraggedRef.current = false;
+    }, 50);
   };
 
-  // Direct Click Handler - Centers the clicked icon smoothly
+  // Direct Click Handler - Centers the clicked icon smoothly if not dragging
   const handleItemClick = (e, facId) => {
+    if (hasDraggedRef.current) return;
     setActiveIndex(facId);
     const btn = e.currentTarget;
     const el = scrollRef.current;
