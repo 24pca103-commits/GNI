@@ -93,11 +93,11 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Brand Logo with Title Case Text */}
-            <Link to="/" className="group flex items-center gap-2 sm:gap-3 min-w-0">
+            <Link to="/" className="group flex items-center gap-2 sm:gap-2.5 min-w-0">
               <img
                 src="/artisan/logo.png"
                 alt="Global Nagas Institute logo"
-                className="h-9 sm:h-11 md:h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
+                className="h-9 sm:h-10 md:h-11 w-auto object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
               />
               <div className="flex flex-col justify-center min-w-0">
                 <div className="flex items-center">
