@@ -32,7 +32,7 @@ export default function Footer() {
               />
               <div className="flex flex-col justify-center">
                 <div className="flex items-center">
-                  <span className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold tracking-tight text-[#241A16]">
+                  <span className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold tracking-tight text-[#4A2C20]">
                     Global Nagas Institute
                   </span>
                 </div>

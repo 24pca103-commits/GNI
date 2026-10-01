@@ -101,7 +101,7 @@ export default function Navbar() {
               />
               <div className="flex flex-col justify-center min-w-0">
                 <div className="flex items-center">
-                  <span className="font-['Cormorant_Garamond'] text-base sm:text-xl md:text-2xl font-bold tracking-tight text-[#241A16] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
+                  <span className="font-['Cormorant_Garamond'] text-base sm:text-xl md:text-2xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
                     Global Nagas Institute
                   </span>
                 </div>
