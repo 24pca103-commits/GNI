@@ -213,36 +213,44 @@ export default function About() {
                       <div className="flex items-center justify-between mb-3.5 sm:mb-5">
                         {/* Relative Medallion Wrapper */}
                         <div className="relative">
-                          {/* 3 Blinking Stars on BOTH Opposite Cross Edges - Only rendered when card is clicked */}
-                          {isSelected && (
-                            <>
-                              {/* Top-Right 3-Star Cluster */}
-                              <div className="absolute -top-2.5 -right-2.5 z-20 pointer-events-none">
-                                <span className="inline-block text-[#B89555] text-xs leading-none animate-pulse drop-shadow-[0_0_6px_#B89555]">
-                                  ✦
-                                </span>
-                                <span className="absolute -top-1.5 right-2 text-[#E5B869] text-[9px] leading-none animate-pulse [animation-delay:300ms] drop-shadow-[0_0_4px_#B89555]">
-                                  ★
-                                </span>
-                                <span className="absolute top-2 -right-1 text-[#B89555] text-[7px] leading-none animate-pulse [animation-delay:600ms] drop-shadow-[0_0_4px_#B89555]">
-                                  ✦
-                                </span>
-                              </div>
+                          {/* 3 Blinking Stars on BOTH Opposite Cross Edges - Visible on Card Hover & Click */}
+                          <div
+                            className={`transition-all duration-300 ${
+                              isSelected ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100'
+                            }`}
+                          >
+                            {/* Top-Right 3-Star Constellation Cluster */}
+                            <div className="absolute -top-3 -right-3 z-30 pointer-events-none flex items-center justify-center">
+                              {/* Primary Main Star */}
+                              <span className="text-[#B89555] text-sm font-bold leading-none animate-pulse drop-shadow-[0_0_8px_#D4AF37]">
+                                ✦
+                              </span>
+                              {/* Second Mini Star */}
+                              <span className="absolute -top-1.5 right-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:300ms] drop-shadow-[0_0_6px_#B89555]">
+                                ★
+                              </span>
+                              {/* Third Micro Star */}
+                              <span className="absolute top-2.5 -right-1.5 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:600ms] drop-shadow-[0_0_6px_#B89555]">
+                                ✦
+                              </span>
+                            </div>
 
-                              {/* Diagonally Opposite Bottom-Left 3-Star Cluster */}
-                              <div className="absolute -bottom-2.5 -left-2.5 z-20 pointer-events-none">
-                                <span className="inline-block text-[#B89555] text-xs leading-none animate-pulse [animation-delay:200ms] drop-shadow-[0_0_6px_#B89555]">
-                                  ✦
-                                </span>
-                                <span className="absolute -bottom-1.5 left-2 text-[#E5B869] text-[9px] leading-none animate-pulse [animation-delay:500ms] drop-shadow-[0_0_4px_#B89555]">
-                                  ★
-                                </span>
-                                <span className="absolute bottom-2 -left-1 text-[#B89555] text-[7px] leading-none animate-pulse [animation-delay:800ms] drop-shadow-[0_0_4px_#B89555]">
-                                  ✦
-                                </span>
-                              </div>
-                            </>
-                          )}
+                            {/* Diagonally Opposite Bottom-Left 3-Star Constellation Cluster */}
+                            <div className="absolute -bottom-3 -left-3 z-30 pointer-events-none flex items-center justify-center">
+                              {/* Primary Main Star */}
+                              <span className="text-[#B89555] text-sm font-bold leading-none animate-pulse [animation-delay:200ms] drop-shadow-[0_0_8px_#D4AF37]">
+                                ✦
+                              </span>
+                              {/* Second Mini Star */}
+                              <span className="absolute -bottom-1.5 left-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:500ms] drop-shadow-[0_0_6px_#B89555]">
+                                ★
+                              </span>
+                              {/* Third Micro Star */}
+                              <span className="absolute bottom-2.5 -left-1.5 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:800ms] drop-shadow-[0_0_6px_#B89555]">
+                                ✦
+                              </span>
+                            </div>
+                          </div>
 
                           {/* Inner Circular Heritage Medallion */}
                           <div
