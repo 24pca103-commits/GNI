@@ -33,6 +33,7 @@ export default function TargetAudience() {
       title: 'Architects / Interior Designers',
       category: 'Spatial Design & Sacred Architecture',
       image: '/artisan/audience-architect.jpg',
+      imageIcon: '/artisan/audience/aud-architect.png',
       icon: Compass,
       desc: 'Integrate ancient Tamil stone relief motifs, sacred proportions, and traditional pooja sanctums into luxury residential and commercial architecture.',
       highlights: [
@@ -46,6 +47,7 @@ export default function TargetAudience() {
       title: 'Jewellery Designers / Artists',
       category: 'Ornamental Metallurgy & Art',
       image: '/artisan/audience-jewellery.jpg',
+      imageIcon: '/artisan/audience/aud-jewellery.png',
       icon: Palette,
       desc: 'Master ancient naga jewellery, copper/brass repousse, Tanjore gold-leaf painting, and authentic heritage iconography.',
       highlights: [
@@ -59,6 +61,7 @@ export default function TargetAudience() {
       title: 'History Lovers / Students / Homemakers',
       category: 'Cultural Identity & Livelihood',
       image: '/artisan/audience-history.jpg',
+      imageIcon: '/artisan/audience/aud-history.png',
       icon: BookOpen,
       desc: 'Learn ancient Tamili epigraphy and rock inscriptions, master handmade craft skills, and build self-reliant creative livelihoods.',
       highlights: [
@@ -97,8 +100,6 @@ export default function TargetAudience() {
             className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-8 sm:gap-9"
           >
             {audiences.map((item) => {
-              const Icon = item.icon;
-
               return (
                 <div
                   key={item.num}
@@ -122,23 +123,29 @@ export default function TargetAudience() {
                       <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#241A16]/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium">
                         {item.tag}
                       </div>
+
+                      {/* Floating Overlapping Medallion Icon Badge */}
+                      <div className="absolute -bottom-5 right-4 sm:right-5 z-20 w-13 h-13 sm:w-15 sm:h-15 rounded-full border-2 border-[#B89555] bg-white p-2 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 flex items-center justify-center">
+                        <img
+                          src={item.imageIcon}
+                          alt={item.title}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
 
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
-                    <div className="p-4.5 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
+                    <div className="p-4.5 sm:p-6 pt-5 sm:pt-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
-                        {/* Icon & Category Header */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/30 shadow-sm">
-                            <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                          </div>
+                        {/* Category & Pathway Info */}
+                        <div className="flex items-center justify-between gap-2 mb-2 pr-12">
                           <div>
-                            <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-semibold text-[#6B4030]">
+                            <span className="text-[10px] sm:text-[11px] font-bold text-[#B89555] tracking-wider uppercase font-['DM_Sans']">
+                              Pathway 0{item.num}
+                            </span>
+                            <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-semibold text-[#6B4030]">
                               {item.category}
                             </p>
-                            <span className="text-[10px] sm:text-[11px] text-[#241A16]/60 font-['DM_Sans']">
-                              Heritage Pathway
-                            </span>
                           </div>
                         </div>
 
