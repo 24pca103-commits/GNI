@@ -5,42 +5,42 @@ export default function TransformationSection() {
   const steps = [
     {
       num: '01',
-      tamil: 'கற்றல்',
+      badge: 'FOUNDATION',
       label: 'Learn',
       desc: 'Ancient Wisdom & Canons',
       detail: 'Epigraphy, Vastu & Sacred Lore',
     },
     {
       num: '02',
-      tamil: 'பயிற்சி',
+      badge: 'TECHNIQUE',
       label: 'Practice',
-      desc: 'Hands-on Technique',
+      desc: 'Hands-on Mastery',
       detail: 'Mastering Hammer, Chisel & Casting',
     },
     {
       num: '03',
-      tamil: 'படைப்பு',
+      badge: 'CREATION',
       label: 'Create',
       desc: 'Original Heritage Art',
       detail: 'Temple Motifs & Gold Repoussé',
     },
     {
       num: '04',
-      tamil: 'காட்சி',
+      badge: 'CURATION',
       label: 'Showcase',
       desc: 'Exhibitions & Archives',
       detail: 'Public Galleries & Architect Curations',
     },
     {
       num: '05',
-      tamil: 'இணைப்பு',
+      badge: 'NETWORK',
       label: 'Connect',
       desc: 'A2O Creator Guild',
-      detail: 'Peer Critiques & Global Collaborations',
+      detail: 'Peer Critiques & Collaborations',
     },
     {
       num: '06',
-      tamil: 'வாழ்வாதாரம்',
+      badge: 'ENTERPRISE',
       label: 'Build Livelihood',
       desc: 'Sustainable Income',
       detail: 'Commercial Orders & Royal Commissions',
@@ -102,9 +102,9 @@ export default function TransformationSection() {
                           {st.num}
                         </div>
 
-                        {/* Tamil Cultural Term Tag */}
-                        <span className="text-[10.5px] sm:text-xs font-semibold text-[#B89555] font-['DM_Sans'] bg-[#4A2C20]/5 px-2 py-0.5 rounded-md border border-[#B89555]/25">
-                          {st.tamil}
+                        {/* English Milestone Badge */}
+                        <span className="text-[9.5px] sm:text-[10px] font-bold text-[#B89555] font-['DM_Sans'] tracking-wider bg-[#4A2C20]/5 px-2 py-0.5 rounded-md border border-[#B89555]/25">
+                          {st.badge}
                         </span>
                       </div>
 
