@@ -122,13 +122,18 @@ export default function TargetAudience() {
                       <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#241A16]/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium">
                         {item.tag}
                       </div>
+
+                      {/* Large Overlapping Circular Medallion Badge (As in Reference) */}
+                      <div className="absolute -bottom-8 right-4 sm:right-6 z-20 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#FAF6EE] border-2 border-[#4A2C20] shadow-md flex items-center justify-center group-hover:scale-110 group-hover:border-[#B89555] transition-all duration-300">
+                        <Icon className="w-8 h-8 sm:w-10 sm:h-10 text-[#4A2C20] stroke-[2] group-hover:text-[#B89555] transition-colors duration-300" />
+                      </div>
                     </div>
 
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
-                    <div className="p-4.5 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
+                    <div className="p-4.5 sm:p-6 pt-5 sm:pt-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
-                        {/* Header: Pathway Info on Left & Elegant Brand Vector Icon on Right */}
-                        <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-[#6B4030]/15">
+                        {/* Header: Pathway Info on Left with space for overlapping circle on Right */}
+                        <div className="flex items-center justify-between gap-3 mb-2.5 pr-14 sm:pr-18">
                           <div className="space-y-1">
                             <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] text-[10.5px] sm:text-xs font-bold tracking-wider uppercase font-['DM_Sans']">
                               Pathway 0{item.num}
@@ -136,11 +141,6 @@ export default function TargetAudience() {
                             <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-bold text-[#B89555] leading-snug">
                               {item.category}
                             </p>
-                          </div>
-
-                          {/* Brand Vector Icon Badge */}
-                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] border border-[#B89555]/30 shadow-xs shrink-0 flex items-center justify-center group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:scale-105 transition-all duration-300">
-                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
                           </div>
                         </div>
 
