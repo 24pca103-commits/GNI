@@ -225,47 +225,47 @@ export default function LearningJourney() {
 
         {/* Field Visit Highlight Banner with Temple & Inscription Background Banner */}
         <Reveal direction="zoom" delay={300}>
-          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl p-5 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-            {/* Background Temple & Field Exploration Drawing Banner Aligned to Right */}
+          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-[#F7F2E8] border border-[#B89555]/40 shadow-md relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-8 min-h-[190px] sm:min-h-[220px]">
+            {/* Background Temple & Field Exploration Drawing Banner in Glowing Sandal Outline Aligned to Right & Scaled Larger */}
             <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-end">
               <img
                 src="/artisan/reconnect-bg-banner.png"
                 alt="Archaeological Temple & Epigraphy Field Visit Drawing"
-                className="w-full h-full object-contain object-right opacity-30 md:opacity-40 invert brightness-125 mix-blend-screen"
+                className="w-[120%] sm:w-[90%] md:w-[75%] h-[130%] sm:h-[150%] object-contain object-right opacity-65 sm:opacity-80 invert sepia saturate-[250%] hue-rotate-[350deg] brightness-125 mix-blend-screen scale-110 sm:scale-130 md:scale-140 transform translate-x-3 sm:translate-x-8"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#4A2C20] via-[#4A2C20]/85 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#4A2C20]/60 via-transparent to-[#4A2C20]/40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4A2C20] via-[#4A2C20]/80 to-transparent w-full sm:w-3/4" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#4A2C20]/70 via-transparent to-[#4A2C20]/40" />
             </div>
 
             {/* Corner Decorative Ornaments */}
-            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2 border-[#B89555]/60 z-10" />
-            <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2 border-[#B89555]/60 z-10" />
-            <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2 border-[#B89555]/60 z-10" />
-            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2 border-[#B89555]/60 z-10" />
+            <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 border-t-2 border-l-2 border-[#B89555] z-10" />
+            <div className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 border-t-2 border-r-2 border-[#B89555] z-10" />
+            <div className="absolute bottom-3 left-3 sm:bottom-3.5 sm:left-3.5 w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 border-b-2 border-l-2 border-[#B89555] z-10" />
+            <div className="absolute bottom-3 right-3 sm:bottom-3.5 sm:right-3.5 w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 border-b-2 border-r-2 border-[#B89555] z-10" />
 
-            <div className="space-y-2 text-left w-full relative z-10">
+            <div className="space-y-2.5 sm:space-y-3 text-left w-full relative z-10 max-w-3xl">
               {/* Top Row on Mobile: Icon + Badges */}
-              <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
-                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#241A16]" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
+                    <MapPin className="w-4.5 h-4.5 sm:w-6 sm:h-6 text-[#241A16]" />
                   </div>
-                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-medium border border-[#B89555]/30">
+                  <span className="inline-block px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-semibold border border-[#B89555]/40">
                     Immersive Experience
                   </span>
                 </div>
-                <div className="shrink-0 px-3 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/10 border border-[#B89555]/30 text-[10px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-medium">
+                <div className="shrink-0 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/10 border border-[#B89555]/40 text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-semibold">
                   ★ Guided by historians
                 </div>
               </div>
 
               {/* Title spanning full width */}
-              <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-white leading-tight pt-1">
+              <h3 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight pt-1">
                 Includes an On-Site Field Visit
               </h3>
 
               {/* Description spanning full width and fully justified */}
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/90 max-w-2xl font-normal text-justify indent-5 sm:indent-0 leading-relaxed">
+              <p className="font-['DM_Sans'] text-xs sm:text-sm md:text-base text-[#F7F2E8]/95 max-w-2xl font-normal text-justify indent-5 sm:indent-0 leading-relaxed">
                 Direct hands-on archaeological exploration of ancient temple rock inscriptions, heritage guilds, and active master artisan workshops across Tamil Nadu.
               </p>
             </div>
