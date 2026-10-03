@@ -1,51 +1,22 @@
 import React from 'react';
+import {
+  BookOpen,
+  Hand,
+  Sparkles,
+  Eye,
+  Share2,
+  TrendingUp,
+} from 'lucide-react';
 import Reveal from './Reveal';
 
 export default function TransformationSection() {
   const steps = [
-    {
-      badge: 'FOUNDATION',
-      label: 'Learn',
-      desc: 'Ancient Wisdom & Canons',
-      detail: 'Epigraphy, Vastu & Sacred Lore',
-      track: 'Knowledge Core',
-    },
-    {
-      badge: 'TECHNIQUE',
-      label: 'Practice',
-      desc: 'Hands-on Mastery',
-      detail: 'Mastering Hammer, Chisel & Casting',
-      track: 'Atelier Practice',
-    },
-    {
-      badge: 'CREATION',
-      label: 'Create',
-      desc: 'Original Heritage Art',
-      detail: 'Temple Motifs & Gold Repoussé',
-      track: 'Studio Craft',
-    },
-    {
-      badge: 'CURATION',
-      label: 'Showcase',
-      desc: 'Exhibitions & Archives',
-      detail: 'Public Galleries & Architect Curations',
-      track: 'Public Archive',
-    },
-    {
-      badge: 'NETWORK',
-      label: 'Connect',
-      desc: 'A2O Creator Guild',
-      detail: 'Peer Critiques & Collaborations',
-      track: 'Creator Guild',
-    },
-    {
-      badge: 'ENTERPRISE',
-      label: 'Build Livelihood',
-      desc: 'Sustainable Income',
-      detail: 'Commercial Orders & Royal Commissions',
-      track: 'Commercial Track',
-      featured: true,
-    },
+    { label: 'Learn', icon: BookOpen, desc: 'Ancient Wisdom & Canons' },
+    { label: 'Practice', icon: Hand, desc: 'Hands-on Technique' },
+    { label: 'Create', icon: Sparkles, desc: 'Original Heritage Art' },
+    { label: 'Showcase', icon: Eye, desc: 'Exhibitions & Repositories' },
+    { label: 'Connect', icon: Share2, desc: 'A2O Creator Guild' },
+    { label: 'Build Livelihood', icon: TrendingUp, desc: 'Sustainable Creative Income' },
   ];
 
   return (
@@ -54,7 +25,7 @@ export default function TransformationSection() {
         <Reveal direction="up" delay={100}>
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
             <span className="inline-block px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
-              The Creative Evolution Roadmap
+              The Creative Evolution
             </span>
             <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
               What Can a Heritage Creator Become?
@@ -67,68 +38,31 @@ export default function TransformationSection() {
           </div>
         </Reveal>
 
-        {/* Visual Progression Roadmap: 6 Step Heritage Evolution Nodes */}
+        {/* Visual Progression Grid: Clean Free-Floating Icons (No Box) */}
         <Reveal direction="up" delay={200}>
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#6B4030]/15 shadow-sm relative">
-            {/* Connected Dashed Guideline on Desktop */}
-            <div className="hidden lg:block absolute top-[68px] left-16 right-16 h-0.5 border-t-2 border-dashed border-[#B89555]/30 z-0 pointer-events-none" />
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4 relative z-10">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-sm relative">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 relative z-10">
               {steps.map((st) => {
+                const Icon = st.icon;
                 return (
                   <div
                     key={st.label}
-                    className={`group rounded-2xl p-4 sm:p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-md select-none ${
-                      st.featured
-                        ? 'bg-[#FAF6EE] border-2 border-[#B89555] shadow-xs'
-                        : 'bg-[#FAF6EE]/70 hover:bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555]/60'
-                    }`}
+                    className="flex flex-col items-center text-center group p-3 sm:p-4 rounded-xl hover:bg-[#FAF6EE] transition-all duration-300"
                   >
-                    <div>
-                      {/* Top Milestone Bead & Category Tag */}
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        {/* Gold Bead Node */}
-                        <div
-                          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center shadow-xs transition-all duration-300 ${
-                            st.featured
-                              ? 'bg-[#B89555] border-[#4A2C20]'
-                              : 'bg-white border-[#B89555] group-hover:border-[#4A2C20]'
-                          }`}
-                        >
-                          <span
-                            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-125 ${
-                              st.featured ? 'bg-[#241A16]' : 'bg-[#B89555] group-hover:bg-[#4A2C20]'
-                            }`}
-                          />
-                        </div>
-
-                        {/* English Milestone Badge */}
-                        <span className="text-[9.5px] sm:text-[10px] font-bold text-[#B89555] font-['DM_Sans'] tracking-wider bg-[#4A2C20]/5 px-2 py-0.5 rounded-md border border-[#B89555]/25">
-                          {st.badge}
-                        </span>
-                      </div>
-
-                      {/* Step Name */}
-                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-tight mb-1">
-                        {st.label}
-                      </h3>
-
-                      {/* Step Subtitle */}
-                      <p className="font-['DM_Sans'] text-xs font-semibold text-[#6B4030] leading-snug">
-                        {st.desc}
-                      </p>
-
-                      {/* Step Detail */}
-                      <p className="font-['DM_Sans'] text-[11px] text-[#241A16]/70 mt-1.5 leading-snug">
-                        {st.detail}
-                      </p>
+                    {/* Free-Floating Icon without Box */}
+                    <div className="mb-3 sm:mb-4 flex items-center justify-center">
+                      <Icon className="w-8 h-8 sm:w-11 sm:h-11 text-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-115 transition-all duration-300 stroke-[1.75]" />
                     </div>
 
-                    {/* Bottom Milestone Pathway */}
-                    <div className="mt-4 pt-2.5 border-t border-[#6B4030]/10 flex items-center justify-between text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030]">
-                      <span>Path</span>
-                      <span className="text-[#B89555] font-bold">{st.track}</span>
-                    </div>
+                    {/* Step Name */}
+                    <p className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#241A16] leading-tight mb-1 group-hover:text-[#4A2C20]">
+                      {st.label}
+                    </p>
+
+                    {/* Step Description */}
+                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] font-medium leading-snug">
+                      {st.desc}
+                    </p>
                   </div>
                 );
               })}
