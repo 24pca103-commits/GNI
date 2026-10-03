@@ -106,34 +106,37 @@ export default function TargetAudience() {
                 >
                   <div className="group relative rounded-2xl overflow-hidden bg-white border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_20px_45px_-10px_rgba(74,44,32,0.18)] hover:shadow-[0_30px_60px_-12px_rgba(74,44,32,0.28)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full select-none">
                     {/* Card Top: Distinct Featured Image Header */}
-                    <div className="relative h-44 sm:h-48 overflow-hidden bg-[#241A16]">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                      />
+                    <div className="relative h-44 sm:h-48 bg-[#241A16]">
+                      {/* Image container with overflow-hidden for zoom effect */}
+                      <div className="absolute inset-0 overflow-hidden">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
 
-                      {/* Subtle Image Overlay */}
-                      <div className="absolute inset-0 bg-[#241A16]/20" />
+                        {/* Subtle Image Overlay */}
+                        <div className="absolute inset-0 bg-[#241A16]/20" />
+                      </div>
 
                       {/* Top Tag */}
-                      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#241A16]/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium">
+                      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 bg-[#241A16]/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium">
                         {item.tag}
                       </div>
 
-                      {/* Large Overlapping Circular Medallion Badge (As in Reference) */}
+                      {/* Large Overlapping Circular Medallion Badge (Unclipped, Full Circle) */}
                       <div className="absolute -bottom-8 right-4 sm:right-6 z-20 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#FAF6EE] border-2 border-[#4A2C20] shadow-md flex items-center justify-center group-hover:scale-110 group-hover:border-[#B89555] transition-all duration-300">
                         <Icon className="w-8 h-8 sm:w-10 sm:h-10 text-[#4A2C20] stroke-[2] group-hover:text-[#B89555] transition-colors duration-300" />
                       </div>
                     </div>
 
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
-                    <div className="p-4.5 sm:p-6 pt-5 sm:pt-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
+                    <div className="p-4.5 sm:p-6 pt-7 sm:pt-9 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
                         {/* Header: Pathway Info on Left with space for overlapping circle on Right */}
-                        <div className="flex items-center justify-between gap-3 mb-2.5 pr-14 sm:pr-18">
+                        <div className="flex items-center justify-between gap-3 mb-2.5 pr-16 sm:pr-20">
                           <div className="space-y-1">
                             <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] text-[10.5px] sm:text-xs font-bold tracking-wider uppercase font-['DM_Sans']">
                               Pathway 0{item.num}
