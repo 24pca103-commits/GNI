@@ -12,6 +12,7 @@ export default function CoreValues() {
       detail:
         'Culture survives when breathed into daily hands-on practice, not inside museum glass.',
       icon: Shield,
+      imageIcon: '/artisan/values/val-preserve-heritage.png',
       highlight: 'Living Practice',
       metric: '100% Living Tradition',
     },
@@ -22,6 +23,7 @@ export default function CoreValues() {
       detail:
         'The touch of stone, mineral paint, and metal — mastery lives in the creator’s fingers.',
       icon: Hand,
+      imageIcon: '/artisan/values/val-create-hands.png',
       highlight: '75% Tactile Work',
       metric: '3:1 Practical Ratio',
     },
@@ -32,6 +34,7 @@ export default function CoreValues() {
       detail:
         'Every motif, proportion, and inscription carries sacred philosophical context.',
       icon: Sparkles,
+      imageIcon: '/artisan/values/val-sacred-craft.png',
       highlight: 'Millennia Canons',
       metric: 'Millennia-Old Codes',
     },
@@ -42,6 +45,7 @@ export default function CoreValues() {
       detail:
         'Cultural learning must empower economic self-reliance and dignified livelihoods.',
       icon: TrendingUp,
+      imageIcon: '/artisan/values/val-livelihood-income.png',
       highlight: 'Economic Dignity',
       metric: 'Sustainable Income',
     },
@@ -52,6 +56,7 @@ export default function CoreValues() {
       detail:
         'Bridging ancestral Tamil mastery with contemporary architecture and modern branding.',
       icon: Compass,
+      imageIcon: '/artisan/values/val-cultural-pride.png',
       highlight: 'Modern Relevance',
       metric: 'Modern Application',
     },
@@ -129,8 +134,6 @@ export default function CoreValues() {
             className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-5 items-stretch"
           >
             {values.map((v, idx) => {
-              const Icon = v.icon;
-
               return (
                 <div
                   key={v.num}
@@ -139,10 +142,15 @@ export default function CoreValues() {
                 >
                   <div className="group h-full rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-[#FAF6EE] text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] hover:shadow-xl text-center">
                     <div className="space-y-2.5 sm:space-y-3">
-                      {/* Top Large Circular Gold Medallion Icon */}
+                      {/* Top Large Circular Gold Medallion Image Icon */}
                       <div className="relative flex justify-center pt-1">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-white text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
-                          <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#B89555] bg-white p-2.5 flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
+                          <img
+                            src={v.imageIcon}
+                            alt={v.title}
+                            className="w-full h-full object-contain filter drop-shadow-xs"
+                            loading="lazy"
+                          />
                         </div>
                         <span className="absolute top-0 right-1 font-number text-xs font-bold px-2 py-0.5 rounded-full bg-[#4A2C20]/10 text-[#4A2C20]">
                           0{v.num}
