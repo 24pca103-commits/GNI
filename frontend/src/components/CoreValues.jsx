@@ -139,12 +139,12 @@ export default function CoreValues() {
                 >
                   <div className="group h-full rounded-2xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555]/50 hover:shadow-lg">
                     <div className="space-y-3 sm:space-y-4">
-                      {/* Top Row: Number & Icon */}
+                      {/* Top Row: Number & Circular Gold Badge Icon */}
                       <div className="flex items-center justify-between">
                         <span className="font-number text-xl sm:text-2xl font-bold leading-none text-[#4A2C20] group-hover:text-[#B89555] transition-colors">
                           {v.num}
                         </span>
-                        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center transition-all bg-[#F7F2E8] text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] shadow-xs">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-[#B89555]/50 flex items-center justify-center transition-all bg-[#FAF6EE] text-[#4A2C20] group-hover:border-[#B89555] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] shadow-xs group-hover:scale-105">
                           <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                       </div>

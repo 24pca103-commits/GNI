@@ -136,9 +136,9 @@ export default function WhyJoinUs() {
                 >
                   <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                     <div>
-                      {/* Header: Icon */}
+                      {/* Header: Circular Golden Rim Icon Badge */}
                       <div className="flex items-center justify-start mb-3 sm:mb-5">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                        <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
                           <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                       </div>

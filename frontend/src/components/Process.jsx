@@ -90,9 +90,9 @@ export default function Process() {
               <Reveal key={index} direction="up" delay={index * 100}>
                 <div className="bg-[#F7F2E8] hover:bg-[#4A2C20] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer select-none">
                   <div>
-                    {/* Header: Icon */}
+                    {/* Header: Circular Golden Badge Icon */}
                     <div className="flex items-center justify-start mb-2.5 sm:mb-4">
-                      <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] group-hover:bg-[#241A16] group-hover:text-[#E5B869] group-hover:border group-hover:border-[#B89555]/40 flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-[#B89555] bg-white group-hover:bg-[#241A16] text-[#4A2C20] group-hover:text-[#E5B869] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                     </div>
