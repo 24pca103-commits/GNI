@@ -200,11 +200,30 @@ export default function About() {
                 >
                   <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                     <div>
-                      {/* Header: Circular Heritage Gold Medallion & Metric Pill */}
+                      {/* Header: Circular Heritage Gold Medallion with Edge Blinking Stars & Metric Pill */}
                       <div className="flex items-center justify-between mb-3.5 sm:mb-5">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FAF6EE] border-2 border-[#B89555] text-[#4A2C20] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:bg-[#4A2C20] group-hover:border-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-110 group-hover:shadow-md">
-                          <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8] transition-transform duration-300" />
+                        {/* Relative Medallion Wrapper with Edge Blinking Stars */}
+                        <div className="relative">
+                          {/* Blinking Sparkle Stars along the edges */}
+                          <span className="absolute -top-1.5 -right-1.5 text-[#B89555] text-xs leading-none animate-pulse drop-shadow-[0_0_5px_#B89555] z-20 pointer-events-none group-hover:scale-125 transition-transform">
+                            ✦
+                          </span>
+                          <span className="absolute -bottom-1 -left-1.5 text-[#B89555] text-[10px] leading-none animate-pulse [animation-delay:400ms] drop-shadow-[0_0_4px_#B89555] z-20 pointer-events-none group-hover:scale-125 transition-transform">
+                            ★
+                          </span>
+                          <span className="absolute -top-1 -left-1.5 text-[#B89555] text-[10px] leading-none animate-pulse [animation-delay:800ms] drop-shadow-[0_0_4px_#B89555] z-20 pointer-events-none group-hover:scale-125 transition-transform">
+                            ✦
+                          </span>
+                          <span className="absolute -bottom-1.5 -right-1.5 text-[#B89555] text-xs leading-none animate-pulse [animation-delay:1200ms] drop-shadow-[0_0_5px_#B89555] z-20 pointer-events-none group-hover:scale-125 transition-transform">
+                            ★
+                          </span>
+
+                          {/* Inner Circular Heritage Medallion */}
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FAF6EE] border-2 border-[#B89555] text-[#4A2C20] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:bg-[#4A2C20] group-hover:border-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-110 group-hover:shadow-md relative z-10">
+                            <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8] transition-transform duration-300" />
+                          </div>
                         </div>
+
                         <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] bg-[#FAF6EE] border border-[#B89555]/50 px-3 py-1 rounded-full shadow-xs group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:border-[#B89555] transition-all">
                           {pillar.metric}
                         </span>
