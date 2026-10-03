@@ -64,8 +64,8 @@ export default function Process() {
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>
           <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#B89555]" />
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20] border border-[#B89555]/40 text-[#E5B869] text-xs font-['DM_Sans'] font-semibold mb-2.5 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#E5B869]" />
               <span>Repository Protocols</span>
             </span>
             <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
@@ -100,10 +100,10 @@ export default function Process() {
                     <Reveal direction={isEven ? 'left' : 'right'} delay={150}>
                       <div className="bg-white hover:bg-[#FAF6EE] p-6 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left">
                         <div className="flex items-center justify-between gap-2 mb-3">
-                          <span className="inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] bg-[#FAF6EE] px-3 py-1 rounded-full border border-[#B89555]/30">
+                          <span className="inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#E5B869] bg-[#4A2C20] px-3 py-1 rounded-full border border-[#B89555]/40 shadow-xs">
                             {item.badge}
                           </span>
-                          <span className="text-xs font-['DM_Sans'] font-bold text-[#B89555]">
+                          <span className="text-[11px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#6B4030]/20">
                             Protocol {index + 1}
                           </span>
                         </div>
@@ -142,10 +142,10 @@ export default function Process() {
                     <Reveal direction="up" delay={150}>
                       <div className="bg-white hover:bg-[#FAF6EE] p-5 sm:p-6 rounded-2xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md transition-all duration-300 text-left">
                         <div className="flex items-center justify-between gap-2 mb-2.5">
-                          <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#B89555]/30">
+                          <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#E5B869] bg-[#4A2C20] px-2.5 py-0.5 rounded-full border border-[#B89555]/40 shadow-xs">
                             {item.badge}
                           </span>
-                          <span className="text-[11px] font-['DM_Sans'] font-bold text-[#B89555]">
+                          <span className="text-[10.5px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2 py-0.5 rounded-full border border-[#6B4030]/20">
                             Protocol {index + 1}
                           </span>
                         </div>
