@@ -219,34 +219,34 @@ export default function About() {
                               isSelected ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100'
                             }`}
                           >
-                            {/* Top-Right 3-Star Constellation Cluster */}
-                            <div className="absolute -top-3 -right-3 z-30 pointer-events-none flex items-center justify-center">
+                            {/* Corner 1: Top-Right Diagonal Cross Cluster */}
+                            <div className="absolute -top-2.5 -right-2.5 z-30 pointer-events-none">
                               {/* Primary Main Star */}
-                              <span className="text-[#B89555] text-sm font-bold leading-none animate-pulse drop-shadow-[0_0_8px_#D4AF37]">
+                              <span className="inline-block text-[#B89555] text-sm font-bold leading-none animate-pulse drop-shadow-[0_0_8px_#D4AF37]">
                                 ✦
                               </span>
                               {/* Second Mini Star */}
-                              <span className="absolute -top-1.5 right-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:300ms] drop-shadow-[0_0_6px_#B89555]">
+                              <span className="absolute -top-2 right-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:300ms] drop-shadow-[0_0_6px_#B89555]">
                                 ★
                               </span>
                               {/* Third Micro Star */}
-                              <span className="absolute top-2.5 -right-1.5 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:600ms] drop-shadow-[0_0_6px_#B89555]">
+                              <span className="absolute top-2.5 -right-2 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:600ms] drop-shadow-[0_0_6px_#B89555]">
                                 ✦
                               </span>
                             </div>
 
-                            {/* Diagonally Opposite Bottom-Left 3-Star Constellation Cluster */}
-                            <div className="absolute -bottom-3 -left-3 z-30 pointer-events-none flex items-center justify-center">
+                            {/* Corner 2: Exact Diagonally Opposite Bottom-Left Cross Cluster */}
+                            <div className="absolute -bottom-2.5 -left-2.5 z-30 pointer-events-none">
                               {/* Primary Main Star */}
-                              <span className="text-[#B89555] text-sm font-bold leading-none animate-pulse [animation-delay:200ms] drop-shadow-[0_0_8px_#D4AF37]">
+                              <span className="inline-block text-[#B89555] text-sm font-bold leading-none animate-pulse [animation-delay:200ms] drop-shadow-[0_0_8px_#D4AF37]">
                                 ✦
                               </span>
                               {/* Second Mini Star */}
-                              <span className="absolute -bottom-1.5 left-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:500ms] drop-shadow-[0_0_6px_#B89555]">
+                              <span className="absolute -bottom-2 left-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:500ms] drop-shadow-[0_0_6px_#B89555]">
                                 ★
                               </span>
                               {/* Third Micro Star */}
-                              <span className="absolute bottom-2.5 -left-1.5 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:800ms] drop-shadow-[0_0_6px_#B89555]">
+                              <span className="absolute bottom-2.5 -left-2 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:800ms] drop-shadow-[0_0_6px_#B89555]">
                                 ✦
                               </span>
                             </div>
