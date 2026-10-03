@@ -9,14 +9,14 @@ export default function SacredDisconnect() {
         {/* Master Centerpiece Frame with Heritage Double Gold Border and Temple Line Art Background */}
         <Reveal direction="zoom" delay={150}>
           <div className="bg-[#FAF6EE] rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
-            {/* Background Architectural Temple, Manuscripts & Gold Jewellery Illustration */}
-            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-center">
+            {/* Background Architectural Temple, Manuscripts & Gold Jewellery Illustration Aligned to Right */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-end">
               <img
                 src="/artisan/reconnect-bg-banner.png"
                 alt="Heritage Temple, Manuscripts & Gold Jewellery Drawing"
-                className="w-full h-full object-contain object-center opacity-70 md:opacity-85 mix-blend-multiply"
+                className="w-full h-full object-contain object-right opacity-75 md:opacity-90 mix-blend-multiply"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/75 via-[#FAF6EE]/35 to-[#FAF6EE]/65" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/75 via-[#FAF6EE]/25 to-[#FAF6EE]/55" />
             </div>
 
             {/* Corner Decorative Ornaments */}
