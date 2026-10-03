@@ -116,36 +116,36 @@ export default function TargetAudience() {
                         className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                       />
 
-                      {/* Dark Solid Overlay at Bottom of Image for Smooth Transition */}
+                      {/* Subtle Image Overlay */}
                       <div className="absolute inset-0 bg-[#241A16]/20" />
 
                       {/* Top Tag */}
                       <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 bg-[#241A16]/85 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium">
                         {item.tag}
                       </div>
-
-                      {/* Floating Overlapping Medallion Icon Badge */}
-                      <div className="absolute -bottom-5 right-4 sm:right-5 z-20 w-13 h-13 sm:w-15 sm:h-15 rounded-full border-2 border-[#B89555] bg-white p-2 shadow-md group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 flex items-center justify-center">
-                        <img
-                          src={item.imageIcon}
-                          alt={item.title}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
                     </div>
 
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
-                    <div className="p-4.5 sm:p-6 pt-5 sm:pt-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
+                    <div className="p-4.5 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
-                        {/* Category & Pathway Info */}
-                        <div className="flex items-center justify-between gap-2 mb-2 pr-12">
-                          <div>
-                            <span className="text-[10px] sm:text-[11px] font-bold text-[#B89555] tracking-wider uppercase font-['DM_Sans']">
+                        {/* Header: Pathway Info on Left & Gold Medallion Icon on Right */}
+                        <div className="flex items-center justify-between gap-3 mb-2.5 pb-2 border-b border-[#6B4030]/10">
+                          <div className="space-y-0.5">
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase font-['DM_Sans']">
                               Pathway 0{item.num}
                             </span>
-                            <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-semibold text-[#6B4030]">
+                            <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-semibold text-[#B89555]">
                               {item.category}
                             </p>
+                          </div>
+
+                          {/* Gold Medallion Icon */}
+                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-[#B89555] bg-[#FAF6EE] p-1.5 shadow-xs shrink-0 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                            <img
+                              src={item.imageIcon}
+                              alt={item.title}
+                              className="w-full h-full object-contain"
+                            />
                           </div>
                         </div>
 
