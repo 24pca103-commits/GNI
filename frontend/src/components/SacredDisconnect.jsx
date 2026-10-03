@@ -6,16 +6,26 @@ export default function SacredDisconnect() {
   return (
     <section className="py-8 md:py-12 bg-[#F7F2E8] text-[#241A16] relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Master Centerpiece Frame with Heritage Double Gold Border */}
+        {/* Master Centerpiece Frame with Heritage Double Gold Border and Temple Line Art Background */}
         <Reveal direction="zoom" delay={150}>
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
-            {/* Corner Decorative Ornaments */}
-            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2 border-[#B89555]" />
-            <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2 border-[#B89555]" />
-            <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2 border-[#B89555]" />
-            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2 border-[#B89555]" />
+          <div className="bg-[#FAF6EE] rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
+            {/* Background Architectural Temple Line Art Illustration */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+              <img
+                src="/artisan/temple-line-art.png"
+                alt="Ancient Tamil Temple Gopuram Line Drawing"
+                className="absolute right-[-15%] sm:right-[-5%] md:right-0 bottom-0 h-full w-auto object-cover md:object-contain object-right-bottom opacity-20 sm:opacity-25 mix-blend-multiply"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6EE] via-[#FAF6EE]/85 to-transparent sm:via-[#FAF6EE]/75" />
+            </div>
 
-            <div className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4">
+            {/* Corner Decorative Ornaments */}
+            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2 border-[#B89555] z-10" />
+            <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2 border-[#B89555] z-10" />
+            <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2 border-[#B89555] z-10" />
+            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2 border-[#B89555] z-10" />
+
+            <div className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4 relative z-10">
               {/* Central Spiritual Icon Badge */}
               <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center mx-auto border border-[#B89555]/40">
                 <Feather className="w-5 h-5 sm:w-7 sm:h-7" />
