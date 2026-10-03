@@ -128,19 +128,19 @@ export default function TargetAudience() {
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
                     <div className="p-4.5 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
-                        {/* Header: Pathway Info on Left & Gold Medallion Icon on Right */}
-                        <div className="flex items-center justify-between gap-3 mb-2.5 pb-2 border-b border-[#6B4030]/10">
-                          <div className="space-y-0.5">
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[10px] sm:text-[10.5px] font-bold tracking-wider uppercase font-['DM_Sans']">
+                        {/* Header: Pathway Info on Left & Large Gold Medallion Icon on Right */}
+                        <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-[#6B4030]/15">
+                          <div className="space-y-1">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[10.5px] sm:text-xs font-bold tracking-wider uppercase font-['DM_Sans']">
                               Pathway 0{item.num}
                             </span>
-                            <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-semibold text-[#B89555]">
+                            <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-bold text-[#B89555] leading-snug">
                               {item.category}
                             </p>
                           </div>
 
-                          {/* Gold Medallion Icon */}
-                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-[#B89555] bg-[#FAF6EE] p-1.5 shadow-xs shrink-0 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                          {/* Large Gold Medallion Icon */}
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] p-2 sm:p-2.5 shadow-sm shrink-0 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                             <img
                               src={item.imageIcon}
                               alt={item.title}
