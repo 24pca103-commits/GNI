@@ -57,14 +57,14 @@ export default function Process() {
   ];
 
   return (
-    <section id="process" className="py-12 md:py-20 bg-white relative overflow-hidden border-t border-[#6B4030]/15">
+    <section id="process" className="py-12 md:py-20 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
       {/* Floating Animated Bubbles */}
       <FloatingBubbles count={8} color="#B89555" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
               <Sparkles className="w-3.5 h-3.5 text-[#B89555]" />
               <span>Repository Protocols</span>
@@ -75,7 +75,7 @@ export default function Process() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-3 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
-              How Global Nagas Institute systematically preserves, safeguards, and transmits unbroken ancient Tamil
+              How Global Nagas Institute systematically preserves, safeguards, and transmits unbroken ancient
               wisdom from historical field archives into living modern craftsmanship.
             </p>
           </div>
@@ -88,37 +88,37 @@ export default function Process() {
 
             return (
               <Reveal key={index} direction="up" delay={index * 100}>
-                <div className="bg-[#FAF6EE] hover:bg-[#4A2C20] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer select-none text-center">
+                <div className="bg-white hover:bg-[#FAF6EE] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full select-none text-center">
                   <div>
                     {/* Header: Large Circular Golden Badge Icon */}
                     <div className="flex justify-center mb-3">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-white group-hover:bg-[#241A16] text-[#4A2C20] group-hover:text-[#E5B869] flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] group-hover:bg-[#4A2C20] text-[#4A2C20] group-hover:text-[#F7F2E8] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:scale-110">
                         <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
                       </div>
                     </div>
 
-                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] group-hover:text-[#E5B869] mb-1.5 transition-colors">
+                    <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] mb-1.5">
                       {item.badge}
                     </span>
 
-                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] group-hover:text-white mb-1.5 leading-snug transition-colors">
+                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] mb-1.5 leading-snug">
                       {item.title}
                     </h3>
 
                     {/* Decorative Ornament Divider */}
                     <div className="flex items-center justify-center gap-1.5 py-0.5 mb-1.5">
-                      <span className="h-px w-5 bg-[#B89555]/40 group-hover:bg-[#E5B869]/40" />
-                      <span className="text-[9px] text-[#B89555] group-hover:text-[#E5B869]">❖</span>
+                      <span className="h-px w-5 bg-[#B89555]/40" />
+                      <span className="text-[9px] text-[#B89555]">❖</span>
                       <span className="h-px w-5 bg-[#B89555]/40" />
                     </div>
 
-                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] group-hover:text-[#F7F2E8]/90 leading-relaxed font-normal text-justify indent-3 sm:indent-0 sm:text-center transition-colors">
+                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal text-justify indent-3 sm:indent-0 sm:text-center">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#6B4030]/15 group-hover:border-[#B89555]/30 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20] group-hover:text-[#E5B869] transition-colors">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] group-hover:bg-[#E5B869] transition-colors" />
+                  <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#6B4030]/10 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#B89555]" />
                     <span>Verified Protocol</span>
                   </div>
                 </div>
@@ -127,17 +127,17 @@ export default function Process() {
           })}
         </div>
 
-        {/* Quality Commitment Banner */}
+        {/* Quality Commitment Banner - Clean Ivory & Gold Border */}
         <Reveal direction="up" delay={500}>
-          <div className="mt-12 max-w-4xl mx-auto rounded-3xl bg-[#4A2C20] border border-[#B89555]/30 p-5 sm:p-6 text-[#F7F2E8] shadow-lg">
+          <div className="mt-10 sm:mt-12 max-w-4xl mx-auto rounded-2xl sm:rounded-3xl bg-[#FAF6EE] border border-[#B89555]/40 p-5 sm:p-6 text-[#241A16] shadow-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-2.5 sm:gap-4 text-xs font-['DM_Sans'] text-left text-justify">
-              <span className="flex items-center gap-2 font-bold text-[#B89555]">
+              <span className="flex items-center gap-2 font-bold text-[#4A2C20]">
                 <ShieldCheck className="w-4 h-4 text-[#B89555] shrink-0" />
                 <span>Uncompromising Preservation Standards</span>
               </span>
-              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> 100% Traditional Hand Tools</span>
-              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> Agamic Iconometrical Authenticity</span>
-              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> Direct Master Sthapathi Certification</span>
+              <span className="flex items-center gap-1.5 text-[#6B4030]"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> 100% Traditional Hand Tools</span>
+              <span className="flex items-center gap-1.5 text-[#6B4030]"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> Agamic Iconometrical Authenticity</span>
+              <span className="flex items-center gap-1.5 text-[#6B4030]"><span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" /> Master Sthapathi Certification</span>
             </div>
           </div>
         </Reveal>
