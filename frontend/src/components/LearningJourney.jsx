@@ -223,17 +223,34 @@ export default function LearningJourney() {
           </div>
         </div>
 
-        {/* Field Visit Highlight Banner - Redesigned to fill whitespace edge-to-edge */}
+        {/* Field Visit Highlight Banner with Temple & Inscription Background Banner */}
         <Reveal direction="zoom" delay={300}>
-          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl p-5 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-            <div className="space-y-2 text-left w-full">
+          <div className="mt-8 sm:mt-12 bg-[#4A2C20] rounded-2xl p-5 sm:p-7 text-[#F7F2E8] border border-[#B89555]/40 shadow-sm relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+            {/* Background Temple & Field Exploration Drawing Banner Aligned to Right */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-end">
+              <img
+                src="/artisan/reconnect-bg-banner.png"
+                alt="Archaeological Temple & Epigraphy Field Visit Drawing"
+                className="w-full h-full object-contain object-right opacity-30 md:opacity-40 invert brightness-125 mix-blend-screen"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4A2C20] via-[#4A2C20]/85 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#4A2C20]/60 via-transparent to-[#4A2C20]/40" />
+            </div>
+
+            {/* Corner Decorative Ornaments */}
+            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-l-2 border-[#B89555]/60 z-10" />
+            <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-r-2 border-[#B89555]/60 z-10" />
+            <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-l-2 border-[#B89555]/60 z-10" />
+            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2 border-[#B89555]/60 z-10" />
+
+            <div className="space-y-2 text-left w-full relative z-10">
               {/* Top Row on Mobile: Icon + Badges */}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#241A16]" />
                   </div>
-                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-medium">
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10.5px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-medium border border-[#B89555]/30">
                     Immersive Experience
                   </span>
                 </div>
