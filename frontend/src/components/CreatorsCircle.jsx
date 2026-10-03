@@ -26,16 +26,17 @@ export default function CreatorsCircle() {
   ];
 
   return (
-    <section id="community" className="py-10 md:py-16 bg-[#241A16] text-[#F7F2E8] relative overflow-hidden">
-      {/* Background Banner Image with Dark Gold & Charcoal Overlay */}
+    <section id="community" className="py-12 md:py-20 bg-[#241A16] text-[#F7F2E8] relative overflow-hidden">
+      {/* Background Banner Image with Enhanced Visibility */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
         <img
           src="/artisan/community-banner.jpg"
           alt="Tamil Heritage Goldsmith Creators Circle Guild Atelier"
-          className="w-full h-full object-cover opacity-25 md:opacity-30"
+          className="w-full h-full object-cover object-right md:object-center opacity-70 md:opacity-85"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#241A16] via-[#241A16]/90 to-[#241A16]/75" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#241A16] via-transparent to-[#241A16]" />
+        {/* Left Dark Gradient for Text Legibility & Right Clear Visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#241A16] via-[#241A16]/80 to-[#241A16]/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#241A16]/70 via-transparent to-[#241A16]/70" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -87,15 +88,15 @@ export default function CreatorsCircle() {
               const Icon = feat.icon;
               return (
                 <Reveal key={feat.title} direction="up" delay={200 + idx * 100}>
-                  <div className="bg-[#4A2C20]/60 backdrop-blur-sm p-4.5 sm:p-7 rounded-xl sm:rounded-2xl border border-white/10 hover:border-[#B89555]/40 transition-all duration-300 flex items-start gap-3.5 sm:gap-5 shadow-sm">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/30 shadow-sm">
+                  <div className="bg-[#241A16]/85 sm:bg-[#241A16]/80 backdrop-blur-md p-4.5 sm:p-7 rounded-xl sm:rounded-2xl border border-[#B89555]/30 hover:border-[#B89555]/70 transition-all duration-300 flex items-start gap-3.5 sm:gap-5 shadow-lg">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0 border border-[#B89555]/40 shadow-sm">
                       <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
                     </div>
                     <div className="space-y-1">
                       <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-white leading-snug">
                         {feat.title}
                       </h3>
-                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#F7F2E8]/80 leading-relaxed font-normal text-justify indent-4 sm:indent-0">
+                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#F7F2E8]/85 leading-relaxed font-normal text-justify indent-4 sm:indent-0">
                         {feat.desc}
                       </p>
                     </div>
