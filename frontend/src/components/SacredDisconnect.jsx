@@ -14,9 +14,9 @@ export default function SacredDisconnect() {
               <img
                 src="/artisan/reconnect-bg-banner.png"
                 alt="Heritage Temple, Manuscripts & Gold Jewellery Drawing"
-                className="w-full h-full object-contain sm:object-cover opacity-40 sm:opacity-50 mix-blend-multiply"
+                className="w-full h-full object-cover opacity-75 sm:opacity-85 mix-blend-multiply"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/90 via-[#FAF6EE]/60 to-[#FAF6EE]/80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/80 via-[#FAF6EE]/40 to-[#FAF6EE]/70" />
             </div>
 
             {/* Corner Decorative Ornaments */}
@@ -45,27 +45,27 @@ export default function SacredDisconnect() {
               {/* Two-Column Contrast Bridge: The Disconnect vs The Heritage Bridge */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5 pt-3 sm:pt-6 text-left">
                 {/* The Modern Disconnect */}
-                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#FAF6EE]/90 backdrop-blur-xs border border-[#6B4030]/20 space-y-1.5 sm:space-y-2 shadow-xs">
+                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#FAF6EE]/75 backdrop-blur-xs border border-[#6B4030]/20 space-y-1.5 sm:space-y-2 shadow-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Modern Dilemma
                     </h3>
                   </div>
-                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-relaxed text-justify indent-4 sm:indent-0">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/85 leading-relaxed text-justify indent-4 sm:indent-0">
                     Fast-paced routine, purely digital interactions, and alienation from tactile creation leave people longing for deeper purpose.
                   </p>
                 </div>
 
                 {/* The Heritage Bridge */}
-                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#FAF6EE]/90 backdrop-blur-xs border border-[#6B4030]/20 space-y-1.5 sm:space-y-2 shadow-xs">
+                <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#FAF6EE]/75 backdrop-blur-xs border border-[#6B4030]/20 space-y-1.5 sm:space-y-2 shadow-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Heritage Remedy
                     </h3>
                   </div>
-                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/80 leading-relaxed text-justify indent-4 sm:indent-0">
+                  <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#241A16]/85 leading-relaxed text-justify indent-4 sm:indent-0">
                     Engaging with traditional goldsmithing, handmade jewellery, and sacred creation restores stillness and artistic mastery.
                   </p>
                 </div>
