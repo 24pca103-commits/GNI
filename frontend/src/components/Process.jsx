@@ -96,12 +96,15 @@ export default function Process() {
               return (
                 <div key={item.title} className="relative flex items-center md:justify-between">
                   {/* Desktop Layout: Left Card or Empty Space */}
-                  <div className={`hidden md:block md:w-[45%] ${isEven ? 'text-right pr-6' : 'order-2 text-left pl-6'}`}>
+                  <div className={`hidden md:block md:w-[45%] ${isEven ? 'pr-8' : 'order-2 pl-8'}`}>
                     <Reveal direction={isEven ? 'left' : 'right'} delay={150}>
-                      <div className="bg-white hover:bg-[#FAF6EE] p-6 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                        <div className={`flex items-center gap-2 mb-3 ${isEven ? 'justify-end' : 'justify-start'}`}>
+                      <div className="bg-white hover:bg-[#FAF6EE] p-6 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left">
+                        <div className="flex items-center justify-between gap-2 mb-3">
                           <span className="inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] bg-[#FAF6EE] px-3 py-1 rounded-full border border-[#B89555]/30">
                             {item.badge}
+                          </span>
+                          <span className="text-xs font-['DM_Sans'] font-bold text-[#B89555]">
+                            Protocol {index + 1}
                           </span>
                         </div>
 
@@ -109,13 +112,16 @@ export default function Process() {
                           {item.title}
                         </h3>
 
-                        <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal mb-4 text-justify indent-3 sm:indent-0">
+                        <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal mb-4 text-left">
                           {item.description}
                         </p>
 
-                        <div className={`pt-3 border-t border-[#6B4030]/10 flex items-center gap-1.5 text-[11px] font-['DM_Sans'] font-medium text-[#4A2C20] ${isEven ? 'justify-end' : 'justify-start'}`}>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
-                          <span>{item.highlight}</span>
+                        <div className="pt-3 border-t border-[#6B4030]/10 flex items-center justify-between text-[11px] font-['DM_Sans'] font-medium text-[#4A2C20]">
+                          <span className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                            <span>{item.highlight}</span>
+                          </span>
+                          <span className="text-[#B89555] font-semibold">Verified</span>
                         </div>
                       </div>
                     </Reveal>
@@ -128,16 +134,19 @@ export default function Process() {
                     </div>
                   </div>
 
-                  {/* Desktop Layout: Right Card or Empty Space */}
-                  <div className={`hidden md:block md:w-[45%] ${isEven ? 'order-2 pl-6' : 'order-1 pr-6'}`} />
+                  {/* Desktop Layout: Empty Space Counterpart */}
+                  <div className={`hidden md:block md:w-[45%] ${isEven ? 'order-2 pl-8' : 'order-1 pr-8'}`} />
 
-                  {/* Mobile Layout Card (Right aligned next to left timeline) */}
+                  {/* Mobile Layout Card */}
                   <div className="md:hidden pl-14 w-full">
                     <Reveal direction="up" delay={150}>
-                      <div className="bg-white hover:bg-[#FAF6EE] p-5 sm:p-6 rounded-2xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md transition-all duration-300">
-                        <div className="mb-2.5">
+                      <div className="bg-white hover:bg-[#FAF6EE] p-5 sm:p-6 rounded-2xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md transition-all duration-300 text-left">
+                        <div className="flex items-center justify-between gap-2 mb-2.5">
                           <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#B89555]/30">
                             {item.badge}
+                          </span>
+                          <span className="text-[11px] font-['DM_Sans'] font-bold text-[#B89555]">
+                            Protocol {index + 1}
                           </span>
                         </div>
 
@@ -145,13 +154,16 @@ export default function Process() {
                           {item.title}
                         </h3>
 
-                        <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal mb-3 text-justify indent-3 sm:indent-0">
+                        <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal mb-3 text-left">
                           {item.description}
                         </p>
 
-                        <div className="pt-2.5 border-t border-[#6B4030]/10 flex items-center gap-1.5 text-[10.5px] font-['DM_Sans'] font-medium text-[#4A2C20]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
-                          <span>{item.highlight}</span>
+                        <div className="pt-2.5 border-t border-[#6B4030]/10 flex items-center justify-between text-[10.5px] font-['DM_Sans'] font-medium text-[#4A2C20]">
+                          <span className="flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                            <span>{item.highlight}</span>
+                          </span>
+                          <span className="text-[#B89555] font-semibold">Verified</span>
                         </div>
                       </div>
                     </Reveal>
