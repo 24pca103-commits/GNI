@@ -95,8 +95,8 @@ export default function About() {
             {/* Left Column: Authentic Studio Visual with Fixed Proportions */}
             <div className="lg:col-span-6 relative rounded-2xl overflow-hidden shadow-lg border border-[#6B4030]/20 bg-[#241A16] h-[300px] sm:h-[420px] group">
               <img
-                src="/artisan/hands-on-studio.jpg"
-                alt="Master artisans and students sculpting and carving sacred Tamil idols at Global Nagas Institute"
+                src="/artisan/about-studio.jpg"
+                alt="Master goldsmiths and students handcrafting sacred jewelry and heritage designs at Global Nagas Institute"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"

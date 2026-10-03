@@ -43,7 +43,7 @@ export default function WhyJoinUs() {
     {
       step: '1',
       icon: Award,
-      image: '/artisan/hands-on-studio.jpg',
+      image: '/artisan/about-studio.jpg',
       title: 'Living Master Lineage',
       subtitle: 'Unbroken ancestral goldsmith transmission',
       tag: 'Sacred Lineage',
