@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Compass, Palette, BookOpen, CheckCircle2, Users } from 'lucide-react';
+import { Landmark, Gem, BookOpen, Users } from 'lucide-react';
 import Reveal from './Reveal';
 
 export default function TargetAudience() {
@@ -33,8 +33,7 @@ export default function TargetAudience() {
       title: 'Architects / Interior Designers',
       category: 'Spatial Design & Sacred Architecture',
       image: '/artisan/audience-architect.jpg',
-      imageIcon: '/artisan/audience/aud-architect.png',
-      icon: Compass,
+      icon: Landmark,
       desc: 'Integrate ancient Tamil stone relief motifs, sacred proportions, and traditional pooja sanctums into luxury residential and commercial architecture.',
       highlights: [
         'Temple proportions & vastu principles',
@@ -47,8 +46,7 @@ export default function TargetAudience() {
       title: 'Jewellery Designers / Artists',
       category: 'Ornamental Metallurgy & Art',
       image: '/artisan/audience-jewellery.jpg',
-      imageIcon: '/artisan/audience/aud-jewellery.png',
-      icon: Palette,
+      icon: Gem,
       desc: 'Master ancient naga jewellery, copper/brass repousse, Tanjore gold-leaf painting, and authentic heritage iconography.',
       highlights: [
         'Sacred naga motifs & metal casting',
@@ -61,7 +59,6 @@ export default function TargetAudience() {
       title: 'History Lovers / Students / Homemakers',
       category: 'Cultural Identity & Livelihood',
       image: '/artisan/audience-history.jpg',
-      imageIcon: '/artisan/audience/aud-history.png',
       icon: BookOpen,
       desc: 'Learn ancient Tamili epigraphy and rock inscriptions, master handmade craft skills, and build self-reliant creative livelihoods.',
       highlights: [
@@ -100,6 +97,8 @@ export default function TargetAudience() {
             className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-8 sm:gap-9"
           >
             {audiences.map((item) => {
+              const Icon = item.icon;
+
               return (
                 <div
                   key={item.num}
@@ -128,10 +127,10 @@ export default function TargetAudience() {
                     {/* Card Body: Clean White Surface for Maximum Legibility */}
                     <div className="p-4.5 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-[#241A16] text-left">
                       <div>
-                        {/* Header: Pathway Info on Left & Large Gold Medallion Icon on Right */}
+                        {/* Header: Pathway Info on Left & Elegant Brand Vector Icon on Right */}
                         <div className="flex items-center justify-between gap-3 mb-3 pb-2.5 border-b border-[#6B4030]/15">
                           <div className="space-y-1">
-                            <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[10.5px] sm:text-xs font-bold tracking-wider uppercase font-['DM_Sans']">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] text-[10.5px] sm:text-xs font-bold tracking-wider uppercase font-['DM_Sans']">
                               Pathway 0{item.num}
                             </span>
                             <p className="font-['DM_Sans'] text-xs sm:text-[13px] font-bold text-[#B89555] leading-snug">
@@ -139,13 +138,9 @@ export default function TargetAudience() {
                             </p>
                           </div>
 
-                          {/* Large Gold Medallion Icon */}
-                          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] p-2 sm:p-2.5 shadow-sm shrink-0 flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                            <img
-                              src={item.imageIcon}
-                              alt={item.title}
-                              className="w-full h-full object-contain"
-                            />
+                          {/* Brand Vector Icon Badge */}
+                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#4A2C20] text-[#B89555] border border-[#B89555]/30 shadow-xs shrink-0 flex items-center justify-center group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:scale-105 transition-all duration-300">
+                            <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
                           </div>
                         </div>
 
