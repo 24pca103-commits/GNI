@@ -9,14 +9,14 @@ export default function SacredDisconnect() {
         {/* Master Centerpiece Frame with Heritage Double Gold Border and Temple Line Art Background */}
         <Reveal direction="zoom" delay={150}>
           <div className="bg-[#FAF6EE] rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
-            {/* Background Architectural Temple Line Art Illustration */}
-            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0">
+            {/* Background Architectural Temple, Manuscripts & Gold Jewellery Illustration */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-center">
               <img
-                src="/artisan/temple-line-art.png"
-                alt="Ancient Tamil Temple Gopuram Line Drawing"
-                className="absolute right-[-10%] sm:right-0 bottom-0 h-full w-auto max-w-none md:max-w-full object-cover md:object-contain object-right-bottom opacity-25 sm:opacity-35 mix-blend-multiply"
+                src="/artisan/reconnect-bg-banner.png"
+                alt="Heritage Temple, Manuscripts & Gold Jewellery Drawing"
+                className="w-full h-full object-contain sm:object-cover opacity-40 sm:opacity-50 mix-blend-multiply"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#FAF6EE] via-[#FAF6EE]/80 to-transparent sm:via-[#FAF6EE]/70" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/90 via-[#FAF6EE]/60 to-[#FAF6EE]/80" />
             </div>
 
             {/* Corner Decorative Ornaments */}
@@ -26,27 +26,18 @@ export default function SacredDisconnect() {
             <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-3 h-3 sm:w-4 sm:h-4 border-b-2 border-r-2 border-[#B89555] z-10" />
 
             <div className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4 relative z-10">
-              {/* Circular Heritage Gold Filigree Icon Badge */}
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#FAF6EE] border-2 border-[#B89555] shadow-md flex items-center justify-center mx-auto relative p-2.5">
-                <img
-                  src="/artisan/user-filigree-icon.png"
-                  alt="Heritage Gold Filigree Ornament Motif"
-                  className="w-full h-full object-contain filter drop-shadow-xs"
-                />
-              </div>
-
               <div>
-                <span className="inline-block px-3 py-0.5 sm:px-4 sm:py-1 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] text-[10px] sm:text-xs font-['DM_Sans'] font-medium">
+                <span className="inline-block px-3.5 py-1 rounded-full bg-[#FAF6EE]/90 backdrop-blur-xs border border-[#6B4030]/25 text-[#4A2C20] text-xs font-['DM_Sans'] font-semibold shadow-xs">
                   Cultural Reflection
                 </span>
-                <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl font-bold text-[#4A2C20] tracking-tight mt-1.5 sm:mt-2.5 leading-tight">
+                <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#4A2C20] tracking-tight mt-2 sm:mt-2.5 leading-tight">
                   Reconnect with What Truly Matters
                 </h2>
                 <div className="w-16 sm:w-20 h-0.5 bg-[#B89555] mx-auto mt-2 sm:mt-2.5" />
               </div>
 
               {/* Main Emotive Statement */}
-              <p className="font-['Cormorant_Garamond'] italic text-sm sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-justify indent-5 sm:indent-0 sm:text-center">
+              <p className="font-['Cormorant_Garamond'] italic text-base sm:text-2xl md:text-3xl text-[#241A16] leading-snug sm:leading-relaxed font-normal pt-1 sm:pt-2 text-justify indent-5 sm:indent-0 sm:text-center">
                 "Modern life has created a sacred disconnect — where people may be successful
                 externally, yet feel disconnected from peace, purpose, creativity and roots."
               </p>
@@ -56,9 +47,7 @@ export default function SacredDisconnect() {
                 {/* The Modern Disconnect */}
                 <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#FAF6EE]/90 backdrop-blur-xs border border-[#6B4030]/20 space-y-1.5 sm:space-y-2 shadow-xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-white border border-[#B89555] flex items-center justify-center shrink-0 p-1">
-                      <img src="/artisan/user-filigree-icon.png" alt="motif" className="w-3.5 h-3.5 object-contain" />
-                    </div>
+                    <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Modern Dilemma
                     </h3>
@@ -71,9 +60,7 @@ export default function SacredDisconnect() {
                 {/* The Heritage Bridge */}
                 <div className="p-4.5 sm:p-5 rounded-xl sm:rounded-2xl bg-[#FAF6EE]/90 backdrop-blur-xs border border-[#6B4030]/20 space-y-1.5 sm:space-y-2 shadow-xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-white border border-[#B89555] flex items-center justify-center shrink-0 p-1">
-                      <img src="/artisan/user-filigree-icon.png" alt="motif" className="w-3.5 h-3.5 object-contain" />
-                    </div>
+                    <span className="w-2 h-2 rounded-full bg-[#B89555] shrink-0" />
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16]">
                       The Heritage Remedy
                     </h3>
