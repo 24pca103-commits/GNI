@@ -6,7 +6,7 @@ import FloatingBubbles from './FloatingBubbles';
 export default function CoreValues() {
   const values = [
     {
-      num: '1',
+      id: 'preserve-heritage',
       title: 'Preserve Heritage',
       statement: 'Ancestral Wisdom in Practice',
       detail:
@@ -14,21 +14,21 @@ export default function CoreValues() {
       icon: Shield,
       imageIcon: '/artisan/values/val-preserve-heritage.png',
       highlight: 'Living Practice',
-      metric: '100% Living Tradition',
+      metric: 'Continuous Tradition',
     },
     {
-      num: '2',
+      id: 'hand-mastery',
       title: 'Hand Mastery',
       statement: 'Skill Over Theory by Doing',
       detail:
         'Tactile mastery sculpted into the creator’s fingers with sacred tools and pure metals.',
       icon: Hand,
       imageIcon: '/artisan/values/val-create-hands.png',
-      highlight: '75% Studio Work',
-      metric: '3:1 Practical Ratio',
+      highlight: 'Studio Immersion',
+      metric: 'Applied Hand Practice',
     },
     {
-      num: '3',
+      id: 'sacred-craft',
       title: 'Sacred Craft',
       statement: 'Respect for Ancient Canons',
       detail:
@@ -39,7 +39,7 @@ export default function CoreValues() {
       metric: 'Agamic Precision Codes',
     },
     {
-      num: '4',
+      id: 'empower-livelihood',
       title: 'Empower Livelihood',
       statement: 'Skill to Dignified Income',
       detail:
@@ -47,10 +47,10 @@ export default function CoreValues() {
       icon: TrendingUp,
       imageIcon: '/artisan/values/val-livelihood-income.png',
       highlight: 'Economic Dignity',
-      metric: 'Sustainable Income',
+      metric: 'Sustainable Enterprise',
     },
     {
-      num: '5',
+      id: 'cultural-pride',
       title: 'Cultural Pride',
       statement: 'Ancient Wisdom in Modern Life',
       detail:
@@ -136,7 +136,7 @@ export default function CoreValues() {
             {values.map((v, idx) => {
               return (
                 <div
-                  key={v.num}
+                  key={v.id}
                   data-card-index={idx}
                   className="w-[82vw] max-w-[300px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col h-full"
                 >
@@ -144,7 +144,7 @@ export default function CoreValues() {
                     {/* Top Content Group */}
                     <div className="flex flex-col items-center">
                       {/* Top Large Circular Gold Medallion Image Icon */}
-                      <div className="relative flex justify-center pt-1 mb-3">
+                      <div className="flex justify-center pt-1 mb-3">
                         <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#B89555] bg-white p-2.5 flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
                           <img
                             src={v.imageIcon}
@@ -153,9 +153,6 @@ export default function CoreValues() {
                             loading="lazy"
                           />
                         </div>
-                        <span className="absolute top-0 -right-2 font-number text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#4A2C20]/10 text-[#4A2C20]">
-                          0{v.num}
-                        </span>
                       </div>
 
                       {/* Single-Line Value Title */}
