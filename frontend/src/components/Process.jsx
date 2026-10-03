@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   FileText,
   Hammer,
@@ -12,6 +12,8 @@ import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
 export default function Process() {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
   const steps = [
     {
       title: 'Epigraphical & Script Ingestion',
@@ -92,15 +94,33 @@ export default function Process() {
             {steps.map((item, index) => {
               const Icon = item.icon;
               const isEven = index % 2 === 0;
+              const isHovered = hoveredIndex === index;
 
               return (
-                <div key={item.title} className="relative flex items-center md:justify-between">
+                <div
+                  key={item.title}
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  className="relative flex items-center md:justify-between group/row cursor-pointer"
+                >
                   {/* Desktop Layout: Left Card or Empty Space */}
                   <div className={`hidden md:block md:w-[45%] ${isEven ? 'pr-8' : 'order-2 pl-8'}`}>
                     <Reveal direction={isEven ? 'left' : 'right'} delay={150}>
-                      <div className="bg-white hover:bg-[#FAF6EE] p-6 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group text-left">
+                      <div
+                        className={`p-6 sm:p-7 rounded-2xl sm:rounded-3xl border transition-all duration-300 text-left ${
+                          isHovered
+                            ? 'bg-[#FAF6EE] border-[#B89555] shadow-lg -translate-y-1'
+                            : 'bg-white hover:bg-[#FAF6EE] border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-lg hover:-translate-y-1'
+                        }`}
+                      >
                         <div className="flex items-center justify-between gap-2 mb-3">
-                          <span className="inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#E5B869] bg-[#4A2C20] px-3 py-1 rounded-full border border-[#B89555]/40 shadow-xs">
+                          <span
+                            className={`inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider px-3 py-1 rounded-full border shadow-xs transition-colors duration-300 ${
+                              isHovered
+                                ? 'bg-[#B89555] text-[#241A16] border-[#4A2C20]'
+                                : 'text-[#E5B869] bg-[#4A2C20] border-[#B89555]/40'
+                            }`}
+                          >
                             {item.badge}
                           </span>
                           <span className="text-[11px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#6B4030]/20">
@@ -127,10 +147,16 @@ export default function Process() {
                     </Reveal>
                   </div>
 
-                  {/* Central Golden Medallion Node (Desktop & Mobile) */}
+                  {/* Central Golden Medallion Node (Desktop & Mobile) - Reactive Color & Glow Change */}
                   <div className="absolute left-6 -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 z-20">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] text-[#4A2C20] flex items-center justify-center shadow-md group hover:scale-110 hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#4A2C20] transition-all duration-300">
-                      <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <div
+                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                        isHovered
+                          ? 'bg-[#B89555] text-[#241A16] border-[#4A2C20] scale-125 shadow-lg shadow-[#B89555]/50 rotate-6'
+                          : 'bg-[#FAF6EE] text-[#4A2C20] border-[#B89555] shadow-md group-hover/row:bg-[#B89555] group-hover/row:text-[#241A16] group-hover/row:border-[#4A2C20] group-hover/row:scale-125 group-hover/row:shadow-lg group-hover/row:shadow-[#B89555]/50 group-hover/row:rotate-6'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
                     </div>
                   </div>
 
@@ -140,9 +166,21 @@ export default function Process() {
                   {/* Mobile Layout Card */}
                   <div className="md:hidden pl-14 w-full">
                     <Reveal direction="up" delay={150}>
-                      <div className="bg-white hover:bg-[#FAF6EE] p-5 sm:p-6 rounded-2xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md transition-all duration-300 text-left">
+                      <div
+                        className={`p-5 sm:p-6 rounded-2xl border transition-all duration-300 text-left ${
+                          isHovered
+                            ? 'bg-[#FAF6EE] border-[#B89555] shadow-md'
+                            : 'bg-white hover:bg-[#FAF6EE] border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md'
+                        }`}
+                      >
                         <div className="flex items-center justify-between gap-2 mb-2.5">
-                          <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#E5B869] bg-[#4A2C20] px-2.5 py-0.5 rounded-full border border-[#B89555]/40 shadow-xs">
+                          <span
+                            className={`inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-xs transition-colors duration-300 ${
+                              isHovered
+                                ? 'bg-[#B89555] text-[#241A16] border-[#4A2C20]'
+                                : 'text-[#E5B869] bg-[#4A2C20] border-[#B89555]/40'
+                            }`}
+                          >
                             {item.badge}
                           </span>
                           <span className="text-[10.5px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2 py-0.5 rounded-full border border-[#6B4030]/20">
