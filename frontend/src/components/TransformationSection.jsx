@@ -70,11 +70,6 @@ export default function TransformationSection() {
 
             {/* Application Domains Grid in Title Case */}
             <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-[#6B4030]/15">
-              <div className="text-center mb-4">
-                <span className="text-xs font-['DM_Sans'] font-semibold text-[#6B4030] uppercase tracking-wider">
-                  Transformation Disciplines & Career Avenues
-                </span>
-              </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-center">
                 <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Textile & Blouse</p>
