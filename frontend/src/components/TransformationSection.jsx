@@ -4,46 +4,46 @@ import Reveal from './Reveal';
 export default function TransformationSection() {
   const steps = [
     {
-      num: '01',
       badge: 'FOUNDATION',
       label: 'Learn',
       desc: 'Ancient Wisdom & Canons',
       detail: 'Epigraphy, Vastu & Sacred Lore',
+      track: 'Knowledge Core',
     },
     {
-      num: '02',
       badge: 'TECHNIQUE',
       label: 'Practice',
       desc: 'Hands-on Mastery',
       detail: 'Mastering Hammer, Chisel & Casting',
+      track: 'Atelier Practice',
     },
     {
-      num: '03',
       badge: 'CREATION',
       label: 'Create',
       desc: 'Original Heritage Art',
       detail: 'Temple Motifs & Gold Repoussé',
+      track: 'Studio Craft',
     },
     {
-      num: '04',
       badge: 'CURATION',
       label: 'Showcase',
       desc: 'Exhibitions & Archives',
       detail: 'Public Galleries & Architect Curations',
+      track: 'Public Archive',
     },
     {
-      num: '05',
       badge: 'NETWORK',
       label: 'Connect',
       desc: 'A2O Creator Guild',
       detail: 'Peer Critiques & Collaborations',
+      track: 'Creator Guild',
     },
     {
-      num: '06',
       badge: 'ENTERPRISE',
       label: 'Build Livelihood',
       desc: 'Sustainable Income',
       detail: 'Commercial Orders & Royal Commissions',
+      track: 'Commercial Track',
       featured: true,
     },
   ];
@@ -61,7 +61,7 @@ export default function TransformationSection() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center">
-              "A heritage creator who understands Tamil culture and transforms it into art, jewellery,
+              "A heritage creator who understands authentic culture and transforms it into art, jewellery,
               interiors, textile design and sustainable livelihood."
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function TransformationSection() {
             <div className="hidden lg:block absolute top-[68px] left-16 right-16 h-0.5 border-t-2 border-dashed border-[#B89555]/30 z-0 pointer-events-none" />
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4 relative z-10">
-              {steps.map((st, idx) => {
+              {steps.map((st) => {
                 return (
                   <div
                     key={st.label}
@@ -84,22 +84,22 @@ export default function TransformationSection() {
                         : 'bg-[#FAF6EE]/70 hover:bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555]/60'
                     }`}
                   >
-                    {/* Background Subtle Watermark Number */}
-                    <span className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-bold text-[#6B4030]/10 absolute -bottom-1.5 -right-1 pointer-events-none select-none group-hover:text-[#B89555]/20 transition-colors">
-                      {st.num}
-                    </span>
-
                     <div>
-                      {/* Top Milestone Badge */}
+                      {/* Top Milestone Bead & Category Tag */}
                       <div className="flex items-center justify-between gap-2 mb-3">
+                        {/* Gold Bead Node */}
                         <div
-                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 flex items-center justify-center font-['Cormorant_Garamond'] text-base sm:text-lg font-bold shadow-xs transition-all duration-300 ${
+                          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center shadow-xs transition-all duration-300 ${
                             st.featured
-                              ? 'bg-[#B89555] text-[#241A16] border-[#4A2C20]'
-                              : 'bg-white text-[#4A2C20] border-[#B89555] group-hover:bg-[#4A2C20] group-hover:text-[#FAF6EE] group-hover:border-[#4A2C20]'
+                              ? 'bg-[#B89555] border-[#4A2C20]'
+                              : 'bg-white border-[#B89555] group-hover:border-[#4A2C20]'
                           }`}
                         >
-                          {st.num}
+                          <span
+                            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 group-hover:scale-125 ${
+                              st.featured ? 'bg-[#241A16]' : 'bg-[#B89555] group-hover:bg-[#4A2C20]'
+                            }`}
+                          />
                         </div>
 
                         {/* English Milestone Badge */}
@@ -124,10 +124,10 @@ export default function TransformationSection() {
                       </p>
                     </div>
 
-                    {/* Bottom Progress Pill */}
+                    {/* Bottom Milestone Pathway */}
                     <div className="mt-4 pt-2.5 border-t border-[#6B4030]/10 flex items-center justify-between text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030]">
-                      <span>Stage</span>
-                      <span className="text-[#B89555] font-bold">Phase {idx + 1}</span>
+                      <span>Path</span>
+                      <span className="text-[#B89555] font-bold">{st.track}</span>
                     </div>
                   </div>
                 );
@@ -148,7 +148,7 @@ export default function TransformationSection() {
                 </div>
                 <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Pooja Interiors</p>
-                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5">Sacred Dravidian Architecture</p>
+                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5">Sacred Architecture</p>
                 </div>
                 <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Handmade Jewelry</p>
