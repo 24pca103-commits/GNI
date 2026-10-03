@@ -200,12 +200,12 @@ export default function About() {
                 >
                   <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                     <div>
-                      {/* Header: Icon & Metric Pill */}
-                      <div className="flex items-center justify-between mb-3 sm:mb-5">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
+                      {/* Header: Circular Heritage Gold Medallion & Metric Pill */}
+                      <div className="flex items-center justify-between mb-3.5 sm:mb-5">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FAF6EE] border-2 border-[#B89555] text-[#4A2C20] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:bg-[#4A2C20] group-hover:border-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-110 group-hover:shadow-md">
+                          <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8] transition-transform duration-300" />
                         </div>
-                        <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-bold text-[#241A16] bg-[#B89555] px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-xs">
+                        <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] bg-[#FAF6EE] border border-[#B89555]/50 px-3 py-1 rounded-full shadow-xs group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:border-[#B89555] transition-all">
                           {pillar.metric}
                         </span>
                       </div>
