@@ -88,29 +88,36 @@ export default function Process() {
 
             return (
               <Reveal key={index} direction="up" delay={index * 100}>
-                <div className="bg-[#F7F2E8] hover:bg-[#4A2C20] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer select-none">
+                <div className="bg-[#FAF6EE] hover:bg-[#4A2C20] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group h-full cursor-pointer select-none text-center">
                   <div>
-                    {/* Header: Circular Golden Badge Icon */}
-                    <div className="flex items-center justify-start mb-2.5 sm:mb-4">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-[#B89555] bg-white group-hover:bg-[#241A16] text-[#4A2C20] group-hover:text-[#E5B869] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    {/* Header: Large Circular Golden Badge Icon */}
+                    <div className="flex justify-center mb-3">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-white group-hover:bg-[#241A16] text-[#4A2C20] group-hover:text-[#E5B869] flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
+                        <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
                       </div>
                     </div>
 
-                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] group-hover:text-[#E5B869] mb-1.5 sm:mb-2 transition-colors">
+                    <span className="inline-block text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] group-hover:text-[#E5B869] mb-1.5 transition-colors">
                       {item.badge}
                     </span>
 
-                    <h3 className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold text-[#241A16] group-hover:text-white mb-1.5 sm:mb-2 leading-snug transition-colors text-left">
+                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] group-hover:text-white mb-1.5 leading-snug transition-colors">
                       {item.title}
                     </h3>
 
-                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] group-hover:text-[#F7F2E8]/90 leading-relaxed font-normal text-justify indent-4 sm:indent-0 transition-colors">
+                    {/* Decorative Ornament Divider */}
+                    <div className="flex items-center justify-center gap-1.5 py-0.5 mb-1.5">
+                      <span className="h-px w-5 bg-[#B89555]/40 group-hover:bg-[#E5B869]/40" />
+                      <span className="text-[9px] text-[#B89555] group-hover:text-[#E5B869]">❖</span>
+                      <span className="h-px w-5 bg-[#B89555]/40" />
+                    </div>
+
+                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] group-hover:text-[#F7F2E8]/90 leading-relaxed font-normal text-justify indent-3 sm:indent-0 sm:text-center transition-colors">
                       {item.description}
                     </p>
                   </div>
 
-                  <div className="mt-3 sm:mt-5 pt-2 sm:pt-3 border-t border-[#6B4030]/15 group-hover:border-[#B89555]/30 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20] group-hover:text-[#E5B869] transition-colors">
+                  <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#6B4030]/15 group-hover:border-[#B89555]/30 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20] group-hover:text-[#E5B869] transition-colors">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] group-hover:bg-[#E5B869] transition-colors" />
                     <span>Verified Protocol</span>
                   </div>

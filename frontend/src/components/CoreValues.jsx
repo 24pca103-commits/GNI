@@ -137,45 +137,50 @@ export default function CoreValues() {
                   data-card-index={idx}
                   className="w-[82vw] max-w-[300px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div className="group h-full rounded-2xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-white text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555]/50 hover:shadow-lg">
-                    <div className="space-y-3 sm:space-y-4">
-                      {/* Top Row: Number & Circular Gold Badge Icon */}
-                      <div className="flex items-center justify-between">
-                        <span className="font-number text-xl sm:text-2xl font-bold leading-none text-[#4A2C20] group-hover:text-[#B89555] transition-colors">
-                          {v.num}
-                        </span>
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-[#B89555]/50 flex items-center justify-center transition-all bg-[#FAF6EE] text-[#4A2C20] group-hover:border-[#B89555] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] shadow-xs group-hover:scale-105">
-                          <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <div className="group h-full rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-[#FAF6EE] text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] hover:shadow-xl text-center">
+                    <div className="space-y-2.5 sm:space-y-3">
+                      {/* Top Large Circular Gold Medallion Icon */}
+                      <div className="relative flex justify-center pt-1">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-white text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
+                          <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
                         </div>
+                        <span className="absolute top-0 right-1 font-number text-xs font-bold px-2 py-0.5 rounded-full bg-[#4A2C20]/10 text-[#4A2C20]">
+                          0{v.num}
+                        </span>
                       </div>
 
                       {/* Value Title */}
-                      <div>
-                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold leading-tight text-[#241A16] text-left">
+                      <div className="space-y-1">
+                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold leading-tight text-[#241A16] group-hover:text-[#4A2C20] transition-colors">
                           {v.title}
                         </h3>
-                        <p className="font-['DM_Sans'] text-[11px] sm:text-xs font-semibold mt-1 leading-snug text-[#6B4030] text-left">
+                        <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-sm leading-snug text-[#6B4030]">
                           {v.statement}
                         </p>
                       </div>
 
+                      {/* Decorative Ornament Divider */}
+                      <div className="flex items-center justify-center gap-1.5 py-0.5">
+                        <span className="h-px w-6 bg-[#B89555]/40" />
+                        <span className="text-[10px] text-[#B89555]">❖</span>
+                        <span className="h-px w-6 bg-[#B89555]/40" />
+                      </div>
+
                       {/* Detail Description */}
-                      <p className="font-['DM_Sans'] text-xs leading-relaxed font-normal pt-1.5 sm:pt-2 border-t border-[#6B4030]/10 text-[#241A16]/80 text-justify indent-4 sm:indent-0">
+                      <p className="font-['DM_Sans'] text-xs leading-relaxed font-normal text-[#241A16]/80 text-justify indent-3 sm:indent-0 sm:text-center">
                         {v.detail}
                       </p>
+                    </div>
 
-                      {/* Benchmark Metric Tag */}
-                      <div className="flex items-center gap-2 pt-0.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium text-[#6B4030]">
+                    {/* Bottom Highlight Pill & Metric */}
+                    <div className="pt-2.5 mt-2.5 sm:pt-3 sm:mt-3 border-t border-[#6B4030]/15 space-y-1.5">
+                      <span className="inline-block w-full text-center text-[10.5px] sm:text-[11px] font-['DM_Sans'] px-2.5 py-1 rounded-full border border-[#B89555]/50 bg-white text-[#4A2C20] font-semibold group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:border-[#4A2C20] transition-all">
+                        {v.highlight}
+                      </span>
+                      <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-medium text-[#6B4030]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                         <span>{v.metric}</span>
                       </div>
-                    </div>
-
-                    {/* Bottom Highlight Pill */}
-                    <div className="pt-2.5 mt-2.5 sm:pt-4 sm:mt-4">
-                      <span className="inline-block w-full text-center text-[10px] sm:text-[11px] font-['DM_Sans'] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#6B4030]/15 bg-[#F7F2E8] text-[#6B4030] font-medium group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:font-semibold group-hover:border-[#B89555] transition-all">
-                        {v.highlight}
-                      </span>
                     </div>
                   </div>
                 </div>

@@ -43,54 +43,66 @@ export default function WhyJoinUs() {
     {
       step: '1',
       icon: Award,
-      title: 'Direct Living Master Lineage',
+      image: '/artisan/hands-on-studio.jpg',
+      title: 'Living Master Lineage',
+      subtitle: 'Unbroken ancestral goldsmith transmission',
       tag: 'Sacred Lineage',
-      desc: 'Learn directly under hereditary Tamil sthapathis and certified epigraphists with unbroken wisdom.',
+      desc: 'Learn directly under hereditary Tamil sthapathis and certified master goldsmiths with unbroken wisdom.',
       metric: 'Unbroken Lineage',
       badge: 'Master Sthapathi',
     },
     {
       step: '2',
       icon: Hammer,
-      title: '1:3 Harmonic Theory To Practice Ratio',
+      image: '/artisan/pedagogy-practice.jpg',
+      title: '75% Hands-on Practice',
+      subtitle: 'Tactile craftsmanship over theory',
       tag: 'Skill Over Theory',
-      desc: '75% tactile physical execution in dedicated studios: brass repousse, stone chiseling, and mineral pigments.',
+      desc: 'Intensive physical execution in dedicated studios: gold repousse, stone setting, wire drawing, and casting.',
       metric: '75% Studio Practice',
-      badge: 'Chisel & Hammer Work',
+      badge: 'Forge & Anvil Work',
     },
     {
       step: '3',
-      icon: Compass,
-      title: 'Livelihood Creation & Revenue Pathways',
+      icon: Sparkles,
+      image: '/artisan/pillar-applications.jpg',
+      title: 'Livelihood & Career',
+      subtitle: 'Crafting high-value luxury jewellery',
       tag: 'Skill To Income',
-      desc: 'Translate rock art and sacred metalwork into lucrative applications: pooja sanctums, jewellery, and luxury interiors.',
-      metric: '₹80K - ₹2.5L / Mo',
+      desc: 'Create bespoke antique gold jewellery, temple ornaments, and bridal sets for prestigious boutique markets.',
+      metric: '₹80K – ₹2.5L / Mo',
       badge: 'High-Demand Market',
     },
     {
       step: '4',
       icon: Layers,
-      title: 'Authentic Studio Kits & Tools Included',
+      image: '/artisan/studio-pigments.jpg',
+      title: 'Authentic Studio Kits',
+      subtitle: 'Complete goldsmith toolset provided',
       tag: 'Complete Materials',
-      desc: 'Artisan kit provided with hand-forged chisels, raw copper/brass sheets, and palm leaf styluses.',
+      desc: 'Full artisan toolkit provided: mini-anvils, chasing hammers, blowpipe, tweezers, and raw metal sheets.',
       metric: '100% Kit Provided',
       badge: 'Traditional Toolkit',
     },
     {
       step: '5',
       icon: Users,
-      title: 'A2O Creators Guild & Fellowship',
+      image: '/artisan/workshop.jpg',
+      title: 'Creators Guild & Atelier',
+      subtitle: 'Collaborative peer apprentice network',
       tag: 'Creative Circle',
-      desc: 'Lifetime access to the physical repository, peer guild critiques, and annual heritage showcase.',
+      desc: 'Lifetime access to the physical repository, peer guild critiques, and annual heritage jewellery showcase.',
       metric: 'Lifetime Fellowship',
       badge: 'Annual Showcase',
     },
     {
       step: '6',
       icon: Feather,
-      title: 'Revival of Endangered Cultural Pride',
+      image: '/artisan/pillar-epigraphy.jpg',
+      title: 'Enduring Cultural Pride',
+      subtitle: 'Reclaiming 2,500+ years of heritage',
       tag: 'Ancient Tamil Wisdom',
-      desc: 'Reclaim 2,500+ years of Tamil scriptural and metallurgy genius through hands-on practice.',
+      desc: 'Reclaim 2,500+ years of Tamil scriptural and metallurgy genius through hands-on jewellery creation.',
       metric: '2,500+ Yrs Heritage',
       badge: 'Save Ancient Wisdom',
     },
@@ -134,36 +146,64 @@ export default function WhyJoinUs() {
                   key={item.step}
                   className="w-[85vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
+                  <div className="bg-[#FAF6EE] rounded-2xl sm:rounded-3xl border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555] transition-all duration-300 flex flex-col justify-between group h-full overflow-hidden">
                     <div>
-                      {/* Header: Circular Golden Rim Icon Badge */}
-                      <div className="flex items-center justify-start mb-3 sm:mb-5">
-                        <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:scale-110">
-                          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                      {/* Top Image Banner with Visual Depth */}
+                      <div className="relative h-36 sm:h-44 w-full overflow-hidden bg-[#241A16]">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-[#241A16]/25 group-hover:bg-[#241A16]/15 transition-colors" />
+
+                        {/* Top Tag */}
+                        <span className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold bg-[#241A16]/85 backdrop-blur-xs text-[#B89555] border border-[#B89555]/30 shadow-xs">
+                          {item.tag}
+                        </span>
+                      </div>
+
+                      {/* Large Floating Circular Icon Medallion Overlapping Top Banner */}
+                      <div className="relative -mt-7 sm:-mt-8 flex justify-center z-10">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
+                          <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
                         </div>
                       </div>
 
-                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/15 mb-2 sm:mb-2.5">
-                        {item.tag}
-                      </span>
+                      {/* Centered Content Body */}
+                      <div className="p-4 sm:p-6 pt-2 sm:pt-3 text-center space-y-2">
+                        <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] group-hover:text-[#4A2C20] transition-colors leading-tight">
+                          {item.title}
+                        </h3>
 
-                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16] mb-1.5 sm:mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors text-left">
-                        {item.title}
-                      </h3>
+                        <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-sm text-[#6B4030] leading-snug">
+                          {item.subtitle}
+                        </p>
 
-                      <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal text-justify indent-4 sm:indent-0">
-                        {item.desc}
-                      </p>
+                        {/* Decorative Ornament Divider */}
+                        <div className="flex items-center justify-center gap-1.5 py-0.5">
+                          <span className="h-px w-6 bg-[#B89555]/40" />
+                          <span className="text-[10px] text-[#B89555]">❖</span>
+                          <span className="h-px w-6 bg-[#B89555]/40" />
+                        </div>
+
+                        <p className="font-['DM_Sans'] text-xs sm:text-[12.5px] text-[#241A16]/80 leading-relaxed font-normal text-justify indent-3 sm:indent-0 sm:text-center">
+                          {item.desc}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Card Footer: Metric & Badge */}
-                    <div className="mt-3 sm:mt-6 pt-2.5 sm:pt-4 border-t border-[#6B4030]/10 flex items-center justify-between">
-                      <span className="font-['DM_Sans'] text-[11px] sm:text-xs font-bold text-[#241A16]">
-                        {item.metric}
-                      </span>
-                      <span className="font-['DM_Sans'] text-[10px] sm:text-[11px] font-medium text-[#B89555]">
-                        {item.badge}
-                      </span>
+                    {/* Card Footer: Metric & Action Button */}
+                    <div className="p-4 sm:p-6 pt-0 mt-auto">
+                      <div className="pt-2.5 sm:pt-3 border-t border-[#6B4030]/15 flex items-center justify-between text-xs">
+                        <span className="font-['DM_Sans'] text-[11px] sm:text-xs font-bold text-[#241A16]">
+                          {item.metric}
+                        </span>
+                        <span className="px-3 py-1 rounded-full border border-[#B89555]/60 text-[10.5px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] uppercase tracking-wider transition-colors">
+                          {item.badge}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
