@@ -5,7 +5,6 @@ import {
   Users,
   ShieldCheck,
   Archive,
-  ArrowRight,
   Sparkles,
   CheckCircle2,
 } from 'lucide-react';
@@ -15,44 +14,44 @@ import FloatingBubbles from './FloatingBubbles';
 export default function Process() {
   const steps = [
     {
-      step: '1',
       title: 'Epigraphical & Script Ingestion',
       icon: FileText,
       description:
-        'Systematic documentation, field rubbings, and optical analysis of ancient Tamili Brahmi inscriptions, rock art, and copper plate records.',
-      badge: 'Step 1: Epigraphical Archival',
+        'Systematic documentation, field rubbings, and optical analysis of ancient inscriptions, rock art, and copper plate records.',
+      badge: 'Archival Protocol',
+      highlight: 'Field rubbings & optical archival',
     },
     {
-      step: '2',
       title: 'Material & Tool Standards Maintenance',
       icon: Hammer,
       description:
         'Sourcing pure copper, temple brass sheets, hand-forged steel chisels, and unadulterated mineral pigments adhering to traditional metallurgical codes.',
-      badge: 'Step 2: Sacred Metallurgy',
+      badge: 'Sacred Metallurgy',
+      highlight: 'Pure copper & hand-forged tools',
     },
     {
-      step: '3',
       title: 'Tactile Lineage Transmission',
       icon: Users,
       description:
-        'Intensive hands-on studio coaching under hereditary master sthapathis to instill correct muscle memory, striking rhythm, and sacred iconography.',
-      badge: 'Step 3: Studio Transmission',
+        'Intensive hands-on studio coaching under hereditary master craftsmen to instill correct muscle memory, striking rhythm, and sacred iconography.',
+      badge: 'Studio Transmission',
+      highlight: 'Direct master sthapathi coaching',
     },
     {
-      step: '4',
       title: 'Shilpa Canons & Authenticity Audits',
       icon: ShieldCheck,
       description:
-        'Every created artifact is evaluated against classical Shilpa Shastra proportions, Tamil iconometrical ratios, and geometric precision.',
-      badge: 'Step 4: Canonic Quality Audit',
+        'Every created artifact is evaluated against classical Shilpa Shastra proportions, traditional iconometrical ratios, and geometric precision.',
+      badge: 'Canonic Quality Audit',
+      highlight: 'Agamic precision & canonic audits',
     },
     {
-      step: '5',
       title: 'Repository Archiving & Livelihood Release',
       icon: Archive,
       description:
         'Approved works enter the physical repository gallery and catalog, while creators are connected with architectural clients, fashion houses, and collectors.',
-      badge: 'Step 5: Catalog & Livelihood',
+      badge: 'Catalog & Livelihood',
+      highlight: 'Gallery catalog & client release',
     },
   ];
 
@@ -61,10 +60,10 @@ export default function Process() {
       {/* Floating Animated Bubbles */}
       <FloatingBubbles count={8} color="#B89555" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header in Title Case */}
         <Reveal direction="up" delay={100}>
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
               <Sparkles className="w-3.5 h-3.5 text-[#B89555]" />
               <span>Repository Protocols</span>
@@ -81,55 +80,91 @@ export default function Process() {
           </div>
         </Reveal>
 
-        {/* 5-Step Process Timeline / Cards in Title Case */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 relative z-10">
-          {steps.map((item, index) => {
-            const Icon = item.icon;
+        {/* Vertical Staggered Timeline Layout */}
+        <div className="relative">
+          {/* Central Golden Timeline Spine (Desktop) */}
+          <div className="hidden md:block absolute left-1/2 top-4 bottom-4 w-0.5 bg-gradient-to-b from-transparent via-[#B89555] to-transparent -translate-x-1/2 z-0" />
 
-            return (
-              <Reveal key={index} direction="up" delay={index * 100}>
-                <div className="bg-white hover:bg-[#FAF6EE] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full select-none text-center">
-                  <div>
-                    {/* Header: Large Circular Golden Badge Icon */}
-                    <div className="flex justify-center mb-3">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] group-hover:bg-[#4A2C20] text-[#4A2C20] group-hover:text-[#F7F2E8] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:scale-110">
-                        <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
+          {/* Mobile Left Timeline Spine */}
+          <div className="md:hidden absolute left-6 top-4 bottom-4 w-0.5 bg-gradient-to-b from-transparent via-[#B89555] to-transparent z-0" />
+
+          <div className="space-y-8 sm:space-y-12 relative z-10">
+            {steps.map((item, index) => {
+              const Icon = item.icon;
+              const isEven = index % 2 === 0;
+
+              return (
+                <div key={item.title} className="relative flex items-center md:justify-between">
+                  {/* Desktop Layout: Left Card or Empty Space */}
+                  <div className={`hidden md:block md:w-[45%] ${isEven ? 'text-right pr-6' : 'order-2 text-left pl-6'}`}>
+                    <Reveal direction={isEven ? 'left' : 'right'} delay={150}>
+                      <div className="bg-white hover:bg-[#FAF6EE] p-6 sm:p-7 rounded-2xl sm:rounded-3xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+                        <div className={`flex items-center gap-2 mb-3 ${isEven ? 'justify-end' : 'justify-start'}`}>
+                          <span className="inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] bg-[#FAF6EE] px-3 py-1 rounded-full border border-[#B89555]/30">
+                            {item.badge}
+                          </span>
+                        </div>
+
+                        <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] mb-2 leading-snug">
+                          {item.title}
+                        </h3>
+
+                        <p className="font-['DM_Sans'] text-xs sm:text-[13px] text-[#6B4030] leading-relaxed font-normal mb-4 text-justify indent-3 sm:indent-0">
+                          {item.description}
+                        </p>
+
+                        <div className={`pt-3 border-t border-[#6B4030]/10 flex items-center gap-1.5 text-[11px] font-['DM_Sans'] font-medium text-[#4A2C20] ${isEven ? 'justify-end' : 'justify-start'}`}>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                          <span>{item.highlight}</span>
+                        </div>
                       </div>
-                    </div>
-
-                    <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] mb-1.5">
-                      {item.badge}
-                    </span>
-
-                    <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] mb-1.5 leading-snug">
-                      {item.title}
-                    </h3>
-
-                    {/* Decorative Ornament Divider */}
-                    <div className="flex items-center justify-center gap-1.5 py-0.5 mb-1.5">
-                      <span className="h-px w-5 bg-[#B89555]/40" />
-                      <span className="text-[9px] text-[#B89555]">❖</span>
-                      <span className="h-px w-5 bg-[#B89555]/40" />
-                    </div>
-
-                    <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal text-justify indent-3 sm:indent-0 sm:text-center">
-                      {item.description}
-                    </p>
+                    </Reveal>
                   </div>
 
-                  <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#6B4030]/10 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#4A2C20]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#B89555]" />
-                    <span>Verified Protocol</span>
+                  {/* Central Golden Medallion Node (Desktop & Mobile) */}
+                  <div className="absolute left-6 -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 z-20">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#B89555] bg-[#FAF6EE] text-[#4A2C20] flex items-center justify-center shadow-md group hover:scale-110 hover:bg-[#4A2C20] hover:text-[#F7F2E8] hover:border-[#4A2C20] transition-all duration-300">
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    </div>
+                  </div>
+
+                  {/* Desktop Layout: Right Card or Empty Space */}
+                  <div className={`hidden md:block md:w-[45%] ${isEven ? 'order-2 pl-6' : 'order-1 pr-6'}`} />
+
+                  {/* Mobile Layout Card (Right aligned next to left timeline) */}
+                  <div className="md:hidden pl-14 w-full">
+                    <Reveal direction="up" delay={150}>
+                      <div className="bg-white hover:bg-[#FAF6EE] p-5 sm:p-6 rounded-2xl border border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md transition-all duration-300">
+                        <div className="mb-2.5">
+                          <span className="inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider text-[#B89555] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#B89555]/30">
+                            {item.badge}
+                          </span>
+                        </div>
+
+                        <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] mb-1.5 leading-snug">
+                          {item.title}
+                        </h3>
+
+                        <p className="font-['DM_Sans'] text-xs text-[#6B4030] leading-relaxed font-normal mb-3 text-justify indent-3 sm:indent-0">
+                          {item.description}
+                        </p>
+
+                        <div className="pt-2.5 border-t border-[#6B4030]/10 flex items-center gap-1.5 text-[10.5px] font-['DM_Sans'] font-medium text-[#4A2C20]">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#B89555]" />
+                          <span>{item.highlight}</span>
+                        </div>
+                      </div>
+                    </Reveal>
                   </div>
                 </div>
-              </Reveal>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {/* Quality Commitment Banner - Clean Ivory & Gold Border */}
         <Reveal direction="up" delay={500}>
-          <div className="mt-10 sm:mt-12 max-w-4xl mx-auto rounded-2xl sm:rounded-3xl bg-[#FAF6EE] border border-[#B89555]/40 p-5 sm:p-6 text-[#241A16] shadow-sm">
+          <div className="mt-12 sm:mt-16 max-w-4xl mx-auto rounded-2xl sm:rounded-3xl bg-[#FAF6EE] border border-[#B89555]/40 p-5 sm:p-6 text-[#241A16] shadow-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-2.5 sm:gap-4 text-xs font-['DM_Sans'] text-left text-justify">
               <span className="flex items-center gap-2 font-bold text-[#4A2C20]">
                 <ShieldCheck className="w-4 h-4 text-[#B89555] shrink-0" />
