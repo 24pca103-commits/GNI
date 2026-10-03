@@ -14,7 +14,6 @@ import FloatingBubbles from './FloatingBubbles';
 
 export default function About() {
   const [activeDot, setActiveDot] = useState(0);
-  const [selectedPillar, setSelectedPillar] = useState(null);
   const scrollRef = useRef(null);
 
   const handleScroll = (e) => {
@@ -193,93 +192,25 @@ export default function About() {
           >
             {pillars.map((pillar) => {
               const IconComponent = pillar.icon;
-              const isSelected = selectedPillar === pillar.id;
 
               return (
                 <div
                   key={pillar.id}
                   className="w-[84vw] max-w-[320px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col"
                 >
-                  <div
-                    onClick={() => setSelectedPillar(isSelected ? null : pillar.id)}
-                    className={`cursor-pointer rounded-2xl sm:rounded-3xl p-5 sm:p-7 border transition-all duration-300 flex flex-col justify-between group h-full select-none ${
-                      isSelected
-                        ? 'bg-[#FAF6EE]/90 border-[#B89555] shadow-xl ring-2 ring-[#B89555]/40 scale-[1.02]'
-                        : 'bg-white border-[#6B4030]/15 shadow-sm hover:shadow-lg hover:border-[#B89555]/40'
-                    }`}
-                  >
+                  <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between group h-full">
                     <div>
-                      {/* Header: Circular Heritage Gold Medallion with Dual-Opposite Edge Blinking Stars (Active on Click) & Metric Pill */}
+                      {/* Header: Circular Heritage Gold Medallion & Metric Pill */}
                       <div className="flex items-center justify-between mb-3.5 sm:mb-5">
-                        {/* Relative Medallion Wrapper */}
-                        <div className="relative">
-                          {/* 3 Blinking Stars on BOTH Opposite Cross Edges - Visible on Card Hover & Click */}
-                          <div
-                            className={`transition-all duration-300 ${
-                              isSelected ? 'opacity-100 scale-100' : 'opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100'
-                            }`}
-                          >
-                            {/* Corner 1: Top-Right Diagonal Cross Cluster */}
-                            <div className="absolute -top-2.5 -right-2.5 z-30 pointer-events-none">
-                              {/* Primary Main Star */}
-                              <span className="inline-block text-[#B89555] text-sm font-bold leading-none animate-pulse drop-shadow-[0_0_8px_#D4AF37]">
-                                ✦
-                              </span>
-                              {/* Second Mini Star */}
-                              <span className="absolute -top-2 right-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:300ms] drop-shadow-[0_0_6px_#B89555]">
-                                ★
-                              </span>
-                              {/* Third Micro Star */}
-                              <span className="absolute top-2.5 -right-2 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:600ms] drop-shadow-[0_0_6px_#B89555]">
-                                ✦
-                              </span>
-                            </div>
-
-                            {/* Corner 2: Exact Diagonally Opposite Bottom-Left Cross Cluster */}
-                            <div className="absolute -bottom-2.5 -left-2.5 z-30 pointer-events-none">
-                              {/* Primary Main Star */}
-                              <span className="inline-block text-[#B89555] text-sm font-bold leading-none animate-pulse [animation-delay:200ms] drop-shadow-[0_0_8px_#D4AF37]">
-                                ✦
-                              </span>
-                              {/* Second Mini Star */}
-                              <span className="absolute -bottom-2 left-2 text-[#E5B869] text-[10px] leading-none animate-pulse [animation-delay:500ms] drop-shadow-[0_0_6px_#B89555]">
-                                ★
-                              </span>
-                              {/* Third Micro Star */}
-                              <span className="absolute bottom-2.5 -left-2 text-[#B89555] text-[9px] leading-none animate-pulse [animation-delay:800ms] drop-shadow-[0_0_6px_#B89555]">
-                                ✦
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Inner Circular Heritage Medallion */}
-                          <div
-                            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 flex items-center justify-center transition-all duration-300 shadow-xs relative z-10 ${
-                              isSelected
-                                ? 'bg-[#4A2C20] border-[#4A2C20] text-[#B89555] scale-110 shadow-md ring-2 ring-[#B89555]/50'
-                                : 'bg-[#FAF6EE] border-[#B89555] text-[#4A2C20] group-hover:bg-[#4A2C20] group-hover:border-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105'
-                            }`}
-                          >
-                            <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8] transition-transform duration-300" />
-                          </div>
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FAF6EE] border-2 border-[#B89555] text-[#4A2C20] flex items-center justify-center transition-all duration-300 shadow-xs group-hover:bg-[#4A2C20] group-hover:border-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-110 group-hover:shadow-md">
+                          <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8] transition-transform duration-300" />
                         </div>
-
-                        <span
-                          className={`text-[10.5px] sm:text-xs font-['DM_Sans'] font-bold px-3 py-1 rounded-full shadow-xs transition-all ${
-                            isSelected
-                              ? 'bg-[#B89555] text-[#241A16] border border-[#B89555]'
-                              : 'bg-[#FAF6EE] text-[#4A2C20] border border-[#B89555]/50 group-hover:bg-[#B89555] group-hover:text-[#241A16]'
-                          }`}
-                        >
+                        <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] font-bold text-[#4A2C20] bg-[#FAF6EE] border border-[#B89555]/50 px-3 py-1 rounded-full shadow-xs group-hover:bg-[#B89555] group-hover:text-[#241A16] group-hover:border-[#B89555] transition-all">
                           {pillar.metric}
                         </span>
                       </div>
 
-                      <h3
-                        className={`font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold mb-1.5 sm:mb-2.5 leading-snug transition-colors ${
-                          isSelected ? 'text-[#4A2C20]' : 'text-[#241A16] group-hover:text-[#4A2C20]'
-                        }`}
-                      >
+                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-2xl font-bold text-[#241A16] mb-1.5 sm:mb-2.5 leading-snug group-hover:text-[#4A2C20] transition-colors">
                         {pillar.title}
                       </h3>
 
