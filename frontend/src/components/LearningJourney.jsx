@@ -229,7 +229,7 @@ export default function LearningJourney() {
             {/* Background Temple & Field Exploration Drawing Banner in Glowing Sandal Outline Aligned to Right & Scaled Larger */}
             <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-end">
               <img
-                src="/artisan/reconnect-bg-banner.png"
+                src="/artisan/field-visit-banner.png"
                 alt="Archaeological Temple & Epigraphy Field Visit Drawing"
                 className="w-[120%] sm:w-[90%] md:w-[75%] h-[130%] sm:h-[150%] object-contain object-right opacity-65 sm:opacity-80 invert sepia saturate-[250%] hue-rotate-[350deg] brightness-125 mix-blend-screen scale-110 sm:scale-130 md:scale-140 transform translate-x-3 sm:translate-x-8"
               />
