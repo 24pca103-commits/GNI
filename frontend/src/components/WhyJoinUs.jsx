@@ -54,7 +54,7 @@ export default function WhyJoinUs() {
     {
       step: '2',
       icon: Hammer,
-      image: '/artisan/pedagogy-practice.jpg',
+      image: '/artisan/why-join-practice.jpg',
       title: '75% Hands-on Practice',
       subtitle: 'Tactile craftsmanship over theory',
       tag: 'Skill Over Theory',
