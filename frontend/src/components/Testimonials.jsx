@@ -250,8 +250,8 @@ export default function Testimonials() {
               ))}
             </div>
 
-            {/* Manual Navigation Controls for Touch & Mouse */}
-            <div className="flex items-center justify-center gap-3 pt-4">
+            {/* Manual Navigation Controls for Desktop (Hidden on Mobile) */}
+            <div className="hidden sm:flex items-center justify-center gap-3 pt-4">
               <button
                 onClick={() => handleManualSlide('prev')}
                 aria-label="Previous Testimonial"
