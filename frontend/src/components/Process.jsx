@@ -115,7 +115,7 @@ export default function Process() {
                       >
                         <div className="flex items-center justify-between gap-2 mb-3">
                           <span
-                            className={`inline-block text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider px-3 py-1 rounded-full border shadow-xs transition-colors duration-300 ${
+                            className={`inline-flex items-center text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold uppercase tracking-wider px-2.5 sm:px-3 py-1 rounded-full border shadow-xs transition-colors duration-300 whitespace-nowrap shrink-0 ${
                               isHovered
                                 ? 'bg-[#B89555] text-[#241A16] border-[#4A2C20]'
                                 : 'text-[#E5B869] bg-[#4A2C20] border-[#B89555]/40'
@@ -123,7 +123,7 @@ export default function Process() {
                           >
                             {item.badge}
                           </span>
-                          <span className="text-[11px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#6B4030]/20">
+                          <span className="text-[10.5px] sm:text-[11px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2.5 py-0.5 rounded-full border border-[#6B4030]/20 whitespace-nowrap shrink-0">
                             Protocol {index + 1}
                           </span>
                         </div>
@@ -173,9 +173,9 @@ export default function Process() {
                             : 'bg-white hover:bg-[#FAF6EE] border-[#6B4030]/15 hover:border-[#B89555] shadow-sm hover:shadow-md'
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <div className="flex items-center justify-between gap-1.5 mb-2.5">
                           <span
-                            className={`inline-block text-[10.5px] font-['DM_Sans'] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-xs transition-colors duration-300 ${
+                            className={`inline-flex items-center text-[10px] font-['DM_Sans'] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-xs transition-colors duration-300 whitespace-nowrap shrink-0 ${
                               isHovered
                                 ? 'bg-[#B89555] text-[#241A16] border-[#4A2C20]'
                                 : 'text-[#E5B869] bg-[#4A2C20] border-[#B89555]/40'
@@ -183,7 +183,7 @@ export default function Process() {
                           >
                             {item.badge}
                           </span>
-                          <span className="text-[10.5px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2 py-0.5 rounded-full border border-[#6B4030]/20">
+                          <span className="text-[10px] font-['DM_Sans'] font-bold text-[#6B4030] bg-[#FAF6EE] px-2 py-0.5 rounded-full border border-[#6B4030]/20 whitespace-nowrap shrink-0">
                             Protocol {index + 1}
                           </span>
                         </div>

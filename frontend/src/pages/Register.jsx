@@ -512,21 +512,21 @@ export default function Register() {
                         : 'border-[#6B4030]/20'
                     }`}
                   >
-                    {/* Clean Country Selector Dropdown */}
-                    <div className="relative border-r border-[#6B4030]/20 shrink-0 flex items-center bg-black/5 rounded-l-xl">
+                    {/* Clean Compact Country Selector Dropdown */}
+                    <div className="relative border-r border-[#6B4030]/20 shrink-0 flex items-center bg-black/5 rounded-l-xl w-[86px] sm:w-[96px]">
                       <select
                         aria-label="Country Code"
                         value={selectedCountryCode}
                         onChange={handleCountryChange}
-                        className="h-full pl-3 pr-7 py-2.5 bg-transparent text-xs font-['DM_Sans'] text-[#241A16] font-semibold focus:outline-hidden cursor-pointer appearance-none"
+                        className="w-full h-full pl-2.5 pr-6 py-2.5 bg-transparent text-xs font-['DM_Sans'] text-[#241A16] font-semibold focus:outline-hidden cursor-pointer appearance-none truncate"
                       >
                         {countryList.map((c) => (
                           <option key={c.code} value={c.code} className="bg-white text-[#241A16]">
-                            {c.flag} {c.name} ({c.dial})
+                            {c.flag} {c.dial} ({c.code})
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="w-3.5 h-3.5 text-[#6B4030] absolute right-2 pointer-events-none" />
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6B4030] absolute right-1.5 pointer-events-none" />
                     </div>
 
                     {/* Clean Phone Number Input */}

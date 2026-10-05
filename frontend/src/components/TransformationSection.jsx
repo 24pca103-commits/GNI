@@ -70,22 +70,22 @@ export default function TransformationSection() {
 
             {/* Application Domains Grid in Title Case */}
             <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-[#6B4030]/15">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-center">
-                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-left">
+                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors text-left">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Textile & Blouse</p>
-                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5">Traditional Motifs & Zari</p>
+                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5 pl-1">Traditional Motifs & Zari</p>
                 </div>
-                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
+                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors text-left">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Pooja Interiors</p>
-                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5">Sacred Architecture</p>
+                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5 pl-1">Sacred Architecture</p>
                 </div>
-                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
+                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors text-left">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Handmade Jewelry</p>
-                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5">Naga Metallurgy & Filigree</p>
+                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5 pl-1">Naga Metallurgy & Filigree</p>
                 </div>
-                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors">
+                <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors text-left">
                   <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Home Décor</p>
-                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5">Cultural Branding & Relief Art</p>
+                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5 pl-1">Cultural Branding & Relief Art</p>
                 </div>
               </div>
             </div>

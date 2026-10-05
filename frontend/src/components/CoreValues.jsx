@@ -140,12 +140,12 @@ export default function CoreValues() {
                   data-card-index={idx}
                   className="w-[82vw] max-w-[300px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col h-full"
                 >
-                  <div className="group h-full rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-[#FAF6EE] text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] hover:shadow-xl text-center">
+                  <div className="group h-full rounded-2xl sm:rounded-3xl p-4 sm:p-6 transition-all duration-300 flex flex-col justify-between select-none bg-[#FAF6EE] text-[#241A16] border border-[#6B4030]/15 shadow-sm hover:border-[#B89555] hover:shadow-xl text-center">
                     {/* Top Content Group */}
                     <div className="flex flex-col items-center">
                       {/* Top Large Circular Gold Medallion Image Icon */}
-                      <div className="flex justify-center pt-1 mb-3">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#B89555] bg-white p-2.5 flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
+                      <div className="flex justify-center pt-0.5 mb-2">
+                        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 border-[#B89555] bg-white p-2 flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-110">
                           <img
                             src={v.imageIcon}
                             alt={v.title}
@@ -156,38 +156,38 @@ export default function CoreValues() {
                       </div>
 
                       {/* Single-Line Value Title */}
-                      <h3 className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold leading-none text-[#241A16] group-hover:text-[#4A2C20] transition-colors whitespace-nowrap overflow-hidden text-ellipsis w-full mb-1.5">
+                      <h3 className="font-['Cormorant_Garamond'] text-base sm:text-xl font-bold leading-tight text-[#241A16] group-hover:text-[#4A2C20] transition-colors whitespace-nowrap overflow-hidden text-ellipsis w-full mb-1">
                         {v.title}
                       </h3>
 
                       {/* Fixed-Height Statement Subtitle for Perfect Alignment */}
-                      <div className="min-h-[32px] sm:min-h-[36px] flex items-center justify-center w-full mb-2">
-                        <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-[13px] leading-snug text-[#6B4030]">
+                      <div className="min-h-[22px] sm:min-h-[28px] flex items-center justify-center w-full mb-1.5">
+                        <p className="font-['Cormorant_Garamond'] italic text-[11.5px] sm:text-[13px] leading-tight text-[#6B4030]">
                           {v.statement}
                         </p>
                       </div>
 
                       {/* Decorative Ornament Divider */}
-                      <div className="flex items-center justify-center gap-1.5 py-1 mb-2.5 w-full">
-                        <span className="h-px w-6 bg-[#B89555]/40" />
-                        <span className="text-[10px] text-[#B89555]">❖</span>
-                        <span className="h-px w-6 bg-[#B89555]/40" />
+                      <div className="flex items-center justify-center gap-1.5 py-0.5 mb-1.5 w-full">
+                        <span className="h-px w-5 bg-[#B89555]/40" />
+                        <span className="text-[9px] text-[#B89555]">❖</span>
+                        <span className="h-px w-5 bg-[#B89555]/40" />
                       </div>
 
                       {/* Fixed-Height Description for Uniform Text Flow */}
-                      <div className="min-h-[64px] sm:min-h-[72px] flex items-center justify-center w-full">
-                        <p className="font-['DM_Sans'] text-xs leading-relaxed font-normal text-[#241A16]/80 text-center">
+                      <div className="min-h-[44px] sm:min-h-[56px] flex items-center justify-center w-full">
+                        <p className="font-['DM_Sans'] text-[11px] sm:text-xs leading-snug font-normal text-[#241A16]/80 text-center">
                           {v.detail}
                         </p>
                       </div>
                     </div>
 
                     {/* Bottom Highlight Pill & Metric locked to identical baseline */}
-                    <div className="pt-3 mt-4 border-t border-[#6B4030]/15 space-y-1.5 w-full">
-                      <span className="inline-block w-full text-center text-[10.5px] sm:text-[11px] font-['DM_Sans'] px-2.5 py-1 rounded-full border border-[#B89555]/50 bg-white text-[#4A2C20] font-semibold group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:border-[#4A2C20] transition-all whitespace-nowrap">
+                    <div className="pt-2 mt-2.5 border-t border-[#6B4030]/15 space-y-1 w-full">
+                      <span className="inline-block w-full text-center text-[10px] sm:text-[11px] font-['DM_Sans'] px-2 py-0.5 rounded-full border border-[#B89555]/50 bg-white text-[#4A2C20] font-semibold group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:border-[#4A2C20] transition-all whitespace-nowrap">
                         {v.highlight}
                       </span>
-                      <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-medium text-[#6B4030] whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1 text-[9.5px] sm:text-[10.5px] font-['DM_Sans'] font-medium text-[#6B4030] whitespace-nowrap">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#B89555] shrink-0" />
                         <span>{v.metric}</span>
                       </div>

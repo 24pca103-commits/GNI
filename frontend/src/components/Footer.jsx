@@ -63,7 +63,7 @@ export default function Footer() {
             <h4 className="font-['DM_Sans'] text-xs font-bold text-[#4A2C20]">
               Repository Sections
             </h4>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1.5 sm:space-y-1 sm:block">
+            <ul className="flex flex-col space-y-2 sm:space-y-1.5">
               {sections.map((item) => (
                 <li key={item.label}>
                   <a

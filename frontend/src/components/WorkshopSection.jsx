@@ -58,15 +58,15 @@ export default function WorkshopSection() {
                 className="w-full h-full object-cover"
               />
 
-              {/* Floating Fee Badge on Image - Solid Overlay */}
-              <div className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-6 bg-[#241A16]/90 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-[#B89555]/40 text-[#F7F2E8] space-y-0.5 sm:space-y-1">
-                <span className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#B89555] font-medium">
+              {/* Floating Fee Badge on Image - Compact Solid Overlay */}
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-6 sm:left-6 sm:right-6 bg-[#241A16]/90 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#B89555]/40 text-[#F7F2E8] space-y-0.5 sm:space-y-1">
+                <span className="font-['DM_Sans'] text-[9.5px] sm:text-xs text-[#B89555] font-medium">
                   Special Cohort Access
                 </span>
-                <p className="font-['Cormorant_Garamond'] text-xl sm:text-3xl font-bold text-white leading-tight">
+                <p className="font-['Cormorant_Garamond'] text-lg sm:text-3xl font-bold text-white leading-tight">
                   Introductory Fee: <span className="font-number text-[#B89555]">₹4,999</span>
                 </p>
-                <p className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#F7F2E8]/80 leading-relaxed text-justify indent-4 sm:indent-0">
+                <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#F7F2E8]/80 leading-tight">
                   Includes raw materials, inscription plate, and craft kit.
                 </p>
               </div>

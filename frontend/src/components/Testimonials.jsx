@@ -178,12 +178,12 @@ export default function Testimonials() {
               onMouseMove={handleMouseMove}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-2 cursor-grab active:cursor-grabbing select-none"
+              className="flex items-stretch gap-3.5 sm:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar py-2 cursor-grab active:cursor-grabbing select-none"
             >
               {displayList.map((item, idx) => (
                 <div
                   key={idx}
-                  className="w-[85vw] max-w-[340px] sm:w-[360px] md:w-[380px] shrink-0 flex flex-col"
+                  className="w-[calc(100vw-3rem)] max-w-[330px] sm:w-[360px] md:w-[380px] shrink-0 snap-center flex flex-col"
                 >
                   <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
                     <div>

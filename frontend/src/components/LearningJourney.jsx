@@ -244,17 +244,17 @@ export default function LearningJourney() {
             <div className="absolute bottom-3 right-3 sm:bottom-3.5 sm:right-3.5 w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 border-b-2 border-r-2 border-[#B89555] z-10" />
 
             <div className="space-y-2.5 sm:space-y-3 text-left w-full relative z-10 max-w-3xl">
-              {/* Top Row on Mobile: Icon + Badges */}
-              <div className="flex flex-wrap items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
-                    <MapPin className="w-4.5 h-4.5 sm:w-6 sm:h-6 text-[#241A16]" />
+              {/* Top Row on Mobile: Icon + Symmetrical Badges */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-[#B89555] text-[#241A16] flex items-center justify-center shrink-0 shadow-sm">
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-[#241A16]" />
                   </div>
-                  <span className="inline-block px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-semibold border border-[#B89555]/40">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] sm:text-xs font-['DM_Sans'] bg-white/10 text-[#B89555] font-semibold border border-[#B89555]/40 whitespace-nowrap">
                     Immersive Experience
                   </span>
                 </div>
-                <div className="shrink-0 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl bg-white/10 border border-[#B89555]/40 text-[10.5px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-semibold">
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-[#B89555]/40 text-[11px] sm:text-xs font-['DM_Sans'] text-[#B89555] font-semibold whitespace-nowrap">
                   ★ Guided by historians
                 </div>
               </div>
