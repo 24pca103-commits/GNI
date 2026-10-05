@@ -309,10 +309,10 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F2E8] text-[#241A16] py-6 sm:py-10 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-center">
-      <div className="max-w-xl mx-auto w-full relative z-10">
+    <div className="min-h-screen bg-[#F7F2E8] text-[#241A16] py-6 sm:py-8 px-4 relative overflow-hidden flex flex-col justify-center">
+      <div className="max-w-md mx-auto w-full relative z-10">
         {/* Top Navigation Back Link */}
-        <div className="mb-3 sm:mb-5">
+        <div className="mb-3 sm:mb-4">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-xs font-['DM_Sans'] font-medium text-[#6B4030] hover:text-[#4A2C20] transition-colors"
@@ -324,25 +324,25 @@ export default function Register() {
 
         {/* Success State View */}
         {isSuccess ? (
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-md text-center space-y-5 sm:space-y-6">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-xs">
-              <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" />
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-[#6B4030]/15 shadow-md text-center space-y-4 sm:space-y-5">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-xs">
+              <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">
                 Registration Successful!
               </h2>
-              <p className="font-['Cormorant_Garamond'] text-lg sm:text-xl text-[#6B4030] font-semibold">
+              <p className="font-['Cormorant_Garamond'] text-base sm:text-lg text-[#6B4030] font-semibold">
                 Welcome to the Heritage Creator Journey.
               </p>
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/75 max-w-lg mx-auto leading-relaxed">
+              <p className="font-['DM_Sans'] text-xs text-[#241A16]/75 max-w-sm mx-auto leading-relaxed">
                 Thank you for applying. Our institutional admissions guild has received your details and will reach out via email and WhatsApp with your cohort schedule and starter kit guidance.
               </p>
             </div>
 
             {registeredData && (
-              <div className="bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-[#6B4030]/15 text-left max-w-md mx-auto space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
+              <div className="bg-[#F7F2E8] rounded-xl p-4 border border-[#6B4030]/15 text-left space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
                 <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                   <span className="text-[#6B4030] font-medium">Applicant Name:</span>
                   <span className="font-bold text-[#4A2C20]">{registeredData.fullName}</span>
@@ -368,10 +368,10 @@ export default function Register() {
               </div>
             )}
 
-            <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
               <Link
                 to="/"
-                className="w-full sm:w-auto px-8 py-3 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-sm"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-sm text-center"
               >
                 Return to Home
               </Link>
@@ -391,7 +391,7 @@ export default function Register() {
                   setErrors({});
                   setTouched({});
                 }}
-                className="w-full sm:w-auto px-8 py-3 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#F7F2E8] hover:bg-[#ebd9bd] transition-colors border border-[#6B4030]/20"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#F7F2E8] hover:bg-[#ebd9bd] transition-colors border border-[#6B4030]/20 cursor-pointer"
               >
                 Register Another Applicant
               </button>
@@ -399,31 +399,36 @@ export default function Register() {
           </div>
         ) : (
           /* Main Application Form Container (Medium Size) */
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-8 border border-[#6B4030]/15 shadow-md">
-            {/* Header */}
-            <div className="text-center max-w-xl mx-auto mb-6 sm:mb-8">
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#B89555]" />
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#6B4030]/15 shadow-md">
+            {/* Header with Official Logo */}
+            <div className="text-center mx-auto mb-5">
+              <img
+                src="/artisan/logo.png"
+                alt="Global Nagas Institute"
+                className="h-14 sm:h-16 w-auto mx-auto object-contain mb-2.5 hover:scale-105 transition-transform"
+              />
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[11px] font-['DM_Sans'] font-medium mb-1.5">
+                <Sparkles className="w-3 h-3 text-[#B89555]" />
                 <span>Admissions Open 2026</span>
               </div>
-              <h1 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl font-bold text-[#241A16] tracking-tight leading-tight">
+              <h1 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16] tracking-tight leading-tight">
                 Heritage Creator Cohort Application
               </h1>
-              <p className="font-['DM_Sans'] mt-2 text-xs sm:text-sm text-[#6B4030] leading-relaxed font-normal text-left text-justify sm:text-center">
-                Register your interest and become part of our upcoming 60-day intensive hands-on craftsmanship cohort.
+              <p className="font-['DM_Sans'] mt-1 text-xs text-[#6B4030] leading-relaxed font-normal">
+                Register your interest for our upcoming 60-day intensive hands-on craftsmanship cohort.
               </p>
             </div>
 
             {/* Error Notification Banner */}
             {errorMessage && (
-              <div className="mb-6 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5">
+              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} noValidate className="space-y-4 sm:space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+              <div className="space-y-3.5">
                 {/* 1. Full Name (Text only - Numbers blocked) */}
                 <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
@@ -488,7 +493,7 @@ export default function Register() {
                 </div>
 
                 {/* 3. Phone / WhatsApp Number with Clean Integrated Country Selector */}
-                <div className="space-y-1 text-left sm:col-span-2">
+                <div className="space-y-1 text-left">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                       Mobile / WhatsApp Number <span className="text-red-600">*</span>
@@ -580,7 +585,7 @@ export default function Register() {
                 </div>
 
                 {/* 5. Profession / Background (Text only - Numbers blocked) */}
-                <div className="space-y-1 sm:col-span-2 text-left">
+                <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                     Current Profession / Background <span className="text-red-600">*</span> <span className="text-[10px] text-[#6B4030]/70">(Letters only)</span>
                   </label>
@@ -593,7 +598,7 @@ export default function Register() {
                       onChange={handleChange}
                       onKeyDown={handleTextOnlyKeyDown}
                       onBlur={handleBlur}
-                      placeholder="e.g. Architecture student, Textile artist, Interior consultant, Heritage researcher"
+                      placeholder="e.g. Architecture student, Textile artist, Heritage researcher"
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden ${
                         touched.profession && errors.profession
                           ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
@@ -612,7 +617,7 @@ export default function Register() {
                 </div>
 
                 {/* 6. Interested Heritage Skill Dropdown */}
-                <div className="space-y-1 sm:col-span-2 text-left">
+                <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                     Interested Heritage Skill Pillar <span className="text-red-600">*</span>
                   </label>
@@ -648,15 +653,15 @@ export default function Register() {
                 </div>
 
                 {/* 7. Experience Level */}
-                <div className="space-y-1.5 sm:col-span-2 text-left">
+                <div className="space-y-1.5 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                     Prior Experience Level <span className="text-red-600">*</span>
                   </label>
-                  <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                     {experienceOptions.map((lvl) => (
                       <label
                         key={lvl}
-                        className={`flex items-center justify-center p-2.5 sm:p-3 rounded-xl border text-xs font-['DM_Sans'] font-medium cursor-pointer transition-all ${
+                        className={`flex items-center justify-center p-2.5 rounded-xl border text-xs font-['DM_Sans'] font-medium cursor-pointer transition-all ${
                           formData.experienceLevel === lvl
                             ? 'bg-[#4A2C20] text-[#F7F2E8] border-[#4A2C20] shadow-xs'
                             : 'bg-[#F7F2E8]/40 text-[#241A16] border-[#6B4030]/20 hover:border-[#B89555]'
@@ -687,7 +692,7 @@ export default function Register() {
                 </div>
 
                 {/* 8. Why do you want to learn heritage skills? */}
-                <div className="space-y-1 sm:col-span-2 text-left">
+                <div className="space-y-1 text-left">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                     Why Do You Want to Learn Heritage Skills? <span className="text-red-600">*</span>
                   </label>
@@ -699,7 +704,7 @@ export default function Register() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       rows={3}
-                      placeholder="Share your goals (e.g. revive temple art, master stone scribing, bridal jewellery design, or start a creative craft business)..."
+                      placeholder="Share your goals (e.g. revive temple art, master stone scribing, bridal jewellery design, or creative craft)..."
                       className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden resize-none ${
                         touched.learningPurpose && errors.learningPurpose
                           ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'

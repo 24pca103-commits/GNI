@@ -28,7 +28,7 @@ export default function Footer() {
               <img
                 src="/artisan/logo.png"
                 alt="Global Nagas Institute logo"
-                className="h-10 sm:h-12 w-auto object-contain transition-transform duration-200 hover:scale-105"
+                className="h-14 sm:h-16 md:h-18 w-auto object-contain transition-transform duration-200 hover:scale-105"
               />
               <div className="flex flex-col justify-center">
                 <div className="flex items-center">

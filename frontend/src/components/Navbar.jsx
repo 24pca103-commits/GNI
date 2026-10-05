@@ -97,11 +97,11 @@ export default function Navbar() {
               <img
                 src="/artisan/logo.png"
                 alt="Global Nagas Institute logo"
-                className="h-11 sm:h-12 md:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
+                className="h-13 sm:h-15 md:h-18 lg:h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
               />
               <div className="flex flex-col justify-center min-w-0">
                 <div className="flex items-center">
-                  <span className="font-['Cormorant_Garamond'] text-base sm:text-xl md:text-2xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
+                  <span className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-3xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
                     Global Nagas Institute
                   </span>
                 </div>
