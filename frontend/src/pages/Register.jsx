@@ -309,10 +309,10 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F2E8] text-[#241A16] py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col justify-center">
-      <div className="max-w-3xl mx-auto w-full relative z-10">
+    <div className="min-h-screen bg-[#F7F2E8] text-[#241A16] py-6 sm:py-10 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-center">
+      <div className="max-w-xl mx-auto w-full relative z-10">
         {/* Top Navigation Back Link */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-3 sm:mb-5">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-xs font-['DM_Sans'] font-medium text-[#6B4030] hover:text-[#4A2C20] transition-colors"
@@ -324,13 +324,13 @@ export default function Register() {
 
         {/* Success State View */}
         {isSuccess ? (
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-12 border border-[#6B4030]/15 shadow-sm text-center space-y-5 sm:space-y-6">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-[#6B4030]/15 shadow-md text-center space-y-5 sm:space-y-6">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-xs">
               <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
 
             <div className="space-y-2">
-              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl font-bold text-[#241A16]">
+              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">
                 Registration Successful!
               </h2>
               <p className="font-['Cormorant_Garamond'] text-lg sm:text-xl text-[#6B4030] font-semibold">
@@ -342,7 +342,7 @@ export default function Register() {
             </div>
 
             {registeredData && (
-              <div className="bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-[#6B4030]/15 text-left max-w-md mx-auto space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
+              <div className="bg-[#F7F2E8] rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-[#6B4030]/15 text-left max-w-md mx-auto space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
                 <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                   <span className="text-[#6B4030] font-medium">Applicant Name:</span>
                   <span className="font-bold text-[#4A2C20]">{registeredData.fullName}</span>
@@ -398,8 +398,8 @@ export default function Register() {
             </div>
           </div>
         ) : (
-          /* Main Application Form Container */
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 md:p-12 border border-[#6B4030]/15 shadow-sm">
+          /* Main Application Form Container (Medium Size) */
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-8 border border-[#6B4030]/15 shadow-md">
             {/* Header */}
             <div className="text-center max-w-xl mx-auto mb-6 sm:mb-8">
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">

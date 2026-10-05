@@ -1,4 +1,4 @@
-import Registration from '../models/Registration.js';
+import { getPool } from '../config/mysql.js';
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -6,12 +6,15 @@ export const registerUser = async (req, res, next) => {
       fullName,
       email,
       phone,
+      country,
+      countryCode,
+      countryDial,
+      fullPhone,
       location,
       profession,
       interestedSkill,
       experienceLevel,
       learningPurpose,
-      password,
     } = req.body;
 
     // Validate presence of required fields
@@ -31,63 +34,97 @@ export const registerUser = async (req, res, next) => {
       });
     }
 
-    // Check for existing user with same email
+    const pool = getPool();
     const normalizedEmail = email.toLowerCase().trim();
-    const existingRegistration = await Registration.findOne({ email: normalizedEmail });
 
-    if (existingRegistration) {
+    // 1. Check for existing registration with same email using parameterized query
+    const [existingRows] = await pool.execute(
+      'SELECT id, email FROM `registrations` WHERE `email` = ? LIMIT 1',
+      [normalizedEmail]
+    );
+
+    if (existingRows && existingRows.length > 0) {
       return res.status(409).json({
         success: false,
-        message: 'An application with this email address already exists. Please use another email or contact support.',
+        message: 'An application with this email address already exists. Please use another email or contact admissions support.',
       });
     }
 
-    // Create and save new registration
-    const newRegistration = new Registration({
-      fullName: fullName.trim(),
-      email: normalizedEmail,
-      phone: phone.trim(),
-      location: location.trim(),
-      profession: profession.trim(),
+    // 2. Insert new registration into MySQL table using parameterized query
+    const insertQuery = `
+      INSERT INTO \`registrations\` (
+        \`full_name\`,
+        \`email\`,
+        \`phone\`,
+        \`country\`,
+        \`country_code\`,
+        \`country_dial\`,
+        \`full_phone\`,
+        \`location\`,
+        \`profession\`,
+        \`interested_skill\`,
+        \`experience_level\`,
+        \`learning_purpose\`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      fullName.trim(),
+      normalizedEmail,
+      phone.trim(),
+      country || 'India',
+      countryCode || 'IN',
+      countryDial || '+91',
+      fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
+      location.trim(),
+      profession.trim(),
       interestedSkill,
       experienceLevel,
-      learningPurpose: learningPurpose.trim(),
-      password: password || null,
-    });
+      learningPurpose.trim(),
+    ];
 
-    await newRegistration.save();
+    const [result] = await pool.execute(insertQuery, values);
 
     return res.status(201).json({
       success: true,
       message: 'Registration Successful! Welcome to the Heritage Creator journey.',
       data: {
-        id: newRegistration._id,
-        fullName: newRegistration.fullName,
-        email: newRegistration.email,
-        interestedSkill: newRegistration.interestedSkill,
-        experienceLevel: newRegistration.experienceLevel,
-        createdAt: newRegistration.createdAt,
+        id: result.insertId,
+        fullName: fullName.trim(),
+        email: normalizedEmail,
+        phone: phone.trim(),
+        country: country || 'India',
+        interestedSkill,
+        experienceLevel,
+        createdAt: new Date().toISOString(),
       },
     });
   } catch (error) {
-    // Handle Mongoose validation errors
-    if (error.name === 'ValidationError') {
-      const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({
+    console.error('[Registration Controller Error]', error);
+    // Handle MySQL duplicate key error (ER_DUP_ENTRY)
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({
         success: false,
-        message: messages.join('. '),
+        message: 'An application with this email address already exists.',
       });
     }
-    next(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error processing registration. Please try again.',
+      error: error.message,
+    });
   }
 };
 
 export const getRegistrationStatus = async (req, res) => {
   try {
-    const totalCount = await Registration.countDocuments();
+    const pool = getPool();
+    const [rows] = await pool.execute('SELECT COUNT(*) as total FROM `registrations`');
+    const totalCount = rows[0]?.total || 0;
+
     return res.status(200).json({
       success: true,
-      service: 'Artisan Coach Heritage Framework API',
+      service: 'Global Nagas Institute MySQL Database API',
       totalRegistered: totalCount,
       timestamp: new Date().toISOString(),
     });
@@ -95,6 +132,7 @@ export const getRegistrationStatus = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve registration statistics',
+      error: error.message,
     });
   }
 };

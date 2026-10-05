@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
-import { connectDB } from './config/db.js';
+import { initMySQL } from './config/mysql.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
@@ -10,8 +10,8 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 // Load environment variables
 dotenv.config();
 
-// Initialize MongoDB connection
-connectDB();
+// Initialize MySQL database connection & tables
+initMySQL();
 
 const app = express();
 
