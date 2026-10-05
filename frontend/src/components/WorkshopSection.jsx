@@ -49,7 +49,7 @@ export default function WorkshopSection() {
         <Reveal direction="up" delay={200}>
           <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#6B4030]/15 shadow-sm grid lg:grid-cols-12 items-stretch">
             {/* Left Column: Workshop Visual with Solid Overlay (No Gradients) */}
-            <div className="lg:col-span-5 relative bg-[#241A16] min-h-[220px] sm:min-h-[320px] lg:min-h-full">
+            <div className="lg:col-span-5 relative bg-[#241A16] h-60 sm:h-80 lg:h-auto min-h-[220px] sm:min-h-[320px] lg:min-h-full">
               <img
                 src="/artisan/workshop.jpg"
                 alt="Tamil heritage workshop hands-on experience"
@@ -59,14 +59,14 @@ export default function WorkshopSection() {
               />
 
               {/* Floating Fee Badge on Image - Compact Solid Overlay */}
-              <div className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-6 sm:left-6 sm:right-6 bg-[#241A16]/90 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-[#B89555]/40 text-[#F7F2E8] space-y-0.5 sm:space-y-1">
-                <span className="font-['DM_Sans'] text-[9.5px] sm:text-xs text-[#B89555] font-medium">
+              <div className="absolute bottom-2 left-2 right-2 sm:bottom-6 sm:left-6 sm:right-6 bg-[#241A16]/90 backdrop-blur-xs py-1.5 px-2.5 sm:p-4 rounded-lg sm:rounded-2xl border border-[#B89555]/40 text-[#F7F2E8] space-y-0.5 sm:space-y-1">
+                <span className="font-['DM_Sans'] text-[8.5px] sm:text-xs text-[#B89555] font-medium block">
                   Special Cohort Access
                 </span>
-                <p className="font-['Cormorant_Garamond'] text-lg sm:text-3xl font-bold text-white leading-tight">
+                <p className="font-['Cormorant_Garamond'] text-sm sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
                   Introductory Fee: <span className="font-number text-[#B89555]">₹4,999</span>
                 </p>
-                <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#F7F2E8]/80 leading-tight">
+                <p className="font-['DM_Sans'] text-[8.5px] sm:text-xs text-[#F7F2E8]/80 leading-tight">
                   Includes raw materials, inscription plate, and craft kit.
                 </p>
               </div>

@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Star, MessageSquareQuote } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
+import { Star, MessageSquareQuote, ChevronLeft, ChevronRight } from 'lucide-react';
 import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
@@ -9,6 +9,7 @@ export default function Testimonials() {
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+  const timeoutRef = useRef(null);
 
   const testimonials = [
     {
@@ -67,13 +68,21 @@ export default function Testimonials() {
     },
   ];
 
-  // Tripled list for infinite looping without jump
+  // Tripled list for infinite seamless looping
   const displayList = [...testimonials, ...testimonials, ...testimonials];
 
-  // Continuous smooth auto-scroll loop
+  // Helper to resume auto-scroll after inactivity
+  const resetInteractionTimeout = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2200);
+  };
+
+  // Continuous smooth auto-scroll loop (60fps requestAnimationFrame)
   useEffect(() => {
     let animId;
-    const speed = 0.6; // gentle smooth auto-scroll speed
+    const speed = 0.75; // smooth auto-scroll speed
 
     const step = () => {
       const el = scrollRef.current;
@@ -90,7 +99,10 @@ export default function Testimonials() {
     };
 
     animId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   // Mouse Drag Handlers
@@ -111,11 +123,7 @@ export default function Testimonials() {
 
   const handleMouseUp = () => {
     isDraggingRef.current = false;
-    setTimeout(() => {
-      if (!isDraggingRef.current) {
-        isInteractingRef.current = false;
-      }
-    }, 1500);
+    resetInteractionTimeout();
   };
 
   const handleMouseEnter = () => {
@@ -124,18 +132,28 @@ export default function Testimonials() {
 
   const handleMouseLeave = () => {
     isDraggingRef.current = false;
-    isInteractingRef.current = false;
+    resetInteractionTimeout();
   };
 
-  // Touch Handlers
+  // Touch Handlers for Mobile Swipe
   const handleTouchStart = () => {
     isInteractingRef.current = true;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
   };
 
   const handleTouchEnd = () => {
-    setTimeout(() => {
-      isInteractingRef.current = false;
-    }, 1500);
+    resetInteractionTimeout();
+  };
+
+  // Manual Slide Control with Prev/Next Buttons
+  const handleManualSlide = (direction) => {
+    isInteractingRef.current = true;
+    const el = scrollRef.current;
+    if (el) {
+      const scrollAmount = direction === 'next' ? 320 : -320;
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+    resetInteractionTimeout();
   };
 
   return (
@@ -164,9 +182,9 @@ export default function Testimonials() {
         {/* Auto-Scrolling & Manual Drag/Swipe Track */}
         <Reveal direction="up" delay={150}>
           <div className="relative py-2">
-            {/* Left & Right Soft Fade Gradient Masks */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
+            {/* Desktop-only Soft Fade Gradient Masks (hidden on mobile to prevent clipping/cutting off cards) */}
+            <div className="hidden sm:block pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
+            <div className="hidden sm:block pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
 
             {/* Scroll Container with combined auto-scroll and manual swipe/drag */}
             <div
@@ -178,12 +196,12 @@ export default function Testimonials() {
               onMouseMove={handleMouseMove}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              className="flex items-stretch gap-3.5 sm:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar py-2 cursor-grab active:cursor-grabbing select-none"
+              className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-3 px-2 sm:px-4 cursor-grab active:cursor-grabbing select-none"
             >
               {displayList.map((item, idx) => (
                 <div
                   key={idx}
-                  className="w-[calc(100vw-3rem)] max-w-[330px] sm:w-[360px] md:w-[380px] shrink-0 snap-center flex flex-col"
+                  className="w-[85vw] max-w-[315px] sm:w-[360px] md:w-[380px] shrink-0 flex flex-col"
                 >
                   <div className="bg-[#F7F2E8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col justify-between h-full group/card">
                     <div>
@@ -230,6 +248,24 @@ export default function Testimonials() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Manual Navigation Controls for Touch & Mouse */}
+            <div className="flex items-center justify-center gap-3 pt-4">
+              <button
+                onClick={() => handleManualSlide('prev')}
+                aria-label="Previous Testimonial"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#B89555] hover:text-[#241A16] hover:border-[#B89555] flex items-center justify-center transition-colors shadow-xs active:scale-95"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleManualSlide('next')}
+                aria-label="Next Testimonial"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#B89555] hover:text-[#241A16] hover:border-[#B89555] flex items-center justify-center transition-colors shadow-xs active:scale-95"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </Reveal>

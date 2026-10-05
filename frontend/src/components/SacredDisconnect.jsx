@@ -9,14 +9,14 @@ export default function SacredDisconnect() {
         {/* Master Centerpiece Frame with Heritage Double Gold Border and Temple Line Art Background */}
         <Reveal direction="zoom" delay={150}>
           <div className="bg-[#FAF6EE] rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 border border-[#B89555]/40 shadow-sm relative overflow-hidden">
-            {/* Background Architectural Temple, Manuscripts & Gold Jewellery Illustration Aligned to Right with Zoom Out */}
-            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-end">
+            {/* Background Architectural Temple, Manuscripts & Gold Jewellery Illustration with Mobile Zoom-In */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-center sm:justify-end">
               <img
                 src="/artisan/reconnect-bg-banner.png"
                 alt="Heritage Temple, Manuscripts & Gold Jewellery Drawing"
-                className="w-full h-full object-contain object-right opacity-75 md:opacity-90 mix-blend-multiply scale-85 sm:scale-95"
+                className="w-full h-full object-cover sm:object-contain object-center sm:object-right opacity-85 md:opacity-90 mix-blend-multiply scale-110 sm:scale-95"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/75 via-[#FAF6EE]/25 to-[#FAF6EE]/55" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/80 via-[#FAF6EE]/30 to-[#FAF6EE]/45 sm:from-[#FAF6EE]/75 sm:via-[#FAF6EE]/25 sm:to-[#FAF6EE]/55" />
             </div>
 
             {/* Corner Decorative Ornaments */}

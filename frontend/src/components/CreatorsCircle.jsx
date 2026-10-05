@@ -27,16 +27,16 @@ export default function CreatorsCircle() {
 
   return (
     <section id="community" className="py-12 md:py-20 bg-[#241A16] text-[#F7F2E8] relative overflow-hidden">
-      {/* Background Banner Image with Zoom-Out Visibility */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-end">
+      {/* Background Banner Image with Zoom-In Visibility */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden z-0 flex items-center justify-center lg:justify-end">
         <img
           src="/artisan/community-banner.jpg"
           alt="Tamil Heritage Goldsmith Creators Circle Guild Atelier"
-          className="w-full h-full object-contain sm:object-cover object-right md:object-center opacity-70 md:opacity-85 scale-90 sm:scale-100"
+          className="w-full h-full object-cover object-center lg:object-center opacity-80 md:opacity-85 scale-110 sm:scale-105 lg:scale-100"
         />
-        {/* Left Dark Gradient for Text Legibility & Right Clear Visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#241A16] via-[#241A16]/80 to-[#241A16]/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#241A16]/60 via-transparent to-[#241A16]/60" />
+        {/* Gradients for Text Legibility & Artwork Visibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#241A16] via-[#241A16]/75 to-[#241A16]/50 lg:bg-gradient-to-r lg:from-[#241A16] lg:via-[#241A16]/80 lg:to-[#241A16]/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#241A16]/50 via-transparent to-[#241A16]/50" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
