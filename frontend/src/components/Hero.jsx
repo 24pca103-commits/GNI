@@ -86,7 +86,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative pt-28 pb-8 sm:pt-36 sm:pb-12 md:pt-40 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
+      className="relative pt-28 pb-8 sm:pt-32 sm:pb-12 md:pt-36 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
     >
       {/* Background Auto-Sliding Carousel with Solid Color Overlay (No Gradients) */}
       <div className="absolute inset-0 z-0">

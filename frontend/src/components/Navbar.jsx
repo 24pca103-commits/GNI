@@ -93,27 +93,18 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Brand Logo with Title Case Text */}
-            <Link to="/" className="group flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <Link to="/" className="group flex items-center gap-2 sm:gap-3 min-w-0">
               <img
                 src="/artisan/logo.png"
                 alt="Global Nagas Institute logo"
-                className="h-13 sm:h-15 md:h-18 lg:h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
+                className="h-10 sm:h-12 md:h-14 lg:h-15 w-auto object-contain transition-transform duration-200 group-hover:scale-105 shrink-0"
               />
               <div className="flex flex-col justify-center min-w-0">
                 <div className="flex items-center">
-                  <span className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-3xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
+                  <span className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-2xl lg:text-3xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
                     Global Nagas Institute
                   </span>
                 </div>
-                {/* Subtitle under logo commented out as requested
-                <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
-                  <span className="h-px w-2 bg-[#B89555] shrink-0" />
-                  <span className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#6B4030] font-medium truncate">
-                    Heritage Framework & Repository
-                  </span>
-                  <span className="h-px w-2 bg-[#B89555] shrink-0" />
-                </div>
-                */}
               </div>
             </Link>
 
@@ -163,7 +154,7 @@ export default function Navbar() {
             <div className="hidden sm:flex items-center">
               <Link
                 to="/register"
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors border border-[#4A2C20] shadow-sm"
+                className="inline-flex items-center gap-1.5 px-4.5 py-2 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors border border-[#4A2C20] shadow-sm"
               >
                 <span>Register</span>
                 <ArrowRight className="w-3.5 h-3.5 text-[#B89555]" />
