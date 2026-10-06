@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Star, MessageSquareQuote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, MessageSquareQuote } from 'lucide-react';
 import Reveal from './Reveal';
 import FloatingBubbles from './FloatingBubbles';
 
@@ -145,17 +145,6 @@ export default function Testimonials() {
     resetInteractionTimeout();
   };
 
-  // Manual Slide Control with Prev/Next Buttons
-  const handleManualSlide = (direction) => {
-    isInteractingRef.current = true;
-    const el = scrollRef.current;
-    if (el) {
-      const scrollAmount = direction === 'next' ? 320 : -320;
-      el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-    resetInteractionTimeout();
-  };
-
   return (
     <section id="testimonials" className="py-8 md:py-16 bg-white relative overflow-hidden border-t border-[#6B4030]/15">
       {/* Floating Animated Bubbles */}
@@ -248,24 +237,6 @@ export default function Testimonials() {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Manual Navigation Controls for Desktop (Hidden on Mobile) */}
-            <div className="hidden sm:flex items-center justify-center gap-3 pt-4">
-              <button
-                onClick={() => handleManualSlide('prev')}
-                aria-label="Previous Testimonial"
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#B89555] hover:text-[#241A16] hover:border-[#B89555] flex items-center justify-center transition-colors shadow-xs active:scale-95"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleManualSlide('next')}
-                aria-label="Next Testimonial"
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF6EE] border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#B89555] hover:text-[#241A16] hover:border-[#B89555] flex items-center justify-center transition-colors shadow-xs active:scale-95"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </Reveal>
