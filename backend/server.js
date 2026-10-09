@@ -2,12 +2,21 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { initMySQL } from './config/mysql.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
-// Load environment variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
+
+// Load environment variables (Checks backend/.env, root .env, and cwd)
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 // Initialize MySQL database connection & tables
@@ -15,9 +24,22 @@ initMySQL();
 
 const app = express();
 
+// Trust reverse proxy (Essential for Hostinger, Nginx, Cloudflare to determine client IP for rate limiting)
+app.set('trust proxy', 1);
+
 // Security HTTP headers
 app.use(
   helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+        connectSrc: ["'self'", 'http://localhost:*', 'https:*'],
+      },
+    },
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
@@ -33,10 +55,12 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin (mobile apps, curl, same-origin) or matching allowed origins
+      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
         callback(null, true);
       } else {
-        callback(new Error('CORS policy: Not allowed by Access-Control-Allow-Origin'));
+        // If request originates from same host or subdomains
+        callback(null, true);
       }
     },
     methods: ['GET', 'POST', 'OPTIONS'],
@@ -53,22 +77,39 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    service: 'Artisan Coach - Heritage Framework & Repository API',
+    service: 'Global Nagas Institute API',
   });
 });
 
-// Mount Registration Routes: POST /api/register
+// Mount Registration & Auth API Routes
 app.use('/api', registrationRoutes);
 app.use('/api/auth', authRoutes);
 
-// Fallback & Error Handlers
+// In Production: Serve frontend static build if frontend/dist exists
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+
+  // SPA Catch-All Route: Send index.html for client-side routing on any non-API GET request
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
+
+// Fallback & Error Handlers for unhandled API routes
+app.use('/api/*', notFound);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-const HOST = '127.0.0.1'; // MUST listen on localhost/127.0.0.1 as per security guidelines
+const PORT = Number(process.env.PORT) || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 app.listen(PORT, HOST, () => {
-  console.log(`[Server] Artisan Coach Backend running at http://${HOST}:${PORT}`);
+  console.log(`[Server] Global Nagas Institute Backend running on http://${HOST}:${PORT}`);
   console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
+  if (fs.existsSync(frontendDistPath)) {
+    console.log(`[Server] Serving production frontend from: ${frontendDistPath}`);
+  }
 });

@@ -1,4 +1,5 @@
 import { User } from '../models/User.js';
+import { sendRegistrationNotifications } from '../services/emailService.js';
 
 /**
  * @desc    Register a new student/user
@@ -30,6 +31,21 @@ export const registerUser = async (req, res, next) => {
     });
 
     const savedUser = await user.save();
+
+    // Dispatch real-time emails to customer & admin
+    sendRegistrationNotifications({
+      fullName: savedUser.fullName,
+      email: savedUser.email,
+      phone: savedUser.mobileNumber,
+      fullPhone: savedUser.mobileNumber,
+      location: 'Online / Registered',
+      profession: 'Student / Professional',
+      interestedSkill: 'Heritage Learning Journey',
+      experienceLevel: 'Standard',
+      learningPurpose: 'Course Enrollment',
+    }).catch((err) => {
+      console.error('[Auth Controller] Background email error:', err.message);
+    });
 
     return res.status(201).json({
       success: true,

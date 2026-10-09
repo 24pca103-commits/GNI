@@ -1,4 +1,5 @@
 import { getPool } from '../config/mysql.js';
+import { sendRegistrationNotifications } from '../services/emailService.js';
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -84,6 +85,26 @@ export const registerUser = async (req, res, next) => {
     ];
 
     const [result] = await pool.execute(insertQuery, values);
+
+    // Dispatch real-time confirmation email to customer & alert to admin (24pca103@anjaconline.org)
+    const registrationDetails = {
+      fullName: fullName.trim(),
+      email: normalizedEmail,
+      phone: phone.trim(),
+      country: country || 'India',
+      countryCode: countryCode || 'IN',
+      countryDial: countryDial || '+91',
+      fullPhone: fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
+      location: location.trim(),
+      profession: profession.trim(),
+      interestedSkill,
+      experienceLevel,
+      learningPurpose: learningPurpose.trim(),
+    };
+
+    sendRegistrationNotifications(registrationDetails).catch((err) => {
+      console.error('[Registration Controller] Background email error:', err.message);
+    });
 
     return res.status(201).json({
       success: true,

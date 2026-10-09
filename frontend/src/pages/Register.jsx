@@ -188,6 +188,7 @@ export default function Register() {
         break;
     }
 
+    return error;
   };
 
   // Validate entire form before submission
@@ -267,7 +268,8 @@ export default function Register() {
     e.preventDefault();
 
     if (!validateForm()) {
-      setErrorMessage('Please correct the highlighted fields before submitting.');
+      setErrorMessage('Please fill in all required fields correctly before submitting.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -300,9 +302,7 @@ export default function Register() {
       setRegisteredData(result.data || submissionPayload);
       setIsSuccess(true);
     } catch (err) {
-      // Fallback in case of mock environment without live backend: grant friendly instant confirmation
-      setRegisteredData(submissionPayload);
-      setIsSuccess(true);
+      setErrorMessage(err.message || 'Registration failed. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
