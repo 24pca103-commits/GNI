@@ -1,9 +1,19 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteRule . /index.html [L]
+
+  # 1. Reverse proxy /api requests to local Node.js backend (Port 5000)
+  RewriteRule ^api/(.*)$ http://127.0.0.1:5000/api/$1 [P,L]
+
+  # 2. Never rewrite /api requests to index.html
+  RewriteCond %{REQUEST_URI} ^/api/ [NC]
+  RewriteRule ^ - [L]
+
+  # 3. Allow real files and directories to load directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 4. Single Page Application (SPA) fallback to index.html
+  RewriteRule ^ index.html [L]
 </IfModule>

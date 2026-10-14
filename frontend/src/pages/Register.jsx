@@ -284,8 +284,10 @@ export default function Register() {
       fullPhone: `${currentCountry.dial} ${formData.phone}`,
     };
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -293,7 +295,16 @@ export default function Register() {
         body: JSON.stringify(submissionPayload),
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      let result = {};
+
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON server response:', text);
+        throw new Error('Backend server is unreachable or returned an invalid response. Please ensure the backend is running on Hostinger.');
+      }
 
       if (!response.ok) {
         throw new Error(result.message || 'Registration failed. Please check your details and try again.');
