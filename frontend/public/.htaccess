@@ -2,15 +2,11 @@
   RewriteEngine On
   RewriteBase /
 
-  # 1. Allow real static files and directories (JS, CSS, images) to load directly
+  # Static files and directories load directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # 2. Never rewrite /api to index.html so Hostinger Node.js can handle it
-  RewriteCond %{REQUEST_URI} ^/api [NC]
-  RewriteRule ^ - [L]
-
-  # 3. SPA Client-Side Routing for Frontend
+  # SPA Client-Side Routing fallback
   RewriteRule ^ index.html [L]
 </IfModule>
