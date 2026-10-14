@@ -127,13 +127,25 @@ app.use('/api/*', notFound);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = Number(process.env.PORT) || 5000;
+const rawPort = process.env.PORT;
+const isNamedPipeOrSocket = rawPort && isNaN(Number(rawPort));
+const PORT = isNamedPipeOrSocket ? rawPort : Number(rawPort) || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
 
-app.listen(PORT, HOST, () => {
-  console.log(`[Server] Global Nagas Institute Backend running on http://${HOST}:${PORT}`);
-  console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
-  if (resolvedFrontendPath) {
-    console.log(`[Server] Serving production frontend from: ${resolvedFrontendPath}`);
-  }
-});
+if (isNamedPipeOrSocket) {
+  app.listen(PORT, () => {
+    console.log(`[Server] Global Nagas Institute Backend listening on socket/pipe: ${PORT}`);
+    console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
+    if (resolvedFrontendPath) {
+      console.log(`[Server] Serving production frontend from: ${resolvedFrontendPath}`);
+    }
+  });
+} else {
+  app.listen(PORT, HOST, () => {
+    console.log(`[Server] Global Nagas Institute Backend running on http://${HOST}:${PORT}`);
+    console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
+    if (resolvedFrontendPath) {
+      console.log(`[Server] Serving production frontend from: ${resolvedFrontendPath}`);
+    }
+  });
+}
