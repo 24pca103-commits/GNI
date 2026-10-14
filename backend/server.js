@@ -12,7 +12,20 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
+
+// Detect frontend dist in various Hostinger or local directory structures
+const possibleFrontendPaths = [
+  path.resolve(__dirname, '../frontend/dist'),
+  path.resolve(__dirname, '../public_html'),
+  path.resolve(__dirname, '../dist'),
+  path.resolve(__dirname, './dist'),
+  path.resolve(__dirname, './public'),
+  path.resolve(__dirname, '..'),
+  path.resolve(__dirname, '.'),
+];
+const resolvedFrontendPath = possibleFrontendPaths.find(
+  (dir) => fs.existsSync(dir) && fs.existsSync(path.join(dir, 'index.html'))
+);
 
 // Load environment variables (Checks backend/.env, root .env, and cwd)
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -73,7 +86,7 @@ app.use(express.json({ limit: '20kb' }));
 app.use(express.urlencoded({ extended: true, limit: '20kb' }));
 
 // Base / Health Check
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.status(200).json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -81,20 +94,31 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mount Registration & Auth API Routes
+// Mount Registration & Auth API Routes (both with and without /api prefix for Hostinger compatibility)
 app.use('/api', registrationRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/', registrationRoutes);
+app.use('/auth', authRoutes);
 
-// In Production: Serve frontend static build if frontend/dist exists
-if (fs.existsSync(frontendDistPath)) {
-  app.use(express.static(frontendDistPath));
+// In Production: Serve frontend static build if index.html was discovered
+if (resolvedFrontendPath) {
+  app.use(express.static(resolvedFrontendPath));
 
   // SPA Catch-All Route: Send index.html for client-side routing on any non-API GET request
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/register') || req.path.startsWith('/auth')) {
       return next();
     }
-    res.sendFile(path.join(frontendDistPath, 'index.html'));
+    res.sendFile(path.join(resolvedFrontendPath, 'index.html'));
+  });
+} else {
+  // If frontend is not alongside backend, ensure root URL returns clean 200 OK
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      service: 'Global Nagas Institute API',
+      status: 'online',
+      message: 'API is running successfully on Hostinger.',
+    });
   });
 }
 
@@ -109,7 +133,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 app.listen(PORT, HOST, () => {
   console.log(`[Server] Global Nagas Institute Backend running on http://${HOST}:${PORT}`);
   console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
-  if (fs.existsSync(frontendDistPath)) {
-    console.log(`[Server] Serving production frontend from: ${frontendDistPath}`);
+  if (resolvedFrontendPath) {
+    console.log(`[Server] Serving production frontend from: ${resolvedFrontendPath}`);
   }
 });

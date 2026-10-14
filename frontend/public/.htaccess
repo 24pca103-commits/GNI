@@ -2,18 +2,15 @@
   RewriteEngine On
   RewriteBase /
 
-  # 1. Reverse proxy /api requests to local Node.js backend (Port 5000)
-  RewriteRule ^api/(.*)$ http://127.0.0.1:5000/api/$1 [P,L]
-
-  # 2. Never rewrite /api requests to index.html
-  RewriteCond %{REQUEST_URI} ^/api/ [NC]
-  RewriteRule ^ - [L]
-
-  # 3. Allow real files and directories to load directly
+  # 1. Allow real static files and directories (JS, CSS, images) to load directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # 4. Single Page Application (SPA) fallback to index.html
+  # 2. Never rewrite /api to index.html so Hostinger Node.js can handle it
+  RewriteCond %{REQUEST_URI} ^/api [NC]
+  RewriteRule ^ - [L]
+
+  # 3. SPA Client-Side Routing for Frontend
   RewriteRule ^ index.html [L]
 </IfModule>
