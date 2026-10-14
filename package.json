@@ -19,5 +19,8 @@
     "global-nagas-institute"
   ],
   "author": "Global Nagas Institute",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
 }

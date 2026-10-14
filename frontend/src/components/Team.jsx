@@ -6,52 +6,52 @@ import FloatingBubbles from './FloatingBubbles';
 export default function Team() {
   const teamMembers = [
     {
-      name: 'Dr. S. Thirugnanam, Ph.D.',
-      designation: 'Director & Chief Epigraphist',
+      name: 'Mr. Kandaswamy',
+      designation: 'Director | Master Artisan – Nakshi Metal Craft & Repousse',
       image: '',
       description:
-        '28+ years documenting Southern Indian stone inscriptions and Tamili Brahmi scripts.',
-      specialty: 'Tamili Script & Epigraphy',
+        'Fourth-generation craftsman specializing in traditional brass and copper repoussé, handcrafted metal artistry, and Nakshi techniques.',
+      specialty: 'Nakshi Metal Craft & Repousse',
     },
     {
-      name: 'Shilpi R. Balasubramanian',
-      designation: 'Principal Sthapathi & Master Sculptor',
+      name: 'Mr. Ramesh',
+      designation: 'Director | Heritage Design & Creative Applications',
       image: '',
       description:
-        'Hereditary sthapathi with 30+ temple installations and lost-wax bronze casting mastery.',
-      specialty: 'Temple Canons & Metallurgy',
+        'Bridges traditional heritage motifs with contemporary bridal fashion, customized textiles, jewellery, and luxury interiors.',
+      specialty: 'Heritage Design & Creative Applications',
     },
     {
-      name: 'Meenakshi Sundaram',
-      designation: 'Head of Traditional Painting Studio',
+      name: 'Mr. Arun Raja Mohan',
+      designation: 'Director | Epigraphy & Heritage Research',
       image: '',
       description:
-        'Specialist in prehistoric rock art pigments, mineral ores, and temple murals.',
-      specialty: 'Rock Art & Natural Pigments',
+        'Yaakkai Heritage Trust researcher with 8+ years of experience documenting Tamil inscriptions, Tamil-Brahmi (Tamili), and Vattezhuthu scripts.',
+      specialty: 'Epigraphy & Heritage Research',
     },
     {
-      name: 'Ananya V. Raja, M.Des',
-      designation: 'Curator of Heritage Applications',
+      name: 'Mr. Sudhakar',
+      designation: 'Head, Yaakkai Heritage Trust | Prehistoric Art & Natural Pigments',
       image: '',
       description:
-        'Transforms sacred motifs into contemporary high-fashion bridal wear and luxury interiors.',
-      specialty: 'Blouse Design & Interiors',
+        'Specialist in prehistoric rock art, traditional pigments, mineral sources, and memorial stone heritage.',
+      specialty: 'Prehistoric Art & Natural Pigments',
     },
     {
-      name: 'K. Senthil Kumar',
-      designation: 'Master Artisan & Repousse Craftsman',
+      name: 'Mr. Kumeravel Ramaswamy',
+      designation: 'Research Dean | Copper Plate Inscriptions & Ancient Tamil Heritage',
       image: '',
       description:
-        'Fourth-generation brass and copper repousse master leading intensive studio hammer work.',
-      specialty: 'Naga Metal Craft & Repousse',
+        'Yaakkai Heritage Trust researcher specializing in copper plate inscriptions, manuscripts, and Tamil historical traditions.',
+      specialty: 'Copper Plate Inscriptions & Heritage',
     },
     {
-      name: 'Dr. Radhika Natarajan',
-      designation: 'Research Dean & Manuscript Archivist',
+      name: 'Shilpi R. Anandan',
+      designation: 'Master Sculptor | Temple Sculpture & Traditional Metallurgy',
       image: '',
       description:
-        'Deciphers medieval copper plates and manuscripts, connecting Sangam lore to art.',
-      specialty: 'Copper Plates & Sangam Lore',
+        'Hereditary Sthapathi with experience in 30+ temple installations, traditional sculptural canons, and lost-wax bronze casting.',
+      specialty: 'Temple Sculpture & Metallurgy',
     },
   ];
 
@@ -73,7 +73,7 @@ export default function Team() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] leading-relaxed font-normal sm:text-center sm:mx-auto max-w-2xl">
-              Meet the hereditary sthapathis, epigraphists, and master artisans transmitting ancient Tamil mastery.
+              Meet our master artisans, heritage researchers, and creative mentors dedicated to preserving traditional craftsmanship and transforming ancient wisdom into contemporary design.
             </p>
           </div>
         </Reveal>
@@ -124,6 +124,16 @@ export default function Team() {
             </Reveal>
           ))}
         </div>
+
+        {/* Bottom Tagline */}
+        <Reveal direction="up" delay={650}>
+          <div className="mt-10 sm:mt-14 text-center">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#4A2C20]/5 border border-[#B89555]/30 text-[#4A2C20] font-['DM_Sans'] text-xs sm:text-sm font-semibold tracking-wide shadow-xs">
+              <Sparkles className="w-4 h-4 text-[#B89555]" />
+              <span>GNI — Preserving Ancient Mastery. Inspiring Modern Creators.</span>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
