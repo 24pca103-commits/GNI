@@ -2,11 +2,14 @@
   RewriteEngine On
   RewriteBase /
 
-  # Static files and directories load directly
+  # 1. Forward all /api calls to the live Hostinger Node.js subdomain
+  RewriteRule ^api/(.*)$ https://api.globalnagasinstitute.in/api/$1 [L,R=307]
+
+  # 2. Static files and directories load directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # SPA Client-Side Routing fallback
+  # 3. SPA Client-Side Routing fallback
   RewriteRule ^ index.html [L]
 </IfModule>

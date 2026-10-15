@@ -284,7 +284,7 @@ export default function Register() {
       fullPhone: `${currentCountry.dial} ${formData.phone}`,
     };
 
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.globalnagasinstitute.in/api';
 
     try {
       const response = await fetch(`${API_BASE_URL}/register`, {
