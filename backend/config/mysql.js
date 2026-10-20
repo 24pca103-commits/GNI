@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import { DEFAULT_COURSES } from '../models/defaultCourses.js';
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const dbConfig = process.env.DATABASE_URL || process.env.DB_URL
 let pool = null;
 
 export const initMySQL = async () => {
-  const createTableQuery = `
+  const createRegistrationsTableQuery = `
     CREATE TABLE IF NOT EXISTS \`registrations\` (
       \`id\` INT AUTO_INCREMENT PRIMARY KEY,
       \`full_name\` VARCHAR(255) NOT NULL,
@@ -42,6 +43,70 @@ export const initMySQL = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `;
 
+  const createCoursesTableQuery = `
+    CREATE TABLE IF NOT EXISTS \`courses\` (
+      \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+      \`title\` VARCHAR(255) NOT NULL,
+      \`slug\` VARCHAR(255) NOT NULL UNIQUE,
+      \`category\` VARCHAR(150) NOT NULL,
+      \`badge\` VARCHAR(100) DEFAULT 'Admissions Open',
+      \`duration\` VARCHAR(100) DEFAULT '60 Days',
+      \`mode\` VARCHAR(100) DEFAULT 'Hybrid / Studio Hands-on',
+      \`original_price\` DECIMAL(10,2) NOT NULL DEFAULT 9999.00,
+      \`discount_price\` DECIMAL(10,2) NOT NULL DEFAULT 4999.00,
+      \`discount_percent\` INT DEFAULT 50,
+      \`description\` TEXT NOT NULL,
+      \`highlights\` TEXT DEFAULT NULL,
+      \`image_url\` VARCHAR(500) DEFAULT '/artisan/workshop.jpg',
+      \`seats_total\` INT DEFAULT 50,
+      \`seats_available\` INT DEFAULT 18,
+      \`is_active\` TINYINT(1) DEFAULT 1,
+      \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX \`idx_slug\` (\`slug\`),
+      INDEX \`idx_active\` (\`is_active\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  const seedCoursesIfEmpty = async (p) => {
+    try {
+      const [rows] = await p.query('SELECT COUNT(*) as cnt FROM `courses`');
+      if (rows && rows[0]?.cnt === 0) {
+        console.log('[MySQL] Seeding default courses into courses table...');
+        for (const c of DEFAULT_COURSES) {
+          await p.query(
+            `INSERT INTO \`courses\` (
+              \`title\`, \`slug\`, \`category\`, \`badge\`, \`duration\`, \`mode\`,
+              \`original_price\`, \`discount_price\`, \`discount_percent\`,
+              \`description\`, \`highlights\`, \`image_url\`, \`seats_total\`,
+              \`seats_available\`, \`is_active\`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              c.title,
+              c.slug,
+              c.category,
+              c.badge,
+              c.duration,
+              c.mode,
+              c.original_price,
+              c.discount_price,
+              c.discount_percent,
+              c.description,
+              c.highlights,
+              c.image_url,
+              c.seats_total,
+              c.seats_available,
+              c.is_active,
+            ]
+          );
+        }
+        console.log('[MySQL] Seeded default heritage courses successfully.');
+      }
+    } catch (seedErr) {
+      console.warn('[MySQL] Course seeding skipped:', seedErr.message);
+    }
+  };
+
   try {
     // 1. Connect directly to target database via pool (Standard for Hostinger & production)
     pool = mysql.createPool(dbConfig);
@@ -50,9 +115,14 @@ export const initMySQL = async () => {
     console.log(`[MySQL] Connected to database ${dbTarget}`);
     connection.release();
 
-    // 2. Ensure registrations table exists
-    await pool.query(createTableQuery);
-    console.log(`[MySQL] Verified 'registrations' table structure.`);
+    // 2. Ensure registrations and courses tables exist
+    await pool.query(createRegistrationsTableQuery);
+    await pool.query(createCoursesTableQuery);
+    console.log(`[MySQL] Verified 'registrations' and 'courses' tables structure.`);
+
+    // 3. Seed default courses if empty
+    await seedCoursesIfEmpty(pool);
+
     return pool;
   } catch (error) {
     // If database does not exist (ER_BAD_DB_ERROR, error 1049) on local dev, attempt to create it
@@ -69,8 +139,10 @@ export const initMySQL = async () => {
         await serverConnection.end();
 
         pool = mysql.createPool(dbConfig);
-        await pool.query(createTableQuery);
-        console.log(`[MySQL] Database created and verified 'registrations' table.`);
+        await pool.query(createRegistrationsTableQuery);
+        await pool.query(createCoursesTableQuery);
+        await seedCoursesIfEmpty(pool);
+        console.log(`[MySQL] Database created and verified 'registrations' and 'courses' tables.`);
         return pool;
       } catch (createErr) {
         console.warn(`[MySQL] Automatic database creation skipped: ${createErr.message}`);

@@ -8,6 +8,8 @@ import fs from 'fs';
 import { initMySQL } from './config/mysql.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -91,6 +93,8 @@ app.get('/api/health', (req, res) => {
 // Mount API Routes
 app.use('/api', registrationRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Serve frontend static build (Production)
 if (frontendDistPath) {

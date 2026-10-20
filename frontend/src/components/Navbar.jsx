@@ -14,6 +14,7 @@ import {
   Compass,
   Palette,
   MoreHorizontal,
+  GraduationCap,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -32,6 +33,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Home', href: '#home', icon: Home, shortLabel: 'Home' },
     { label: 'About', href: '#about', icon: Compass, shortLabel: 'About' },
+    { label: 'Courses', href: '#courses', icon: GraduationCap, shortLabel: 'Courses' },
     { label: 'Heritage Pillars', href: '#heritage-skills', icon: Bookmark, shortLabel: 'Pillars' },
     { label: 'Studios', href: '#facilities', icon: Palette, shortLabel: 'Studios' },
     { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles, shortLabel: 'Journey' },
@@ -49,6 +51,12 @@ export default function Navbar() {
 
   // Remaining sections accessible via the "More" bottom sheet
   const moreNavLinks = [
+    {
+      label: 'Courses & Cohorts',
+      href: '#courses',
+      icon: GraduationCap,
+      desc: 'Browse programs & exclusive discount offers',
+    },
     {
       label: 'Heritage Pillars',
       href: '#heritage-skills',

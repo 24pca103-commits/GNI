@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -71,13 +71,28 @@ export default function Register() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [registeredData, setRegisteredData] = useState(null);
 
-  const skillOptions = [
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const skillParam = params.get('skill');
+    if (skillParam) {
+      setFormData((prev) => ({ ...prev, interestedSkill: skillParam }));
+    }
+  }, [location.search]);
+
+  const defaultSkillOptions = [
     'Painting & Natural Mineral Pigments',
     'Libi – Language, Scripts & Epigraphy',
     'Sculpturing & Sacred Nagas Metal Art',
     'Heritage Applications & Interior Crafts',
     'All Four Skill Pillars',
   ];
+
+  const skillOptions =
+    formData.interestedSkill && !defaultSkillOptions.includes(formData.interestedSkill)
+      ? [formData.interestedSkill, ...defaultSkillOptions]
+      : defaultSkillOptions;
 
   const experienceOptions = ['Beginner', 'Intermediate', 'Advanced'];
 

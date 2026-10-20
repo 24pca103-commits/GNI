@@ -10,6 +10,7 @@ import StudioFacilities from '../components/StudioFacilities';
 import CoreValues from '../components/CoreValues';
 import LearningJourney from '../components/LearningJourney';
 import WorkshopSection from '../components/WorkshopSection';
+import CoursesSection from '../components/CoursesSection';
 import Process from '../components/Process';
 import TransformationSection from '../components/TransformationSection';
 import Team from '../components/Team';
@@ -53,6 +54,9 @@ export default function Home() {
 
         {/* 6-Step Workshop */}
         <WorkshopSection />
+
+        {/* Dynamic Admin-Managed Courses & Cohorts with Live Discounts */}
+        <CoursesSection />
 
         {/* 4. Process of Maintenance */}
         <Process />

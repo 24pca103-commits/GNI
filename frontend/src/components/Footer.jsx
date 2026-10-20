@@ -3,6 +3,7 @@ import { ArrowUp, MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   const sections = [
+    { label: 'Courses & Cohorts', href: '#courses' },
     { label: 'Heritage Skills', href: '#heritage-skills' },
     { label: 'Core Values', href: '#core-values' },
     { label: 'Learning Journey', href: '#learning-journey' },
@@ -10,8 +11,16 @@ export default function Footer() {
     { label: 'Community', href: '#community' },
   ];
 
-  const handleStaticClick = (e) => {
+  const handleSectionClick = (e, href) => {
     e.preventDefault();
+    if (window.location.pathname !== '/') {
+      window.location.href = '/' + href;
+      return;
+    }
+    const target = document.querySelector(href);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const scrollToTop = () => {
@@ -59,8 +68,8 @@ export default function Footer() {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    onClick={handleStaticClick}
-                    className="font-['DM_Sans'] text-xs text-[#6B4030] hover:text-[#B89555] transition-colors cursor-default"
+                    onClick={(e) => handleSectionClick(e, item.href)}
+                    className="font-['DM_Sans'] text-xs text-[#6B4030] hover:text-[#B89555] transition-colors cursor-pointer"
                   >
                     {item.label}
                   </a>
@@ -113,7 +122,16 @@ export default function Footer() {
         {/* Bottom Copyright */}
         <div className="pt-4 sm:pt-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
           <p>© <span className="font-number font-normal">2026</span> Global Nagas Institute. All Rights Reserved.</p>
-          <p className="text-[11px] sm:text-xs">Designed with ancient Tamil cultural reverence.</p>
+          <div className="flex items-center gap-3 text-[11px] sm:text-xs">
+            <span>Designed with ancient Tamil cultural reverence.</span>
+            <span className="text-[#6B4030]/30">•</span>
+            <a
+              href="/admin"
+              className="text-[#6B4030]/70 hover:text-[#B89555] font-semibold transition-colors inline-flex items-center gap-1"
+            >
+              Faculty Portal (Admin)
+            </a>
+          </div>
         </div>
       </div>
     </footer>
