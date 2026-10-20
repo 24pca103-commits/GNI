@@ -13,11 +13,13 @@ import {
   Users,
   Compass,
   Palette,
+  MoreHorizontal,
 } from 'lucide-react';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +39,43 @@ export default function Navbar() {
     { label: 'Creators Circle', href: '#community', icon: Users, shortLabel: 'Circle' },
   ];
 
+  // 4 Main mobile items (Journey in the exact center at index 2)
+  const mobileNavItems = [
+    { label: 'Home', href: '#home', icon: Home, shortLabel: 'Home' },
+    { label: 'About', href: '#about', icon: Compass, shortLabel: 'About' },
+    { label: 'Learning Journey', href: '#learning-journey', icon: Sparkles, shortLabel: 'Journey', isCenter: true },
+    { label: 'Workshops', href: '#workshop', icon: Hammer, shortLabel: 'Workshop' },
+  ];
+
+  // Remaining sections accessible via the "More" bottom sheet
+  const moreNavLinks = [
+    {
+      label: 'Heritage Pillars',
+      href: '#heritage-skills',
+      icon: Bookmark,
+      desc: '4 traditional craft disciplines',
+    },
+    {
+      label: 'Studio Facilities',
+      href: '#facilities',
+      icon: Palette,
+      desc: 'Artisan forge, labs & stations',
+    },
+    {
+      label: 'Creators Circle',
+      href: '#community',
+      icon: Users,
+      desc: 'Master artisans & community guild',
+    },
+    {
+      label: 'Cohort Admissions 2026',
+      href: '/register',
+      icon: Sparkles,
+      desc: 'Apply for 60-day intensive cohort',
+      isRoute: true,
+    },
+  ];
+
   const handleNavClick = (e, href) => {
     e.preventDefault();
     if (window.location.pathname !== '/') {
@@ -48,6 +87,7 @@ export default function Navbar() {
       target.scrollIntoView({ behavior: 'smooth' });
     }
     setMobileMenuOpen(false);
+    setMoreMenuOpen(false);
   };
 
   return (
@@ -176,14 +216,102 @@ export default function Navbar() {
       </nav>
       </header>
 
-      {/* Mobile Fixed Bottom Navigation Bar - Icons with Names Below */}
+      {/* Mobile "More" Menu Bottom Sheet / Drawer */}
+      {moreMenuOpen && (
+        <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 bg-black/65 backdrop-blur-xs transition-opacity duration-200"
+            onClick={() => setMoreMenuOpen(false)}
+          />
+
+          {/* Bottom Drawer Card */}
+          <div className="relative z-10 bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.5)] p-4 pb-6 space-y-3 max-h-[80vh] overflow-y-auto">
+            {/* Header with Title & Close Button */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#B89555] animate-pulse" />
+                <span className="font-['Cormorant_Garamond'] text-lg font-bold text-[#F7F2E8]">
+                  More Repository Sections
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMoreMenuOpen(false)}
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-[#F7F2E8] flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Close menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Navigation Cards List */}
+            <div className="grid grid-cols-1 gap-2 pt-0.5">
+              {moreNavLinks.map((item) => {
+                const Icon = item.icon;
+                if (item.isRoute) {
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      onClick={() => setMoreMenuOpen(false)}
+                      className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#4A2C20] to-[#5C3728] border border-[#B89555]/40 text-[#F7F2E8] hover:border-[#B89555] transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-[#B89555]/20 text-[#B89555] flex items-center justify-center shrink-0">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-['DM_Sans'] text-xs font-bold text-white leading-tight">
+                            {item.label}
+                          </p>
+                          <p className="font-['DM_Sans'] text-[10.5px] text-[#F7F2E8]/70 leading-tight mt-0.5">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-[#B89555] shrink-0" />
+                    </Link>
+                  );
+                }
+
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#B89555]/30 text-[#F7F2E8] transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#B89555]/15 text-[#B89555] flex items-center justify-center shrink-0">
+                        <Icon className="w-4.5 h-4.5" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] leading-tight">
+                          {item.label}
+                        </p>
+                        <p className="font-['DM_Sans'] text-[10px] text-[#F7F2E8]/60 leading-tight mt-0.5">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#F7F2E8]/40 shrink-0" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Fixed Bottom Navigation Bar - Exactly 5 items, Journey at Center */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] py-1.5 px-1">
         <div className="flex items-center justify-between w-full max-w-md mx-auto">
-          {navLinks.map((item) => {
-            const isSpecial = item.label.toLowerCase().includes('learning journey');
+          {mobileNavItems.map((item) => {
             const Icon = item.icon;
 
-            if (isSpecial) {
+            // Center Journey item: shining golden sparkle icon, NO solid circular background
+            if (item.isCenter) {
               return (
                 <a
                   key={item.label}
@@ -193,10 +321,10 @@ export default function Navbar() {
                   title={item.label}
                   className="flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-transform cursor-pointer group"
                 >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#B89555] text-[#241A16] shadow-md">
-                    <Sparkles className="w-4 h-4 text-[#241A16] animate-pulse" />
+                  <div className="w-7 h-7 flex items-center justify-center rounded-lg group-hover:bg-white/10 transition-colors">
+                    <Sparkles className="w-5 h-5 text-[#B89555] animate-pulse drop-shadow-[0_0_8px_rgba(184,149,85,0.85)]" />
                   </div>
-                  <span className="text-[9.5px] font-['DM_Sans'] font-bold text-[#B89555] mt-0.5 truncate max-w-full">
+                  <span className="text-[9.5px] font-['DM_Sans'] font-bold text-[#B89555] animate-text-glow mt-0.5 truncate max-w-full">
                     {item.shortLabel || item.label}
                   </span>
                 </a>
@@ -221,6 +349,28 @@ export default function Navbar() {
               </a>
             );
           })}
+
+          {/* 5th Item: More Button */}
+          <button
+            type="button"
+            onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+            aria-label="More navigation sections"
+            title="More sections"
+            className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group ${
+              moreMenuOpen ? 'text-[#B89555]' : 'text-[#F7F2E8]/85 hover:text-[#B89555]'
+            }`}
+          >
+            <div className={`w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${
+              moreMenuOpen ? 'bg-white/15' : 'group-hover:bg-white/10'
+            }`}>
+              <MoreHorizontal className="w-4.5 h-4.5" />
+            </div>
+            <span className={`text-[9.5px] font-['DM_Sans'] font-medium mt-0.5 truncate max-w-full ${
+              moreMenuOpen ? 'text-[#B89555] font-bold' : 'text-[#F7F2E8]/80 group-hover:text-[#B89555]'
+            }`}>
+              More
+            </span>
+          </button>
         </div>
       </div>
     </>
