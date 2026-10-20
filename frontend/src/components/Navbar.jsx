@@ -217,17 +217,17 @@ export default function Navbar() {
       </nav>
       </header>
 
-      {/* Mobile "More" Menu Bottom Sheet / Drawer */}
+      {/* Mobile "More" Menu Bottom Sheet / Drawer - Positioned cleanly right above the bottom nav bar */}
       {moreMenuOpen && (
-        <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
+        <div className="sm:hidden fixed inset-0 z-40 flex flex-col justify-end pb-[54px]">
           {/* Backdrop overlay */}
           <div
-            className="fixed inset-0 bg-black/65 backdrop-blur-xs transition-opacity duration-200"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-200"
             onClick={() => setMoreMenuOpen(false)}
           />
 
           {/* Bottom Drawer Card */}
-          <div className="relative z-10 bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.5)] p-4 pb-6 space-y-3 max-h-[80vh] overflow-y-auto">
+          <div className="relative z-10 bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.6)] p-4 pb-4 space-y-3 max-h-[72vh] overflow-y-auto">
             {/* Header with Title & Close Button */}
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
               <div className="flex items-center gap-2">
@@ -239,7 +239,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMoreMenuOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-[#F7F2E8] flex items-center justify-center transition-colors cursor-pointer"
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-[#F7F2E8] flex items-center justify-center transition-colors cursor-pointer select-none outline-none"
                 aria-label="Close menu"
               >
                 <X className="w-4 h-4" />
@@ -357,7 +357,7 @@ export default function Navbar() {
             onClick={() => setMoreMenuOpen(!moreMenuOpen)}
             aria-label="More navigation sections"
             title="More sections"
-            className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group ${
+            className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group select-none outline-none focus:outline-none [-webkit-tap-highlight-color:transparent] ${
               moreMenuOpen ? 'text-[#B89555]' : 'text-[#F7F2E8]/85 hover:text-[#B89555]'
             }`}
           >
