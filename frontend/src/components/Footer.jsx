@@ -3,7 +3,6 @@ import { ArrowUp, MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   const sections = [
-    { label: 'Courses & Cohorts', href: '#courses' },
     { label: 'Heritage Skills', href: '#heritage-skills' },
     { label: 'Core Values', href: '#core-values' },
     { label: 'Learning Journey', href: '#learning-journey' },
