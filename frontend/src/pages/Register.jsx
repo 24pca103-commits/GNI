@@ -18,6 +18,7 @@ import {
   Copy,
   Check,
   CreditCard,
+  ExternalLink,
 } from 'lucide-react';
 
 export default function Register() {
@@ -401,7 +402,7 @@ export default function Register() {
                 </div>
 
                 {/* Bank Details for Registration Payment Card in Success View */}
-                <div className="rounded-xl border border-[#B89555]/40 bg-[#FAF7F0] p-3.5 sm:p-4 text-left space-y-2 text-xs font-['DM_Sans']">
+                <div className="rounded-xl border border-[#B89555]/40 bg-[#FAF7F0] p-3.5 sm:p-4 text-left space-y-2.5 text-xs font-['DM_Sans']">
                   <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-2">
                     <div className="flex items-center gap-1.5 font-bold text-[#4A2C20]">
                       <Landmark className="w-3.5 h-3.5 text-[#B89555]" />
@@ -411,7 +412,36 @@ export default function Register() {
                       Fee: ₹4,999
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] pt-1">
+
+                  {/* Online Payment Link Button (Source: Startupwala) */}
+                  <div className="bg-white p-2.5 rounded-lg border border-[#B89555]/30 space-y-1.5">
+                    <div className="flex items-center justify-between text-[10.5px]">
+                      <span className="font-bold text-[#4A2C20]">Pay Online (Instant Gateway)</span>
+                      <span className="text-[9.5px] text-[#6B4030] bg-[#FAF7F0] px-1.5 py-0.5 rounded border border-[#6B4030]/15 font-medium">Source: Startupwala</span>
+                    </div>
+                    <a
+                      href="https://share.google/pyTPtvnuTIIM6Fc0X"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-xs transition-colors"
+                    >
+                      <span>Pay Registration Fee via Startupwala Portal</span>
+                      <ExternalLink className="w-3 h-3 text-[#B89555]" />
+                    </a>
+                    <div className="flex items-center justify-between text-[10px] text-[#6B4030]">
+                      <span className="truncate">Ref: https://share.google/pyTPtvnuTIIM6Fc0X</span>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard('https://share.google/pyTPtvnuTIIM6Fc0X', 'paylink_success')}
+                        className="text-[#B89555] hover:text-[#4A2C20] flex items-center gap-1 shrink-0 ml-1 cursor-pointer font-medium"
+                      >
+                        {copiedField === 'paylink_success' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        <span>{copiedField === 'paylink_success' ? 'Copied' : 'Copy Link'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] pt-0.5">
                     <div>
                       <span className="text-[#6B4030] block">Beneficiary:</span>
                       <strong className="text-[#241A16]">Global Nagas Institute</strong>
@@ -460,7 +490,7 @@ export default function Register() {
                       </button>
                     </div>
                   </div>
-                  <div className="text-[10.5px] text-[#6B4030] pt-1">
+                  <div className="text-[10.5px] text-[#6B4030] pt-1 border-t border-[#6B4030]/10">
                     📍 Campus: No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
                   </div>
                 </div>
@@ -831,7 +861,7 @@ export default function Register() {
               </div>
 
               {/* Add Bank details for registration payment */}
-              <div className="rounded-2xl border border-[#B89555]/40 bg-[#FAF7F0] p-4 sm:p-5 space-y-3 text-left">
+              <div className="rounded-2xl border border-[#B89555]/40 bg-[#FAF7F0] p-4 sm:p-5 space-y-3.5 text-left">
                 <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-2.5">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0">
@@ -839,7 +869,7 @@ export default function Register() {
                     </div>
                     <div>
                       <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">
-                        Add Bank details for registration payment
+                        Bank Details for Registration Payment
                       </h3>
                       <p className="font-['DM_Sans'] text-[11px] text-[#6B4030]">
                         Cohort Registration Fee: <strong className="font-number text-[#4A2C20]">₹4,999</strong>
@@ -847,96 +877,140 @@ export default function Register() {
                     </div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-[#B89555]/20 text-[#6B4030] text-[10px] font-['DM_Sans'] font-semibold shrink-0">
-                    Official Account
+                    Official Payment
                   </span>
                 </div>
 
-                <div className="space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
-                  {/* Account Name */}
-                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
-                    <span className="text-[#6B4030]">Beneficiary Name:</span>
-                    <span className="font-semibold text-[#4A2C20]">Global Nagas Institute</span>
+                {/* Option 1: Pay Online via Reference Link (Source: Startupwala) */}
+                <div className="rounded-xl border border-[#B89555]/30 bg-white p-3 sm:p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold font-['DM_Sans'] text-[#4A2C20] uppercase tracking-wide">
+                      Option 1: Pay Online (Instant Gateway)
+                    </span>
+                    <span className="text-[10px] font-['DM_Sans'] text-[#6B4030] bg-[#FAF7F0] px-2 py-0.5 rounded border border-[#6B4030]/15 font-medium">
+                      Source: Startupwala
+                    </span>
                   </div>
-
-                  {/* Bank Name */}
-                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
-                    <span className="text-[#6B4030]">Bank Name:</span>
-                    <span className="font-medium text-[#241A16]">State Bank of India (SBI)</span>
+                  <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] leading-relaxed">
+                    Pay using UPI (GPay, PhonePe, Paytm), Net Banking, or Debit/Credit Card via the official reference payment portal:
+                  </p>
+                  <a
+                    href="https://share.google/pyTPtvnuTIIM6Fc0X"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-lg bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-xs transition-colors"
+                  >
+                    <span>Pay Registration Fee via Startupwala Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-[#B89555]" />
+                  </a>
+                  <div className="flex items-center justify-between text-[10px] font-['DM_Sans'] text-[#6B4030]/75 pt-0.5">
+                    <span className="truncate">Ref: https://share.google/pyTPtvnuTIIM6Fc0X</span>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard('https://share.google/pyTPtvnuTIIM6Fc0X', 'paylink')}
+                      className="text-[#B89555] hover:text-[#4A2C20] flex items-center gap-1 shrink-0 ml-1 cursor-pointer font-medium"
+                    >
+                      {copiedField === 'paylink' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                      <span>{copiedField === 'paylink' ? 'Copied' : 'Copy Link'}</span>
+                    </button>
                   </div>
+                </div>
 
-                  {/* Account Number */}
-                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
-                    <span className="text-[#6B4030]">Account Number:</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono font-bold text-[#4A2C20] tracking-wider">41280056981</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard('41280056981', 'acc')}
-                        className="p-1 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
-                        title="Copy Account Number"
-                      >
-                        {copiedField === 'acc' ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* IFSC Code */}
-                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
-                    <span className="text-[#6B4030]">IFSC Code:</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-mono font-bold text-[#B89555] tracking-wider">SBIN0000827</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard('SBIN0000827', 'ifsc')}
-                        className="p-1 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
-                        title="Copy IFSC Code"
-                      >
-                        {copiedField === 'ifsc' ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Branch & Campus Address */}
-                  <div className="flex items-start justify-between py-1 border-b border-[#6B4030]/10">
-                    <span className="text-[#6B4030] shrink-0">Branch &amp; Address:</span>
-                    <span className="font-medium text-[#241A16] text-right pl-2 text-[11px] leading-snug">
-                      No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
+                {/* Option 2: Direct Bank Account Transfer (NEFT / IMPS / RTGS / UPI) */}
+                <div className="rounded-xl border border-[#6B4030]/15 bg-white/70 p-3 sm:p-3.5 space-y-2">
+                  <div className="flex items-center justify-between border-b border-[#6B4030]/10 pb-1.5">
+                    <span className="text-[11px] font-bold font-['DM_Sans'] text-[#4A2C20] uppercase tracking-wide">
+                      Option 2: Direct Bank Transfer (NEFT / IMPS / UPI)
                     </span>
                   </div>
 
-                  {/* UPI ID */}
-                  <div className="flex items-center justify-between py-1">
-                    <span className="text-[#6B4030]">UPI ID:</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-semibold text-[#4A2C20]">globalnagas@sbi</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard('globalnagas@sbi', 'upi')}
-                        className="p-1 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
-                        title="Copy UPI ID"
-                      >
-                        {copiedField === 'upi' ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
+                  <div className="space-y-1.5 text-xs font-['DM_Sans'] text-[#241A16]">
+                    {/* Account Name */}
+                    <div className="flex items-center justify-between py-0.5 border-b border-[#6B4030]/10">
+                      <span className="text-[#6B4030]">Beneficiary Name:</span>
+                      <span className="font-semibold text-[#4A2C20]">Global Nagas Institute</span>
+                    </div>
+
+                    {/* Bank Name */}
+                    <div className="flex items-center justify-between py-0.5 border-b border-[#6B4030]/10">
+                      <span className="text-[#6B4030]">Bank Name:</span>
+                      <span className="font-medium text-[#241A16]">State Bank of India (SBI)</span>
+                    </div>
+
+                    {/* Account Number */}
+                    <div className="flex items-center justify-between py-0.5 border-b border-[#6B4030]/10">
+                      <span className="text-[#6B4030]">Account Number:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-[#4A2C20] tracking-wider">41280056981</span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('41280056981', 'acc')}
+                          className="p-0.5 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
+                          title="Copy Account Number"
+                        >
+                          {copiedField === 'acc' ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* IFSC Code */}
+                    <div className="flex items-center justify-between py-0.5 border-b border-[#6B4030]/10">
+                      <span className="text-[#6B4030]">IFSC Code:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-[#B89555] tracking-wider">SBIN0000827</span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('SBIN0000827', 'ifsc')}
+                          className="p-0.5 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
+                          title="Copy IFSC Code"
+                        >
+                          {copiedField === 'ifsc' ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Branch & Campus Address */}
+                    <div className="flex items-start justify-between py-0.5 border-b border-[#6B4030]/10">
+                      <span className="text-[#6B4030] shrink-0">Branch &amp; Address:</span>
+                      <span className="font-medium text-[#241A16] text-right pl-2 text-[11px] leading-snug">
+                        No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
+                      </span>
+                    </div>
+
+                    {/* UPI ID */}
+                    <div className="flex items-center justify-between py-0.5">
+                      <span className="text-[#6B4030]">UPI ID:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-[#4A2C20]">globalnagas@sbi</span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('globalnagas@sbi', 'upi')}
+                          className="p-0.5 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
+                          title="Copy UPI ID"
+                        >
+                          {copiedField === 'upi' ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Reference / UTR Number (Optional) */}
-                <div className="space-y-1 text-left pt-2 border-t border-[#6B4030]/15">
+                <div className="space-y-1 text-left pt-1">
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Payment Reference / UTR No. <span className="text-[10px] text-[#6B4030]/70">(Optional - if fee paid)</span>
+                    Payment Reference / UTR No. <span className="text-[10px] text-[#6B4030]/70">(Optional - after completing payment)</span>
                   </label>
                   <div className="relative">
                     <CreditCard className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
@@ -945,7 +1019,7 @@ export default function Register() {
                       name="paymentRef"
                       value={formData.paymentRef}
                       onChange={handleChange}
-                      placeholder="e.g. 238491823901 or UPI Ref ID"
+                      placeholder="e.g. 238491823901 or UPI / Gateway Ref ID"
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#6B4030]/20 bg-white text-sm text-[#241A16] placeholder-[#6B4030]/40 focus:outline-hidden focus:border-[#B89555]"
                     />
                   </div>

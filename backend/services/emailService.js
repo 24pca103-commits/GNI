@@ -168,9 +168,20 @@ export async function sendCustomerRegistrationEmail(data) {
                     <div style="font-size: 13.5px; font-weight: 700; color: #4a2c20; margin-bottom: 8px;">
                       Bank Details for Registration Payment (Fee: ₹4,999)
                     </div>
-                    <p style="font-size: 11.5px; color: #6b4030; margin: 0 0 10px;">
-                      Please complete your cohort seat reservation by transferring to the official institute bank account:
-                    </p>
+                    
+                    <!-- Option 1: Online Payment Link -->
+                    <div style="background-color: #ffffff; border: 1px solid #e6dcd0; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; text-align: center;">
+                      <div style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; margin-bottom: 6px;">Option 1: Pay Online via Gateway (Source: Startupwala)</div>
+                      <a href="https://share.google/pyTPtvnuTIIM6Fc0X" target="_blank" style="display: inline-block; background-color: #4a2c20; color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                        Open Startupwala Payment Portal →
+                      </a>
+                      <div style="font-size: 10.5px; color: #7a6e65; margin-top: 4px;">
+                        Reference: https://share.google/pyTPtvnuTIIM6Fc0X
+                      </div>
+                    </div>
+
+                    <!-- Option 2: Direct Bank Account Transfer -->
+                    <div style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; margin-bottom: 4px;">Option 2: Direct Bank Transfer (NEFT / IMPS / UPI)</div>
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px; color: #241a16;">
                       <tr><td style="padding: 3px 0; color: #6b4030; width: 38%;">Beneficiary Name:</td><td style="padding: 3px 0; font-weight: 600;">Global Nagas Institute</td></tr>
                       <tr><td style="padding: 3px 0; color: #6b4030;">Bank Name:</td><td style="padding: 3px 0; font-weight: 600;">State Bank of India (SBI)</td></tr>
