@@ -16,6 +16,7 @@ export const registerUser = async (req, res, next) => {
       interestedSkill,
       experienceLevel,
       learningPurpose,
+      paymentRef,
     } = req.body;
 
     // Validate presence of required fields
@@ -100,6 +101,7 @@ export const registerUser = async (req, res, next) => {
       interestedSkill,
       experienceLevel,
       learningPurpose: learningPurpose.trim(),
+      paymentRef: paymentRef ? paymentRef.trim() : '',
     };
 
     sendRegistrationNotifications(registrationDetails).catch((err) => {
@@ -117,6 +119,7 @@ export const registerUser = async (req, res, next) => {
         country: country || 'India',
         interestedSkill,
         experienceLevel,
+        paymentRef: paymentRef ? paymentRef.trim() : '',
         createdAt: new Date().toISOString(),
       },
     });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   const sections = [
@@ -22,8 +22,8 @@ export default function Footer() {
     <footer className="bg-[#F7F2E8] text-[#241A16] border-t border-[#6B4030]/20 py-6 sm:py-8 pb-20 sm:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8 pb-5 sm:pb-6 border-b border-[#6B4030]/15 items-start">
-          {/* Brand Info (6 cols) */}
-          <div className="md:col-span-6 space-y-2.5 sm:space-y-3">
+          {/* Brand Info (5 cols) */}
+          <div className="md:col-span-5 space-y-2.5 sm:space-y-3">
             <div className="flex items-center gap-3">
               <img
                 src="/artisan/logo.png"
@@ -36,15 +36,6 @@ export default function Footer() {
                     Global Nagas Institute
                   </span>
                 </div>
-                {/* Subtitle under logo commented out as requested
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="h-px w-3 bg-[#B89555]" />
-                  <span className="font-['DM_Sans'] text-[11px] sm:text-xs text-[#6B4030] font-medium">
-                    Heritage Framework & Repository
-                  </span>
-                  <span className="h-px w-3 bg-[#B89555]" />
-                </div>
-                */}
               </div>
             </div>
 
@@ -58,8 +49,8 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Static Section Links (4 cols) */}
-          <div className="md:col-span-4 space-y-2">
+          {/* Static Section Links (3 cols) */}
+          <div className="md:col-span-3 space-y-2">
             <h4 className="font-['DM_Sans'] text-xs font-bold text-[#4A2C20]">
               Repository Sections
             </h4>
@@ -78,8 +69,37 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Back to top (2 cols) */}
-          <div className="md:col-span-2 flex justify-end">
+          {/* Campus Address & Contact Info (3 cols) */}
+          <div className="md:col-span-3 space-y-2.5">
+            <h4 className="font-['DM_Sans'] text-xs font-bold text-[#4A2C20]">
+              Campus Address &amp; Contact
+            </h4>
+            <div className="flex items-start gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
+              <MapPin className="w-4 h-4 text-[#B89555] shrink-0 mt-0.5" />
+              <p className="leading-relaxed text-[#241A16]/85">
+                No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
+              </p>
+            </div>
+            <div className="space-y-1.5 pt-1 text-xs font-['DM_Sans'] text-[#6B4030]">
+              <a
+                href="tel:+919061621111"
+                className="flex items-center gap-2 hover:text-[#4A2C20] transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 text-[#B89555]" />
+                <span className="font-number">+91 90616 21111</span>
+              </a>
+              <a
+                href="mailto:info@artisancoach.org"
+                className="flex items-center gap-2 hover:text-[#4A2C20] transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5 text-[#B89555]" />
+                <span>info@artisancoach.org</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Back to top (1 col) */}
+          <div className="md:col-span-1 flex justify-end">
             <button
               onClick={scrollToTop}
               className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white hover:bg-[#4A2C20] text-[#6B4030] hover:text-[#B89555] border border-[#6B4030]/20 shadow-xs transition-all duration-200 flex items-center justify-center cursor-pointer"

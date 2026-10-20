@@ -163,6 +163,24 @@ export async function sendCustomerRegistrationEmail(data) {
                     <div class="field-val" style="font-size: 14px; font-weight: 500; color: #241a16; word-break: break-word; overflow-wrap: anywhere;">${locationSafe}</div>
                   </div>
 
+                  <!-- Bank Details for Registration Payment -->
+                  <div style="background-color: #fcfaf7; border: 1px solid #e7ded4; border-left: 4px solid #b89555; border-radius: 8px; padding: 14px 16px; margin: 16px 0; box-sizing: border-box;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #4a2c20; margin-bottom: 8px;">
+                      Bank Details for Registration Payment (Fee: ₹4,999)
+                    </div>
+                    <p style="font-size: 11.5px; color: #6b4030; margin: 0 0 10px;">
+                      Please complete your cohort seat reservation by transferring to the official institute bank account:
+                    </p>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px; color: #241a16;">
+                      <tr><td style="padding: 3px 0; color: #6b4030; width: 38%;">Beneficiary Name:</td><td style="padding: 3px 0; font-weight: 600;">Global Nagas Institute</td></tr>
+                      <tr><td style="padding: 3px 0; color: #6b4030;">Bank Name:</td><td style="padding: 3px 0; font-weight: 600;">State Bank of India (SBI)</td></tr>
+                      <tr><td style="padding: 3px 0; color: #6b4030;">Account Number:</td><td style="padding: 3px 0; font-weight: 700; color: #4a2c20; font-family: monospace;">41280056981</td></tr>
+                      <tr><td style="padding: 3px 0; color: #6b4030;">IFSC Code:</td><td style="padding: 3px 0; font-weight: 700; color: #b89555; font-family: monospace;">SBIN0000827</td></tr>
+                      <tr><td style="padding: 3px 0; color: #6b4030;">Branch:</td><td style="padding: 3px 0; font-weight: 500;">Raja Street, Coimbatore</td></tr>
+                      <tr><td style="padding: 3px 0; color: #6b4030;">UPI ID:</td><td style="padding: 3px 0; font-weight: 600;">globalnagas@sbi</td></tr>
+                    </table>
+                  </div>
+
                   <!-- Next Steps Box -->
                   <div style="background-color: #fbf5eb; border-left: 4px solid #b89555; padding: 13px 14px; margin: 16px 0; border-radius: 6px; font-size: 13.5px; line-height: 1.5; color: #4a2c20; box-sizing: border-box; word-break: break-word;">
                     <strong style="color: #6b4030;">What happens next?</strong><br>
@@ -177,7 +195,8 @@ export async function sendCustomerRegistrationEmail(data) {
               <!-- Footer -->
               <tr>
                 <td style="background-color: #f3ede2; padding: 16px 18px; text-align: center; font-size: 11.5px; color: #7a6e65; line-height: 1.4; word-break: break-word;">
-                  © ${new Date().getFullYear()} Global Nagas Institute. Preserving and revitalizing ancient heritage traditions.
+                  © ${new Date().getFullYear()} Global Nagas Institute. Preserving and revitalizing ancient heritage traditions.<br>
+                  📍 No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
                 </td>
               </tr>
             </table>
@@ -323,12 +342,21 @@ export async function sendAdminRegistrationAlert(data) {
                     <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Purpose of Learning</div>
                     <div class="field-val" style="font-size: 13px; line-height: 1.55; color: #1e293b; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; word-wrap: break-word;">${purposeSafe}</div>
                   </div>
+
+                  ${data.paymentRef ? `
+                  <!-- 9. Payment Reference / UTR -->
+                  <div class="field-card" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; box-sizing: border-box;">
+                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Payment UTR / Transaction ID</div>
+                    <div class="field-val" style="font-size: 14px; font-weight: 700; color: #14532d; font-family: monospace; word-break: break-word; overflow-wrap: anywhere;">${escapeHtml(data.paymentRef)}</div>
+                  </div>
+                  ` : ''}
                 </td>
               </tr>
               <!-- Footer -->
               <tr>
                 <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 18px; text-align: center; font-size: 11px; color: #64748b; line-height: 1.4; word-break: break-word;">
-                  Admissions Alert dispatched to Admin: <strong>${escapeHtml(adminEmail)}</strong>
+                  Admissions Alert dispatched to Admin: <strong>${escapeHtml(adminEmail)}</strong><br>
+                  📍 Campus: No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
                 </td>
               </tr>
             </table>

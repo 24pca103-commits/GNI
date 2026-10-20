@@ -14,6 +14,10 @@ import {
   Sparkles,
   Loader2,
   ChevronDown,
+  Landmark,
+  Copy,
+  Check,
+  CreditCard,
 } from 'lucide-react';
 
 export default function Register() {
@@ -46,7 +50,18 @@ export default function Register() {
     interestedSkill: '',
     experienceLevel: '',
     learningPurpose: '',
+    paymentRef: '',
   });
+
+  const [copiedField, setCopiedField] = useState(null);
+
+  const copyToClipboard = (text, fieldName) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => setCopiedField(null), 2200);
+    }
+  };
 
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
@@ -353,28 +368,101 @@ export default function Register() {
             </div>
 
             {registeredData && (
-              <div className="bg-[#F7F2E8] rounded-xl p-4 border border-[#6B4030]/15 text-left space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
-                <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
-                  <span className="text-[#6B4030] font-medium">Applicant Name:</span>
-                  <span className="font-bold text-[#4A2C20]">{registeredData.fullName}</span>
+              <div className="space-y-3">
+                <div className="bg-[#F7F2E8] rounded-xl p-4 border border-[#6B4030]/15 text-left space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
+                  <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                    <span className="text-[#6B4030] font-medium">Applicant Name:</span>
+                    <span className="font-bold text-[#4A2C20]">{registeredData.fullName}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                    <span className="text-[#6B4030] font-medium">Contact Number:</span>
+                    <span className="font-medium text-[#241A16]">
+                      {registeredData.countryDial || currentCountry.dial} {registeredData.phone}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                    <span className="text-[#6B4030] font-medium">Email:</span>
+                    <span className="font-medium text-[#241A16]">{registeredData.email}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                    <span className="text-[#6B4030] font-medium">Selected Skill:</span>
+                    <span className="font-bold text-[#B89555]">{registeredData.interestedSkill}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#6B4030] font-medium">Level:</span>
+                    <span className="font-medium text-[#4A2C20]">{registeredData.experienceLevel || 'Beginner'}</span>
+                  </div>
+                  {registeredData.paymentRef && (
+                    <div className="flex justify-between border-t border-[#6B4030]/15 pt-1.5">
+                      <span className="text-[#6B4030] font-medium">Payment Ref / UTR:</span>
+                      <span className="font-mono font-semibold text-[#4A2C20]">{registeredData.paymentRef}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
-                  <span className="text-[#6B4030] font-medium">Contact Number:</span>
-                  <span className="font-medium text-[#241A16]">
-                    {registeredData.countryDial || currentCountry.dial} {registeredData.phone}
-                  </span>
-                </div>
-                <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
-                  <span className="text-[#6B4030] font-medium">Email:</span>
-                  <span className="font-medium text-[#241A16]">{registeredData.email}</span>
-                </div>
-                <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
-                  <span className="text-[#6B4030] font-medium">Selected Skill:</span>
-                  <span className="font-bold text-[#B89555]">{registeredData.interestedSkill}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#6B4030] font-medium">Level:</span>
-                  <span className="font-medium text-[#4A2C20]">{registeredData.experienceLevel || 'Beginner'}</span>
+
+                {/* Bank Details for Registration Payment Card in Success View */}
+                <div className="rounded-xl border border-[#B89555]/40 bg-[#FAF7F0] p-3.5 sm:p-4 text-left space-y-2 text-xs font-['DM_Sans']">
+                  <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-2">
+                    <div className="flex items-center gap-1.5 font-bold text-[#4A2C20]">
+                      <Landmark className="w-3.5 h-3.5 text-[#B89555]" />
+                      <span>Bank Details for Registration Payment</span>
+                    </div>
+                    <span className="text-[10px] font-semibold text-[#B89555] bg-[#4A2C20] px-2 py-0.5 rounded-full">
+                      Fee: ₹4,999
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] pt-1">
+                    <div>
+                      <span className="text-[#6B4030] block">Beneficiary:</span>
+                      <strong className="text-[#241A16]">Global Nagas Institute</strong>
+                    </div>
+                    <div>
+                      <span className="text-[#6B4030] block">Bank Name:</span>
+                      <strong className="text-[#241A16]">State Bank of India (SBI)</strong>
+                    </div>
+                    <div>
+                      <span className="text-[#6B4030] block">Account Number:</span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-mono font-bold text-[#4A2C20]">41280056981</span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('41280056981', 'acc_success')}
+                          className="text-[#6B4030] hover:text-[#4A2C20] cursor-pointer"
+                        >
+                          {copiedField === 'acc_success' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[#6B4030] block">IFSC Code:</span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-mono font-bold text-[#B89555]">SBIN0000827</span>
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard('SBIN0000827', 'ifsc_success')}
+                          className="text-[#6B4030] hover:text-[#4A2C20] cursor-pointer"
+                        >
+                          {copiedField === 'ifsc_success' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-1 border-t border-[#6B4030]/10 flex items-center justify-between text-[11px]">
+                    <span className="text-[#6B4030]">UPI ID:</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-[#4A2C20]">globalnagas@sbi</span>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard('globalnagas@sbi', 'upi_success')}
+                        className="text-[#6B4030] hover:text-[#4A2C20] cursor-pointer"
+                      >
+                        {copiedField === 'upi_success' ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-[10.5px] text-[#6B4030] pt-1">
+                    📍 Campus: No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
+                  </div>
                 </div>
               </div>
             )}
@@ -398,6 +486,7 @@ export default function Register() {
                     interestedSkill: '',
                     experienceLevel: '',
                     learningPurpose: '',
+                    paymentRef: '',
                   });
                   setErrors({});
                   setTouched({});
@@ -428,6 +517,13 @@ export default function Register() {
               <p className="font-['DM_Sans'] mt-1 text-xs text-[#6B4030] leading-relaxed font-normal">
                 Register your interest for our upcoming 60-day intensive hands-on craftsmanship cohort.
               </p>
+              {/* Campus Address Banner */}
+              <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 mt-2.5 rounded-lg bg-[#FAF7F0] border border-[#6B4030]/15 text-[#4A2C20] text-[11px] font-['DM_Sans'] max-w-full text-center">
+                <MapPin className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+                <span className="leading-tight">
+                  Campus: No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
+                </span>
+              </div>
             </div>
 
             {/* Error Notification Banner */}
@@ -734,6 +830,128 @@ export default function Register() {
                 </div>
               </div>
 
+              {/* Add Bank details for registration payment */}
+              <div className="rounded-2xl border border-[#B89555]/40 bg-[#FAF7F0] p-4 sm:p-5 space-y-3 text-left">
+                <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#4A2C20] text-[#B89555] flex items-center justify-center shrink-0">
+                      <Landmark className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">
+                        Add Bank details for registration payment
+                      </h3>
+                      <p className="font-['DM_Sans'] text-[11px] text-[#6B4030]">
+                        Cohort Registration Fee: <strong className="font-number text-[#4A2C20]">₹4,999</strong>
+                      </p>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-[#B89555]/20 text-[#6B4030] text-[10px] font-['DM_Sans'] font-semibold shrink-0">
+                    Official Account
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-xs font-['DM_Sans'] text-[#241A16]">
+                  {/* Account Name */}
+                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
+                    <span className="text-[#6B4030]">Beneficiary Name:</span>
+                    <span className="font-semibold text-[#4A2C20]">Global Nagas Institute</span>
+                  </div>
+
+                  {/* Bank Name */}
+                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
+                    <span className="text-[#6B4030]">Bank Name:</span>
+                    <span className="font-medium text-[#241A16]">State Bank of India (SBI)</span>
+                  </div>
+
+                  {/* Account Number */}
+                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
+                    <span className="text-[#6B4030]">Account Number:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-[#4A2C20] tracking-wider">41280056981</span>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard('41280056981', 'acc')}
+                        className="p-1 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
+                        title="Copy Account Number"
+                      >
+                        {copiedField === 'acc' ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* IFSC Code */}
+                  <div className="flex items-center justify-between py-1 border-b border-[#6B4030]/10">
+                    <span className="text-[#6B4030]">IFSC Code:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-[#B89555] tracking-wider">SBIN0000827</span>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard('SBIN0000827', 'ifsc')}
+                        className="p-1 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
+                        title="Copy IFSC Code"
+                      >
+                        {copiedField === 'ifsc' ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Branch & Campus Address */}
+                  <div className="flex items-start justify-between py-1 border-b border-[#6B4030]/10">
+                    <span className="text-[#6B4030] shrink-0">Branch &amp; Address:</span>
+                    <span className="font-medium text-[#241A16] text-right pl-2 text-[11px] leading-snug">
+                      No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
+                    </span>
+                  </div>
+
+                  {/* UPI ID */}
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-[#6B4030]">UPI ID:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-[#4A2C20]">globalnagas@sbi</span>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard('globalnagas@sbi', 'upi')}
+                        className="p-1 hover:bg-[#B89555]/20 rounded-md transition-colors text-[#6B4030] cursor-pointer"
+                        title="Copy UPI ID"
+                      >
+                        {copiedField === 'upi' ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Reference / UTR Number (Optional) */}
+                <div className="space-y-1 text-left pt-2 border-t border-[#6B4030]/15">
+                  <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                    Payment Reference / UTR No. <span className="text-[10px] text-[#6B4030]/70">(Optional - if fee paid)</span>
+                  </label>
+                  <div className="relative">
+                    <CreditCard className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
+                    <input
+                      type="text"
+                      name="paymentRef"
+                      value={formData.paymentRef}
+                      onChange={handleChange}
+                      placeholder="e.g. 238491823901 or UPI Ref ID"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#6B4030]/20 bg-white text-sm text-[#241A16] placeholder-[#6B4030]/40 focus:outline-hidden focus:border-[#B89555]"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Submit Button */}
               <div className="pt-3 sm:pt-4">
                 <button
@@ -760,6 +978,14 @@ export default function Register() {
             </form>
           </div>
         )}
+
+        {/* Institute Campus Address Footer */}
+        <div className="mt-4 text-center text-xs font-['DM_Sans'] text-[#6B4030] space-y-1">
+          <div className="inline-flex items-center justify-center gap-1.5 text-[#4A2C20] font-medium bg-white/70 px-3.5 py-1.5 rounded-full border border-[#6B4030]/15 shadow-2xs">
+            <MapPin className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+            <span>Campus Address: No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001</span>
+          </div>
+        </div>
       </div>
     </div>
   );
