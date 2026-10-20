@@ -827,8 +827,8 @@ export default function Admin() {
             onClick={() => setIsModalOpen(false)}
           />
 
-          <div className="relative z-10 bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 border border-[#6B4030]/20 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#6B4030]/15 pb-3">
+          <div className="relative z-10 bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col border border-[#6B4030]/20 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-[#6B4030]/15 px-6 py-4 bg-white shrink-0">
               <div>
                 <h2 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#241A16]">
                   {modalMode === 'create' ? 'Add New Heritage Course' : 'Edit Course & Discount Offers'}
@@ -845,21 +845,20 @@ export default function Admin() {
               </button>
             </div>
 
-            {formError && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-                <span>{formError}</span>
-              </div>
-            )}
+            <form id="courseModalForm" onSubmit={handleSaveCourse} className="overflow-y-auto px-6 py-4 space-y-4 text-xs flex-1">
+              {formError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>{formError}</span>
+                </div>
+              )}
 
-            {formSuccess && (
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>{formSuccess}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSaveCourse} className="space-y-4 text-xs">
+              {formSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>{formSuccess}</span>
+                </div>
+              )}
               {/* Course Title */}
               <div className="space-y-1 text-left">
                 <label className="block font-medium text-[#4A2C20]">
@@ -1089,32 +1088,33 @@ export default function Admin() {
                   </label>
                 </div>
               </div>
-
-              {/* Modal Buttons */}
-              <div className="pt-3 border-t border-[#6B4030]/15 flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border border-[#6B4030]/20 text-[#6B4030] hover:bg-[#FAF7F0] text-xs font-semibold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={modalLoading}
-                  className="px-6 py-2.5 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {modalLoading ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#B89555]" />
-                      <span>Saving Changes...</span>
-                    </>
-                  ) : (
-                    <span>{modalMode === 'create' ? 'Create & Publish Course' : 'Save & Update Site'}</span>
-                  )}
-                </button>
-              </div>
             </form>
+
+            {/* Modal Buttons (Sticky Footer) */}
+            <div className="px-6 py-3.5 border-t border-[#6B4030]/15 bg-[#FAF7F0] flex items-center justify-end gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2.5 rounded-xl border border-[#6B4030]/20 text-[#6B4030] hover:bg-white text-xs font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="courseModalForm"
+                disabled={modalLoading}
+                className="px-6 py-2.5 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] text-xs font-bold shadow-sm transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {modalLoading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#B89555]" />
+                    <span>Saving Changes...</span>
+                  </>
+                ) : (
+                  <span>{modalMode === 'create' ? 'Create & Publish Course' : 'Save & Update Site'}</span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -937,9 +937,13 @@ export default function App() {
 
       {/* MODAL: ADD / EDIT COURSE & DISCOUNT OFFER */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-[#241A16] border border-[#B89555]/40 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-xs">
+          <form
+            onSubmit={handleSaveCourse}
+            className="bg-[#241A16] border border-[#B89555]/40 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
+          >
+            {/* Sticky Header */}
+            <div className="flex items-center justify-between border-b border-white/10 px-5 sm:px-6 py-4 bg-[#241A16] shrink-0">
               <div>
                 <h3 className="font-serif-brand text-xl font-bold text-white">
                   {editingCourse ? 'Edit Course & Discount Offer' : 'Add New Heritage Course'}
@@ -960,7 +964,8 @@ export default function App() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveCourse} className="space-y-4">
+            {/* Scrollable Form Body */}
+            <div className="overflow-y-auto p-5 sm:p-6 space-y-4 flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
@@ -1173,27 +1178,28 @@ export default function App() {
                   />
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setEditingCourse(null);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-white transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] font-semibold text-xs transition-transform active:scale-95 cursor-pointer shadow-md"
-                >
-                  {editingCourse ? 'Save Changes' : 'Publish Course'}
-                </button>
-              </div>
-            </form>
-          </div>
+            {/* Sticky Action Footer */}
+            <div className="flex items-center justify-end gap-3 px-5 sm:px-6 py-3.5 border-t border-white/10 bg-[#1c130f] shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddModal(false);
+                  setEditingCourse(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] font-semibold text-xs transition-transform active:scale-95 cursor-pointer shadow-md"
+              >
+                {editingCourse ? 'Save Changes' : 'Publish Course'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>
