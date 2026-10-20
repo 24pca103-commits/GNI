@@ -8,12 +8,10 @@ import {
   AlertCircle,
   Users,
   Tag,
-  DollarSign,
   Search,
   Download,
   LogOut,
   Sparkles,
-  Layers,
   Eye,
   EyeOff,
   Flame,
@@ -25,8 +23,10 @@ import {
   ShieldCheck,
   Check,
   ChevronRight,
-  Database,
   Radio,
+  Layers,
+  GraduationCap,
+  Percent,
 } from 'lucide-react';
 import {
   adminLogin,
@@ -42,10 +42,10 @@ import {
 
 const DEFAULT_IMAGES = [
   { label: 'Natural Mineral Pigments', url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80' },
-  { label: 'Sacred Epigraphy & Manuscripts', url: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=80' },
-  { label: 'Lost-Wax Metallurgy & Sculpture', url: 'https://images.unsplash.com/photo-1569172122301-bc500f309134?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Sacred Epigraphy & Scripts', url: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Lost-Wax Bronze Metallurgy', url: 'https://images.unsplash.com/photo-1569172122301-bc500f309134?w=800&auto=format&fit=crop&q=80' },
   { label: 'Heritage Interiors & Architecture', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80' },
-  { label: 'Traditional Artisan Workshop', url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80' },
+  { label: 'Traditional Artisan Studio', url: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80' },
 ];
 
 export default function App() {
@@ -57,8 +57,8 @@ export default function App() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  // Dashboard Tabs
-  const [activeTab, setActiveTab] = useState('courses'); // 'courses' | 'registrations' | 'host'
+  // Dashboard Tabs: 'courses' | 'registrations' | 'host'
+  const [activeTab, setActiveTab] = useState('courses');
 
   // Data State
   const [courses, setCourses] = useState([]);
@@ -66,7 +66,6 @@ export default function App() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [apiOnline, setApiOnline] = useState(true);
 
   // Search & Filter
   const [searchTerm, setSearchTerm] = useState('');
@@ -129,10 +128,8 @@ export default function App() {
       setCourses(fetchedCourses || []);
       setRegistrations(fetchedRegs || []);
       setStats(fetchedStats);
-      setApiOnline(true);
     } catch (err) {
       console.error('Error loading admin dashboard:', err);
-      setApiOnline(false);
     } finally {
       setLoading(false);
     }
@@ -189,7 +186,7 @@ export default function App() {
     try {
       if (editingCourse) {
         await updateCourse(editingCourse.id, payload);
-        notify('Course & Discount Offer updated successfully!');
+        notify('Course and Discount Offer updated successfully!');
       } else {
         await createCourse(payload);
         notify('New Course published successfully to user website!');
@@ -275,7 +272,6 @@ export default function App() {
     notify('Registrations CSV exported successfully!');
   };
 
-  // Filtered registrations
   const filteredRegistrations = registrations.filter((r) => {
     const matchesSearch =
       (r.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -285,63 +281,67 @@ export default function App() {
     return matchesSearch && matchesSkill;
   });
 
-  // Calculate live host port and public client target
   const currentHost = window.location.host;
   const publicWebsiteUrl =
     window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:5173'
       : 'https://globalnagasinstitute.in';
 
-  // LOGIN SCREEN
+  // LOGIN SCREEN (CLEAN WHITE/LIGHT THEME WITH PROMINENT LOGO)
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#18110D] flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans-brand">
-        {/* Ambient glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#B89555]/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-72 h-72 bg-[#6B4030]/20 rounded-full blur-2xl pointer-events-none" />
+      <div className="min-h-screen bg-[#F4F5F7] flex flex-col justify-center items-center p-4 font-sans-brand relative">
+        {/* Subtle decorative background gradient */}
+        <div className="absolute inset-0 bg-radial-[at_top_center] from-[#B89555]/10 via-transparent to-transparent pointer-events-none" />
 
-        <div className="max-w-md w-full bg-[#241A16] border border-[#B89555]/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)] relative z-10">
-          {/* Logo & Header */}
-          <div className="text-center space-y-2 mb-6">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#4A2C20] border border-[#B89555]/40 text-[#B89555] shadow-inner mb-2">
-              <Sparkles className="w-7 h-7 animate-pulse" />
+        <div className="max-w-md w-full bg-white border border-slate-200/90 rounded-3xl p-7 sm:p-9 shadow-[0_10px_40px_rgba(0,0,0,0.06)] relative z-10">
+          {/* Logo Placement */}
+          <div className="text-center space-y-3 mb-7">
+            <div className="flex justify-center mb-1">
+              <img
+                src="/logo.png"
+                alt="Global Nagas Institute"
+                className="h-16 sm:h-20 w-auto object-contain hover:scale-105 transition-transform"
+              />
             </div>
-            <h1 className="font-serif-brand text-2xl sm:text-3xl font-bold text-[#F7F2E8]">
-              Faculty &amp; Admin Host
-            </h1>
-            <p className="text-xs text-[#B89555] font-medium tracking-wide uppercase">
-              Global Nagas Institute • Standalone Host
-            </p>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-[#F7F2E8]/70 mt-1">
-              <Server className="w-3 h-3 text-emerald-400" />
-              <span>Current Host: <strong className="text-emerald-400 font-mono">{currentHost}</strong></span>
+            <div>
+              <h1 className="font-serif-brand text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                Global Nagas Institute
+              </h1>
+              <p className="text-xs font-semibold text-[#B89555] uppercase tracking-wider mt-0.5">
+                Faculty &amp; Administrator Portal
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] text-slate-600 font-medium">
+              <Server className="w-3 h-3 text-emerald-600" />
+              <span>Standalone Host: <strong className="font-mono text-slate-800">{currentHost}</strong></span>
             </div>
           </div>
 
           {loginError && (
-            <div className="mb-4 p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <div className="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <span>{loginError}</span>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
-                Admin Email
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                Admin Email Address
               </label>
               <input
                 type="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#18110D] border border-[#6B4030]/60 text-white text-xs focus:border-[#B89555] focus:outline-hidden transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs focus:border-[#4A2C20] focus:ring-2 focus:ring-[#B89555]/20 focus:outline-hidden transition-all shadow-xs"
                 placeholder="admin@globalnagas.org"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Security Password
               </label>
               <input
@@ -349,7 +349,7 @@ export default function App() {
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 required
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#18110D] border border-[#6B4030]/60 text-white text-xs focus:border-[#B89555] focus:outline-hidden transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs focus:border-[#4A2C20] focus:ring-2 focus:ring-[#B89555]/20 focus:outline-hidden transition-all shadow-xs"
                 placeholder="••••••••"
               />
             </div>
@@ -357,26 +357,26 @@ export default function App() {
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-[#B89555] to-[#c8a565] text-[#241A16] font-semibold text-xs uppercase tracking-wider hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+              className="w-full mt-2 py-3 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-white font-semibold text-xs tracking-wider uppercase shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
             >
               {loginLoading ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
+                <RefreshCw className="w-4 h-4 animate-spin text-[#B89555]" />
               ) : (
                 <>
-                  <KeyRound className="w-4 h-4" />
-                  <span>Secure Sign In</span>
+                  <KeyRound className="w-4 h-4 text-[#B89555]" />
+                  <span>Sign In to Admin Workspace</span>
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between text-[11px] text-[#F7F2E8]/60">
-            <span>Pre-filled credentials available</span>
+          <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between text-[11.5px] text-slate-500">
+            <span>Demo: admin@globalnagas.org</span>
             <a
               href={publicWebsiteUrl}
               target="_blank"
               rel="noreferrer"
-              className="text-[#B89555] hover:underline inline-flex items-center gap-1"
+              className="text-[#4A2C20] hover:text-[#B89555] font-semibold inline-flex items-center gap-1 transition-colors"
             >
               <span>User Site</span>
               <ExternalLink className="w-3 h-3" />
@@ -387,90 +387,95 @@ export default function App() {
     );
   }
 
-  // AUTHENTICATED ADMIN DASHBOARD
+  // MAIN WHITE-THEMED ADMIN DASHBOARD
   return (
-    <div className="min-h-screen bg-[#18110D] text-[#F7F2E8] flex flex-col font-sans-brand">
+    <div className="min-h-screen bg-[#F8F9FA] text-slate-800 flex flex-col font-sans-brand">
       {/* Toast Notification */}
       {notification && (
         <div
-          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl border text-xs font-medium flex items-center gap-2 transition-all ${
+          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-2xl shadow-xl border text-xs font-semibold flex items-center gap-2 transition-all ${
             notification.type === 'error'
-              ? 'bg-red-950 border-red-500/50 text-red-200'
-              : 'bg-[#241A16] border-[#B89555] text-[#F7F2E8]'
+              ? 'bg-red-50 border-red-200 text-red-800'
+              : 'bg-white border-emerald-300 text-emerald-900'
           }`}
         >
           {notification.type === 'error' ? (
-            <AlertCircle className="w-4 h-4 text-red-400" />
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 text-[#B89555]" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           )}
           <span>{notification.msg}</span>
         </div>
       )}
 
-      {/* Top Navbar for Standalone Host */}
-      <header className="sticky top-0 z-40 bg-[#241A16]/95 backdrop-blur-md border-b border-[#B89555]/20 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-          {/* Brand & Host Identifier */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#4A2C20] border border-[#B89555]/40 text-[#B89555] flex items-center justify-center shrink-0">
-              <Sparkles className="w-5 h-5" />
-            </div>
+      {/* Top Navbar in Clean Crisp White with Prominent Logo */}
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200/90 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-4">
+          {/* Brand Logo & Title */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <img
+              src="/logo.png"
+              alt="Global Nagas Institute Logo"
+              className="h-10 sm:h-12 w-auto object-contain shrink-0"
+            />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif-brand text-lg font-bold text-white tracking-wide">
+                <span className="font-serif-brand text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-tight">
                   Global Nagas Institute
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#B89555]/20 text-[#B89555] border border-[#B89555]/40">
-                  Admin Host
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#B89555]/15 text-[#8C6B30] border border-[#B89555]/30">
+                  Admin Portal
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#F7F2E8]/60">
-                <span className="flex items-center gap-1 font-mono text-emerald-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                <span className="flex items-center gap-1 font-mono font-medium text-emerald-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   {currentHost}
                 </span>
                 <span>•</span>
-                <span>API: <strong className="font-mono text-[#B89555]">{API_BASE_URL}</strong></span>
+                <span className="hidden md:inline font-sans">
+                  API: <strong className="font-mono text-slate-700">{API_BASE_URL}</strong>
+                </span>
               </div>
             </div>
           </div>
 
           {/* Quick Actions & User Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <a
               href={publicWebsiteUrl}
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-[#F7F2E8] border border-white/10 transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 border border-slate-200 transition-colors shadow-2xs"
             >
-              <span>View User Site</span>
+              <span>User Site</span>
               <ExternalLink className="w-3.5 h-3.5 text-[#B89555]" />
             </a>
 
             <button
               onClick={loadDashboardData}
               title="Refresh Data"
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-[#F7F2E8] border border-white/10 transition-colors cursor-pointer"
+              className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition-colors cursor-pointer shadow-2xs"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#B89555]' : ''}`} />
             </button>
 
-            <div className="h-6 w-px bg-white/10 hidden sm:block" />
+            <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 
+            {/* Admin Profile & Logout */}
             <div className="flex items-center gap-2">
               <div className="text-right hidden md:block">
-                <p className="text-xs font-semibold text-white leading-tight">
+                <p className="text-xs font-bold text-slate-900 leading-tight">
                   {adminUser?.name || 'Administrator'}
                 </p>
-                <p className="text-[10px] text-[#B89555] leading-tight">
+                <p className="text-[10px] text-slate-500 font-medium leading-tight">
                   {adminUser?.email || 'admin@globalnagas.org'}
                 </p>
               </div>
               <button
                 onClick={handleLogout}
                 title="Log Out"
-                className="p-2 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-500/30 transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -478,104 +483,112 @@ export default function App() {
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/5 flex gap-2 pt-1">
+        {/* Tab Navigation */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 flex gap-1 sm:gap-2 pt-0.5">
           <button
             onClick={() => setActiveTab('courses')}
-            className={`px-4 py-2.5 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+            className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
               activeTab === 'courses'
-                ? 'border-[#B89555] text-[#B89555]'
-                : 'border-transparent text-[#F7F2E8]/60 hover:text-white'
+                ? 'border-[#4A2C20] text-[#4A2C20]'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <BookOpen className="w-4 h-4" />
             <span>Courses &amp; Discount Management</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-white/10 text-white font-mono">
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700 font-mono font-bold">
               {courses.length}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('registrations')}
-            className={`px-4 py-2.5 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+            className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
               activeTab === 'registrations'
-                ? 'border-[#B89555] text-[#B89555]'
-                : 'border-transparent text-[#F7F2E8]/60 hover:text-white'
+                ? 'border-[#4A2C20] text-[#4A2C20]'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <Users className="w-4 h-4" />
             <span>Student Registrations</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-white/10 text-white font-mono">
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700 font-mono font-bold">
               {registrations.length}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('host')}
-            className={`px-4 py-2.5 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
+            className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
               activeTab === 'host'
-                ? 'border-[#B89555] text-[#B89555]'
-                : 'border-transparent text-[#F7F2E8]/60 hover:text-white'
+                ? 'border-[#4A2C20] text-[#4A2C20]'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <Server className="w-4 h-4" />
-            <span>Standalone Host Settings</span>
+            <span>Host Settings</span>
           </button>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
-        {/* Metric Cards Banner */}
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-1 w-full space-y-6">
+        {/* KPI / Metric Cards in Clean White */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-2xl bg-[#241A16] border border-[#6B4030]/30 shadow-md">
-            <div className="flex items-center justify-between text-[#B89555] mb-1">
-              <span className="text-xs font-semibold">Total Programs</span>
-              <BookOpen className="w-4 h-4" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-slate-600 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Courses</span>
+              <div className="w-8 h-8 rounded-lg bg-[#B89555]/15 text-[#8C6B30] flex items-center justify-center">
+                <BookOpen className="w-4 h-4" />
+              </div>
             </div>
-            <p className="font-serif-brand text-2xl sm:text-3xl font-bold text-white">
+            <p className="font-serif-brand text-3xl font-bold text-slate-900">
               {courses.length}
             </p>
-            <span className="text-[11px] text-emerald-400 font-medium">
+            <span className="text-xs text-emerald-700 font-semibold mt-0.5 inline-block">
               {courses.filter((c) => c.is_active).length} Active on Website
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#241A16] border border-[#6B4030]/30 shadow-md">
-            <div className="flex items-center justify-between text-amber-400 mb-1">
-              <span className="text-xs font-semibold">Active Offers</span>
-              <Flame className="w-4 h-4" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-slate-600 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Active Offers</span>
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                <Flame className="w-4 h-4" />
+              </div>
             </div>
-            <p className="font-serif-brand text-2xl sm:text-3xl font-bold text-white">
+            <p className="font-serif-brand text-3xl font-bold text-slate-900">
               {courses.filter((c) => c.discount_price < c.original_price).length}
             </p>
-            <span className="text-[11px] text-amber-300 font-medium">
-              Up to 50% discount running
+            <span className="text-xs text-amber-700 font-semibold mt-0.5 inline-block">
+              Special Discounts Running
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#241A16] border border-[#6B4030]/30 shadow-md">
-            <div className="flex items-center justify-between text-blue-400 mb-1">
-              <span className="text-xs font-semibold">Student Applicants</span>
-              <Users className="w-4 h-4" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-slate-600 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Registrations</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                <Users className="w-4 h-4" />
+              </div>
             </div>
-            <p className="font-serif-brand text-2xl sm:text-3xl font-bold text-white">
+            <p className="font-serif-brand text-3xl font-bold text-slate-900">
               {registrations.length}
             </p>
-            <span className="text-[11px] text-blue-300 font-medium">
-              Verified submissions
+            <span className="text-xs text-blue-700 font-semibold mt-0.5 inline-block">
+              Enrolled Applicants
             </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#241A16] border border-[#6B4030]/30 shadow-md">
-            <div className="flex items-center justify-between text-emerald-400 mb-1">
-              <span className="text-xs font-semibold">Host Status</span>
-              <Radio className="w-4 h-4 animate-pulse" />
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-slate-600 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Host Status</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <Radio className="w-4 h-4 animate-pulse" />
+              </div>
             </div>
-            <p className="font-mono text-sm sm:text-base font-bold text-emerald-400 truncate">
+            <p className="font-mono text-sm sm:text-base font-bold text-emerald-700 truncate">
               {currentHost}
             </p>
-            <span className="text-[11px] text-[#F7F2E8]/60 font-medium">
+            <span className="text-xs text-slate-500 font-medium mt-0.5 inline-block">
               Standalone Port 5174
             </span>
           </div>
@@ -583,14 +596,15 @@ export default function App() {
 
         {/* TAB 1: COURSES & DISCOUNT MANAGEMENT */}
         {activeTab === 'courses' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[#241A16] p-4 rounded-2xl border border-[#6B4030]/30">
+          <div className="space-y-5">
+            {/* Action Bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
               <div>
-                <h2 className="font-serif-brand text-xl font-bold text-white">
-                  Courses &amp; Promotional Discount Offers
+                <h2 className="font-serif-brand text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+                  Courses &amp; Promotional Discount Management
                 </h2>
-                <p className="text-xs text-[#F7F2E8]/70">
-                  Manage heritage programs, custom cohorts, and customize discount offers. All changes reflect live on the user website.
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Add new courses or edit prices and discount offers. All changes sync dynamically to the user site.
                 </p>
               </div>
 
@@ -613,104 +627,102 @@ export default function App() {
                   });
                   setShowAddModal(true);
                 }}
-                className="px-4 py-2.5 rounded-xl bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] font-semibold text-xs flex items-center gap-1.5 shadow-md transition-transform active:scale-95 cursor-pointer shrink-0"
+                className="px-4 py-2.5 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-white font-semibold text-xs flex items-center gap-2 shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 text-[#B89555]" />
                 <span>Add New Course</span>
               </button>
             </div>
 
-            {/* Courses Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Courses Grid in Crisp White Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {courses.map((course) => {
                 const discount = calcDiscountPercent(course.original_price, course.discount_price);
                 return (
                   <div
                     key={course.id}
-                    className={`rounded-2xl border overflow-hidden flex flex-col justify-between transition-all duration-200 ${
-                      course.is_active
-                        ? 'bg-[#241A16] border-[#6B4030]/50 hover:border-[#B89555]/50 shadow-md'
-                        : 'bg-[#1e1512] border-white/5 opacity-70'
+                    className={`bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md ${
+                      course.is_active ? 'border-slate-200' : 'border-slate-200/60 opacity-75'
                     }`}
                   >
                     <div>
-                      {/* Image Banner */}
-                      <div className="relative h-44 w-full bg-[#18110D]">
+                      {/* Image Thumbnail with Overlay Badges */}
+                      <div className="relative h-44 w-full bg-slate-100">
                         <img
                           src={course.image_url || DEFAULT_IMAGES[0].url}
                           alt={course.title}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#241A16] via-transparent to-black/40" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
 
                         {/* Top Badges */}
                         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
-                          <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-[#B89555] text-[#241A16] shadow-sm">
+                          <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-[#B89555] text-white shadow-xs">
                             {course.badge || 'Masterclass'}
                           </span>
                           {discount > 0 && (
-                            <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-amber-500 text-black flex items-center gap-1 shadow-sm">
+                            <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-amber-500 text-slate-900 flex items-center gap-1 shadow-xs">
                               <Flame className="w-3 h-3 fill-current" />
                               {discount}% OFF
                             </span>
                           )}
                         </div>
 
-                        {/* Visibility Status */}
+                        {/* Live Status Toggle */}
                         <div className="absolute top-2.5 right-2.5">
                           <button
                             onClick={() => handleToggleStatus(course)}
                             title={course.is_active ? 'Click to hide from website' : 'Click to make live'}
-                            className={`px-2 py-1 rounded-full text-[10px] font-semibold flex items-center gap-1 cursor-pointer transition-colors ${
+                            className={`px-2.5 py-1 rounded-full text-[10.5px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-xs ${
                               course.is_active
-                                ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
-                                : 'bg-neutral-900/90 border border-neutral-600 text-neutral-400'
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-slate-700 text-slate-200'
                             }`}
                           >
                             {course.is_active ? (
                               <>
-                                <Eye className="w-3 h-3 text-emerald-400" />
+                                <Eye className="w-3 h-3" />
                                 <span>Live</span>
                               </>
                             ) : (
                               <>
-                                <EyeOff className="w-3 h-3 text-neutral-400" />
+                                <EyeOff className="w-3 h-3" />
                                 <span>Hidden</span>
                               </>
                             )}
                           </button>
                         </div>
 
-                        <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[11px] text-white/90">
-                          <span className="font-semibold uppercase tracking-wider text-[#B89555]">
+                        <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-xs text-white/95 font-medium">
+                          <span className="font-semibold uppercase tracking-wider text-[#eedfc8]">
                             {course.category}
                           </span>
                           <span>{course.duration}</span>
                         </div>
                       </div>
 
-                      {/* Details Content */}
-                      <div className="p-4 space-y-3">
-                        <h3 className="font-serif-brand text-lg font-bold text-white leading-tight">
+                      {/* Card Content */}
+                      <div className="p-4 sm:p-5 space-y-3.5">
+                        <h3 className="font-serif-brand text-xl font-bold text-slate-900 leading-snug">
                           {course.title}
                         </h3>
 
-                        <p className="text-xs text-[#F7F2E8]/75 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                           {course.description}
                         </p>
 
-                        {/* Discount Offer Price Display */}
-                        <div className="p-2.5 rounded-xl bg-[#18110D] border border-white/5 flex items-baseline justify-between">
+                        {/* Pricing & Discount Highlights Box in Soft Amber */}
+                        <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-center justify-between">
                           <div>
-                            <span className="text-[10px] uppercase font-semibold text-[#B89555] block">
-                              Discounted Fee
+                            <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider block">
+                              Offer Price
                             </span>
                             <div className="flex items-baseline gap-2">
-                              <span className="font-serif-brand text-xl font-bold text-white">
+                              <span className="font-serif-brand text-2xl font-bold text-slate-900">
                                 ₹{Number(course.discount_price || 0).toLocaleString('en-IN')}
                               </span>
                               {Number(course.original_price) > Number(course.discount_price) && (
-                                <span className="text-xs text-[#F7F2E8]/50 line-through">
+                                <span className="text-xs text-slate-500 line-through">
                                   ₹{Number(course.original_price).toLocaleString('en-IN')}
                                 </span>
                               )}
@@ -718,8 +730,8 @@ export default function App() {
                           </div>
 
                           <div className="text-right">
-                            <span className="text-[10px] text-[#F7F2E8]/60 block">Seats Remaining</span>
-                            <span className="text-xs font-bold text-emerald-400">
+                            <span className="text-[10px] text-slate-500 font-semibold block">Seats Left</span>
+                            <span className="text-xs font-bold text-emerald-700">
                               {course.seats_available || 15} / {course.seats_total || 50}
                             </span>
                           </div>
@@ -727,23 +739,23 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Action Bar */}
-                    <div className="p-3 bg-[#1c130f] border-t border-white/5 flex items-center justify-between">
-                      <span className="text-[11px] text-[#F7F2E8]/50">
+                    {/* Footer Actions */}
+                    <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-400 font-mono">
                         ID: #{course.id}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEditModal(course)}
-                          className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-[#B89555] border border-[#B89555]/30 flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-xs font-semibold text-[#4A2C20] border border-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
+                          <Edit3 className="w-3.5 h-3.5 text-[#B89555]" />
                           <span>Edit / Offer</span>
                         </button>
 
                         <button
                           onClick={() => handleDeleteCourse(course.id, course.title)}
-                          className="p-1.5 rounded-lg bg-red-950/30 hover:bg-red-900/50 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg bg-white hover:bg-red-50 text-red-600 border border-slate-300 hover:border-red-300 transition-colors cursor-pointer"
                           title="Delete Course"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -757,47 +769,45 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 2: STUDENT REGISTRATIONS */}
+        {/* TAB 2: STUDENT REGISTRATIONS IN CRISP WHITE DATA TABLE */}
         {activeTab === 'registrations' && (
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[#241A16] p-4 rounded-2xl border border-[#6B4030]/30">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
               <div>
-                <h2 className="font-serif-brand text-xl font-bold text-white">
+                <h2 className="font-serif-brand text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
                   Enrolled Students &amp; Cohort Applications
                 </h2>
-                <p className="text-xs text-[#F7F2E8]/70">
-                  Total {registrations.length} verified applications submitted through the public website.
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Total {registrations.length} verified submissions from the public website.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  onClick={exportRegistrationsCSV}
-                  className="px-3.5 py-2 rounded-xl bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export to CSV</span>
-                </button>
-              </div>
+              <button
+                onClick={exportRegistrationsCSV}
+                className="px-4 py-2 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-white font-semibold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+              >
+                <Download className="w-4 h-4 text-[#B89555]" />
+                <span>Export to CSV</span>
+              </button>
             </div>
 
             {/* Filter and Search Bar */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="relative sm:col-span-2">
-                <Search className="w-4 h-4 text-[#F7F2E8]/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search by student name, email, or phone number..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#241A16] border border-[#6B4030]/40 text-xs text-white placeholder-white/40 focus:border-[#B89555] focus:outline-hidden"
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:border-[#4A2C20] focus:ring-2 focus:ring-[#B89555]/20 focus:outline-hidden shadow-2xs"
                 />
               </div>
 
               <select
                 value={filterSkill}
                 onChange={(e) => setFilterSkill(e.target.value)}
-                className="px-3 py-2.5 rounded-xl bg-[#241A16] border border-[#6B4030]/40 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-800 font-medium focus:border-[#4A2C20] focus:outline-hidden shadow-2xs cursor-pointer"
               >
                 <option value="All">All Skill Pillars</option>
                 <option value="Painting & Natural Mineral Pigments">Painting & Natural Pigments</option>
@@ -807,57 +817,57 @@ export default function App() {
               </select>
             </div>
 
-            {/* Registrations Table */}
-            <div className="rounded-2xl bg-[#241A16] border border-[#6B4030]/40 overflow-hidden shadow-md">
+            {/* Registrations White Data Table */}
+            <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#18110D] border-b border-white/10 text-[#B89555] uppercase text-[10px] tracking-wider font-semibold">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[10.5px] tracking-wider font-bold">
                     <tr>
                       <th className="py-3 px-4">Student</th>
                       <th className="py-3 px-4">Contact</th>
                       <th className="py-3 px-4">Location &amp; Profession</th>
                       <th className="py-3 px-4">Cohort Selected</th>
-                      <th className="py-3 px-4">Payment Reference</th>
+                      <th className="py-3 px-4">Payment Ref</th>
                       <th className="py-3 px-4">Date</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-100">
                     {filteredRegistrations.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="py-8 text-center text-[#F7F2E8]/50">
-                          No matching registrations found.
+                        <td colSpan="6" className="py-10 text-center text-slate-400">
+                          No student registrations found.
                         </td>
                       </tr>
                     ) : (
                       filteredRegistrations.map((reg) => (
-                        <tr key={reg.id || Math.random()} className="hover:bg-white/5 transition-colors">
-                          <td className="py-3 px-4">
-                            <span className="font-semibold text-white block">{reg.fullName}</span>
-                            <span className="text-[10px] text-[#B89555]">{reg.experienceLevel || 'Beginner'}</span>
+                        <tr key={reg.id || Math.random()} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="py-3.5 px-4">
+                            <span className="font-bold text-slate-900 block">{reg.fullName}</span>
+                            <span className="text-[10.5px] text-[#B89555] font-semibold">{reg.experienceLevel || 'Beginner'}</span>
                           </td>
-                          <td className="py-3 px-4 text-[#F7F2E8]/80 space-y-0.5">
+                          <td className="py-3.5 px-4 text-slate-700 space-y-0.5">
                             <div>{reg.email}</div>
-                            <div className="font-mono text-[11px] text-[#B89555]">{reg.fullPhone || reg.phone}</div>
+                            <div className="font-mono text-[11px] text-slate-600 font-medium">{reg.fullPhone || reg.phone}</div>
                           </td>
-                          <td className="py-3 px-4 text-[#F7F2E8]/80">
+                          <td className="py-3.5 px-4 text-slate-700">
                             <div>{reg.location || '-'}</div>
-                            <div className="text-[10px] text-[#F7F2E8]/50">{reg.profession || '-'}</div>
+                            <div className="text-[10.5px] text-slate-400">{reg.profession || '-'}</div>
                           </td>
-                          <td className="py-3 px-4">
-                            <span className="px-2 py-1 rounded-md bg-[#4A2C20] text-[#B89555] font-medium text-[11px]">
+                          <td className="py-3.5 px-4">
+                            <span className="px-2.5 py-1 rounded-md bg-slate-100 text-[#4A2C20] font-semibold text-[11px] border border-slate-200/80 inline-block">
                               {reg.interestedSkill}
                             </span>
                           </td>
-                          <td className="py-3 px-4">
+                          <td className="py-3.5 px-4">
                             {reg.paymentRef ? (
-                              <span className="font-mono text-[11px] text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded">
+                              <span className="font-mono text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
                                 {reg.paymentRef}
                               </span>
                             ) : (
-                              <span className="text-[11px] text-amber-400/80 italic">Startupwala Link</span>
+                              <span className="text-[11px] text-amber-700 font-medium">Startupwala Link</span>
                             )}
                           </td>
-                          <td className="py-3 px-4 text-[#F7F2E8]/60 text-[11px]">
+                          <td className="py-3.5 px-4 text-slate-500 text-[11px]">
                             {reg.created_at ? new Date(reg.created_at).toLocaleDateString() : 'Recent'}
                           </td>
                         </tr>
@@ -870,64 +880,58 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 3: STANDALONE HOST SETTINGS & DEPLOYMENT GUIDE */}
+        {/* TAB 3: STANDALONE HOST SETTINGS */}
         {activeTab === 'host' && (
           <div className="space-y-6">
-            <div className="bg-[#241A16] p-6 rounded-2xl border border-[#B89555]/30 space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#4A2C20] border border-[#B89555]/40 text-[#B89555] flex items-center justify-center">
-                  <Server className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-[#4A2C20] text-white flex items-center justify-center">
+                  <Server className="w-5 h-5 text-[#B89555]" />
                 </div>
                 <div>
-                  <h2 className="font-serif-brand text-xl font-bold text-white">
+                  <h2 className="font-serif-brand text-xl sm:text-2xl font-bold text-slate-900">
                     Standalone Host &amp; Architecture Overview
                   </h2>
-                  <p className="text-xs text-[#F7F2E8]/70">
-                    This admin panel runs independently from the main public user application.
+                  <p className="text-xs text-slate-500">
+                    This admin application runs on its own independent host, decoupled from the public user client.
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                <div className="p-4 rounded-xl bg-[#18110D] border border-white/10 space-y-1">
-                  <span className="text-[11px] text-[#B89555] font-semibold uppercase">Admin Panel Host</span>
-                  <p className="font-mono text-sm font-bold text-white">{currentHost}</p>
-                  <p className="text-[11px] text-emerald-400">Independent Port 5174</p>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Admin Panel Host</span>
+                  <p className="font-mono text-sm font-bold text-slate-900">{currentHost}</p>
+                  <p className="text-xs text-emerald-700 font-medium">Port 5174 (Standalone)</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#18110D] border border-white/10 space-y-1">
-                  <span className="text-[11px] text-[#B89555] font-semibold uppercase">Target API Backend</span>
-                  <p className="font-mono text-sm font-bold text-white">{API_BASE_URL}</p>
-                  <p className="text-[11px] text-emerald-400">Node/Express Server (Port 5000 / Production)</p>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Target API Server</span>
+                  <p className="font-mono text-sm font-bold text-slate-900">{API_BASE_URL}</p>
+                  <p className="text-xs text-emerald-700 font-medium">Express API on Port 5000 / Production</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#18110D] border border-white/10 space-y-1">
-                  <span className="text-[11px] text-[#B89555] font-semibold uppercase">Public User Website Host</span>
-                  <p className="font-mono text-sm font-bold text-white">{publicWebsiteUrl}</p>
-                  <p className="text-[11px] text-blue-400">Separately Hosted Client</p>
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Public User Site</span>
+                  <p className="font-mono text-sm font-bold text-slate-900">{publicWebsiteUrl}</p>
+                  <p className="text-xs text-blue-700 font-medium">Port 5173 / Main Domain</p>
                 </div>
               </div>
             </div>
 
-            {/* Production Deployment Instructions */}
-            <div className="bg-[#241A16] p-6 rounded-2xl border border-white/10 space-y-4">
-              <h3 className="font-serif-brand text-lg font-bold text-white flex items-center gap-2">
+            {/* Subdomain Deployment Guide */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+              <h3 className="font-serif-brand text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Globe className="w-5 h-5 text-[#B89555]" />
-                <span>How to Host Admin Panel on a Separate Subdomain or Server</span>
+                <span>Hosting Instructions for Production Subdomain</span>
               </h3>
 
-              <div className="space-y-3 text-xs text-[#F7F2E8]/80 leading-relaxed">
-                <div className="p-3.5 rounded-xl bg-[#18110D] border border-white/5 space-y-1.5">
-                  <strong className="text-white text-xs block">Option A: Host on Hostinger Subdomain (e.g. admin.globalnagasinstitute.in)</strong>
-                  <p>1. In Hostinger hPanel, create a Subdomain: <code className="text-[#B89555]">admin.globalnagasinstitute.in</code>.</p>
-                  <p>2. Build the admin bundle: <code className="text-[#B89555]">npm run build --prefix admin</code>.</p>
-                  <p>3. Upload the generated <code className="text-[#B89555]">admin/dist</code> contents into the subdomain's <code className="text-[#B89555]">public_html/admin</code> folder.</p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-[#18110D] border border-white/5 space-y-1.5">
-                  <strong className="text-white text-xs block">Option B: Run as a Standalone Node / Vite Service</strong>
-                  <p>Start standalone dev server: <code className="text-[#B89555]">npm run dev:admin</code> (Serves on <code className="text-[#B89555]">http://localhost:5174</code>).</p>
-                  <p>Build command: <code className="text-[#B89555]">npm run build:admin</code>.</p>
+              <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                  <strong className="text-slate-900 text-xs block font-bold">Hostinger Subdomain Setup (e.g. admin.globalnagasinstitute.in)</strong>
+                  <p>1. In Hostinger hPanel, create subdomain: <code className="text-[#4A2C20] font-bold">admin.globalnagasinstitute.in</code></p>
+                  <p>2. Run build: <code className="text-[#4A2C20] font-bold">npm run build:admin</code></p>
+                  <p>3. Upload files from <code className="text-[#4A2C20] font-bold">admin/dist</code> into the subdomain's <code className="text-[#4A2C20] font-bold">public_html</code>.</p>
                 </div>
               </div>
             </div>
@@ -935,22 +939,25 @@ export default function App() {
         )}
       </main>
 
-      {/* MODAL: ADD / EDIT COURSE & DISCOUNT OFFER */}
+      {/* MODAL: ADD / EDIT COURSE IN PURE WHITE WITH STICKY HEADER & FOOTER */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
           <form
             onSubmit={handleSaveCourse}
-            className="bg-[#241A16] border border-[#B89555]/40 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
+            className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
           >
             {/* Sticky Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-5 sm:px-6 py-4 bg-[#241A16] shrink-0">
-              <div>
-                <h3 className="font-serif-brand text-xl font-bold text-white">
-                  {editingCourse ? 'Edit Course & Discount Offer' : 'Add New Heritage Course'}
-                </h3>
-                <p className="text-xs text-[#F7F2E8]/60">
-                  Customized parameters will dynamically display on the public website.
-                </p>
+            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4 bg-white shrink-0">
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
+                <div>
+                  <h3 className="font-serif-brand text-xl font-bold text-slate-900 leading-tight">
+                    {editingCourse ? 'Edit Course & Discount Offer' : 'Add New Heritage Course'}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Changes will sync live to the public user site.
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
@@ -958,17 +965,17 @@ export default function App() {
                   setShowAddModal(false);
                   setEditingCourse(null);
                 }}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* Scrollable Form Body */}
-            <div className="overflow-y-auto p-5 sm:p-6 space-y-4 flex-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="overflow-y-auto p-6 space-y-4 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Course Title *
                   </label>
                   <input
@@ -978,19 +985,19 @@ export default function App() {
                     onChange={handleFormChange}
                     required
                     placeholder="e.g. Master Sculpting & Lost-Wax Bronze Metallurgy"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:ring-2 focus:ring-[#B89555]/20 focus:outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Heritage Category
                   </label>
                   <select
                     name="category"
                     value={courseForm.category}
                     onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden cursor-pointer"
                   >
                     <option value="Painting & Natural Pigments">Painting & Natural Pigments</option>
                     <option value="Libi & Epigraphy">Libi & Epigraphy</option>
@@ -1001,7 +1008,7 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Badge / Tag
                   </label>
                   <input
@@ -1009,13 +1016,13 @@ export default function App() {
                     name="badge"
                     value={courseForm.badge}
                     onChange={handleFormChange}
-                    placeholder="e.g. Bestseller Cohort / Special Masterclass"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    placeholder="e.g. Popular Masterclass / 50% Off Special"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Duration
                   </label>
                   <input
@@ -1024,12 +1031,12 @@ export default function App() {
                     value={courseForm.duration}
                     onChange={handleFormChange}
                     placeholder="e.g. 60 Days / 8 Weeks"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Learning Mode
                   </label>
                   <input
@@ -1038,29 +1045,27 @@ export default function App() {
                     value={courseForm.mode}
                     onChange={handleFormChange}
                     placeholder="e.g. Studio Hands-on & Forge"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                   />
                 </div>
               </div>
 
-              {/* Pricing & Discount Offer Box */}
-              <div className="p-4 rounded-2xl bg-[#18110D] border border-[#B89555]/30 space-y-3">
+              {/* Pricing & Discount Offer Box in Amber Accent */}
+              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">
-                      Pricing &amp; Discount Offer Settings
-                    </span>
+                  <div className="flex items-center gap-1.5 font-bold text-amber-900 text-xs uppercase tracking-wider">
+                    <Flame className="w-4 h-4 text-amber-600" />
+                    <span>Pricing &amp; Discount Offer Settings</span>
                   </div>
-                  <span className="text-xs font-bold text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/30">
+                  <span className="text-xs font-bold text-emerald-800 px-2.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-300">
                     {calcDiscountPercent(courseForm.original_price, courseForm.discount_price)}% Discount Applied
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#F7F2E8]/80 mb-1">
-                      Original Price (₹)
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Original Fee (₹)
                     </label>
                     <input
                       type="number"
@@ -1069,13 +1074,13 @@ export default function App() {
                       onChange={handleFormChange}
                       required
                       min="0"
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#241A16] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                      className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#F7F2E8]/80 mb-1">
-                      Discounted / Offer Price (₹)
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Offer / Discounted Price (₹) *
                     </label>
                     <input
                       type="number"
@@ -1084,14 +1089,14 @@ export default function App() {
                       onChange={handleFormChange}
                       required
                       min="0"
-                      className="w-full px-3.5 py-2 rounded-xl bg-[#241A16] border border-white/10 text-xs text-emerald-400 font-bold focus:border-[#B89555] focus:outline-hidden"
+                      className="w-full px-3.5 py-2 rounded-xl bg-white border border-emerald-400 text-xs text-emerald-700 font-bold focus:border-emerald-600 focus:outline-hidden"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Course Description *
                 </label>
                 <textarea
@@ -1100,28 +1105,28 @@ export default function App() {
                   onChange={handleFormChange}
                   required
                   rows="2"
-                  placeholder="Comprehensive description of the curriculum, ancient origins, and practical skills learned..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                  placeholder="Overview of the curriculum, historical foundations, and practical techniques..."
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
-                  Key Highlights (semicolon-separated)
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Key Takeaways / Highlights (semicolon-separated)
                 </label>
                 <input
                   type="text"
                   name="highlights"
                   value={courseForm.highlights}
                   onChange={handleFormChange}
-                  placeholder="Raw mineral grinding; Lost-wax furnace casting; Take-home certificate"
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                  placeholder="Raw mineral grinding; Lost-wax furnace casting; Mastercraft certificate"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                 />
               </div>
 
-              {/* Quick Image Picker */}
+              {/* Image Picker */}
               <div>
-                <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1">
                   Image Banner URL
                 </label>
                 <input
@@ -1130,7 +1135,7 @@ export default function App() {
                   value={courseForm.image_url}
                   onChange={handleFormChange}
                   placeholder="https://..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden mb-2"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden mb-2"
                 />
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {DEFAULT_IMAGES.map((img, i) => (
@@ -1140,8 +1145,8 @@ export default function App() {
                       onClick={() => setCourseForm((prev) => ({ ...prev, image_url: img.url }))}
                       className={`text-[10px] px-2.5 py-1 rounded-lg border whitespace-nowrap transition-colors cursor-pointer ${
                         courseForm.image_url === img.url
-                          ? 'bg-[#B89555] text-[#241A16] border-[#B89555] font-semibold'
-                          : 'bg-white/5 text-[#F7F2E8]/70 border-white/10 hover:border-white/20'
+                          ? 'bg-[#4A2C20] text-white border-[#4A2C20] font-bold'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
                       {img.label}
@@ -1152,7 +1157,7 @@ export default function App() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Total Seats
                   </label>
                   <input
@@ -1161,11 +1166,11 @@ export default function App() {
                     value={courseForm.seats_total}
                     onChange={handleFormChange}
                     min="1"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#F7F2E8]/80 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Seats Available
                   </label>
                   <input
@@ -1174,27 +1179,27 @@ export default function App() {
                     value={courseForm.seats_available}
                     onChange={handleFormChange}
                     min="0"
-                    className="w-full px-3.5 py-2 rounded-xl bg-[#18110D] border border-white/10 text-xs text-white focus:border-[#B89555] focus:outline-hidden"
+                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:border-[#4A2C20] focus:outline-hidden"
                   />
                 </div>
               </div>
             </div>
 
             {/* Sticky Action Footer */}
-            <div className="flex items-center justify-end gap-3 px-5 sm:px-6 py-3.5 border-t border-white/10 bg-[#1c130f] shrink-0">
+            <div className="flex items-center justify-end gap-3 px-6 py-3.5 border-t border-slate-200 bg-slate-50 shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setShowAddModal(false);
                   setEditingCourse(null);
                 }}
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-white transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] font-semibold text-xs transition-transform active:scale-95 cursor-pointer shadow-md"
+                className="px-5 py-2 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-white font-bold text-xs shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer"
               >
                 {editingCourse ? 'Save Changes' : 'Publish Course'}
               </button>

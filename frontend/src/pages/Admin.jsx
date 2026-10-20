@@ -318,8 +318,12 @@ export default function Admin() {
     return (
       <div className="min-h-screen bg-[#F7F2E8] flex flex-col justify-center items-center py-12 px-4 text-[#241A16]">
         <div className="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 border border-[#6B4030]/20 shadow-lg text-center space-y-5">
-          <div className="w-14 h-14 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center mx-auto shadow-sm">
-            <Lock className="w-7 h-7" />
+          <div className="flex justify-center mb-1">
+            <img
+              src="/artisan/logo.png"
+              alt="Global Nagas Institute"
+              className="h-16 sm:h-20 w-auto object-contain hover:scale-105 transition-transform"
+            />
           </div>
 
           <div className="space-y-1">
