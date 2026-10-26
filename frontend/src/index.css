@@ -12,22 +12,16 @@
   --color-darkcharcoal: #241A16;
 }
 
-/* Override Cormorant Garamond digits to use normal standard numbers from DM Sans */
-@font-face {
-  font-family: 'Cormorant Garamond';
-  src: local('DM Sans'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
-  unicode-range: U+0030-0039;
-  font-display: swap;
-}
-
 @layer base {
   *, ::before, ::after {
     font-variant-numeric: lining-nums tabular-nums;
+    caret-color: transparent !important;
   }
 
   html {
     scroll-behavior: smooth;
     font-family: 'DM Sans', sans-serif;
+    caret-color: transparent !important;
   }
 
   body {
@@ -38,12 +32,30 @@
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    caret-color: transparent !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Cormorant Garamond', Georgia, serif;
     color: #241A16;
     letter-spacing: -0.01em;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    padding-bottom: 0.08em;
+  }
+
+  /* Universal badge, pill, and label font protection - prevents font ascenders & descenders from being cut */
+  [class*="rounded-full"],
+  [class*="rounded-xl"],
+  [class*="rounded-2xl"],
+  [class*="rounded-lg"],
+  [class*="rounded-md"] {
+    text-rendering: optimizeLegibility;
+  }
+
+  span[class*="rounded-"],
+  div[class*="rounded-full"] {
+    line-height: normal;
   }
 }
 

@@ -88,26 +88,32 @@ export const getAdminStats = async (req, res) => {
 };
 
 /**
- * Admin: Login verification
+ * Admin: Login verification strictly handled by .env configuration
  */
 export const adminLogin = async (req, res) => {
   const { username, password } = req.body;
 
-  // Simple secure credential check (standard for GNI Admin Portal)
-  const ADMIN_USER = process.env.ADMIN_USER || 'admin@globalnagas.org';
-  const ADMIN_PASS = process.env.ADMIN_PASS || 'admin@gni2026';
+  const ADMIN_USER = process.env.ADMIN_USER;
+  const ADMIN_PASS = process.env.ADMIN_PASS;
 
-  if (
-    (username === ADMIN_USER || username === 'admin' || username === 'kan93095@gmail.com') &&
-    (password === ADMIN_PASS || password === 'admin123' || password === 'admin@gni2026')
-  ) {
+  if (!ADMIN_USER || !ADMIN_PASS) {
+    return res.status(500).json({
+      success: false,
+      message: 'Server configuration error: ADMIN_USER and ADMIN_PASS must be defined in backend/.env file.',
+    });
+  }
+
+  const inputUser = (username || '').trim().toLowerCase();
+  const validUser = ADMIN_USER.trim().toLowerCase();
+
+  if (inputUser === validUser && password === ADMIN_PASS) {
     return res.status(200).json({
       success: true,
       message: 'Admin authentication successful',
       token: 'gni_admin_token_' + Date.now(),
       admin: {
         name: 'GNI Master Administrator',
-        email: username,
+        email: ADMIN_USER,
         role: 'SuperAdmin',
       },
     });
@@ -115,6 +121,6 @@ export const adminLogin = async (req, res) => {
 
   return res.status(401).json({
     success: false,
-    message: 'Invalid admin username or password. Please try again.',
+    message: 'Invalid admin username or password. Please check backend/.env configuration.',
   });
 };

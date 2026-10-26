@@ -1,8 +1,15 @@
 import { getPool } from '../config/mysql.js';
 import { DEFAULT_COURSES } from '../models/defaultCourses.js';
+import { GNI_COURSE_PRICING, calculateTrustedFee } from '../models/pricingConfig.js';
 
 // In-memory fallback cache if MySQL is temporarily offline
 let memoryCourses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
+
+function countWords(str) {
+  if (!str) return 0;
+  const matches = String(str).trim().match(/[\S]+/g);
+  return matches ? matches.length : 0;
+}
 
 function generateSlug(text) {
   return text
@@ -78,6 +85,29 @@ export const createCourse = async (req, res) => {
         success: false,
         message: 'Title, Category, and Description are required.',
       });
+    }
+
+    if (countWords(title) > 12) {
+      return res.status(400).json({ success: false, message: 'Title cannot exceed 12 words.' });
+    }
+    if (countWords(description) > 40) {
+      return res.status(400).json({ success: false, message: 'Description cannot exceed 40 words.' });
+    }
+    if (countWords(category) > 6) {
+      return res.status(400).json({ success: false, message: 'Category cannot exceed 6 words.' });
+    }
+    if (badge && countWords(badge) > 5) {
+      return res.status(400).json({ success: false, message: 'Banner badge cannot exceed 5 words.' });
+    }
+    if (duration && countWords(duration) > 5) {
+      return res.status(400).json({ success: false, message: 'Duration cannot exceed 5 words.' });
+    }
+    if (mode && countWords(mode) > 5) {
+      return res.status(400).json({ success: false, message: 'Learning mode cannot exceed 5 words.' });
+    }
+    const isJsonRoadmapCreate = typeof highlights === 'string' && highlights.trim().startsWith('[');
+    if (highlights && !isJsonRoadmapCreate && countWords(highlights) > 45) {
+      return res.status(400).json({ success: false, message: 'Practical modules cannot exceed 45 words.' });
     }
 
     const origPrice = Number(original_price) || 0;
@@ -204,6 +234,29 @@ export const updateCourse = async (req, res) => {
       seats_available,
       is_active,
     } = req.body;
+
+    if (title && countWords(title) > 12) {
+      return res.status(400).json({ success: false, message: 'Title cannot exceed 12 words.' });
+    }
+    if (description && countWords(description) > 40) {
+      return res.status(400).json({ success: false, message: 'Description cannot exceed 40 words.' });
+    }
+    if (category && countWords(category) > 6) {
+      return res.status(400).json({ success: false, message: 'Category cannot exceed 6 words.' });
+    }
+    if (badge && countWords(badge) > 5) {
+      return res.status(400).json({ success: false, message: 'Banner badge cannot exceed 5 words.' });
+    }
+    if (duration && countWords(duration) > 5) {
+      return res.status(400).json({ success: false, message: 'Duration cannot exceed 5 words.' });
+    }
+    if (mode && countWords(mode) > 5) {
+      return res.status(400).json({ success: false, message: 'Learning mode cannot exceed 5 words.' });
+    }
+    const isJsonRoadmapCreate = typeof highlights === 'string' && highlights.trim().startsWith('[');
+    if (highlights && !isJsonRoadmapCreate && countWords(highlights) > 45) {
+      return res.status(400).json({ success: false, message: 'Practical modules cannot exceed 45 words.' });
+    }
 
     const origPrice = Number(original_price) || 0;
     const discPrice = Number(discount_price) || 0;
@@ -350,6 +403,61 @@ export const deleteCourse = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to delete course',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Public: Get course pricing configuration with supported durations & fees
+ */
+export const getPricingConfig = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      count: GNI_COURSE_PRICING.length,
+      data: GNI_COURSE_PRICING,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve pricing configuration',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Public/Protected: Calculate trusted course fee based on course and duration
+ */
+export const calculateCourseFee = async (req, res) => {
+  try {
+    const { courseId, courseName, duration } = req.body;
+    const identifier = courseName || courseId;
+
+    if (!identifier) {
+      return res.status(400).json({
+        success: false,
+        message: 'Course Name or Course ID is required.',
+      });
+    }
+
+    const calculated = calculateTrustedFee(identifier, duration);
+    if (!calculated) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pricing not found for the requested course/duration.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: calculated,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to calculate course fee',
       error: error.message,
     });
   }

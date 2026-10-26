@@ -50,7 +50,7 @@ export default function CreatorsCircle() {
             </Reveal>
 
             <Reveal direction="up" delay={200}>
-              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+              <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.2] pb-1">
                 A2O Creators Circle Community
               </h2>
             </Reveal>
@@ -73,7 +73,7 @@ export default function CreatorsCircle() {
                 {/* Strictly static button */}
                 <button
                   onClick={handleStaticClick}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200 cursor-default group"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200 cursor-pointer group"
                 >
                   <span>Join A2O WhatsApp Group</span>
                   <ArrowUpRight className="w-4 h-4 text-[#241A16] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

@@ -355,11 +355,11 @@ export default function StudioFacilities() {
             <span className="inline-block px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-[11px] sm:text-xs font-['DM_Sans'] font-medium mb-1.5 sm:mb-2.5">
               Infrastructure & Studios
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
-              Repository Studios & Facilities
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-[1.2] pb-1">
+              Repository Studios &amp; Facilities
             </h2>
             <div className="w-14 sm:w-16 h-0.5 bg-[#B89555] mx-auto mt-1.5 sm:mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-xs sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
+            <p className="font-['DM_Sans'] mt-2.5 text-xs sm:text-base text-[#6B4030] font-normal leading-relaxed text-center mx-auto max-w-2xl">
               Explore our 6 dedicated purpose-built spaces designed for tactile craftsmanship and epigraphical study.
             </p>
           </div>

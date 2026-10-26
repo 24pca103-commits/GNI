@@ -10,6 +10,7 @@ import registrationRoutes from './routes/registrationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -87,7 +88,17 @@ app.use(
   })
 );
 
-// Body parsing with limit to prevent DoS
+// Dedicated upload route with 10MB limit for image uploads
+app.use('/api/upload', express.json({ limit: '10mb' }), uploadRoutes);
+
+// Static file serving for uploaded images
+const uploadsDir = path.resolve(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
+
+// Body parsing with limit to prevent DoS for other endpoints
 app.use(express.json({ limit: '20kb' }));
 app.use(express.urlencoded({ extended: true, limit: '20kb' }));
 

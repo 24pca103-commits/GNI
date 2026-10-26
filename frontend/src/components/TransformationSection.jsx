@@ -27,11 +27,11 @@ export default function TransformationSection() {
             <span className="inline-block px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
               The Creative Evolution
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-[1.2] pb-1">
               What Can a Heritage Creator Become?
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center">
+            <p className="font-['Cormorant_Garamond'] text-lg sm:text-2xl text-[#6B4030] font-semibold mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed text-center">
               "A heritage creator who understands authentic culture and transforms it into art, jewellery,
               interiors, textile design and sustainable livelihood."
             </p>
@@ -84,7 +84,7 @@ export default function TransformationSection() {
                   <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5 pl-1">Naga Metallurgy & Filigree</p>
                 </div>
                 <div className="p-3 sm:p-4 rounded-xl bg-[#FAF6EE] border border-[#6B4030]/15 hover:border-[#B89555] transition-colors text-left">
-                  <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Home Décor</p>
+                  <p className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-tight">Home Decor</p>
                   <p className="text-[11px] font-['DM_Sans'] text-[#6B4030] mt-0.5 pl-1">Cultural Branding & Relief Art</p>
                 </div>
               </div>

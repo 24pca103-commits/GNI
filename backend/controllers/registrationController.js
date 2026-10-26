@@ -1,5 +1,6 @@
 import { getPool } from '../config/mysql.js';
 import { sendRegistrationNotifications } from '../services/emailService.js';
+import { calculateTrustedFee } from '../models/pricingConfig.js';
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -13,11 +14,17 @@ export const registerUser = async (req, res, next) => {
       fullPhone,
       location,
       profession,
+      courseName,
       interestedSkill,
+      courseDuration,
+      duration,
       experienceLevel,
       learningPurpose,
       paymentRef,
     } = req.body;
+
+    const chosenCourse = (courseName || interestedSkill || '').trim();
+    const chosenDuration = (courseDuration || duration || '').trim();
 
     // Validate presence of required fields
     if (
@@ -26,20 +33,21 @@ export const registerUser = async (req, res, next) => {
       !phone ||
       !location ||
       !profession ||
-      !interestedSkill ||
+      !chosenCourse ||
+      !chosenDuration ||
       !experienceLevel ||
       !learningPurpose
     ) {
       return res.status(400).json({
         success: false,
-        message: 'All application fields are required. Please fill in all fields.',
+        message: 'All application fields including Course Name and Course Duration are required.',
       });
     }
 
     const pool = getPool();
     const normalizedEmail = email.toLowerCase().trim();
 
-    // 1. Check for existing registration with same email using parameterized query
+    // 1. Check for existing registration with same email using parameterized query to prevent duplicates
     const [existingRows] = await pool.execute(
       'SELECT id, email FROM `registrations` WHERE `email` = ? LIMIT 1',
       [normalizedEmail]
@@ -52,43 +60,114 @@ export const registerUser = async (req, res, next) => {
       });
     }
 
-    // 2. Insert new registration into MySQL table using parameterized query
-    const insertQuery = `
-      INSERT INTO \`registrations\` (
-        \`full_name\`,
-        \`email\`,
-        \`phone\`,
-        \`country\`,
-        \`country_code\`,
-        \`country_dial\`,
-        \`full_phone\`,
-        \`location\`,
-        \`profession\`,
-        \`interested_skill\`,
-        \`experience_level\`,
-        \`learning_purpose\`
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    // 2. Server-side trusted calculation of course fee and total payable
+    const pricing = calculateTrustedFee(chosenCourse, chosenDuration);
+    const trustedFee = pricing ? pricing.fee : 4999;
+    const formattedTrustedFee = pricing ? pricing.formattedFee : '₹4,999';
+    const totalAmount = pricing ? pricing.totalPayable : trustedFee;
+    const formattedTotal = pricing ? pricing.formattedTotal : formattedTrustedFee;
+    const discountAmount = pricing ? pricing.discount : 0;
+    const formattedDiscount = pricing ? pricing.formattedDiscount : '₹0';
+    const taxes = pricing ? pricing.taxes : 0;
+    const courseTitle = pricing ? pricing.courseName : chosenCourse;
+    const validatedDuration = pricing ? pricing.duration : chosenDuration;
 
-    const values = [
-      fullName.trim(),
-      normalizedEmail,
-      phone.trim(),
-      country || 'India',
-      countryCode || 'IN',
-      countryDial || '+91',
-      fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
-      location.trim(),
-      profession.trim(),
-      interestedSkill,
-      experienceLevel,
-      learningPurpose.trim(),
-    ];
+    // 3. Generate unique institutional application reference ID
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const applicationRef = `GNI-APP-2026-${Date.now().toString().slice(-4)}${randomSuffix}`;
+    const paymentStatus = 'Pending Offline Payment at Campus';
+    const paymentRefVal = (paymentRef && paymentRef.trim()) ? paymentRef.trim() : 'Offline Campus Payment';
 
-    const [result] = await pool.execute(insertQuery, values);
+    // 4. Insert new registration into MySQL table
+    let result = { insertId: Date.now() };
 
-    // Dispatch real-time confirmation email to customer & alert to admin (24pca103@anjaconline.org)
+    try {
+      const insertQueryWithNewCols = `
+        INSERT INTO \`registrations\` (
+          \`full_name\`,
+          \`email\`,
+          \`phone\`,
+          \`country\`,
+          \`country_code\`,
+          \`country_dial\`,
+          \`full_phone\`,
+          \`location\`,
+          \`profession\`,
+          \`interested_skill\`,
+          \`course_duration\`,
+          \`course_fee\`,
+          \`total_amount\`,
+          \`application_ref\`,
+          \`payment_status\`,
+          \`payment_ref\`,
+          \`experience_level\`,
+          \`learning_purpose\`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const valuesNew = [
+        fullName.trim(),
+        normalizedEmail,
+        phone.trim(),
+        country || 'India',
+        countryCode || 'IN',
+        countryDial || '+91',
+        fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
+        location.trim(),
+        profession.trim(),
+        courseTitle,
+        validatedDuration,
+        trustedFee,
+        totalAmount,
+        applicationRef,
+        paymentStatus,
+        paymentRefVal,
+        experienceLevel,
+        learningPurpose.trim(),
+      ];
+
+      const [resQuery] = await pool.execute(insertQueryWithNewCols, valuesNew);
+      result = resQuery;
+    } catch (insertErr) {
+      // Fallback to basic schema if new columns are not yet provisioned in an older database
+      console.warn('[Registration Controller] Fallback to legacy columns:', insertErr.message);
+      const fallbackQuery = `
+        INSERT INTO \`registrations\` (
+          \`full_name\`,
+          \`email\`,
+          \`phone\`,
+          \`country\`,
+          \`country_code\`,
+          \`country_dial\`,
+          \`full_phone\`,
+          \`location\`,
+          \`profession\`,
+          \`interested_skill\`,
+          \`experience_level\`,
+          \`learning_purpose\`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const fallbackValues = [
+        fullName.trim(),
+        normalizedEmail,
+        phone.trim(),
+        country || 'India',
+        countryCode || 'IN',
+        countryDial || '+91',
+        fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
+        location.trim(),
+        profession.trim(),
+        `${courseTitle} — ${validatedDuration} (${formattedTotal}) [Ref: ${applicationRef}]`,
+        experienceLevel,
+        learningPurpose.trim(),
+      ];
+      const [resQueryFallback] = await pool.execute(fallbackQuery, fallbackValues);
+      result = resQueryFallback;
+    }
+
+    // 5. Dispatch real-time confirmation email to customer & alert to admin
     const registrationDetails = {
+      applicationRef,
       fullName: fullName.trim(),
       email: normalizedEmail,
       phone: phone.trim(),
@@ -98,10 +177,16 @@ export const registerUser = async (req, res, next) => {
       fullPhone: fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
       location: location.trim(),
       profession: profession.trim(),
-      interestedSkill,
+      interestedSkill: courseTitle,
+      courseName: courseTitle,
+      courseDuration: validatedDuration,
+      courseFee: formattedTrustedFee,
+      totalAmount: formattedTotal,
+      paymentStatus,
+      paymentMethod: 'Offline Payment at Campus',
+      paymentRef: paymentRefVal,
       experienceLevel,
       learningPurpose: learningPurpose.trim(),
-      paymentRef: paymentRef ? paymentRef.trim() : '',
     };
 
     sendRegistrationNotifications(registrationDetails).catch((err) => {
@@ -110,16 +195,27 @@ export const registerUser = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Registration Successful! Welcome to the Heritage Creator journey.',
+      message: 'Application Submitted Successfully! Welcome to the Heritage Creator journey.',
       data: {
         id: result.insertId,
+        applicationRef,
         fullName: fullName.trim(),
         email: normalizedEmail,
         phone: phone.trim(),
         country: country || 'India',
-        interestedSkill,
+        courseName: courseTitle,
+        interestedSkill: courseTitle,
+        courseDuration: validatedDuration,
+        courseFee: trustedFee,
+        formattedFee: formattedTrustedFee,
+        discount: discountAmount,
+        formattedDiscount,
+        taxes,
+        totalAmount,
+        formattedTotal,
+        paymentStatus,
+        paymentMethod: 'Offline Payment at Campus',
         experienceLevel,
-        paymentRef: paymentRef ? paymentRef.trim() : '',
         createdAt: new Date().toISOString(),
       },
     });

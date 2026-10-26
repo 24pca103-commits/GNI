@@ -16,7 +16,7 @@ export default function FinalCTA() {
                 <span>Admissions Now Open</span>
               </div>
 
-              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+              <h2 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.2] pb-1">
                 Begin Your Heritage Journey
               </h2>
 
@@ -24,8 +24,8 @@ export default function FinalCTA() {
                 Learn Heritage. Create Art. Build Livelihood.
               </p>
 
-              {/* Sub-content with Text Justification & Clean Start Alignment on mobile */}
-              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed max-w-lg mx-auto font-normal text-justify indent-5 sm:indent-0 sm:text-center">
+              {/* Sub-content with Clean Center Alignment */}
+              <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed max-w-lg mx-auto font-normal text-center">
                 Join our upcoming cohort to uncover ancient Tamil knowledge, master traditional craftsmanship,
                 and transform cultural wisdom into a sustainable, modern creative career.
               </p>

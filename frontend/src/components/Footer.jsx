@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUp, MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
@@ -26,11 +27,6 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const adminHostUrl =
-    import.meta.env.VITE_ADMIN_HOST_URL ||
-    (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'http://localhost:5174'
-      : '/admin');
 
   return (
     <footer className="bg-[#F7F2E8] text-[#241A16] border-t border-[#6B4030]/20 py-6 sm:py-8 pb-20 sm:pb-8">
@@ -130,14 +126,12 @@ export default function Footer() {
           <div className="flex items-center gap-3 text-[11px] sm:text-xs">
             <span>Designed with ancient Tamil cultural reverence.</span>
             <span className="text-[#6B4030]/30">•</span>
-            <a
-              href={adminHostUrl}
-              target={adminHostUrl.startsWith('http') ? '_blank' : '_self'}
-              rel="noreferrer"
+            <Link
+              to="/admin"
               className="text-[#6B4030]/70 hover:text-[#B89555] font-semibold transition-colors inline-flex items-center gap-1"
             >
-              Faculty Portal (Admin Host)
-            </a>
+              Faculty Portal
+            </Link>
           </div>
         </div>
       </div>

@@ -34,6 +34,12 @@ export const initMySQL = async () => {
       \`location\` VARCHAR(255) NOT NULL,
       \`profession\` VARCHAR(255) NOT NULL,
       \`interested_skill\` VARCHAR(255) NOT NULL,
+      \`course_duration\` VARCHAR(100) DEFAULT NULL,
+      \`course_fee\` DECIMAL(10,2) DEFAULT NULL,
+      \`total_amount\` DECIMAL(10,2) DEFAULT NULL,
+      \`application_ref\` VARCHAR(100) DEFAULT NULL,
+      \`payment_status\` VARCHAR(100) DEFAULT 'Pending Verification',
+      \`payment_ref\` VARCHAR(150) DEFAULT NULL,
       \`experience_level\` VARCHAR(100) NOT NULL,
       \`learning_purpose\` TEXT NOT NULL,
       \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -107,6 +113,27 @@ export const initMySQL = async () => {
     }
   };
 
+  const ensureRegistrationColumns = async (p) => {
+    const columns = [
+      '`course_duration` VARCHAR(100) DEFAULT NULL',
+      '`course_fee` DECIMAL(10,2) DEFAULT NULL',
+      '`total_amount` DECIMAL(10,2) DEFAULT NULL',
+      '`application_ref` VARCHAR(100) DEFAULT NULL',
+      '`payment_status` VARCHAR(100) DEFAULT \'Pending Verification\'',
+      '`payment_ref` VARCHAR(150) DEFAULT NULL',
+    ];
+    for (const col of columns) {
+      try {
+        await p.query(`ALTER TABLE \`registrations\` ADD COLUMN ${col}`);
+      } catch (colErr) {
+        // Error 1060 (ER_DUP_FIELDNAME) means column already exists - ignore safely
+        if (colErr.errno !== 1060 && colErr.code !== 'ER_DUP_FIELDNAME') {
+          // Ignore other non-critical alter warnings
+        }
+      }
+    }
+  };
+
   try {
     // 1. Connect directly to target database via pool (Standard for Hostinger & production)
     pool = mysql.createPool(dbConfig);
@@ -117,6 +144,7 @@ export const initMySQL = async () => {
 
     // 2. Ensure registrations and courses tables exist
     await pool.query(createRegistrationsTableQuery);
+    await ensureRegistrationColumns(pool);
     await pool.query(createCoursesTableQuery);
     console.log(`[MySQL] Verified 'registrations' and 'courses' tables structure.`);
 

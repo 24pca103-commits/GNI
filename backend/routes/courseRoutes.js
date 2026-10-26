@@ -6,12 +6,20 @@ import {
   updateCourse,
   toggleCourseStatus,
   deleteCourse,
+  getPricingConfig,
+  calculateCourseFee,
 } from '../controllers/courseController.js';
 
 const router = express.Router();
 
 // Public: Get all active courses
 router.get('/', getActiveCourses);
+
+// Public: Get official pricing and duration configuration
+router.get('/pricing-config', getPricingConfig);
+
+// Public: Calculate trusted course fee based on course & duration
+router.post('/calculate-fee', calculateCourseFee);
 
 // Admin: Get all courses (active + inactive)
 router.get('/all', getAllCourses);

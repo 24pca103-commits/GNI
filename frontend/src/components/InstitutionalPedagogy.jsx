@@ -37,11 +37,11 @@ export default function InstitutionalPedagogy() {
               <Compass className="w-3.5 h-3.5 text-[#B89555]" />
               <span>The Learning Methodology</span>
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-[1.2] pb-1">
               Timeless Wisdom. Hands-on Mastery.
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
-            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-justify indent-5 sm:indent-0 sm:text-center sm:mx-auto max-w-2xl">
+            <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed text-center mx-auto max-w-2xl">
               Experiencing the structured curriculum at the Global Nagas Institute repository is truly transformative.
               We combine classical historical literature with intensive, daily tactile craftsmanship to prepare
               learners for dignified sustainable careers.

@@ -123,7 +123,7 @@ export default function Hero() {
           </div>
 
           {/* Heading in Cormorant Garamond - Sentence Case with high contrast */}
-          <h1 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-white tracking-tight leading-tight text-left drop-shadow-md">
+          <h1 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-white tracking-tight leading-[1.2] pb-1 text-left drop-shadow-md">
             <span className="block sm:inline">{current.headingMain}</span>{' '}
             <span className="text-[#E5B869] italic block sm:inline">
               {current.headingAccent}
@@ -167,7 +167,7 @@ export default function Hero() {
 
             <button
               onClick={handleStaticClick}
-              className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-default shadow-sm shrink-0"
+              className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-pointer shadow-sm shrink-0"
             >
               <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E5B869]" />
               <span>{current.secondaryBtn}</span>

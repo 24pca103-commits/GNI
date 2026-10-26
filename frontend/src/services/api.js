@@ -69,6 +69,40 @@ export const fetchActiveCourses = async () => {
 };
 
 /**
+ * Public: Get approved course pricing & durations configuration
+ */
+export const fetchPricingConfig = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/courses/pricing-config`);
+    if (!response.ok) throw new Error('Failed to fetch pricing config');
+    const data = await response.json();
+    return data.data || [];
+  } catch (err) {
+    console.warn('[API] Pricing config fetch error:', err.message);
+    return null;
+  }
+};
+
+/**
+ * Public: Request server-side trusted course fee calculation
+ */
+export const calculateCourseFee = async (courseName, duration) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/courses/calculate-fee`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ courseName, duration }),
+    });
+    if (!response.ok) throw new Error('Failed to calculate course fee');
+    const data = await response.json();
+    return data.data || null;
+  } catch (err) {
+    console.warn('[API] Dynamic fee calculation error:', err.message);
+    return null;
+  }
+};
+
+/**
  * Admin: Get all courses (active + inactive)
  */
 export const fetchAllCourses = async () => {
@@ -191,9 +225,25 @@ export const adminLogin = async (username, password) => {
   return data;
 };
 
+/**
+ * Upload an offering image file to the server
+ */
+export const uploadOfferingImage = async (base64Image, filename = 'image.jpg') => {
+  const response = await fetch(`${API_BASE_URL}/upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image: base64Image, filename }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Image upload failed');
+  return data;
+};
+
 export default {
   registerUser,
   fetchActiveCourses,
+  fetchPricingConfig,
+  calculateCourseFee,
   fetchAllCourses,
   createCourse,
   updateCourse,
@@ -202,4 +252,5 @@ export default {
   fetchAdminRegistrations,
   fetchAdminStats,
   adminLogin,
+  uploadOfferingImage,
 };

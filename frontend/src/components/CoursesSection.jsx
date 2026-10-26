@@ -142,7 +142,7 @@ export default function CoursesSection() {
               <span>Admissions Open 2026 • Live Cohort Discount Offers</span>
             </div>
 
-            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-tight">
+            <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-normal pb-1">
               Curated Heritage Courses &amp; Masterclasses
             </h2>
 
@@ -228,23 +228,23 @@ export default function CoursesSection() {
                   {/* Course Body Content */}
                   <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
-                      <span className="text-[11px] font-['DM_Sans'] font-bold uppercase tracking-wider text-[#B89555]">
+                      <span className="text-[11px] font-['DM_Sans'] font-bold uppercase tracking-wider text-[#B89555] block">
                         {course.category}
                       </span>
-                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] group-hover:text-[#4A2C20] transition-colors leading-tight">
+                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] group-hover:text-[#4A2C20] transition-colors leading-tight min-h-[52px] flex items-center">
                         {course.title}
                       </h3>
-                      <p className="font-['DM_Sans'] text-xs text-[#241A16]/75 leading-relaxed line-clamp-2">
+                      <p className="font-['DM_Sans'] text-xs text-[#241A16]/75 leading-relaxed line-clamp-2 min-h-[36px]">
                         {course.description}
                       </p>
                     </div>
 
-                    {/* Highlights list */}
-                    {highlightList.length > 0 && (
-                      <div className="space-y-1.5 pt-1 border-t border-[#6B4030]/10">
-                        <span className="text-[11px] font-['DM_Sans'] font-bold text-[#4A2C20] block">
-                          Key Takeaways &amp; Skills:
-                        </span>
+                    {/* Highlights list - Uniform Height */}
+                    <div className="space-y-1.5 pt-1 border-t border-[#6B4030]/10 min-h-[82px] flex flex-col justify-center">
+                      <span className="text-[11px] font-['DM_Sans'] font-bold text-[#4A2C20] block">
+                        Key Takeaways &amp; Skills:
+                      </span>
+                      {highlightList.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11.5px] font-['DM_Sans'] text-[#6B4030]">
                           {highlightList.slice(0, 4).map((h, hIdx) => (
                             <div key={hIdx} className="flex items-start gap-1.5">
@@ -253,8 +253,12 @@ export default function CoursesSection() {
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-[11.5px] font-['DM_Sans'] text-[#6B4030]/70 italic">
+                          Studio masterclass syllabus &amp; live practice included.
+                        </p>
+                      )}
+                    </div>
 
                     {/* Seats & Progress indicator */}
                     <div className="pt-2 border-t border-[#6B4030]/10 flex items-center justify-between text-xs font-['DM_Sans']">
