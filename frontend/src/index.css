@@ -15,13 +15,11 @@
 @layer base {
   *, ::before, ::after {
     font-variant-numeric: lining-nums tabular-nums;
-    caret-color: transparent !important;
   }
 
   html {
     scroll-behavior: smooth;
     font-family: 'DM Sans', sans-serif;
-    caret-color: transparent !important;
   }
 
   body {
@@ -32,7 +30,35 @@
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
-    caret-color: transparent !important;
+  }
+
+  /* Text Inputs, Textareas, and Editable Fields: Real Text Cursor & Normal Selection */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  textarea,
+  [contenteditable="true"] {
+    cursor: text !important;
+    caret-color: #4A2C20 !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
+  /* Buttons, Dropdowns, Links, Clickable Cards: Pointer Cursor */
+  button,
+  [role="button"],
+  select,
+  input[type="submit"],
+  input[type="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  a,
+  .cursor-pointer {
+    cursor: pointer !important;
   }
 
   h1, h2, h3, h4, h5, h6 {

@@ -1,5 +1,9 @@
 import { getPool } from '../config/mysql.js';
-import { sendRegistrationNotifications } from '../services/emailService.js';
+import {
+  sendCustomerRegistrationEmail,
+  sendAdminRegistrationAlert,
+  sendRegistrationNotifications,
+} from '../services/emailService.js';
 import { calculateTrustedFee } from '../models/pricingConfig.js';
 
 export const registerUser = async (req, res, next) => {
@@ -71,6 +75,33 @@ export const registerUser = async (req, res, next) => {
     const taxes = pricing ? pricing.taxes : 0;
     const courseTitle = pricing ? pricing.courseName : chosenCourse;
     const validatedDuration = pricing ? pricing.duration : chosenDuration;
+
+    // 2b. Check seat capacity & availability to prevent overbooking
+    try {
+      const [courseRows] = await pool.query(
+        'SELECT id, title, seats_total, seats_available FROM `courses` WHERE (LOWER(title) LIKE ? OR title = ?) AND is_active = 1 LIMIT 1',
+        [`%${courseTitle.toLowerCase()}%`, courseTitle]
+      );
+      if (courseRows && courseRows.length > 0) {
+        const c = courseRows[0];
+        const [bookRows] = await pool.query(
+          `SELECT COUNT(*) as cnt FROM \`registrations\` WHERE (LOWER(interested_skill) LIKE ? OR interested_skill = ?) AND payment_status NOT IN ('Cancelled', 'Rejected')`,
+          [`%${c.title.toLowerCase()}%`, c.title]
+        );
+        const booked = bookRows[0]?.cnt || 0;
+        const total = Number(c.seats_total || 50);
+        const available = Math.max(0, total - booked);
+
+        if (available <= 0) {
+          return res.status(409).json({
+            success: false,
+            message: `We apologize, but '${c.title}' is currently fully booked (${total}/${total} seats confirmed). No seats are available for registration at this time.`,
+          });
+        }
+      }
+    } catch (seatErr) {
+      console.warn('[RegistrationController] Seat check warning:', seatErr.message);
+    }
 
     // 3. Generate unique institutional application reference ID
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
@@ -165,6 +196,16 @@ export const registerUser = async (req, res, next) => {
       result = resQueryFallback;
     }
 
+    // 4b. Atomically decrement seats_available for this offering
+    try {
+      await pool.query(
+        `UPDATE \`courses\` SET \`seats_available\` = GREATEST(0, \`seats_available\` - 1) WHERE (LOWER(title) LIKE ? OR title = ?) AND is_active = 1`,
+        [`%${courseTitle.toLowerCase()}%`, courseTitle]
+      );
+    } catch (e) {
+      console.warn('[RegistrationController] Seat decrement fallback:', e.message);
+    }
+
     // 5. Dispatch real-time confirmation email to customer & alert to admin
     const registrationDetails = {
       applicationRef,
@@ -189,13 +230,40 @@ export const registerUser = async (req, res, next) => {
       learningPurpose: learningPurpose.trim(),
     };
 
-    sendRegistrationNotifications(registrationDetails).catch((err) => {
-      console.error('[Registration Controller] Background email error:', err.message);
+    let emailSent = false;
+    let emailStatus = 'pending';
+    let emailErrorMessage = null;
+
+    try {
+      // Send real-time confirmation email directly to the customer's registered email
+      const customerEmailResult = await sendCustomerRegistrationEmail(registrationDetails);
+      emailSent = Boolean(customerEmailResult?.success || customerEmailResult?.simulated);
+      emailStatus = emailSent ? 'delivered' : 'failed';
+      if (!emailSent && customerEmailResult?.error) {
+        emailErrorMessage = customerEmailResult.error;
+      }
+    } catch (mailErr) {
+      console.error('[RegistrationController] Customer confirmation email dispatch failed:', mailErr.message);
+      emailSent = false;
+      emailStatus = 'failed';
+      emailErrorMessage = mailErr.message;
+    }
+
+    // Send real-time notification alert to Admin in the background
+    sendAdminRegistrationAlert(registrationDetails).catch((adminErr) => {
+      console.error('[RegistrationController] Background admin alert error:', adminErr.message);
     });
+
+    // Provide tailored status message per Requirement 4
+    const responseMessage = emailSent
+      ? 'Registration Successful! A confirmation email has been dispatched to your email address.'
+      : 'Your registration was successful, but we could not send the confirmation email. Please check your email address or request another confirmation email.';
 
     return res.status(201).json({
       success: true,
-      message: 'Application Submitted Successfully! Welcome to the Heritage Creator journey.',
+      emailSent,
+      emailStatus,
+      message: responseMessage,
       data: {
         id: result.insertId,
         applicationRef,
@@ -252,6 +320,84 @@ export const getRegistrationStatus = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve registration statistics',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Resend User Registration Confirmation Email (Requirement 4)
+ */
+export const resendConfirmationEmail = async (req, res) => {
+  try {
+    const { email, applicationRef } = req.body;
+
+    if (!email && !applicationRef) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide either a registered email address or an application reference number.',
+      });
+    }
+
+    const pool = getPool();
+    let query = 'SELECT * FROM `registrations` WHERE `email` = ? ORDER BY `id` DESC LIMIT 1';
+    let params = [(email || '').trim().toLowerCase()];
+
+    if (applicationRef) {
+      query = 'SELECT * FROM `registrations` WHERE `application_ref` = ? LIMIT 1';
+      params = [applicationRef.trim()];
+    }
+
+    const [rows] = await pool.query(query, params);
+
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No registration record found for the provided details. Please verify your email or application reference.',
+      });
+    }
+
+    const reg = rows[0];
+    const details = {
+      applicationRef: reg.application_ref || `GNI-APP-${reg.id}`,
+      fullName: reg.full_name,
+      email: reg.email,
+      phone: reg.phone,
+      fullPhone: reg.full_phone || reg.phone,
+      country: reg.country || 'India',
+      location: reg.location || '',
+      profession: reg.profession || 'Applicant',
+      interestedSkill: reg.interested_skill || 'Heritage Learning Program',
+      courseName: reg.interested_skill || 'Heritage Learning Program',
+      courseDuration: reg.course_duration || 'Scheduled Cohort',
+      courseFee: reg.course_fee || '₹4,999',
+      totalAmount: reg.total_amount || reg.course_fee || '₹4,999',
+      paymentStatus: reg.payment_status || 'Pending Offline Payment at Campus',
+      paymentMethod: reg.payment_ref || 'Offline Campus Payment',
+      paymentRef: reg.payment_ref || 'Offline Campus Payment',
+      experienceLevel: reg.experience_level || 'Beginner',
+      learningPurpose: reg.learning_purpose || '',
+    };
+
+    const emailResult = await sendCustomerRegistrationEmail(details);
+
+    if (emailResult.success || emailResult.simulated) {
+      return res.status(200).json({
+        success: true,
+        message: `Confirmation email successfully dispatched to ${reg.email}.`,
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'Email delivery failed. Please check your email configuration or contact admissions support.',
+        error: emailResult.error,
+      });
+    }
+  } catch (error) {
+    console.error('[ResendConfirmationController] Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to resend confirmation email. Please try again later.',
       error: error.message,
     });
   }

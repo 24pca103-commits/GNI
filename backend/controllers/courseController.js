@@ -5,23 +5,92 @@ import { GNI_COURSE_PRICING, calculateTrustedFee } from '../models/pricingConfig
 // In-memory fallback cache if MySQL is temporarily offline
 let memoryCourses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
 
-function countWords(str) {
-  if (!str) return 0;
-  const matches = String(str).trim().match(/[\S]+/g);
-  return matches ? matches.length : 0;
-}
-
 function generateSlug(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/[\s\W-]+/g, '-')
-    .replace(/^-+|-+$/g, '') + '-' + Date.now().toString().slice(-4);
+  return (
+    text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/[\s\W-]+/g, '-')
+      .replace(/^-+|-+$/g, '') +
+    '-' +
+    Date.now().toString().slice(-4)
+  );
 }
 
 /**
- * Public: Get all active courses
+ * Calculate dynamic seat metrics & availability status for courses list
+ * Available Seats = Total Seat Capacity − Confirmed Bookings
+ */
+async function enrichCoursesWithSeatMetrics(pool, coursesList) {
+  try {
+    const [bookingRows] = await pool.query(
+      `SELECT LOWER(interested_skill) as skill, COUNT(*) as cnt 
+       FROM \`registrations\` 
+       WHERE payment_status NOT IN ('Cancelled', 'Rejected') 
+       GROUP BY LOWER(interested_skill)`
+    );
+
+    const bookingMap = new Map();
+    (bookingRows || []).forEach((row) => {
+      bookingMap.set(String(row.skill || '').trim(), Number(row.cnt || 0));
+    });
+
+    return coursesList.map((c) => {
+      const titleLower = String(c.title || '').toLowerCase().trim();
+      let booked = 0;
+
+      for (const [skill, count] of bookingMap.entries()) {
+        if (skill.includes(titleLower) || titleLower.includes(skill)) {
+          booked += count;
+        }
+      }
+
+      const total = Number(c.seats_total ?? 50);
+      const available = Math.max(0, total - booked);
+
+      let availabilityStatus = 'Available';
+      if (available === 0) {
+        availabilityStatus = 'Full';
+      } else if (available <= 5) {
+        availabilityStatus = 'Almost Full';
+      }
+
+      return {
+        ...c,
+        seats_total: total,
+        booked_seats: booked,
+        seats_available: available,
+        availability_status: availabilityStatus,
+      };
+    });
+  } catch (err) {
+    console.warn('[Courses] Seat metric enrichment fallback:', err.message);
+    return coursesList.map((c) => {
+      const total = Number(c.seats_total ?? 50);
+      const available = Number(c.seats_available ?? 18);
+      const booked = Math.max(0, total - available);
+
+      let availabilityStatus = 'Available';
+      if (available === 0) {
+        availabilityStatus = 'Full';
+      } else if (available <= 5) {
+        availabilityStatus = 'Almost Full';
+      }
+
+      return {
+        ...c,
+        seats_total: total,
+        booked_seats: booked,
+        seats_available: available,
+        availability_status: availabilityStatus,
+      };
+    });
+  }
+}
+
+/**
+ * Public: Get all active courses with real-time seat metrics
  */
 export const getActiveCourses = async (req, res) => {
   try {
@@ -29,12 +98,14 @@ export const getActiveCourses = async (req, res) => {
     const [rows] = await pool.query(
       'SELECT * FROM `courses` WHERE `is_active` = 1 ORDER BY `id` ASC'
     );
-    if (rows && rows.length > 0) {
-      return res.status(200).json({ success: true, count: rows.length, data: rows });
-    }
-    // If table is empty, return memoryCourses active
-    const active = memoryCourses.filter((c) => c.is_active === 1 || c.is_active === true);
-    return res.status(200).json({ success: true, count: active.length, data: active });
+
+    const baseList =
+      rows && rows.length > 0
+        ? rows
+        : memoryCourses.filter((c) => c.is_active === 1 || c.is_active === true);
+
+    const enriched = await enrichCoursesWithSeatMetrics(pool, baseList);
+    return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
     const active = memoryCourses.filter((c) => c.is_active === 1 || c.is_active === true);
@@ -43,16 +114,17 @@ export const getActiveCourses = async (req, res) => {
 };
 
 /**
- * Admin: Get all courses (active + inactive)
+ * Admin: Get all courses (active + inactive) with full seat analytics
  */
 export const getAllCourses = async (req, res) => {
   try {
     const pool = getPool();
     const [rows] = await pool.query('SELECT * FROM `courses` ORDER BY `id` DESC');
-    if (rows && rows.length > 0) {
-      return res.status(200).json({ success: true, count: rows.length, data: rows });
-    }
-    return res.status(200).json({ success: true, count: memoryCourses.length, data: memoryCourses });
+
+    const baseList = rows && rows.length > 0 ? rows : memoryCourses;
+    const enriched = await enrichCoursesWithSeatMetrics(pool, baseList);
+
+    return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
     return res.status(200).json({ success: true, count: memoryCourses.length, data: memoryCourses, fallback: true });
@@ -60,7 +132,7 @@ export const getAllCourses = async (req, res) => {
 };
 
 /**
- * Admin: Create a new course
+ * Admin: Create a new course offering with strict character-length validation
  */
 export const createCourse = async (req, res) => {
   try {
@@ -83,32 +155,67 @@ export const createCourse = async (req, res) => {
     if (!title || !category || !description) {
       return res.status(400).json({
         success: false,
-        message: 'Title, Category, and Description are required.',
+        message: 'Offering Title, Category, and Description are required.',
       });
     }
 
-    if (countWords(title) > 12) {
-      return res.status(400).json({ success: false, message: 'Title cannot exceed 12 words.' });
+    const trimmedTitle = String(title).trim();
+    const trimmedCategory = String(category).trim();
+    const trimmedDesc = String(description).trim();
+    const trimmedBadge = String(badge || '').trim();
+    const trimmedDuration = String(duration || '').trim();
+    const trimmedMode = String(mode || '').trim();
+    const trimmedHighlights = String(highlights || '').trim();
+
+    // CHARACTER COUNT VALIDATION (Not word count)
+    if (trimmedTitle.length < 5 || trimmedTitle.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: `Offering Title must be between 5 and 100 characters (${trimmedTitle.length} entered).`,
+      });
     }
-    if (countWords(description) > 40) {
-      return res.status(400).json({ success: false, message: 'Description cannot exceed 40 words.' });
+    if (trimmedCategory.length < 3 || trimmedCategory.length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: `Category must be between 3 and 50 characters (${trimmedCategory.length} entered).`,
+      });
     }
-    if (countWords(category) > 6) {
-      return res.status(400).json({ success: false, message: 'Category cannot exceed 6 words.' });
+    if (trimmedBadge && trimmedBadge.length > 40) {
+      return res.status(400).json({
+        success: false,
+        message: `Badge / Tag cannot exceed 40 characters (${trimmedBadge.length} entered).`,
+      });
     }
-    if (badge && countWords(badge) > 5) {
-      return res.status(400).json({ success: false, message: 'Banner badge cannot exceed 5 words.' });
+    if (trimmedDuration && (trimmedDuration.length < 2 || trimmedDuration.length > 30)) {
+      return res.status(400).json({
+        success: false,
+        message: `Duration must be between 2 and 30 characters (${trimmedDuration.length} entered).`,
+      });
     }
-    if (duration && countWords(duration) > 5) {
-      return res.status(400).json({ success: false, message: 'Duration cannot exceed 5 words.' });
+    if (trimmedMode && (trimmedMode.length < 3 || trimmedMode.length > 40)) {
+      return res.status(400).json({
+        success: false,
+        message: `Learning Mode must be between 3 and 40 characters (${trimmedMode.length} entered).`,
+      });
     }
-    if (mode && countWords(mode) > 5) {
-      return res.status(400).json({ success: false, message: 'Learning mode cannot exceed 5 words.' });
+    if (trimmedDesc.length < 15 || trimmedDesc.length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: `Description must be between 15 and 500 characters (${trimmedDesc.length} entered).`,
+      });
     }
-    const isJsonRoadmapCreate = typeof highlights === 'string' && highlights.trim().startsWith('[');
-    if (highlights && !isJsonRoadmapCreate && countWords(highlights) > 45) {
-      return res.status(400).json({ success: false, message: 'Practical modules cannot exceed 45 words.' });
+    if (trimmedHighlights && trimmedHighlights.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        message: `Curriculum highlights / roadmap cannot exceed 2000 characters (${trimmedHighlights.length} entered).`,
+      });
     }
+
+    const parsedTotalSeats = Math.max(1, Number(seats_total) || 50);
+    const parsedAvailSeats = Math.min(
+      parsedTotalSeats,
+      Math.max(0, Number(seats_available !== undefined ? seats_available : parsedTotalSeats))
+    );
 
     const origPrice = Number(original_price) || 0;
     const discPrice = Number(discount_price) || 0;
@@ -117,7 +224,7 @@ export const createCourse = async (req, res) => {
       discPercent = Math.round(((origPrice - discPrice) / origPrice) * 100);
     }
 
-    const slug = req.body.slug ? req.body.slug.trim() : generateSlug(title);
+    const slug = req.body.slug ? String(req.body.slug).trim() : generateSlug(trimmedTitle);
 
     try {
       const pool = getPool();
@@ -131,76 +238,79 @@ export const createCourse = async (req, res) => {
       `;
 
       const values = [
-        title.trim(),
+        trimmedTitle,
         slug,
-        category.trim(),
-        badge.trim(),
-        duration.trim(),
-        mode.trim(),
+        trimmedCategory,
+        trimmedBadge,
+        trimmedDuration,
+        trimmedMode,
         origPrice,
         discPrice,
         discPercent,
-        description.trim(),
-        highlights ? highlights.trim() : '',
+        trimmedDesc,
+        trimmedHighlights,
         image_url.trim() || '/artisan/workshop.jpg',
-        Number(seats_total) || 50,
-        Number(seats_available) || 20,
+        parsedTotalSeats,
+        parsedAvailSeats,
         Number(is_active) ? 1 : 0,
       ];
 
       const [result] = await pool.query(insertQuery, values);
       const newCourse = {
         id: result.insertId,
-        title: title.trim(),
+        title: trimmedTitle,
         slug,
-        category: category.trim(),
-        badge: badge.trim(),
-        duration: duration.trim(),
-        mode: mode.trim(),
+        category: trimmedCategory,
+        badge: trimmedBadge,
+        duration: trimmedDuration,
+        mode: trimmedMode,
         original_price: origPrice,
         discount_price: discPrice,
         discount_percent: discPercent,
-        description: description.trim(),
-        highlights: highlights ? highlights.trim() : '',
+        description: trimmedDesc,
+        highlights: trimmedHighlights,
         image_url: image_url.trim() || '/artisan/workshop.jpg',
-        seats_total: Number(seats_total) || 50,
-        seats_available: Number(seats_available) || 20,
+        seats_total: parsedTotalSeats,
+        booked_seats: 0,
+        seats_available: parsedAvailSeats,
+        availability_status: parsedAvailSeats > 5 ? 'Available' : parsedAvailSeats > 0 ? 'Almost Full' : 'Full',
         is_active: Number(is_active) ? 1 : 0,
       };
 
-      // Also update memory cache
       memoryCourses.unshift(newCourse);
 
       return res.status(201).json({
         success: true,
-        message: `Course '${title}' added successfully!`,
+        message: `Offering '${trimmedTitle}' added successfully!`,
         data: newCourse,
       });
     } catch (dbError) {
-      // Fallback in-memory
       console.warn('[Courses] DB insert error, using memory fallback:', dbError.message);
       const newCourse = {
         id: Date.now(),
-        title: title.trim(),
+        title: trimmedTitle,
         slug,
-        category: category.trim(),
-        badge: badge.trim(),
-        duration: duration.trim(),
-        mode: mode.trim(),
+        category: trimmedCategory,
+        badge: trimmedBadge,
+        duration: trimmedDuration,
+        mode: trimmedMode,
         original_price: origPrice,
         discount_price: discPrice,
         discount_percent: discPercent,
-        description: description.trim(),
-        highlights: highlights ? highlights.trim() : '',
+        description: trimmedDesc,
+        highlights: trimmedHighlights,
         image_url: image_url.trim() || '/artisan/workshop.jpg',
-        seats_total: Number(seats_total) || 50,
-        seats_available: Number(seats_available) || 20,
+        seats_total: parsedTotalSeats,
+        booked_seats: 0,
+        seats_available: parsedAvailSeats,
+        availability_status: parsedAvailSeats > 5 ? 'Available' : parsedAvailSeats > 0 ? 'Almost Full' : 'Full',
         is_active: Number(is_active) ? 1 : 0,
       };
       memoryCourses.unshift(newCourse);
+
       return res.status(201).json({
         success: true,
-        message: `Course '${title}' added successfully! (In-memory mode)`,
+        message: `Offering '${trimmedTitle}' added successfully! (In-memory mode)`,
         data: newCourse,
       });
     }
@@ -214,7 +324,7 @@ export const createCourse = async (req, res) => {
 };
 
 /**
- * Admin: Update an existing course & discount offers
+ * Admin: Update course, seat capacity & discount offers
  */
 export const updateCourse = async (req, res) => {
   try {
@@ -231,31 +341,59 @@ export const updateCourse = async (req, res) => {
       highlights,
       image_url,
       seats_total,
-      seats_available,
       is_active,
     } = req.body;
 
-    if (title && countWords(title) > 12) {
-      return res.status(400).json({ success: false, message: 'Title cannot exceed 12 words.' });
+    const trimmedTitle = title ? String(title).trim() : null;
+    const trimmedCategory = category ? String(category).trim() : null;
+    const trimmedDesc = description ? String(description).trim() : null;
+    const trimmedBadge = badge !== undefined ? String(badge).trim() : null;
+    const trimmedDuration = duration ? String(duration).trim() : null;
+    const trimmedMode = mode ? String(mode).trim() : null;
+    const trimmedHighlights = highlights !== undefined ? String(highlights).trim() : null;
+
+    // CHARACTER COUNT VALIDATION (Not word count)
+    if (trimmedTitle && (trimmedTitle.length < 5 || trimmedTitle.length > 100)) {
+      return res.status(400).json({
+        success: false,
+        message: `Offering Title must be between 5 and 100 characters (${trimmedTitle.length} entered).`,
+      });
     }
-    if (description && countWords(description) > 40) {
-      return res.status(400).json({ success: false, message: 'Description cannot exceed 40 words.' });
+    if (trimmedCategory && (trimmedCategory.length < 3 || trimmedCategory.length > 50)) {
+      return res.status(400).json({
+        success: false,
+        message: `Category must be between 3 and 50 characters (${trimmedCategory.length} entered).`,
+      });
     }
-    if (category && countWords(category) > 6) {
-      return res.status(400).json({ success: false, message: 'Category cannot exceed 6 words.' });
+    if (trimmedBadge && trimmedBadge.length > 40) {
+      return res.status(400).json({
+        success: false,
+        message: `Badge / Tag cannot exceed 40 characters (${trimmedBadge.length} entered).`,
+      });
     }
-    if (badge && countWords(badge) > 5) {
-      return res.status(400).json({ success: false, message: 'Banner badge cannot exceed 5 words.' });
+    if (trimmedDuration && (trimmedDuration.length < 2 || trimmedDuration.length > 30)) {
+      return res.status(400).json({
+        success: false,
+        message: `Duration must be between 2 and 30 characters (${trimmedDuration.length} entered).`,
+      });
     }
-    if (duration && countWords(duration) > 5) {
-      return res.status(400).json({ success: false, message: 'Duration cannot exceed 5 words.' });
+    if (trimmedMode && (trimmedMode.length < 3 || trimmedMode.length > 40)) {
+      return res.status(400).json({
+        success: false,
+        message: `Learning Mode must be between 3 and 40 characters (${trimmedMode.length} entered).`,
+      });
     }
-    if (mode && countWords(mode) > 5) {
-      return res.status(400).json({ success: false, message: 'Learning mode cannot exceed 5 words.' });
+    if (trimmedDesc && (trimmedDesc.length < 15 || trimmedDesc.length > 500)) {
+      return res.status(400).json({
+        success: false,
+        message: `Description must be between 15 and 500 characters (${trimmedDesc.length} entered).`,
+      });
     }
-    const isJsonRoadmapCreate = typeof highlights === 'string' && highlights.trim().startsWith('[');
-    if (highlights && !isJsonRoadmapCreate && countWords(highlights) > 45) {
-      return res.status(400).json({ success: false, message: 'Practical modules cannot exceed 45 words.' });
+    if (trimmedHighlights && trimmedHighlights.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        message: `Curriculum highlights / roadmap cannot exceed 2000 characters (${trimmedHighlights.length} entered).`,
+      });
     }
 
     const origPrice = Number(original_price) || 0;
@@ -267,6 +405,34 @@ export const updateCourse = async (req, res) => {
 
     try {
       const pool = getPool();
+
+      // Retrieve current course details & confirmed bookings
+      const [existingCourse] = await pool.query('SELECT * FROM `courses` WHERE `id` = ?', [id]);
+      const current = existingCourse[0] || {};
+      const courseTitleToMatch = trimmedTitle || current.title || '';
+
+      const [bookingRows] = await pool.query(
+        `SELECT COUNT(*) as cnt FROM \`registrations\` 
+         WHERE (LOWER(interested_skill) LIKE ? OR interested_skill = ?) 
+         AND payment_status NOT IN ('Cancelled', 'Rejected')`,
+        [`%${courseTitleToMatch.toLowerCase()}%`, courseTitleToMatch]
+      );
+      const confirmedBookings = bookingRows[0]?.cnt || 0;
+
+      // VALIDATE SEAT CAPACITY: Total seat capacity can NEVER be reduced below confirmed bookings!
+      const requestedTotalSeats = seats_total !== undefined ? Number(seats_total) : (current.seats_total || 50);
+
+      if (requestedTotalSeats < confirmedBookings) {
+        return res.status(400).json({
+          success: false,
+          message: `Total seat capacity (${requestedTotalSeats}) cannot be reduced below the ${confirmedBookings} currently confirmed bookings.`,
+        });
+      }
+
+      // Automatically calculate available seats:
+      // Available Seats = Total Seat Capacity − Confirmed Bookings
+      const calculatedAvailableSeats = Math.max(0, requestedTotalSeats - confirmedBookings);
+
       const updateQuery = `
         UPDATE \`courses\` SET
           \`title\` = COALESCE(?, \`title\`),
@@ -287,19 +453,19 @@ export const updateCourse = async (req, res) => {
       `;
 
       const values = [
-        title ? title.trim() : null,
-        category ? category.trim() : null,
-        badge ? badge.trim() : null,
-        duration ? duration.trim() : null,
-        mode ? mode.trim() : null,
+        trimmedTitle,
+        trimmedCategory,
+        trimmedBadge,
+        trimmedDuration,
+        trimmedMode,
         origPrice,
         discPrice,
         discPercent,
-        description ? description.trim() : null,
-        highlights !== undefined ? highlights.trim() : null,
+        trimmedDesc,
+        trimmedHighlights,
         image_url ? image_url.trim() : null,
-        Number(seats_total) || 50,
-        Number(seats_available) || 20,
+        requestedTotalSeats,
+        calculatedAvailableSeats,
         is_active !== undefined ? (Number(is_active) ? 1 : 0) : 1,
         id,
       ];
@@ -309,31 +475,37 @@ export const updateCourse = async (req, res) => {
       console.warn('[Courses] DB update error, falling back to memory:', dbErr.message);
     }
 
-    // Update memory
+    // Update memory cache
     const idx = memoryCourses.findIndex((c) => String(c.id) === String(id));
     if (idx !== -1) {
+      const prev = memoryCourses[idx];
+      const newTotal = seats_total !== undefined ? Number(seats_total) : prev.seats_total;
+      const booked = prev.booked_seats || 0;
+      const newAvailable = Math.max(0, newTotal - booked);
+
       memoryCourses[idx] = {
-        ...memoryCourses[idx],
-        ...(title && { title: title.trim() }),
-        ...(category && { category: category.trim() }),
-        ...(badge && { badge: badge.trim() }),
-        ...(duration && { duration: duration.trim() }),
-        ...(mode && { mode: mode.trim() }),
+        ...prev,
+        ...(trimmedTitle && { title: trimmedTitle }),
+        ...(trimmedCategory && { category: trimmedCategory }),
+        ...(trimmedBadge !== null && { badge: trimmedBadge }),
+        ...(trimmedDuration && { duration: trimmedDuration }),
+        ...(trimmedMode && { mode: trimmedMode }),
         original_price: origPrice,
         discount_price: discPrice,
         discount_percent: discPercent,
-        ...(description && { description: description.trim() }),
-        ...(highlights !== undefined && { highlights: highlights.trim() }),
+        ...(trimmedDesc && { description: trimmedDesc }),
+        ...(trimmedHighlights !== null && { highlights: trimmedHighlights }),
         ...(image_url && { image_url: image_url.trim() }),
-        seats_total: Number(seats_total) || memoryCourses[idx].seats_total,
-        seats_available: Number(seats_available) || memoryCourses[idx].seats_available,
-        is_active: is_active !== undefined ? (Number(is_active) ? 1 : 0) : memoryCourses[idx].is_active,
+        seats_total: newTotal,
+        seats_available: newAvailable,
+        availability_status: newAvailable === 0 ? 'Full' : newAvailable <= 5 ? 'Almost Full' : 'Available',
+        is_active: is_active !== undefined ? (Number(is_active) ? 1 : 0) : prev.is_active,
       };
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Course & Discount offers updated successfully!',
+      message: 'Offering & seat configuration updated successfully!',
     });
   } catch (error) {
     return res.status(500).json({
@@ -367,7 +539,7 @@ export const toggleCourseStatus = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `Course status changed to ${newStatus ? 'Active' : 'Inactive'}.`,
+      message: `Offering status changed to ${newStatus ? 'Active' : 'Inactive'}.`,
       is_active: newStatus,
     });
   } catch (error) {
@@ -397,7 +569,7 @@ export const deleteCourse = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Course deleted successfully.',
+      message: 'Course offering deleted successfully.',
     });
   } catch (error) {
     return res.status(500).json({

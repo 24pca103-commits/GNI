@@ -23,7 +23,7 @@ import {
   Receipt,
   Clock,
 } from 'lucide-react';
-import { fetchActiveCourses, fetchPricingConfig, calculateCourseFee } from '../services/api';
+import { fetchActiveCourses, fetchPricingConfig, calculateCourseFee, resendConfirmationEmail } from '../services/api';
 
 /**
  * Official GNI Approved Course Catalog & Pricing Matrix
@@ -291,6 +291,7 @@ export default function Register() {
 
   // Course catalog & configuration
   const [coursesCatalog, setCoursesCatalog] = useState(DEFAULT_GNI_CATALOG);
+  const [activeCoursesWithSeats, setActiveCoursesWithSeats] = useState([]);
   const [selectedCourseName, setSelectedCourseName] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('');
 
@@ -312,17 +313,29 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [registeredData, setRegisteredData] = useState(null);
+  const [emailSentStatus, setEmailSentStatus] = useState(true);
+  const [resendingEmail, setResendingEmail] = useState(false);
+  const [resendStatusMsg, setResendStatusMsg] = useState('');
+  const [resendSuccess, setResendSuccess] = useState(null);
 
   const location = useLocation();
 
-  // Load live pricing configuration from backend on mount
+  // Load live pricing configuration and active courses with seat metrics from backend
   useEffect(() => {
     let isMounted = true;
     const loadConfig = async () => {
       try {
-        const liveCatalog = await fetchPricingConfig();
-        if (isMounted && liveCatalog && liveCatalog.length > 0) {
-          setCoursesCatalog(liveCatalog);
+        const [liveCatalogRes, liveCoursesRes] = await Promise.allSettled([
+          fetchPricingConfig(),
+          fetchActiveCourses(),
+        ]);
+        if (isMounted) {
+          if (liveCatalogRes.status === 'fulfilled' && liveCatalogRes.value && liveCatalogRes.value.length > 0) {
+            setCoursesCatalog(liveCatalogRes.value);
+          }
+          if (liveCoursesRes.status === 'fulfilled' && liveCoursesRes.value && liveCoursesRes.value.length > 0) {
+            setActiveCoursesWithSeats(liveCoursesRes.value);
+          }
         }
       } catch (err) {
         console.warn('[Register] Using local catalog fallback:', err);
@@ -394,6 +407,27 @@ export default function Register() {
       ) || currentCourse.durations[0] || null
     );
   }, [currentCourse, selectedDuration]);
+
+  // Derive live seat metrics & availability status for selected course (Requirement 7)
+  const selectedCourseSeatInfo = useMemo(() => {
+    if (!selectedCourseName) return null;
+    const lower = selectedCourseName.toLowerCase().trim();
+    const found = activeCoursesWithSeats.find((c) => {
+      const titleLower = String(c.title || '').toLowerCase().trim();
+      return titleLower.includes(lower) || lower.includes(titleLower);
+    });
+    if (!found) return null;
+    const total = Number(found.seats_total || 50);
+    const available = found.seats_available !== undefined ? Number(found.seats_available) : 20;
+    const status = found.availability_status || (available === 0 ? 'Full' : available <= 5 ? 'Almost Full' : 'Available');
+    return {
+      seats_total: total,
+      seats_available: available,
+      availability_status: status,
+    };
+  }, [selectedCourseName, activeCoursesWithSeats]);
+
+  const isSelectedCourseFull = selectedCourseSeatInfo?.seats_available === 0;
 
   // Reset duration whenever the course changes
   const handleCourseChange = (e) => {
@@ -573,7 +607,11 @@ export default function Register() {
     // Validate course selection & duration
     newTouched.courseName = true;
     const courseError = validateField('courseName', selectedCourseName);
-    if (courseError) newErrors.courseName = courseError;
+    if (courseError) {
+      newErrors.courseName = courseError;
+    } else if (isSelectedCourseFull) {
+      newErrors.courseName = 'This program is currently fully booked (0 available seats). Please select an alternate program.';
+    }
 
     newTouched.courseDuration = true;
     const durationError = validateField('courseDuration', selectedDuration);
@@ -606,9 +644,10 @@ export default function Register() {
       hasCourse &&
       hasDuration &&
       hasLevel &&
-      hasPurpose
+      hasPurpose &&
+      !isSelectedCourseFull
     );
-  }, [formData, currentCountry.digits, selectedCourseName, selectedDuration]);
+  }, [formData, currentCountry.digits, selectedCourseName, selectedDuration, isSelectedCourseFull]);
 
   // Input change with strict type sanitization
   const handleChange = (e) => {
@@ -660,6 +699,12 @@ export default function Register() {
   // Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isSelectedCourseFull) {
+      setErrorMessage(`We apologize, but '${selectedCourseName}' has reached maximum student capacity (0 seats available). Registration is currently closed.`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
 
     if (!validateForm()) {
       setErrorMessage('Please complete all required fields correctly before proceeding.');
@@ -717,12 +762,36 @@ export default function Register() {
       }
 
       setRegisteredData(result.data || submissionPayload);
+      setEmailSentStatus(result.emailSent !== false);
+      setResendStatusMsg('');
+      setResendSuccess(null);
       setIsSuccess(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setErrorMessage(err.message || 'Registration failed. Please check your details and try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (resendingEmail) return;
+    setResendingEmail(true);
+    setResendStatusMsg('');
+    setResendSuccess(null);
+
+    try {
+      const email = registeredData?.email || formData.email;
+      const applicationRef = registeredData?.applicationRef;
+      const res = await resendConfirmationEmail({ email, applicationRef });
+      setResendSuccess(true);
+      setEmailSentStatus(true);
+      setResendStatusMsg(res.message || 'A confirmation email has been dispatched to your registered address.');
+    } catch (err) {
+      setResendSuccess(false);
+      setResendStatusMsg(err.message || 'Unable to resend confirmation email. Please check your email address or try again shortly.');
+    } finally {
+      setResendingEmail(false);
     }
   };
 
@@ -761,6 +830,78 @@ export default function Register() {
 
             {registeredData && (
               <div className="space-y-3.5">
+                {/* Email Delivery Status Banner */}
+                {!emailSentStatus ? (
+                  <div className="p-3.5 sm:p-4 rounded-xl bg-amber-50/95 border border-amber-300 text-left space-y-2.5">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                      <div className="space-y-1 text-xs font-['DM_Sans']">
+                        <p className="font-semibold text-amber-950 leading-snug">
+                          Your registration was successful, but we could not send the confirmation email. Please check your email address or request another confirmation email.
+                        </p>
+                        <p className="text-amber-800 text-[11px]">
+                          Target Email: <strong className="text-amber-950">{registeredData?.email}</strong>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-1 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleResendConfirmation}
+                        disabled={resendingEmail}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold cursor-pointer transition-colors disabled:opacity-50"
+                      >
+                        {resendingEmail ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Sending Confirmation Email...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-3.5 h-3.5" />
+                            <span>Resend Confirmation Email</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 sm:p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-left flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-['DM_Sans']">
+                    <div className="flex items-center gap-2 text-emerald-900">
+                      <Mail className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <span>
+                        Confirmation email dispatched to <strong>{registeredData?.email}</strong>.
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      disabled={resendingEmail}
+                      className="text-[11px] font-semibold text-[#6B4030] hover:text-[#4A2C20] underline cursor-pointer text-left sm:text-right"
+                    >
+                      {resendingEmail ? 'Sending...' : "Didn't receive? Resend"}
+                    </button>
+                  </div>
+                )}
+
+                {/* Resend Status Feedback Banner */}
+                {resendStatusMsg && (
+                  <div
+                    className={`p-3 rounded-lg text-xs font-['DM_Sans'] text-left flex items-center gap-2 ${
+                      resendSuccess
+                        ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                        : 'bg-red-50 text-red-900 border border-red-200'
+                    }`}
+                  >
+                    {resendSuccess ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                    )}
+                    <span>{resendStatusMsg}</span>
+                  </div>
+                )}
+
                 {/* Official Application Reference ID Banner */}
                 <div className="p-3.5 sm:p-4 rounded-xl bg-[#4A2C20] text-[#F7F2E8] border border-[#B89555] flex flex-col sm:flex-row items-center justify-between gap-2.5">
                   <div className="text-center sm:text-left">
@@ -1130,9 +1271,24 @@ export default function Register() {
 
                 {/* 1. Required Field: Course / Program Name */}
                 <div className="space-y-1 text-left">
-                  <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                    Course / Program Name <span className="text-red-600">*</span>
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                      Course / Program Name <span className="text-red-600">*</span>
+                    </label>
+                    {selectedCourseSeatInfo && (
+                      <span className={`text-[10px] font-['DM_Sans'] font-semibold px-2 py-0.5 rounded-full ${
+                        selectedCourseSeatInfo.seats_available === 0
+                          ? 'bg-red-100 text-red-800 border border-red-200'
+                          : selectedCourseSeatInfo.seats_available <= 5
+                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                          : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                      }`}>
+                        {selectedCourseSeatInfo.seats_available === 0
+                          ? '0 Seats Available (Full)'
+                          : `${selectedCourseSeatInfo.seats_available} Seats Open`}
+                      </span>
+                    )}
+                  </div>
                   <div className="relative">
                     <Layers className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
                     <select
@@ -1145,7 +1301,7 @@ export default function Register() {
                         setErrors((prev) => ({ ...prev, courseName: error }));
                       }}
                       className={`w-full pl-10 pr-9 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden cursor-pointer appearance-none ${
-                        touched.courseName && errors.courseName
+                        (touched.courseName && errors.courseName) || isSelectedCourseFull
                           ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
                           : selectedCourseName
                           ? 'border-[#B89555] bg-white'
@@ -1153,14 +1309,58 @@ export default function Register() {
                       }`}
                     >
                       <option value="">— Select Course / Program Name —</option>
-                      {coursesCatalog.map((c) => (
-                        <option key={c.id || c.courseName} value={c.courseName}>
-                          {c.courseName} ({c.category || 'Program'})
-                        </option>
-                      ))}
+                      {coursesCatalog.map((c) => {
+                        const seat = activeCoursesWithSeats.find((ac) => {
+                          const t = String(ac.title || '').toLowerCase().trim();
+                          const cn = String(c.courseName || '').toLowerCase().trim();
+                          return t.includes(cn) || cn.includes(t);
+                        });
+                        const isCourseFull = seat && seat.seats_available === 0;
+
+                        return (
+                          <option key={c.id || c.courseName} value={c.courseName}>
+                            {c.courseName} ({c.category || 'Program'}) {isCourseFull ? '— [FULL: 0 SEATS]' : seat ? `— (${seat.seats_available} seats left)` : ''}
+                          </option>
+                        );
+                      })}
                     </select>
                     <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
                   </div>
+
+                  {/* Dynamic Seat Availability Status Banner (Requirement 7) */}
+                  {selectedCourseSeatInfo && (
+                    <div className="pt-1">
+                      {selectedCourseSeatInfo.seats_available === 0 ? (
+                        <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                          <span>
+                            <strong>Cohort Full:</strong> All {selectedCourseSeatInfo.seats_total} seats for &ldquo;{selectedCourseName}&rdquo; are currently confirmed. Applications are closed.
+                          </span>
+                        </div>
+                      ) : selectedCourseSeatInfo.seats_available <= 5 ? (
+                        <div className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 font-medium">
+                            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                            <span>Almost Full: Only <strong>{selectedCourseSeatInfo.seats_available} of {selectedCourseSeatInfo.seats_total} seats</strong> remain!</span>
+                          </div>
+                          <span className="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full">
+                            Almost Full
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 font-medium">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                            <span>Seats Available: <strong>{selectedCourseSeatInfo.seats_available} open</strong> of {selectedCourseSeatInfo.seats_total} total capacity.</span>
+                          </div>
+                          <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                            Available
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {touched.courseName && errors.courseName && (
                     <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-center gap-1 pt-0.5">
                       <AlertCircle className="w-3 h-3 shrink-0" />
@@ -1420,13 +1620,13 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Submit & Proceed Button (Disabled until course, duration, and details are valid) */}
+              {/* Submit & Proceed Button (Disabled until course, duration, and details are valid, or if cohort is full) */}
               <div className="pt-2 sm:pt-3">
                 <button
                   type="submit"
-                  disabled={loading || !isFormValid}
+                  disabled={loading || !isFormValid || isSelectedCourseFull}
                   className={`w-full py-3.5 sm:py-4 rounded-xl font-['DM_Sans'] text-xs sm:text-sm font-semibold transition-all duration-200 border flex items-center justify-center gap-2 ${
-                    isFormValid && !loading
+                    isFormValid && !loading && !isSelectedCourseFull
                       ? 'bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] border-[#B89555] shadow-sm cursor-pointer'
                       : 'bg-[#6B4030]/20 text-[#6B4030]/60 border-transparent cursor-not-allowed opacity-75'
                   }`}
@@ -1436,6 +1636,8 @@ export default function Register() {
                       <Loader2 className="w-4 h-4 animate-spin text-[#241A16]" />
                       <span>Validating & Submitting Application...</span>
                     </>
+                  ) : isSelectedCourseFull ? (
+                    <span>Cohort Full (0 Available Seats) • Closed</span>
                   ) : !selectedCourseName || !selectedDuration ? (
                     <span>Select Course & Duration to Proceed</span>
                   ) : (
@@ -1444,11 +1646,15 @@ export default function Register() {
                     </span>
                   )}
                 </button>
-                {!isFormValid && (
+                {isSelectedCourseFull ? (
+                  <p className="text-center text-[10.5px] font-['DM_Sans'] text-red-600 font-semibold pt-1.5">
+                    This cohort is at maximum student capacity. Please choose another program from the list above.
+                  </p>
+                ) : !isFormValid ? (
                   <p className="text-center text-[10.5px] font-['DM_Sans'] text-[#6B4030] pt-1.5">
                     Please fill all required fields, select a course, and pick a duration to activate submission.
                   </p>
-                )}
+                ) : null}
               </div>
 
               <div className="text-center pt-1">

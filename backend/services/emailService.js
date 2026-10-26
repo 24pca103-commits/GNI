@@ -1,26 +1,23 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
+import {
+  generateCustomerRegistrationEmail,
+  generateAdminRegistrationAlert,
+  generateAdminLoginOtpEmail,
+  generateAdminPasswordResetOtpEmail,
+  generatePaymentConfirmationEmail,
+  generateApplicationStatusUpdateEmail,
+  generateCourseUpdateEmail,
+} from './emailTemplates.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
-
-/**
- * HTML Escape helper to prevent HTML injection in emails
- */
-function escapeHtml(str) {
-  if (str === null || str === undefined) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
 /**
  * Creates and returns Nodemailer transporter using environment variables
@@ -32,12 +29,11 @@ function getTransporter() {
   const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 
   if (!user || !pass) {
-    console.warn('[EmailService] SMTP credentials missing (SMTP_USER or SMTP_PASS not set).');
     return null;
   }
 
   // If host is Gmail, use nodemailer's built-in gmail service configuration
-  if (host.includes('gmail') || user.includes('@gmail.com')) {
+  if (host.includes('gmail') || (user && user.includes('@gmail.com'))) {
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -67,349 +63,365 @@ function getTransporter() {
 }
 
 /**
- * Send real-time confirmation email to customer
+ * Resolves the official GNI logo attachment for inline CID embedding
+ */
+function getLogoAttachment() {
+  const possiblePaths = [
+    path.resolve(__dirname, '../assets/logo.png'),
+    path.resolve(__dirname, '../../frontend/public/logo.png'),
+    path.resolve(__dirname, '../public/logo.png'),
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return [
+        {
+          filename: 'gni-logo.png',
+          path: p,
+          cid: 'gni_logo',
+        },
+      ];
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Formats sender address with institutional display name
+ */
+function getFromAddress(displayName = 'Global Nagas Institute') {
+  const smtpUser = process.env.SMTP_USER || 'admissions@globalnagas.org';
+  if (process.env.SMTP_FROM && process.env.SMTP_FROM.includes('<')) {
+    return process.env.SMTP_FROM;
+  }
+  return `"${displayName}" <${smtpUser}>`;
+}
+
+/**
+ * 1. Send User Registration Confirmation Email
  */
 export async function sendCustomerRegistrationEmail(data) {
   const transporter = getTransporter();
-  const customerEmail = data.email;
-  const adminEmail = process.env.ADMIN_EMAIL || '24pca103@anjaconline.org';
-  const fromAddress = process.env.SMTP_FROM || `"Global Nagas Institute" <${process.env.SMTP_USER || 'admissions@globalnagas.org'}>`;
+  const customerEmail = data.email ? String(data.email).trim() : '';
 
-  const fullNameSafe = escapeHtml(data.fullName);
-  const skillSafe = escapeHtml(data.interestedSkill);
-  const experienceSafe = escapeHtml(data.experienceLevel);
-  const locationSafe = escapeHtml(data.location);
-  const phoneSafe = escapeHtml(data.fullPhone || data.phone);
-
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-      <title>Successfully Registered - Global Nagas Institute</title>
-      <style type="text/css">
-        body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f7f2e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        * { box-sizing: border-box; }
-        @media only screen and (max-width: 600px) {
-          .outer-table { padding: 6px 4px !important; }
-          .card-box { width: 100% !important; border-radius: 8px !important; }
-          .header-box { padding: 20px 14px !important; }
-          .content-box { padding: 16px 12px !important; }
-          .header-title { font-size: 19px !important; }
-          .greeting-text { font-size: 16px !important; }
-          .field-card { padding: 9px 12px !important; margin-bottom: 7px !important; }
-          .field-label { font-size: 10px !important; }
-          .field-val { font-size: 13.5px !important; }
-        }
-      </style>
-    </head>
-    <body style="margin: 0; padding: 0; background-color: #f7f2e8; color: #241a16;">
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="outer-table" style="background-color: #f7f2e8; padding: 18px 8px;">
-        <tr>
-          <td align="center">
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="card-box" style="max-width: 580px; width: 100%; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e6dcd0; box-shadow: 0 4px 14px rgba(0,0,0,0.06);">
-              <!-- Header -->
-              <tr>
-                <td class="header-box" style="background-color: #6b4030; padding: 26px 20px; text-align: center; color: #ffffff;">
-                  <p style="margin: 0 0 4px; color: #d4a373; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Global Nagas Institute</p>
-                  <h1 class="header-title" style="margin: 0 0 8px; font-size: 22px; line-height: 1.3; color: #ffffff; word-break: break-word;">Heritage Framework &amp; Repository</h1>
-                  <div style="display: inline-block; background-color: #2d6a4f; color: #ffffff; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-                    ✓ Successfully Registered
-                  </div>
-                </td>
-              </tr>
-              <!-- Content -->
-              <tr>
-                <td class="content-box" style="padding: 22px 18px;">
-                  <div class="greeting-text" style="font-size: 17px; font-weight: 700; color: #6b4030; margin-bottom: 8px; word-break: break-word;">
-                    Vanakkam &amp; Welcome, ${fullNameSafe}!
-                  </div>
-                  <p style="font-size: 14px; line-height: 1.5; color: #4a2c20; margin: 0 0 16px;">
-                    We are delighted to confirm that your application has been <strong>successfully registered</strong> with Global Nagas Institute.
-                  </p>
-
-                  <!-- Details Stacked Cards -->
-                  <div class="field-card" style="background-color: #faf8f5; border: 1px solid #ede5dc; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Candidate Name</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 600; color: #241a16; word-break: break-word; overflow-wrap: anywhere;">${fullNameSafe}</div>
-                  </div>
-
-                  <div class="field-card" style="background-color: #faf8f5; border: 1px solid #ede5dc; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Registered Email</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 500; color: #241a16; word-break: break-all; overflow-wrap: anywhere;">${escapeHtml(customerEmail)}</div>
-                  </div>
-
-                  <div class="field-card" style="background-color: #faf8f5; border: 1px solid #ede5dc; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Contact Phone</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 600; color: #241a16; word-break: break-word; overflow-wrap: anywhere;">${phoneSafe}</div>
-                  </div>
-
-                  <div class="field-card" style="background-color: #fbf8f2; border: 1px solid #ede3d2; border-left: 4px solid #b89555; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Selected Skill Pillar</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 700; color: #6b4030; word-break: break-word; overflow-wrap: anywhere;">${skillSafe}</div>
-                  </div>
-
-                  <div class="field-card" style="background-color: #faf8f5; border: 1px solid #ede5dc; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Experience Level</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 500; color: #241a16; word-break: break-word; overflow-wrap: anywhere;">${experienceSafe}</div>
-                  </div>
-
-                  <div class="field-card" style="background-color: #faf8f5; border: 1px solid #ede5dc; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Location</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 500; color: #241a16; word-break: break-word; overflow-wrap: anywhere;">${locationSafe}</div>
-                  </div>
-
-                  <!-- Bank Details for Registration Payment -->
-                  <div style="background-color: #fcfaf7; border: 1px solid #e7ded4; border-left: 4px solid #b89555; border-radius: 8px; padding: 14px 16px; margin: 16px 0; box-sizing: border-box;">
-                    <div style="font-size: 13.5px; font-weight: 700; color: #4a2c20; margin-bottom: 8px;">
-                      Registration Payment (Fee: ₹4,999)
-                    </div>
-                    
-                    <!-- Online Payment Link (Source: Startupwala) -->
-                    <div style="background-color: #ffffff; border: 1px solid #e6dcd0; border-radius: 6px; padding: 12px 14px; text-align: center;">
-                      <div style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; margin-bottom: 6px;">Pay Online via Gateway (Source: Startupwala)</div>
-                      <p style="font-size: 11.5px; color: #6b4030; margin: 0 0 10px;">
-                        Complete your cohort seat reservation online via the secure Startupwala payment gateway (supports UPI, Net Banking, and Cards).
-                      </p>
-                      <a href="https://share.google/pyTPtvnuTIIM6Fc0X" target="_blank" style="display: inline-block; background-color: #4a2c20; color: #ffffff; text-decoration: none; padding: 9px 18px; border-radius: 6px; font-size: 12px; font-weight: 600;">
-                        Open Startupwala Payment Portal →
-                      </a>
-                      <div style="font-size: 10.5px; color: #7a6e65; margin-top: 6px;">
-                        Reference: https://share.google/pyTPtvnuTIIM6Fc0X
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Next Steps Box -->
-                  <div style="background-color: #fbf5eb; border-left: 4px solid #b89555; padding: 13px 14px; margin: 16px 0; border-radius: 6px; font-size: 13.5px; line-height: 1.5; color: #4a2c20; box-sizing: border-box; word-break: break-word;">
-                    <strong style="color: #6b4030;">What happens next?</strong><br>
-                    Our master artisans and admissions team will review your application. You will receive further orientation details and curriculum schedules within <strong>24–48 hours</strong>.
-                  </div>
-
-                  <p style="font-size: 13px; line-height: 1.5; color: #6b4030; margin: 14px 0 0; word-break: break-word;">
-                    If you have any questions, reply directly to this email or reach us at <a href="mailto:${adminEmail}" style="color: #6b4030; font-weight: 600;">${adminEmail}</a>.
-                  </p>
-                </td>
-              </tr>
-              <!-- Footer -->
-              <tr>
-                <td style="background-color: #f3ede2; padding: 16px 18px; text-align: center; font-size: 11.5px; color: #7a6e65; line-height: 1.4; word-break: break-word;">
-                  © ${new Date().getFullYear()} Global Nagas Institute. Preserving and revitalizing ancient heritage traditions.<br>
-                  📍 No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </body>
-    </html>
-  `;
-
-  if (!transporter) {
-    console.warn(`[EmailService] SMTP not configured. Customer email to [${customerEmail}] simulated.`);
-    return { success: false, simulated: true, recipient: customerEmail };
+  if (!customerEmail) {
+    return {
+      success: false,
+      error: 'Missing recipient email address.',
+    };
   }
 
-  const mailOptions = {
-    from: fromAddress,
-    to: customerEmail,
-    subject: 'Successfully Registered | Global Nagas Institute',
-    text: `Vanakkam ${data.fullName},\n\nYour application with Global Nagas Institute has been successfully registered!\n\nSkill Pillar: ${data.interestedSkill}\nExperience: ${data.experienceLevel}\nPhone: ${data.fullPhone || data.phone}\n\nOur admissions team will review your application and contact you within 24–48 hours.\n\nGlobal Nagas Institute`,
-    html: htmlContent,
-  };
+  const template = generateCustomerRegistrationEmail(data);
+  const fromAddress = getFromAddress('Global Nagas Institute');
+  const logoAttachments = getLogoAttachment();
 
-  const info = await transporter.sendMail(mailOptions);
-  console.log(`[EmailService] Real-time customer confirmation email sent to: ${customerEmail} (ID: ${info.messageId})`);
-  return { success: true, messageId: info.messageId, recipient: customerEmail };
+  if (!transporter) {
+    console.warn(`[EmailService] SMTP not configured. Customer confirmation simulated for: ${customerEmail}`);
+    return {
+      success: true,
+      simulated: true,
+      recipient: customerEmail,
+      subject: template.subject,
+    };
+  }
+
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: customerEmail,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Customer confirmation sent to ${customerEmail} (ID: ${info.messageId})`);
+    return {
+      success: true,
+      messageId: info.messageId,
+      recipient: customerEmail,
+    };
+  } catch (error) {
+    console.error(`[EmailService] Failed to send confirmation to ${customerEmail}:`, error.message);
+    return {
+      success: false,
+      error: error.message,
+      recipient: customerEmail,
+    };
+  }
 }
 
 /**
- * Send real-time notification email to Admin (24pca103@anjaconline.org)
+ * 2. Send Real-Time Registration Notification to Admin
  */
 export async function sendAdminRegistrationAlert(data) {
   const transporter = getTransporter();
-  const adminEmail = process.env.ADMIN_EMAIL || '24pca103@anjaconline.org';
-  const fromAddress = process.env.SMTP_FROM || `"GNI Admissions Alert" <${process.env.SMTP_USER || 'no-reply@globalnagas.org'}>`;
+  const rawAdminEmail = process.env.ADMIN_EMAIL || '24pca103@anjaconline.org';
+  const adminRecipients = rawAdminEmail
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 
-  const fullNameSafe = escapeHtml(data.fullName);
-  const emailSafe = escapeHtml(data.email);
-  const phoneSafe = escapeHtml(data.fullPhone || data.phone);
-  const countrySafe = escapeHtml(data.country || 'India');
-  const locationSafe = escapeHtml(data.location);
-  const professionSafe = escapeHtml(data.profession);
-  const skillSafe = escapeHtml(data.interestedSkill);
-  const experienceSafe = escapeHtml(data.experienceLevel);
-  const purposeSafe = escapeHtml(data.learningPurpose);
-  const submittedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-      <title>New ${professionSafe || 'Applicant'} Registration Alert</title>
-      <style type="text/css">
-        body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        * { box-sizing: border-box; }
-        @media only screen and (max-width: 600px) {
-          .outer-table { padding: 6px 4px !important; }
-          .card-box { width: 100% !important; border-radius: 8px !important; }
-          .header-box { padding: 18px 14px !important; }
-          .content-box { padding: 16px 12px !important; }
-          .header-title { font-size: 17px !important; line-height: 1.35 !important; }
-          .field-card { padding: 9px 12px !important; margin-bottom: 7px !important; }
-          .field-label { font-size: 10px !important; }
-          .field-val { font-size: 13.5px !important; }
-        }
-      </style>
-    </head>
-    <body style="margin: 0; padding: 0; background-color: #f1f5f9; color: #1e293b;">
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="outer-table" style="background-color: #f1f5f9; padding: 18px 8px;">
-        <tr>
-          <td align="center">
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="card-box" style="max-width: 580px; width: 100%; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-              <!-- Header -->
-              <tr>
-                <td class="header-box" style="background-color: #0f172a; padding: 22px 20px; color: #ffffff;">
-                  <p style="margin: 0 0 4px; font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Global Nagas Institute</p>
-                  <h2 class="header-title" style="margin: 0 0 6px; font-size: 19px; line-height: 1.35; color: #ffffff; font-weight: 700; word-break: break-word; overflow-wrap: anywhere;">🔔 New ${professionSafe || 'Applicant'} Registration Alert</h2>
-                  <div style="display: inline-block; background-color: #3b82f6; color: #ffffff; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 600; margin-top: 6px; word-break: break-word;">
-                    Received: ${escapeHtml(submittedAt)} IST
-                  </div>
-                </td>
-              </tr>
-              <!-- Content -->
-              <tr>
-                <td class="content-box" style="padding: 20px 18px;">
-                  <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.5; color: #334155;">
-                    A new candidate with profession <strong style="color: #0f172a;">${professionSafe || 'Applicant'}</strong> has submitted the application form:
-                  </p>
-
-                  <!-- 1. Full Name -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Full Name</div>
-                    <div class="field-val" style="font-size: 15px; font-weight: 600; color: #0f172a; word-break: break-word; overflow-wrap: anywhere; word-wrap: break-word;">${fullNameSafe}</div>
-                  </div>
-
-                  <!-- 2. Email Address -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Email Address</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 500; word-break: break-all; overflow-wrap: anywhere; word-wrap: break-word;">
-                      <a href="mailto:${emailSafe}" style="color: #2563eb; text-decoration: none;">${emailSafe}</a>
-                    </div>
-                  </div>
-
-                  <!-- 3. Mobile / WhatsApp -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Mobile / WhatsApp</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 600; word-break: break-word; overflow-wrap: anywhere;">
-                      <a href="tel:${phoneSafe}" style="color: #0f172a; text-decoration: none;">${phoneSafe}</a>
-                    </div>
-                  </div>
-
-                  <!-- 4. Location & Country -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Location &amp; Country</div>
-                    <div class="field-val" style="font-size: 14px; color: #0f172a; font-weight: 500; word-break: break-word; overflow-wrap: anywhere;">${locationSafe}, ${countrySafe}</div>
-                  </div>
-
-                  <!-- 5. Profession / Background -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Profession / Background</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 700; color: #0f172a; word-break: break-word; overflow-wrap: anywhere;">${professionSafe}</div>
-                  </div>
-
-                  <!-- 6. Interested Skill Pillar -->
-                  <div class="field-card" style="background-color: #fbf8f2; border: 1px solid #ede3d2; border-left: 4px solid #b89555; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #8c6832; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Interested Heritage Skill Pillar</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 700; color: #6b4030; word-break: break-word; overflow-wrap: anywhere;">${skillSafe}</div>
-                  </div>
-
-                  <!-- 7. Prior Experience Level -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 9px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Prior Experience Level</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 600; color: #0f172a; word-break: break-word; overflow-wrap: anywhere;">${experienceSafe}</div>
-                  </div>
-
-                  <!-- 8. Purpose of Learning -->
-                  <div class="field-card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Purpose of Learning</div>
-                    <div class="field-val" style="font-size: 13px; line-height: 1.55; color: #1e293b; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; word-wrap: break-word;">${purposeSafe}</div>
-                  </div>
-
-                  ${data.paymentRef ? `
-                  <!-- 9. Payment Reference / UTR -->
-                  <div class="field-card" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 11px 14px; margin-bottom: 12px; box-sizing: border-box;">
-                    <div class="field-label" style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Payment UTR / Transaction ID</div>
-                    <div class="field-val" style="font-size: 14px; font-weight: 700; color: #14532d; font-family: monospace; word-break: break-word; overflow-wrap: anywhere;">${escapeHtml(data.paymentRef)}</div>
-                  </div>
-                  ` : ''}
-                </td>
-              </tr>
-              <!-- Footer -->
-              <tr>
-                <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 18px; text-align: center; font-size: 11px; color: #64748b; line-height: 1.4; word-break: break-word;">
-                  Admissions Alert dispatched to Admin: <strong>${escapeHtml(adminEmail)}</strong><br>
-                  📍 Campus: No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </body>
-    </html>
-  `;
+  const template = generateAdminRegistrationAlert(data);
+  const fromAddress = getFromAddress('GNI Admissions Directorate');
+  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
-    console.warn(`[EmailService] SMTP not configured. Admin alert to [${adminEmail}] simulated.`);
-    return { success: false, simulated: true, recipient: adminEmail };
+    console.warn(`[EmailService] SMTP not configured. Admin alert simulated for: ${adminRecipients.join(', ')}`);
+    return {
+      success: true,
+      simulated: true,
+      recipients: adminRecipients,
+    };
   }
 
-  const professionText = data.profession ? data.profession.trim() : 'Applicant';
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: adminRecipients,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
 
-  const mailOptions = {
-    from: fromAddress,
-    to: adminEmail,
-    subject: `[New ${professionText} Registration] ${data.fullName} - ${data.interestedSkill}`,
-    text: `New ${professionText} Registration Alert:\n\nName: ${data.fullName}\nEmail: ${data.email}\nPhone: ${data.fullPhone || data.phone}\nLocation: ${data.location}\nProfession: ${data.profession}\nSkill: ${data.interestedSkill}\nExperience: ${data.experienceLevel}\nPurpose: ${data.learningPurpose}\nSubmitted at: ${submittedAt} IST`,
-    html: htmlContent,
-  };
-
-  const info = await transporter.sendMail(mailOptions);
-  console.log(`[EmailService] Real-time admin notification email sent to: ${adminEmail} (ID: ${info.messageId})`);
-  return { success: true, messageId: info.messageId, recipient: adminEmail };
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Admin alert sent to ${adminRecipients.join(', ')} (ID: ${info.messageId})`);
+    return {
+      success: true,
+      messageId: info.messageId,
+      recipients: adminRecipients,
+    };
+  } catch (error) {
+    console.error(`[EmailService] Failed to send admin alert:`, error.message);
+    return {
+      success: false,
+      error: error.message,
+      recipients: adminRecipients,
+    };
+  }
 }
 
 /**
- * Send real-time notifications to both Customer and Admin in parallel
+ * Dispatch real-time notifications to both Customer and Admin in parallel
  */
 export async function sendRegistrationNotifications(data) {
   try {
-    const results = await Promise.allSettled([
+    const [customerSettled, adminSettled] = await Promise.allSettled([
       sendCustomerRegistrationEmail(data),
       sendAdminRegistrationAlert(data),
     ]);
 
-    results.forEach((res, index) => {
-      const target = index === 0 ? 'Customer' : 'Admin';
-      if (res.status === 'rejected') {
-        console.error(`[EmailService] Failed to send email to ${target}:`, res.reason?.message || res.reason);
-      }
-    });
+    const customerResult =
+      customerSettled.status === 'fulfilled'
+        ? customerSettled.value
+        : { success: false, error: customerSettled.reason?.message };
 
-    return results;
+    const adminResult =
+      adminSettled.status === 'fulfilled'
+        ? adminSettled.value
+        : { success: false, error: adminSettled.reason?.message };
+
+    return {
+      customerResult,
+      adminResult,
+      success: customerResult.success,
+    };
   } catch (err) {
-    console.error('[EmailService] Unexpected error sending notifications:', err.message);
+    console.error('[EmailService] Unexpected notification dispatch error:', err.message);
+    return {
+      success: false,
+      error: err.message,
+    };
+  }
+}
+
+/**
+ * 3. Send Admin Login 2FA OTP Email
+ */
+export async function sendAdminLoginOtpEmail(adminEmail, otp) {
+  const transporter = getTransporter();
+  const template = generateAdminLoginOtpEmail(otp);
+  const fromAddress = getFromAddress('GNI Admin Security');
+  const logoAttachments = getLogoAttachment();
+
+  if (!transporter) {
+    console.log(
+      `\n========================================\n[Admin Auth] SMTP NOT CONFIGURED.\nGenerated Login OTP for [${adminEmail}]: ${otp}\nValid for: 10 minutes\n========================================\n`
+    );
+    return { success: true, simulated: true, recipient: adminEmail };
+  }
+
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: adminEmail,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Admin Login OTP sent to ${adminEmail} (ID: ${info.messageId})`);
+    return { success: true, messageId: info.messageId, recipient: adminEmail };
+  } catch (err) {
+    console.error(`[EmailService] Failed to send Login OTP to ${adminEmail}:`, err.message);
+    return { success: false, error: err.message, recipient: adminEmail };
+  }
+}
+
+/**
+ * 4. Send Admin Password Reset OTP Email
+ */
+export async function sendAdminPasswordResetOtpEmail(adminEmail, otp) {
+  const transporter = getTransporter();
+  const template = generateAdminPasswordResetOtpEmail(otp);
+  const fromAddress = getFromAddress('GNI Admin Security');
+  const logoAttachments = getLogoAttachment();
+
+  if (!transporter) {
+    console.log(
+      `\n========================================\n[Admin Auth] SMTP NOT CONFIGURED.\nGenerated Password Reset OTP for [${adminEmail}]: ${otp}\nValid for: 15 minutes\n========================================\n`
+    );
+    return { success: true, simulated: true, recipient: adminEmail };
+  }
+
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: adminEmail,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Password Reset OTP sent to ${adminEmail} (ID: ${info.messageId})`);
+    return { success: true, messageId: info.messageId, recipient: adminEmail };
+  } catch (err) {
+    console.error(`[EmailService] Failed to send Reset OTP to ${adminEmail}:`, err.message);
+    return { success: false, error: err.message, recipient: adminEmail };
+  }
+}
+
+/**
+ * 5. Send Payment Confirmation Email
+ */
+export async function sendPaymentConfirmationEmail(data) {
+  const transporter = getTransporter();
+  const customerEmail = data.email ? String(data.email).trim() : '';
+
+  if (!customerEmail) {
+    return { success: false, error: 'Recipient email is missing' };
+  }
+
+  const template = generatePaymentConfirmationEmail(data);
+  const fromAddress = getFromAddress('Global Nagas Institute');
+  const logoAttachments = getLogoAttachment();
+
+  if (!transporter) {
+    console.warn(`[EmailService] SMTP not configured. Payment confirmation simulated for: ${customerEmail}`);
+    return { success: true, simulated: true, recipient: customerEmail };
+  }
+
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: customerEmail,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Payment confirmation sent to ${customerEmail} (ID: ${info.messageId})`);
+    return { success: true, messageId: info.messageId, recipient: customerEmail };
+  } catch (err) {
+    console.error(`[EmailService] Failed to send payment confirmation to ${customerEmail}:`, err.message);
+    return { success: false, error: err.message, recipient: customerEmail };
+  }
+}
+
+/**
+ * 6. Send Application Status Update Email (Approved, Confirmed, Cancelled, Rejected)
+ */
+export async function sendApplicationStatusUpdateEmail(data, newStatus) {
+  const transporter = getTransporter();
+  const customerEmail = data.email ? String(data.email).trim() : '';
+
+  if (!customerEmail) {
+    return { success: false, error: 'Recipient email is missing' };
+  }
+
+  const template = generateApplicationStatusUpdateEmail(data, newStatus);
+  const fromAddress = getFromAddress('Global Nagas Institute Admissions');
+  const logoAttachments = getLogoAttachment();
+
+  if (!transporter) {
+    console.warn(`[EmailService] SMTP not configured. Status update simulated for: ${customerEmail}`);
+    return { success: true, simulated: true, recipient: customerEmail };
+  }
+
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: customerEmail,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Application status update sent to ${customerEmail} (ID: ${info.messageId})`);
+    return { success: true, messageId: info.messageId, recipient: customerEmail };
+  } catch (err) {
+    console.error(`[EmailService] Failed to send status update to ${customerEmail}:`, err.message);
+    return { success: false, error: err.message, recipient: customerEmail };
+  }
+}
+
+/**
+ * 7. Send Workshop or Course Registration Update Email
+ */
+export async function sendCourseUpdateEmail(data, updateNotice) {
+  const transporter = getTransporter();
+  const customerEmail = data.email ? String(data.email).trim() : '';
+
+  if (!customerEmail) {
+    return { success: false, error: 'Recipient email is missing' };
+  }
+
+  const template = generateCourseUpdateEmail(data, updateNotice);
+  const fromAddress = getFromAddress('Global Nagas Institute');
+  const logoAttachments = getLogoAttachment();
+
+  if (!transporter) {
+    console.warn(`[EmailService] SMTP not configured. Course update simulated for: ${customerEmail}`);
+    return { success: true, simulated: true, recipient: customerEmail };
+  }
+
+  try {
+    const mailOptions = {
+      from: fromAddress,
+      to: customerEmail,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
+      attachments: logoAttachments,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[EmailService] Course update sent to ${customerEmail} (ID: ${info.messageId})`);
+    return { success: true, messageId: info.messageId, recipient: customerEmail };
+  } catch (err) {
+    console.error(`[EmailService] Failed to send course update to ${customerEmail}:`, err.message);
+    return { success: false, error: err.message, recipient: customerEmail };
   }
 }
 
@@ -417,4 +429,9 @@ export default {
   sendCustomerRegistrationEmail,
   sendAdminRegistrationAlert,
   sendRegistrationNotifications,
+  sendAdminLoginOtpEmail,
+  sendAdminPasswordResetOtpEmail,
+  sendPaymentConfirmationEmail,
+  sendApplicationStatusUpdateEmail,
+  sendCourseUpdateEmail,
 };

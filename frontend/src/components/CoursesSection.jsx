@@ -265,11 +265,17 @@ export default function CoursesSection() {
                       <div className="flex items-center gap-1.5 text-[#6B4030]">
                         <Users className="w-3.5 h-3.5 text-[#B89555]" />
                         <span>
-                          Seats: <strong className="text-[#4A2C20]">{course.seats_available || 12} left</strong> of {course.seats_total || 50}
+                          Seats: <strong className="text-[#4A2C20]">{course.seats_available !== undefined ? course.seats_available : 12} left</strong> of {course.seats_total || 50}
                         </span>
                       </div>
-                      <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold border border-emerald-200">
-                        Enrollment Active
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
+                        course.seats_available === 0
+                          ? 'text-red-700 bg-red-50 border-red-200'
+                          : (course.seats_available <= 5 || course.availability_status === 'Almost Full')
+                          ? 'text-amber-800 bg-amber-50 border-amber-200'
+                          : 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                      }`}>
+                        {course.seats_available === 0 ? 'Full' : (course.seats_available <= 5 || course.availability_status === 'Almost Full') ? 'Almost Full' : 'Available'}
                       </span>
                     </div>
 
@@ -293,13 +299,19 @@ export default function CoursesSection() {
                         )}
                       </div>
 
-                      <Link
-                        to={`/register?skill=${encodeURIComponent(course.title)}`}
-                        className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all border border-[#B89555] cursor-pointer shrink-0"
-                      >
-                        <span>Enroll Now</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      {course.seats_available === 0 ? (
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-['DM_Sans'] text-xs font-semibold text-red-800 bg-red-100/90 border border-red-300 cursor-not-allowed shrink-0">
+                          <span>Fully Booked</span>
+                        </span>
+                      ) : (
+                        <Link
+                          to={`/register?skill=${encodeURIComponent(course.title)}`}
+                          className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all border border-[#B89555] cursor-pointer shrink-0"
+                        >
+                          <span>Enroll Now</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>

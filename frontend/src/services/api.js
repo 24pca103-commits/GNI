@@ -212,7 +212,7 @@ export const fetchAdminStats = async () => {
 };
 
 /**
- * Admin Login
+ * Admin Login: Step 1 (Credential verification & request OTP)
  */
 export const adminLogin = async (username, password) => {
   const response = await fetch(`${API_BASE_URL}/admin/login`, {
@@ -222,6 +222,102 @@ export const adminLogin = async (username, password) => {
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.message || 'Authentication failed');
+  return data;
+};
+
+/**
+ * Admin Login: Step 2 (Verify OTP & receive auth token)
+ */
+export const verifyAdminLoginOtp = async (otpSessionId, otp) => {
+  const response = await fetch(`${API_BASE_URL}/admin/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ otpSessionId, otp }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'OTP verification failed');
+  return data;
+};
+
+/**
+ * Admin Login: Resend OTP
+ */
+export const resendAdminLoginOtp = async (otpSessionId) => {
+  const response = await fetch(`${API_BASE_URL}/admin/resend-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ otpSessionId }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to resend OTP');
+  return data;
+};
+
+/**
+ * Admin Forgot Password: Step 1 (Request reset OTP)
+ */
+export const adminForgotPassword = async (email) => {
+  const response = await fetch(`${API_BASE_URL}/admin/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to initiate password reset');
+  return data;
+};
+
+/**
+ * Admin Forgot Password: Step 2 (Verify reset OTP & get resetToken)
+ */
+export const verifyAdminResetOtp = async (resetSessionId, otp) => {
+  const response = await fetch(`${API_BASE_URL}/admin/verify-reset-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ resetSessionId, otp }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Reset code verification failed');
+  return data;
+};
+
+/**
+ * Admin Forgot Password: Step 3 (Submit new password)
+ */
+export const resetAdminPassword = async (resetToken, newPassword) => {
+  const response = await fetch(`${API_BASE_URL}/admin/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ resetToken, newPassword }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Password update failed');
+  return data;
+};
+
+/**
+ * Admin: Update student application status
+ */
+export const updateRegistrationStatus = async (id, status) => {
+  const response = await fetch(`${API_BASE_URL}/admin/registrations/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to update application status');
+  return data;
+};
+
+/**
+ * Admin: Delete a student registration record
+ */
+export const deleteRegistration = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/admin/registrations/${id}`, {
+    method: 'DELETE',
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to delete registration');
   return data;
 };
 
@@ -239,8 +335,37 @@ export const uploadOfferingImage = async (base64Image, filename = 'image.jpg') =
   return data;
 };
 
+/**
+ * Resend student registration confirmation email
+ */
+export const resendConfirmationEmail = async (payload) => {
+  const response = await fetch(`${API_BASE_URL}/resend-confirmation`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to resend confirmation email');
+  return data;
+};
+
+/**
+ * Admin: Send course/workshop broadcast update email to enrolled students
+ */
+export const notifyCourseStudents = async (courseId, payload) => {
+  const response = await fetch(`${API_BASE_URL}/admin/courses/${courseId}/notify-students`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to notify course students');
+  return data;
+};
+
 export default {
   registerUser,
+  resendConfirmationEmail,
   fetchActiveCourses,
   fetchPricingConfig,
   calculateCourseFee,
@@ -250,7 +375,15 @@ export default {
   toggleCourseStatus,
   deleteCourse,
   fetchAdminRegistrations,
+  updateRegistrationStatus,
+  deleteRegistration,
+  notifyCourseStudents,
   fetchAdminStats,
   adminLogin,
+  verifyAdminLoginOtp,
+  resendAdminLoginOtp,
+  adminForgotPassword,
+  verifyAdminResetOtp,
+  resetAdminPassword,
   uploadOfferingImage,
 };

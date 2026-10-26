@@ -169,8 +169,12 @@ function mapCourseToWorkshop(c) {
     feeBadge: c.badge || 'Special Access',
     fee: formattedFee,
     feeNote: 'Includes raw materials, inscription plate, and certified craft kit.',
-    seatsInfo: `Seats Available: ${c.seats_available ?? 30} / ${c.seats_total ?? 50} • Fee: ${formattedFee}`,
+    seatsInfo:
+      Number(c.seats_available) === 0
+        ? `Full Capacity (0 Seats Available) • Fee: ${formattedFee}`
+        : `Seats Available: ${c.seats_available ?? 30} / ${c.seats_total ?? 50} • Fee: ${formattedFee}`,
     seatsDesc: `${c.mode || 'Hands-on learning'}, live sthapathi guidance & take-home craft.`,
+    isFull: Number(c.seats_available) === 0,
     highlights: [
       { icon: Calendar, label: c.duration || '1 Day Intensive' },
       { icon: Users, label: `${c.seats_total || 50} Max Seats` },
@@ -414,13 +418,19 @@ export default function WorkshopSection() {
                   </p>
                 </div>
 
-                <Link
-                  to={`/register?course=${encodeURIComponent(currentWorkshop.title)}&duration=${encodeURIComponent(currentWorkshop.highlights?.[0]?.label?.match(/\d+\s*day[s]?/i)?.[0] || '1 Day')}`}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200 cursor-pointer shrink-0"
-                >
-                  <span>Register for Workshop</span>
-                  <ArrowRight className="w-4 h-4 text-[#241A16]" />
-                </Link>
+                {currentWorkshop.isFull ? (
+                  <span className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-red-800 bg-red-100/90 border border-red-300 cursor-not-allowed shrink-0">
+                    <span>Workshop Full</span>
+                  </span>
+                ) : (
+                  <Link
+                    to={`/register?course=${encodeURIComponent(currentWorkshop.title)}&duration=${encodeURIComponent(currentWorkshop.highlights?.[0]?.label?.match(/\d+\s*day[s]?/i)?.[0] || '1 Day')}`}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200 cursor-pointer shrink-0"
+                  >
+                    <span>Register for Workshop</span>
+                    <ArrowRight className="w-4 h-4 text-[#241A16]" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>

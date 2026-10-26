@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -33,6 +33,14 @@ import {
   Eye,
   EyeOff,
   Award,
+  KeyRound,
+  ShieldCheck,
+  Check,
+  Mail,
+  RotateCcw,
+  CheckSquare,
+  XCircle,
+  ImagePlus,
 } from 'lucide-react';
 import {
   fetchAllCourses,
@@ -41,8 +49,15 @@ import {
   toggleCourseStatus,
   deleteCourse,
   fetchAdminRegistrations,
+  updateRegistrationStatus,
+  deleteRegistration,
   fetchAdminStats,
   adminLogin,
+  verifyAdminLoginOtp,
+  resendAdminLoginOtp,
+  adminForgotPassword,
+  verifyAdminResetOtp,
+  resetAdminPassword,
   uploadOfferingImage,
 } from '../services/api';
 
@@ -223,24 +238,57 @@ function parseDaysFromPeriod(periodStr) {
   };
 }
 
-// Helper to count words strictly
-function countWords(str) {
-  if (!str) return 0;
-  const matches = String(str).trim().match(/[\S]+/g);
-  return matches ? matches.length : 0;
+// Helper to count characters cleanly (Character-based validation)
+function countChars(str) {
+  return str ? String(str).length : 0;
 }
+
+export const CHAR_LIMITS = {
+  title: { min: 5, max: 100, label: 'Offering Title' },
+  category: { min: 3, max: 50, label: 'Category / Pillar' },
+  badge: { min: 0, max: 40, label: 'Banner Badge' },
+  duration: { min: 2, max: 30, label: 'Duration' },
+  mode: { min: 3, max: 40, label: 'Learning Mode' },
+  description: { min: 15, max: 500, label: 'Description' },
+  highlights: { min: 10, max: 500, label: 'Practical Modules / Highlights' },
+  phaseTitle: { min: 3, max: 80, label: 'Phase Title' },
+  phaseDetails: { min: 10, max: 200, label: 'Studio Focus' },
+  phaseOutcome: { min: 5, max: 120, label: 'Key Milestone Outcome' },
+};
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('gni_admin_token') ? true : false;
   });
 
-  // Login form state
+  // Multi-step Authentication state:
+  // 'login' | 'verify_otp' | 'forgot_password' | 'verify_reset_otp' | 'new_password'
+  const [authView, setAuthView] = useState('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+
+  // OTP 2FA verification state
+  const [otpSessionId, setOtpSessionId] = useState('');
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [otpInput, setOtpInput] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Forgot password flow state
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetSessionId, setResetSessionId] = useState('');
+  const [resetOtpInput, setResetOtpInput] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  // Real-time Dashboard Syncing & Data Refresh
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState(new Date().toLocaleTimeString());
 
   // Dashboard tabs: 'courses' | 'registrations'
   const [activeTab, setActiveTab] = useState('courses');
@@ -275,6 +323,8 @@ export default function Admin() {
   const [imageUploadMode, setImageUploadMode] = useState('upload'); // 'upload' | 'presets' | 'url'
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef(null);
+  const changeFileInputRef = useRef(null);
 
   // Left Sidebar Drawer State (3-line hamburger menu)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -366,6 +416,19 @@ export default function Admin() {
     setJourneyPhases((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Countdown timer for OTP resend cooldown
+  useEffect(() => {
+    let timer = null;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [resendCooldown]);
+
   // Load Dashboard Data
   const loadDashboardData = async () => {
     setCoursesLoading(true);
@@ -377,6 +440,7 @@ export default function Admin() {
       }
       const statsData = await fetchAdminStats();
       if (statsData) setStats(statsData);
+      setLastSyncTime(new Date().toLocaleTimeString());
     } catch (err) {
       console.warn('Dashboard load warning:', err);
     } finally {
@@ -392,6 +456,7 @@ export default function Admin() {
       if (allRegs) {
         setRegistrations(allRegs);
       }
+      setLastSyncTime(new Date().toLocaleTimeString());
     } catch (err) {
       console.warn('Registrations load warning:', err);
     } finally {
@@ -399,25 +464,63 @@ export default function Admin() {
     }
   };
 
+  // Real-time synchronization: Auto-poll every 12s & refetch on window focus
   useEffect(() => {
-    if (isAuthenticated) {
-      loadDashboardData();
-    }
-  }, [isAuthenticated]);
+    if (!isAuthenticated) return;
 
-  // Handle Login
+    loadDashboardData();
+    loadRegistrations();
+
+    const interval = setInterval(() => {
+      loadDashboardData();
+      if (activeTab === 'registrations') {
+        loadRegistrations();
+      }
+    }, 12000);
+
+    const onWindowFocus = () => {
+      loadDashboardData();
+      loadRegistrations();
+    };
+
+    window.addEventListener('focus', onWindowFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onWindowFocus);
+    };
+  }, [isAuthenticated, activeTab]);
+
+  // Manual Trigger to refresh all data immediately
+  const handleSyncAllData = async () => {
+    setIsSyncing(true);
+    try {
+      await Promise.all([loadDashboardData(), loadRegistrations()]);
+    } finally {
+      setTimeout(() => setIsSyncing(false), 500);
+    }
+  };
+
+  // 1. Handle Admin Login Step 1: Credential check & OTP trigger
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError('');
+    setLoginSuccess('');
     setLoginLoading(true);
 
     try {
       const data = await adminLogin(username, password);
-      if (data && data.token) {
+      if (data && data.requireOtp) {
+        setOtpSessionId(data.otpSessionId);
+        setMaskedEmail(data.maskedEmail);
+        setAuthView('verify_otp');
+        setResendCooldown(60);
+        setLoginSuccess(data.message || 'OTP verification code sent to your registered admin email.');
+      } else if (data && data.token) {
         localStorage.setItem('gni_admin_token', data.token);
         setIsAuthenticated(true);
       } else {
-        setLoginError('Invalid credentials received from server.');
+        setLoginError('Invalid response received from authentication server.');
       }
     } catch (err) {
       setLoginError(err.message || 'Invalid admin username or password.');
@@ -426,9 +529,153 @@ export default function Admin() {
     }
   };
 
+  // 1. Handle Admin Login Step 2: Verify OTP
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginLoading(true);
+
+    try {
+      const data = await verifyAdminLoginOtp(otpSessionId, otpInput);
+      if (data && data.token) {
+        localStorage.setItem('gni_admin_token', data.token);
+        setIsAuthenticated(true);
+      } else {
+        setLoginError('OTP verification failed. Please check the code.');
+      }
+    } catch (err) {
+      setLoginError(err.message || 'Incorrect verification code. Please try again.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // 1. Handle Resend OTP
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0) return;
+    setLoginError('');
+    setLoginLoading(true);
+
+    try {
+      const data = await resendAdminLoginOtp(otpSessionId);
+      setResendCooldown(60);
+      setLoginSuccess(data.message || 'Fresh OTP dispatched.');
+    } catch (err) {
+      setLoginError(err.message || 'Failed to resend code.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // 1. Forgot Password Step 1: Request OTP
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginSuccess('');
+    setLoginLoading(true);
+
+    try {
+      const data = await adminForgotPassword(forgotEmail);
+      if (data && data.resetSessionId) {
+        setResetSessionId(data.resetSessionId);
+        setMaskedEmail(data.maskedEmail);
+        setAuthView('verify_reset_otp');
+        setLoginSuccess(data.message || 'Password reset OTP sent.');
+      }
+    } catch (err) {
+      setLoginError(err.message || 'Failed to initiate password reset.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // 1. Forgot Password Step 2: Verify Reset OTP
+  const handleVerifyResetOtp = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginLoading(true);
+
+    try {
+      const data = await verifyAdminResetOtp(resetSessionId, resetOtpInput);
+      if (data && data.resetToken) {
+        setResetToken(data.resetToken);
+        setAuthView('new_password');
+        setLoginSuccess('Verification successful. Please choose a new password.');
+      }
+    } catch (err) {
+      setLoginError(err.message || 'Invalid reset OTP code.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // 1. Forgot Password Step 3: Submit New Password
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+
+    if (newPassword !== confirmPassword) {
+      setLoginError('Passwords do not match. Please re-enter.');
+      return;
+    }
+    if (newPassword.length < 8) {
+      setLoginError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    setLoginLoading(true);
+
+    try {
+      const data = await resetAdminPassword(resetToken, newPassword);
+      setAuthView('login');
+      setLoginSuccess(data.message || 'Password updated successfully! You can now log in.');
+      setPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setLoginError(err.message || 'Failed to update password.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // Handle Application Status Update
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await updateRegistrationStatus(id, newStatus);
+      setRegistrations((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, payment_status: newStatus } : r))
+      );
+      // Immediately refresh stats
+      const statsData = await fetchAdminStats();
+      if (statsData) setStats(statsData);
+    } catch (err) {
+      alert('Failed to update status: ' + err.message);
+    }
+  };
+
+  // Handle Application Delete
+  const handleDeleteRegistration = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete the application record for ${name || 'this student'}?`)) {
+      return;
+    }
+    try {
+      await deleteRegistration(id);
+      setRegistrations((prev) => prev.filter((r) => r.id !== id));
+      const statsData = await fetchAdminStats();
+      if (statsData) setStats(statsData);
+    } catch (err) {
+      alert('Failed to delete registration: ' + err.message);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('gni_admin_token');
     setIsAuthenticated(false);
+    setAuthView('login');
+    setUsername('');
+    setPassword('');
+    setOtpInput('');
   };
 
   // Open Create Modal with clean blank form (no pre-filled defaults)
@@ -558,38 +805,38 @@ export default function Admin() {
     const seatsTotal = Number(courseFormData.seats_total) || 0;
     const seatsAvailable = Number(courseFormData.seats_available) || 0;
 
-    // 1. Title validation & limitation (Words only)
+    // 1. Title validation & limitation (Character count)
     if (!title) {
       setFormError('Please enter an offering title.');
       return;
     }
-    const titleWords = countWords(title);
-    if (titleWords < 1) {
-      setFormError('Title must contain at least 1 word.');
+    const titleChars = countChars(title);
+    if (titleChars < CHAR_LIMITS.title.min) {
+      setFormError(`Title must contain at least ${CHAR_LIMITS.title.min} characters (currently ${titleChars} chars).`);
       return;
     }
-    if (titleWords > 12) {
-      setFormError(`Title cannot exceed 12 words (currently ${titleWords} words).`);
-      return;
-    }
-
-    // 2. Category & Banner Badge limitations (Words only)
-    const catWords = countWords(courseFormData.category);
-    if (catWords > 6) {
-      setFormError(`Category cannot exceed 6 words (currently ${catWords} words).`);
-      return;
-    }
-    const badgeWords = countWords(courseFormData.badge);
-    if (badgeWords > 5) {
-      setFormError(`Banner badge cannot exceed 5 words (currently ${badgeWords} words).`);
+    if (titleChars > CHAR_LIMITS.title.max) {
+      setFormError(`Title cannot exceed ${CHAR_LIMITS.title.max} characters (currently ${titleChars} chars).`);
       return;
     }
 
-    // 3. Duration validation based on offering type (Words only)
+    // 2. Category & Banner Badge limitations (Character count)
+    const catChars = countChars(courseFormData.category);
+    if (catChars < CHAR_LIMITS.category.min || catChars > CHAR_LIMITS.category.max) {
+      setFormError(`Category must be between ${CHAR_LIMITS.category.min} and ${CHAR_LIMITS.category.max} characters (currently ${catChars} chars).`);
+      return;
+    }
+    const badgeChars = countChars(courseFormData.badge);
+    if (badgeChars > CHAR_LIMITS.badge.max) {
+      setFormError(`Banner badge cannot exceed ${CHAR_LIMITS.badge.max} characters (currently ${badgeChars} chars).`);
+      return;
+    }
+
+    // 3. Duration validation based on offering type (Character count)
     const rawDur = (courseFormData.duration || '').trim();
-    const durWords = countWords(rawDur);
-    if (durWords > 5) {
-      setFormError(`Duration cannot exceed 5 words (currently ${durWords} words).`);
+    const durChars = countChars(rawDur);
+    if (durChars < CHAR_LIMITS.duration.min || durChars > CHAR_LIMITS.duration.max) {
+      setFormError(`Duration must be between ${CHAR_LIMITS.duration.min} and ${CHAR_LIMITS.duration.max} characters (currently ${durChars} chars).`);
       return;
     }
     const dayMatch = rawDur.match(/(\d+)\s*day/i);
@@ -627,23 +874,31 @@ export default function Admin() {
 
       for (let i = 0; i < journeyPhases.length; i++) {
         const ph = journeyPhases[i];
-        const pTitleWords = countWords(ph.title);
-        if (pTitleWords === 0) {
-          setFormError(`Phase ${i + 1} requires a milestone title.`);
+        const pTitleChars = countChars(ph.title);
+        if (pTitleChars < CHAR_LIMITS.phaseTitle.min) {
+          setFormError(`Phase ${i + 1} milestone title must be at least ${CHAR_LIMITS.phaseTitle.min} characters.`);
           return;
         }
-        if (pTitleWords > 8) {
-          setFormError(`Phase ${i + 1} title cannot exceed 8 words (currently ${pTitleWords} words).`);
+        if (pTitleChars > CHAR_LIMITS.phaseTitle.max) {
+          setFormError(`Phase ${i + 1} title cannot exceed ${CHAR_LIMITS.phaseTitle.max} characters (currently ${pTitleChars} chars).`);
           return;
         }
-        const pDetWords = countWords(ph.details);
-        if (pDetWords > 18) {
-          setFormError(`Phase ${i + 1} studio focus details cannot exceed 18 words (currently ${pDetWords} words).`);
+        const pDetChars = countChars(ph.details);
+        if (pDetChars < CHAR_LIMITS.phaseDetails.min) {
+          setFormError(`Phase ${i + 1} studio focus details must be at least ${CHAR_LIMITS.phaseDetails.min} characters.`);
           return;
         }
-        const pOutWords = countWords(ph.outcome);
-        if (pOutWords > 18) {
-          setFormError(`Phase ${i + 1} outcome cannot exceed 18 words (currently ${pOutWords} words).`);
+        if (pDetChars > CHAR_LIMITS.phaseDetails.max) {
+          setFormError(`Phase ${i + 1} studio focus cannot exceed ${CHAR_LIMITS.phaseDetails.max} characters (currently ${pDetChars} chars).`);
+          return;
+        }
+        const pOutChars = countChars(ph.outcome);
+        if (pOutChars < CHAR_LIMITS.phaseOutcome.min) {
+          setFormError(`Phase ${i + 1} outcome must be at least ${CHAR_LIMITS.phaseOutcome.min} characters.`);
+          return;
+        }
+        if (pOutChars > CHAR_LIMITS.phaseOutcome.max) {
+          setFormError(`Phase ${i + 1} outcome cannot exceed ${CHAR_LIMITS.phaseOutcome.max} characters (currently ${pOutChars} chars).`);
           return;
         }
         const { start, end } = parseDaysFromPeriod(ph.period);
@@ -656,38 +911,42 @@ export default function Admin() {
       }
     }
 
-    // 4. Learning Mode limitation (Words only)
-    const modeWords = countWords(courseFormData.mode);
-    if (modeWords > 5) {
-      setFormError(`Learning mode cannot exceed 5 words (currently ${modeWords} words).`);
+    // 4. Learning Mode limitation (Character count)
+    const modeChars = countChars(courseFormData.mode);
+    if (modeChars > CHAR_LIMITS.mode.max) {
+      setFormError(`Learning mode cannot exceed ${CHAR_LIMITS.mode.max} characters (currently ${modeChars} chars).`);
       return;
     }
 
-    // 5. Description limitation (Words only)
+    // 5. Description limitation (Character count)
     if (!description) {
       setFormError('Please enter an overview description.');
       return;
     }
-    const descWords = countWords(description);
-    if (descWords < 2) {
-      setFormError('Description is too short. Please provide at least 2 words.');
+    const descChars = countChars(description);
+    if (descChars < CHAR_LIMITS.description.min) {
+      setFormError(`Description must be at least ${CHAR_LIMITS.description.min} characters (currently ${descChars} chars).`);
       return;
     }
-    if (descWords > 40) {
-      setFormError(`Description cannot exceed 40 words to keep cards uniform (currently ${descWords} words).`);
+    if (descChars > CHAR_LIMITS.description.max) {
+      setFormError(`Description cannot exceed ${CHAR_LIMITS.description.max} characters (currently ${descChars} chars).`);
       return;
     }
 
-    // 6. Highlights limitation for workshop (Words only)
+    // 6. Highlights limitation for workshop (Character count)
     if (formOfferingType === 'workshop') {
-      const modWords = countWords(courseFormData.highlights);
-      if (modWords > 45) {
-        setFormError(`Practical modules text cannot exceed 45 words (currently ${modWords} words).`);
+      const modChars = countChars(courseFormData.highlights);
+      if (modChars < CHAR_LIMITS.highlights.min) {
+        setFormError(`Practical modules text must be at least ${CHAR_LIMITS.highlights.min} characters.`);
+        return;
+      }
+      if (modChars > CHAR_LIMITS.highlights.max) {
+        setFormError(`Practical modules text cannot exceed ${CHAR_LIMITS.highlights.max} characters (currently ${modChars} chars).`);
         return;
       }
     }
 
-    // 6. Pricing limitations
+    // 7. Pricing limitations
     if (discPrice <= 0) {
       setFormError('Please enter a valid Discount / Offer Fee greater than ₹0.');
       return;
@@ -703,17 +962,24 @@ export default function Admin() {
       return;
     }
 
-    // 7. Seats limitations
+    // 8. Seat Capacity & Booking Consistency (Requirement 7)
     if (seatsTotal <= 0 || seatsTotal > 500) {
       setFormError('Total batch seats must be between 1 and 500.');
       return;
     }
-    if (seatsAvailable < 0 || seatsAvailable > seatsTotal) {
+
+    // Check confirmed bookings when editing to prevent reducing capacity below confirmed seats
+    const currentCourse = courses.find((c) => c.id === editingCourseId);
+    const confirmedBookings = currentCourse?.booked_seats || 0;
+
+    if (modalMode === 'edit' && seatsTotal < confirmedBookings) {
       setFormError(
-        `Available seats (${seatsAvailable}) cannot be negative or exceed total batch seats (${seatsTotal}).`
+        `Total batch seats (${seatsTotal}) cannot be reduced below the ${confirmedBookings} currently confirmed student bookings.`
       );
       return;
     }
+
+    const calculatedAvailableSeats = Math.max(0, seatsTotal - confirmedBookings);
 
     setModalLoading(true);
     setFormError('');
@@ -723,8 +989,8 @@ export default function Admin() {
         ...courseFormData,
         original_price: Number(courseFormData.original_price) || 0,
         discount_price: Number(courseFormData.discount_price) || 0,
-        seats_total: Number(courseFormData.seats_total) || 50,
-        seats_available: Number(courseFormData.seats_available) || 30,
+        seats_total: seatsTotal,
+        seats_available: calculatedAvailableSeats,
         image_url:
           (courseFormData.image_url || '').trim() ||
           (formOfferingType === 'workshop'
@@ -852,24 +1118,34 @@ export default function Admin() {
     calcOrig > 0 && calcDisc < calcOrig ? Math.round(((calcOrig - calcDisc) / calcOrig) * 100) : 0;
 
   // -------------------------------------------------------------
-  // LOGIN SCREEN
+  // MULTI-STEP ADMIN AUTHENTICATION (OTP 2FA & FORGOT PASSWORD)
   // -------------------------------------------------------------
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#F7F2E8] flex flex-col justify-center items-center px-4 py-12 font-['DM_Sans']">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 border border-[#6B4030]/20 shadow-xl space-y-6">
+          {/* Header Brand */}
           <div className="text-center space-y-2">
             <div className="w-16 h-16 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center mx-auto shadow-sm">
-              <Lock className="w-8 h-8" />
+              {authView === 'login' && <Lock className="w-8 h-8" />}
+              {authView === 'verify_otp' && <ShieldCheck className="w-8 h-8 text-[#E5B869]" />}
+              {authView === 'forgot_password' && <Mail className="w-8 h-8 text-[#E5B869]" />}
+              {authView === 'verify_reset_otp' && <KeyRound className="w-8 h-8 text-[#E5B869]" />}
+              {authView === 'new_password' && <KeyRound className="w-8 h-8 text-[#E5B869]" />}
             </div>
             <h1 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">
-              Faculty &amp; Admin Workspace
+              {authView === 'login' && 'Faculty & Admin Workspace'}
+              {authView === 'verify_otp' && 'Two-Factor Verification'}
+              {authView === 'forgot_password' && 'Reset Admin Password'}
+              {authView === 'verify_reset_otp' && 'Verify Password Reset'}
+              {authView === 'new_password' && 'Create New Password'}
             </h1>
             <p className="font-['DM_Sans'] text-xs text-[#6B4030]">
               Global Nagas Institute • Admissions &amp; Offerings Portal
             </p>
           </div>
 
+          {/* Alert Notifications */}
           {loginError && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
@@ -877,74 +1153,323 @@ export default function Admin() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-1">
-              <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                Institutional Email
-              </label>
-              <input
-                type="email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] focus:outline-hidden focus:border-[#B89555]"
-                placeholder="admin@globalnagas.org"
-              />
+          {loginSuccess && (
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{loginSuccess}</span>
             </div>
+          )}
 
-            <div className="space-y-1">
-              <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                Access Security Key / Password
-              </label>
-              <div className="relative">
+          {/* VIEW 1: ADMIN LOGIN FORM */}
+          {authView === 'login' && (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1">
+                <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                  Institutional Administrator Email
+                </label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  type="email"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] focus:outline-hidden focus:border-[#B89555]"
-                  placeholder="••••••••"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                  placeholder="admin@globalnagas.org"
                 />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                    Access Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthView('forgot_password');
+                      setLoginError('');
+                      setLoginSuccess('');
+                    }}
+                    className="text-[11px] font-semibold text-[#B89555] hover:text-[#4A2C20] cursor-pointer transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B4030] hover:text-[#241A16] transition-colors p-1 cursor-pointer focus:outline-hidden"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full py-3 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
+                    <span>Verifying Credentials &amp; Sending OTP...</span>
+                  </>
+                ) : (
+                  <span>Continue to OTP Verification</span>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* VIEW 2: LOGIN OTP VERIFICATION */}
+          {authView === 'verify_otp' && (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div className="text-center space-y-1">
+                <span className="text-[11px] font-medium text-[#6B4030]">
+                  Enter the 6-digit verification code sent to:
+                </span>
+                <p className="font-mono font-bold text-xs text-[#4A2C20]">{maskedEmail}</p>
+              </div>
+
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                  required
+                  autoFocus
+                  placeholder="• • • • • •"
+                  className="w-full text-center tracking-[12px] font-mono text-2xl font-bold py-3 rounded-xl border border-[#B89555] bg-[#FAF7F0] text-[#4A2C20] cursor-text select-text focus:outline-hidden focus:ring-2 focus:ring-[#B89555]/30"
+                />
+                <span className="text-[10px] text-center block text-[#6B4030]/70">
+                  Valid for 10 minutes
+                </span>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading || otpInput.length < 6}
+                className="w-full py-3 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
+                    <span>Verifying Code...</span>
+                  </>
+                ) : (
+                  <span>Verify Code &amp; Access Dashboard</span>
+                )}
+              </button>
+
+              <div className="flex items-center justify-between text-xs pt-1">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B4030] hover:text-[#241A16] transition-colors p-1 cursor-pointer focus:outline-hidden"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  tabIndex={-1}
+                  onClick={handleResendOtp}
+                  disabled={resendCooldown > 0 || loginLoading}
+                  className="text-[#B89555] font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
+                  {resendCooldown > 0 ? `Resend Code in ${resendCooldown}s` : 'Resend Code'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthView('login');
+                    setLoginError('');
+                    setLoginSuccess('');
+                    setOtpInput('');
+                  }}
+                  className="text-[#6B4030] hover:text-[#4A2C20] cursor-pointer"
+                >
+                  Back to Sign In
                 </button>
               </div>
-            </div>
+            </form>
+          )}
 
-            <button
-              type="submit"
-              disabled={loginLoading}
-              className="w-full py-3 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {loginLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
-                  <span>Authenticating...</span>
-                </>
-              ) : (
-                <>
-                  <span>Sign In to Admin Workspace</span>
-                </>
-              )}
-            </button>
-          </form>
+          {/* VIEW 3: FORGOT PASSWORD REQUEST OTP */}
+          {authView === 'forgot_password' && (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="text-left space-y-1">
+                <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                  Registered Admin Email
+                </label>
+                <input
+                  type="email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                  placeholder="admin@globalnagas.org"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                />
+                <span className="text-[10.5px] text-[#6B4030]/80 block">
+                  A password reset authorization code will be dispatched to this email.
+                </span>
+              </div>
 
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full py-3 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
+                    <span>Sending Reset Code...</span>
+                  </>
+                ) : (
+                  <span>Send Password Reset OTP</span>
+                )}
+              </button>
+
+              <div className="text-center pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthView('login');
+                    setLoginError('');
+                    setLoginSuccess('');
+                  }}
+                  className="text-xs text-[#6B4030] hover:text-[#4A2C20] cursor-pointer"
+                >
+                  &larr; Back to Admin Sign In
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* VIEW 4: VERIFY FORGOT PASSWORD RESET OTP */}
+          {authView === 'verify_reset_otp' && (
+            <form onSubmit={handleVerifyResetOtp} className="space-y-4">
+              <div className="text-center space-y-1">
+                <span className="text-[11px] font-medium text-[#6B4030]">
+                  Enter 6-digit password reset code sent to:
+                </span>
+                <p className="font-mono font-bold text-xs text-[#4A2C20]">{maskedEmail}</p>
+              </div>
+
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={resetOtpInput}
+                  onChange={(e) => setResetOtpInput(e.target.value.replace(/\D/g, ''))}
+                  required
+                  autoFocus
+                  placeholder="• • • • • •"
+                  className="w-full text-center tracking-[12px] font-mono text-2xl font-bold py-3 rounded-xl border border-[#B89555] bg-[#FAF7F0] text-[#4A2C20] cursor-text select-text focus:outline-hidden focus:ring-2 focus:ring-[#B89555]/30"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading || resetOtpInput.length < 6}
+                className="w-full py-3 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
+                    <span>Verifying Code...</span>
+                  </>
+                ) : (
+                  <span>Verify &amp; Create New Password</span>
+                )}
+              </button>
+
+              <div className="text-center pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthView('login');
+                    setLoginError('');
+                    setLoginSuccess('');
+                  }}
+                  className="text-xs text-[#6B4030] hover:text-[#4A2C20] cursor-pointer"
+                >
+                  Cancel &amp; Return to Sign In
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* VIEW 5: SET NEW ADMIN PASSWORD */}
+          {authView === 'new_password' && (
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div className="space-y-1 text-left">
+                <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                  New Administrator Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    placeholder="At least 8 chars (letters & numbers)"
+                    className="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B4030] hover:text-[#241A16] p-1 cursor-pointer"
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1 text-left">
+                <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                  Confirm New Password
+                </label>
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  placeholder="Re-enter new password"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full py-3 rounded-xl bg-[#4A2C20] hover:bg-[#6B4030] text-[#F7F2E8] font-['DM_Sans'] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {loginLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
+                    <span>Updating Password...</span>
+                  </>
+                ) : (
+                  <span>Update Password &amp; Proceed to Login</span>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* Footer Back Link */}
           <div className="pt-2 border-t border-[#6B4030]/15 flex items-center justify-between text-xs font-['DM_Sans'] text-[#6B4030]">
-            <Link to="/" className="inline-flex items-center gap-1 hover:text-[#4A2C20]">
+            <Link to="/" className="inline-flex items-center gap-1 hover:text-[#4A2C20] cursor-pointer">
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Public Site</span>
             </Link>
-            <span className="text-[11px] text-[#6B4030]/70">Protected Route</span>
+            <span className="text-[11px] text-[#6B4030]/70 flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>2FA Secured</span>
+            </span>
           </div>
         </div>
       </div>
@@ -955,7 +1480,7 @@ export default function Admin() {
   // AUTHENTICATED DASHBOARD
   // -------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-[#F7F2E8] text-[#241A16] flex flex-col font-['DM_Sans'] select-none [caret-color:transparent] [&_input]:select-text [&_textarea]:select-text [&_input]:caret-[#B89555] [&_textarea]:caret-[#B89555]">
+    <div className="min-h-screen bg-[#F7F2E8] text-[#241A16] flex flex-col font-['DM_Sans']">
       {/* Top Header */}
       <header className="bg-white text-[#241A16] border-b border-[#6B4030]/15 sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
@@ -1106,62 +1631,99 @@ export default function Admin() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-1 w-full space-y-6">
-        {/* KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[#6B4030] text-xs">
-              <span className="font-medium">Total Offerings</span>
-              <Layers className="w-4 h-4 text-[#B89555]" />
+        {/* KPI Summary Cards - Requirement 5 Ordered:
+            1. Registered Students (Visually Prominent)
+            2. Total Offerings
+            3. Workshops & Learning Journeys
+            4. Active Discounts
+        */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          {/* 1. REGISTERED STUDENTS (First & Visually Prominent) */}
+          <div
+            onClick={() => {
+              setActiveTab('registrations');
+              loadRegistrations();
+            }}
+            className="p-4 sm:p-5 rounded-2xl bg-[#4A2C20] text-[#F7F2E8] border-2 border-[#B89555] shadow-md space-y-2 cursor-pointer group hover:bg-[#573527] transition-all relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-[#B89555]/10 rounded-bl-full pointer-events-none" />
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold flex items-center gap-1.5 text-[#E5B869] uppercase tracking-wider text-[11px]">
+                <Users className="w-4 h-4 text-[#E5B869]" />
+                <span>Registered Students</span>
+              </span>
+              <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-[#B89555] text-[#241A16] font-number">
+                Top Metric
+              </span>
             </div>
-            <p className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">
-              {courses.length}
-            </p>
-            <span className="text-[11px] text-emerald-700 font-medium">
-              {courses.filter((c) => c.is_active).length} Active on Website
-            </span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[#6B4030] text-xs">
-              <span className="font-medium">Workshops &amp; Journeys</span>
-              <Hammer className="w-4 h-4 text-amber-600" />
-            </div>
-            <p className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#4A2C20]">
-              {workshopCount + journeyCount}
-            </p>
-            <span className="text-[11px] text-[#6B4030] font-medium">
-              {workshopCount} Workshops • {journeyCount} Journeys
-            </span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-1">
-            <div className="flex items-center justify-between text-[#6B4030] text-xs">
-              <span className="font-medium">Registered Students</span>
-              <Users className="w-4 h-4 text-[#4A2C20]" />
-            </div>
-            <p className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#4A2C20]">
+            <p className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-white tracking-tight">
               {registrations.length}
             </p>
-            <span className="text-[11px] text-[#6B4030] font-medium">
-              Enrolled Applicants
-            </span>
+            <div className="flex items-center justify-between text-[11px] text-[#F7F2E8]/80 pt-1 border-t border-white/10">
+              <span>
+                {registrations.filter((r) => !['Cancelled', 'Rejected'].includes(r.payment_status)).length} Confirmed Seats
+              </span>
+              <span className="text-[#E5B869] font-bold group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-0.5">
+                <span>View Applicants</span>
+                <span>&rarr;</span>
+              </span>
+            </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-1">
+          {/* 2. TOTAL OFFERINGS */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-2">
             <div className="flex items-center justify-between text-[#6B4030] text-xs">
-              <span className="font-medium">Active Discounts</span>
+              <span className="font-semibold uppercase tracking-wider text-[11px]">Total Offerings</span>
+              <Layers className="w-4 h-4 text-[#B89555]" />
+            </div>
+            <p className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#241A16]">
+              {courses.length}
+            </p>
+            <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#6B4030]/10">
+              <span className="text-emerald-700 font-semibold">
+                {courses.filter((c) => c.is_active).length} Active on Website
+              </span>
+              <span className="text-[#6B4030]/70 font-number">
+                {courses.filter((c) => !c.is_active).length} Hidden
+              </span>
+            </div>
+          </div>
+
+          {/* 3. WORKSHOPS & LEARNING JOURNEYS */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between text-[#6B4030] text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[11px]">Workshops &amp; Journeys</span>
+              <Hammer className="w-4 h-4 text-amber-600" />
+            </div>
+            <p className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#4A2C20]">
+              {workshopCount + journeyCount}
+            </p>
+            <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#6B4030]/10 text-[#6B4030]">
+              <span>{workshopCount} Workshops</span>
+              <span>•</span>
+              <span>{journeyCount} Journeys</span>
+            </div>
+          </div>
+
+          {/* 4. ACTIVE DISCOUNTS */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#6B4030]/15 shadow-2xs space-y-2">
+            <div className="flex items-center justify-between text-[#6B4030] text-xs">
+              <span className="font-semibold uppercase tracking-wider text-[11px]">Active Discounts</span>
               <Flame className="w-4 h-4 text-red-600" />
             </div>
-            <p className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-red-700">
+            <p className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-red-700">
               {courses.filter((c) => Number(c.discount_price) < Number(c.original_price)).length}
             </p>
-            <span className="text-[11px] text-emerald-700 font-medium">
-              Special Offers Running
-            </span>
+            <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#6B4030]/10">
+              <span className="text-emerald-700 font-semibold">Special Offers Running</span>
+              <span className="text-[#6B4030]/70 font-number">
+                {courses.filter((c) => Number(c.discount_price) >= Number(c.original_price)).length} Regular
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Top Navigation Tabs */}
+        {/* Top Navigation Tabs & Real-time Live Refetch Controls */}
         <div className="flex items-center justify-between border-b border-[#6B4030]/20 pb-3 flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <button
@@ -1189,25 +1751,40 @@ export default function Admin() {
             </button>
           </div>
 
-          {activeTab === 'courses' && (
+          <div className="flex items-center gap-2.5">
+            {/* Live Data Sync Button */}
             <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              type="button"
+              onClick={handleSyncAllData}
+              disabled={isSyncing}
+              title={`Last synced at ${lastSyncTime}`}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-[#FAF7F0] text-[#4A2C20] border border-[#6B4030]/20 text-xs font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
             >
-              <Menu className="w-3.5 h-3.5 text-[#B89555]" />
-              <span>+ Add Offerings</span>
+              <RefreshCw className={`w-3.5 h-3.5 text-[#B89555] ${isSyncing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">{isSyncing ? 'Syncing...' : 'Sync Data'}</span>
+              <span className="text-[10px] text-[#6B4030]/70 font-normal">({lastSyncTime})</span>
             </button>
-          )}
 
-          {activeTab === 'registrations' && (
-            <button
-              onClick={handleExportCSV}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-[#FAF7F0] text-[#4A2C20] border border-[#6B4030]/20 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5 text-[#B89555]" />
-              <span>Export CSV</span>
-            </button>
-          )}
+            {activeTab === 'courses' && (
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              >
+                <Menu className="w-3.5 h-3.5 text-[#B89555]" />
+                <span>+ Add Offerings</span>
+              </button>
+            )}
+
+            {activeTab === 'registrations' && (
+              <button
+                onClick={handleExportCSV}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-[#FAF7F0] text-[#4A2C20] border border-[#6B4030]/20 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-[#B89555]" />
+                <span>Export CSV</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* TAB 1: OFFERINGS MANAGEMENT */}
@@ -1349,12 +1926,48 @@ export default function Admin() {
                             {course.title}
                           </h3>
 
-                          <div className="flex items-center gap-2 text-[11px] text-[#6B4030] font-number">
-                            <span className="bg-[#FAF7F0] px-2 py-0.5 rounded border border-[#6B4030]/10">
+                          <div className="flex items-center justify-between gap-1.5 pt-0.5 flex-wrap">
+                            <span className="bg-[#FAF7F0] px-2 py-0.5 rounded border border-[#6B4030]/15 text-[11px] font-number text-[#6B4030]">
                               {course.duration}
                             </span>
-                            <span>•</span>
-                            <span>{course.seats_available || 15} seats left</span>
+
+                            {/* Requirement 7: Live Seat Availability Status Badge */}
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold border inline-flex items-center gap-1 ${
+                                course.availability_status === 'Full' || course.seats_available === 0
+                                  ? 'bg-red-50 text-red-800 border-red-200'
+                                  : course.availability_status === 'Almost Full' || (course.seats_available > 0 && course.seats_available <= 5)
+                                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                  : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              }`}
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                              <span>{course.availability_status || (course.seats_available === 0 ? 'Full' : course.seats_available <= 5 ? 'Almost Full' : 'Available')}</span>
+                            </span>
+                          </div>
+
+                          {/* Requirement 7: Total Seats, Booked Seats & Available Seats Breakdown */}
+                          <div className="grid grid-cols-3 gap-1 p-2 rounded-xl bg-[#FAF7F0] border border-[#6B4030]/10 text-center font-number text-[11px] mt-1.5">
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-[#6B4030] block font-sans">Total</span>
+                              <span className="font-bold text-[#4A2C20]">{course.seats_total || 50}</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-[#6B4030] block font-sans">Booked</span>
+                              <span className="font-bold text-[#B89555]">{course.booked_seats || 0}</span>
+                            </div>
+                            <div>
+                              <span className="text-[9px] uppercase tracking-wider text-[#6B4030] block font-sans">Available</span>
+                              <span className={`font-bold ${
+                                (course.seats_available === 0 || course.availability_status === 'Full')
+                                  ? 'text-red-700 font-extrabold'
+                                  : (course.seats_available <= 5 || course.availability_status === 'Almost Full')
+                                  ? 'text-amber-700 font-extrabold'
+                                  : 'text-emerald-700 font-extrabold'
+                              }`}>
+                                {course.seats_available !== undefined ? course.seats_available : Math.max(0, (course.seats_total || 50) - (course.booked_seats || 0))}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1463,57 +2076,113 @@ export default function Admin() {
             </div>
 
             <div className="bg-white rounded-2xl border border-[#6B4030]/15 overflow-hidden shadow-2xs">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#FAF7F0] text-[#4A2C20] border-b border-[#6B4030]/15 uppercase font-bold text-[10px] tracking-wider">
-                    <tr>
-                      <th className="py-3 px-3">Applicant Name</th>
-                      <th className="py-3 px-3">Contact</th>
-                      <th className="py-3 px-3">Location / Profession</th>
-                      <th className="py-3 px-3">Selected Discipline</th>
-                      <th className="py-3 px-3">Payment Reference</th>
-                      <th className="py-3 px-3">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#6B4030]/10">
-                    {filteredRegistrations.map((reg) => (
-                      <tr key={reg.id || Math.random()} className="hover:bg-[#FAF7F0]/50 transition-colors">
-                        <td className="py-3 px-3">
-                          <p className="font-bold text-[#241A16]">{reg.full_name || reg.fullName}</p>
-                          <span className="text-[10px] text-[#6B4030]">
-                            Level: {reg.experience_level || 'Beginner'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3">
-                          <p className="font-medium text-[#241A16]">{reg.email}</p>
-                          <p className="text-[#6B4030] text-[11px] font-number">{reg.full_phone || reg.phone}</p>
-                        </td>
-                        <td className="py-3 px-3">
-                          <p>{reg.location}</p>
-                          <p className="text-[10px] text-[#6B4030]">{reg.profession}</p>
-                        </td>
-                        <td className="py-3 px-3">
-                          <span className="font-bold text-[#B89555] block">
-                            {reg.interested_skill}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3">
-                          {reg.payment_ref ? (
-                            <span className="font-number bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10.5px] font-semibold">
-                              {reg.payment_ref}
-                            </span>
-                          ) : (
-                            <span className="text-[#6B4030]/50 text-[11px]">Pending / Direct</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-3 text-[11px] text-[#6B4030] font-number">
-                          {reg.created_at ? new Date(reg.created_at).toLocaleDateString('en-IN') : 'Recent'}
-                        </td>
+              {regLoading && (
+                <div className="p-4 bg-[#FAF7F0] border-b border-[#6B4030]/10 flex items-center justify-center gap-2 text-xs text-[#6B4030]">
+                  <Loader2 className="w-4 h-4 animate-spin text-[#B89555]" />
+                  <span>Refreshing applications from database...</span>
+                </div>
+              )}
+
+              {filteredRegistrations.length === 0 ? (
+                <div className="p-10 text-center space-y-2">
+                  <Users className="w-10 h-10 text-[#6B4030]/40 mx-auto" />
+                  <p className="font-['Cormorant_Garamond'] text-lg font-bold text-[#241A16]">
+                    No Student Applications Found
+                  </p>
+                  <p className="text-xs text-[#6B4030] max-w-sm mx-auto">
+                    When applicants register on the public website, their submissions sync and appear here automatically in real time.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#FAF7F0] text-[#4A2C20] border-b border-[#6B4030]/15 uppercase font-bold text-[10px] tracking-wider">
+                      <tr>
+                        <th className="py-3 px-3">Applicant &amp; Ref ID</th>
+                        <th className="py-3 px-3">Contact</th>
+                        <th className="py-3 px-3">Location &amp; Profession</th>
+                        <th className="py-3 px-3">Selected Course</th>
+                        <th className="py-3 px-3">Status &amp; Actions</th>
+                        <th className="py-3 px-3 text-right">Date</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#6B4030]/10">
+                      {filteredRegistrations.map((reg) => {
+                        const statusVal = reg.payment_status || 'Pending Offline Payment at Campus';
+                        const isConfirmed = statusVal === 'Confirmed' || statusVal === 'Approved';
+                        const isCancelled = statusVal === 'Cancelled' || statusVal === 'Rejected';
+
+                        return (
+                          <tr key={reg.id || Math.random()} className="hover:bg-[#FAF7F0]/50 transition-colors">
+                            <td className="py-3 px-3">
+                              <p className="font-bold text-[#241A16]">{reg.full_name || reg.fullName}</p>
+                              {reg.application_ref && (
+                                <span className="font-mono text-[10px] text-[#B89555] font-semibold block">
+                                  {reg.application_ref}
+                                </span>
+                              )}
+                              <span className="text-[10px] text-[#6B4030]">
+                                Level: {reg.experience_level || 'Beginner'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3">
+                              <p className="font-medium text-[#241A16]">{reg.email}</p>
+                              <p className="text-[#6B4030] text-[11px] font-number">{reg.full_phone || reg.phone}</p>
+                            </td>
+                            <td className="py-3 px-3">
+                              <p className="font-medium text-[#241A16]">{reg.location}</p>
+                              <p className="text-[10px] text-[#6B4030]">{reg.profession}</p>
+                            </td>
+                            <td className="py-3 px-3">
+                              <span className="font-bold text-[#4A2C20] block">
+                                {reg.interested_skill || reg.course_name}
+                              </span>
+                              {reg.course_duration && (
+                                <span className="text-[10px] text-[#6B4030] font-number block">
+                                  {reg.course_duration}
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-3 px-3">
+                              <div className="flex items-center gap-2">
+                                <select
+                                  value={statusVal}
+                                  onChange={(e) => handleStatusChange(reg.id, e.target.value)}
+                                  className={`text-[11px] font-semibold px-2 py-1 rounded-lg border cursor-pointer focus:outline-hidden ${
+                                    isConfirmed
+                                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                      : isCancelled
+                                      ? 'bg-red-50 text-red-800 border-red-300'
+                                      : 'bg-amber-50 text-amber-800 border-amber-300'
+                                  }`}
+                                >
+                                  <option value="Pending Offline Payment at Campus">Pending Offline</option>
+                                  <option value="Confirmed">Confirmed</option>
+                                  <option value="Approved">Approved</option>
+                                  <option value="Cancelled">Cancelled</option>
+                                  <option value="Rejected">Rejected</option>
+                                </select>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteRegistration(reg.id, reg.full_name || reg.fullName)}
+                                  className="p-1 rounded-md text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
+                                  title="Delete record"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-[11px] text-[#6B4030] font-number text-right">
+                              {reg.created_at ? new Date(reg.created_at).toLocaleDateString('en-IN') : 'Recent'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1615,14 +2284,14 @@ export default function Admin() {
                     </label>
                     <span
                       className={`text-[10px] font-number ${
-                        countWords(courseFormData.title) > 12
+                        countChars(courseFormData.title) > CHAR_LIMITS.title.max
                           ? 'text-red-600 font-bold'
-                          : countWords(courseFormData.title) >= 10
+                          : countChars(courseFormData.title) >= CHAR_LIMITS.title.max - 10
                           ? 'text-amber-700 font-bold'
                           : 'text-[#6B4030]/70'
                       }`}
                     >
-                      {countWords(courseFormData.title)} / 12 words
+                      {countChars(courseFormData.title)} / {CHAR_LIMITS.title.max} characters
                     </span>
                   </div>
                   <input
@@ -1632,7 +2301,7 @@ export default function Admin() {
                     onChange={handleFormChange}
                     placeholder="e.g. Ancient Tamil Art Workshop"
                     required
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-sm text-[#241A16] focus:outline-hidden focus:border-[#B89555]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-sm text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
                   />
                 </div>
 
@@ -1642,12 +2311,12 @@ export default function Admin() {
                       <label className="block font-medium text-[#4A2C20]">Category / Pillar</label>
                       <span
                         className={`text-[10px] font-number ${
-                          countWords(courseFormData.category) > 6
+                          countChars(courseFormData.category) > CHAR_LIMITS.category.max
                             ? 'text-red-600 font-bold'
                             : 'text-[#6B4030]/70'
                         }`}
                       >
-                        {countWords(courseFormData.category)} / 6 words
+                        {countChars(courseFormData.category)} / {CHAR_LIMITS.category.max} characters
                       </span>
                     </div>
                     <input
@@ -1656,7 +2325,7 @@ export default function Admin() {
                       value={courseFormData.category}
                       onChange={handleFormChange}
                       placeholder={formOfferingType === 'workshop' ? 'Workshop' : 'Learning Journey'}
-                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/60 text-xs text-[#241A16]"
+                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/60 text-xs text-[#241A16] cursor-text select-text"
                     />
                   </div>
 
@@ -1665,12 +2334,12 @@ export default function Admin() {
                       <label className="block font-medium text-[#4A2C20]">Banner Badge / Promo Tag</label>
                       <span
                         className={`text-[10px] font-number ${
-                          countWords(courseFormData.badge) > 5
+                          countChars(courseFormData.badge) > CHAR_LIMITS.badge.max
                             ? 'text-red-600 font-bold'
                             : 'text-[#6B4030]/70'
                         }`}
                       >
-                        {countWords(courseFormData.badge)} / 5 words
+                        {countChars(courseFormData.badge)} / {CHAR_LIMITS.badge.max} characters
                       </span>
                     </div>
                     <input
@@ -1679,7 +2348,7 @@ export default function Admin() {
                       value={courseFormData.badge}
                       onChange={handleFormChange}
                       placeholder="e.g. Immersive Masterclass"
-                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16]"
+                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] cursor-text select-text"
                     />
                   </div>
                 </div>
@@ -1692,12 +2361,12 @@ export default function Admin() {
                       </label>
                       <span
                         className={`text-[10px] font-number ${
-                          countWords(courseFormData.duration) > 5
+                          countChars(courseFormData.duration) > CHAR_LIMITS.duration.max
                             ? 'text-red-600 font-bold'
                             : 'text-[#6B4030]/70'
                         }`}
                       >
-                        {countWords(courseFormData.duration)} / 5 words
+                        {countChars(courseFormData.duration)} / {CHAR_LIMITS.duration.max} characters
                       </span>
                     </div>
                     <input
@@ -1706,7 +2375,7 @@ export default function Admin() {
                       value={courseFormData.duration}
                       onChange={handleFormChange}
                       placeholder={formOfferingType === 'workshop' ? '1 Day Pilot Event' : 'e.g. 40 Days'}
-                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16]"
+                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] cursor-text select-text"
                     />
                     {formOfferingType === 'workshop' ? (
                       <p className="text-[10.5px] text-[#6B4030] mt-0.5">
@@ -1732,12 +2401,12 @@ export default function Admin() {
                       <label className="block font-medium text-[#4A2C20]">Learning Mode</label>
                       <span
                         className={`text-[10px] font-number ${
-                          countWords(courseFormData.mode) > 5
+                          countChars(courseFormData.mode) > CHAR_LIMITS.mode.max
                             ? 'text-red-600 font-bold'
                             : 'text-[#6B4030]/70'
                         }`}
                       >
-                        {countWords(courseFormData.mode)} / 5 words
+                        {countChars(courseFormData.mode)} / {CHAR_LIMITS.mode.max} characters
                       </span>
                     </div>
                     <input
@@ -1746,7 +2415,7 @@ export default function Admin() {
                       value={courseFormData.mode}
                       onChange={handleFormChange}
                       placeholder="Studio Hands-on"
-                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16]"
+                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] cursor-text select-text"
                     />
                   </div>
                 </div>
@@ -1828,14 +2497,14 @@ export default function Admin() {
                     </label>
                     <span
                       className={`text-[10px] font-number ${
-                        countWords(courseFormData.description) > 40
+                        countChars(courseFormData.description) > CHAR_LIMITS.description.max
                           ? 'text-red-600 font-bold'
-                          : countWords(courseFormData.description) >= 35
+                          : countChars(courseFormData.description) >= CHAR_LIMITS.description.max - 30
                           ? 'text-amber-700 font-bold'
                           : 'text-[#6B4030]/70'
                       }`}
                     >
-                      {countWords(courseFormData.description)} / 40 words
+                      {countChars(courseFormData.description)} / {CHAR_LIMITS.description.max} characters
                     </span>
                   </div>
                   <textarea
@@ -1843,9 +2512,9 @@ export default function Admin() {
                     value={courseFormData.description}
                     onChange={handleFormChange}
                     rows={2}
-                    placeholder="Short description of the hands-on craft experience (max 40 words)..."
+                    placeholder={`Short description of the hands-on craft experience (${CHAR_LIMITS.description.min}–${CHAR_LIMITS.description.max} characters)...`}
                     required
-                    className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] resize-none"
+                    className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] resize-none cursor-text select-text"
                   />
                 </div>
 
@@ -2005,12 +2674,12 @@ export default function Admin() {
                                 </label>
                                 <span
                                   className={`text-[9.5px] font-number ${
-                                    countWords(phase.title) > 8
+                                    countChars(phase.title) > CHAR_LIMITS.phaseTitle.max
                                       ? 'text-red-600 font-bold'
                                       : 'text-[#6B4030]/70'
                                   }`}
                                 >
-                                  {countWords(phase.title)} / 8 words
+                                  {countChars(phase.title)} / {CHAR_LIMITS.phaseTitle.max} characters
                                 </span>
                               </div>
                               <input
@@ -2019,7 +2688,7 @@ export default function Admin() {
                                 onChange={(e) => handleUpdatePhase(idx, 'title', e.target.value)}
                                 placeholder="e.g. Drawing & Sacred Geometry"
                                 required
-                                className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-xs text-[#241A16] focus:border-[#B89555]"
+                                className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-xs text-[#241A16] cursor-text select-text focus:border-[#B89555]"
                               />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -2030,12 +2699,12 @@ export default function Admin() {
                                   </label>
                                   <span
                                     className={`text-[9.5px] font-number ${
-                                      countWords(phase.details) > 18
+                                      countChars(phase.details) > CHAR_LIMITS.phaseDetails.max
                                         ? 'text-red-600 font-bold'
                                         : 'text-[#6B4030]/70'
                                     }`}
                                   >
-                                    {countWords(phase.details)} / 18 words
+                                    {countChars(phase.details)} / {CHAR_LIMITS.phaseDetails.max} characters
                                   </span>
                                 </div>
                                 <input
@@ -2043,7 +2712,7 @@ export default function Admin() {
                                   value={phase.details}
                                   onChange={(e) => handleUpdatePhase(idx, 'details', e.target.value)}
                                   placeholder="e.g. Line geometry, sacred motifs, ancient grids"
-                                  className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-[11px] text-[#241A16]"
+                                  className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-[11px] text-[#241A16] cursor-text select-text"
                                 />
                               </div>
                               <div className="p-2 sm:p-2.5 rounded-lg bg-[#B89555]/10 border border-[#B89555]/30 space-y-1">
@@ -2057,12 +2726,12 @@ export default function Admin() {
                                   </label>
                                   <span
                                     className={`text-[9.5px] font-number ${
-                                      countWords(phase.outcome) > 18
+                                      countChars(phase.outcome) > CHAR_LIMITS.phaseOutcome.max
                                         ? 'text-red-600 font-bold'
                                         : 'text-[#6B4030]/70'
                                     }`}
                                   >
-                                    {countWords(phase.outcome)} / 18 words
+                                    {countChars(phase.outcome)} / {CHAR_LIMITS.phaseOutcome.max} characters
                                   </span>
                                 </div>
                                 <input
@@ -2070,7 +2739,7 @@ export default function Admin() {
                                   value={phase.outcome}
                                   onChange={(e) => handleUpdatePhase(idx, 'outcome', e.target.value)}
                                   placeholder="e.g. Master Foundational Sacred Proportions"
-                                  className="w-full px-2.5 py-1.5 rounded-md border border-[#B89555]/40 bg-white text-[11px] text-[#241A16] font-medium placeholder-[#6B4030]/40 focus:border-[#B89555] focus:ring-1 focus:ring-[#B89555]/30"
+                                  className="w-full px-2.5 py-1.5 rounded-md border border-[#B89555]/40 bg-white text-[11px] text-[#241A16] font-medium placeholder-[#6B4030]/40 focus:border-[#B89555] focus:ring-1 focus:ring-[#B89555]/30 cursor-text select-text"
                                 />
                                 <p className="text-[9.5px] text-[#6B4030] leading-snug">
                                   💡 Appears in the gold quote box under &ldquo;{phase.title || `Phase ${idx + 1}`}&rdquo; in the Learning Journey section.
@@ -2092,12 +2761,12 @@ export default function Admin() {
                       </label>
                       <span
                         className={`text-[10px] font-number ${
-                          countWords(courseFormData.highlights) > 45
+                          countChars(courseFormData.highlights) > CHAR_LIMITS.highlights.max
                             ? 'text-red-600 font-bold'
                             : 'text-[#6B4030]/70'
                         }`}
                       >
-                        {countWords(courseFormData.highlights)} / 45 words
+                        {countChars(courseFormData.highlights)} / {CHAR_LIMITS.highlights.max} characters
                       </span>
                     </div>
                     <input
@@ -2106,211 +2775,348 @@ export default function Admin() {
                       value={courseFormData.highlights}
                       onChange={handleFormChange}
                       placeholder="Rock Painting; Tamili Writing; Iconography Basics; Copper Plate Inscription"
-                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16]"
+                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] cursor-text select-text"
                     />
                     <p className="text-[10.5px] text-[#6B4030]">
-                      Add up to 6–8 hands-on activities separated by a semicolon (;) (max 45 words).
+                      Add up to 6–8 hands-on activities separated by a semicolon (;) (max {CHAR_LIMITS.highlights.max} characters).
                     </p>
                   </div>
                 )}
 
-                {/* Real Image Uploader with Tabs */}
+                {/* REAL IMAGE UPLOADER & PREVIEW MANAGEMENT (Requirement 3) */}
                 <div className="space-y-2 text-left">
-                  <div className="flex items-center justify-between flex-wrap gap-1">
+                  <div className="flex items-center justify-between">
                     <label className="block font-medium text-[#4A2C20]">Cover Image</label>
-                    <div className="inline-flex p-0.5 rounded-lg bg-[#FAF7F0] border border-[#6B4030]/15 text-[10.5px]">
-                      <button
-                        type="button"
-                        onClick={() => setImageUploadMode('upload')}
-                        className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                          imageUploadMode === 'upload'
-                            ? 'bg-[#4A2C20] text-white shadow-2xs'
-                            : 'text-[#6B4030] hover:text-[#241A16]'
-                        }`}
-                      >
-                        Upload from Device
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setImageUploadMode('presets')}
-                        className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                          imageUploadMode === 'presets'
-                            ? 'bg-[#4A2C20] text-white shadow-2xs'
-                            : 'text-[#6B4030] hover:text-[#241A16]'
-                        }`}
-                      >
-                        Preset Gallery
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setImageUploadMode('url')}
-                        className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
-                          imageUploadMode === 'url'
-                            ? 'bg-[#4A2C20] text-white shadow-2xs'
-                            : 'text-[#6B4030] hover:text-[#241A16]'
-                        }`}
-                      >
-                        Custom URL
-                      </button>
-                    </div>
+                    {courseFormData.image_url && (
+                      <span className="text-[10.5px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold border border-emerald-200">
+                        Image Attached
+                      </span>
+                    )}
                   </div>
 
-                  {/* UPLOAD MODE */}
-                  {imageUploadMode === 'upload' && (
-                    <div>
-                      <label
-                        htmlFor="imageFileInput"
-                        className={`border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
-                          uploadingImage
-                            ? 'border-[#B89555] bg-[#FAF7F0]'
-                            : 'border-[#6B4030]/25 hover:border-[#B89555] hover:bg-[#FAF7F0]/50'
-                        }`}
-                      >
-                        <input
-                          id="imageFileInput"
-                          type="file"
-                          accept="image/png, image/jpeg, image/webp"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                          disabled={uploadingImage}
-                        />
-                        {uploadingImage ? (
-                          <div className="flex flex-col items-center gap-1.5 py-2">
-                            <Loader2 className="w-6 h-6 animate-spin text-[#B89555]" />
-                            <span className="text-xs font-semibold text-[#4A2C20]">
-                              Uploading image to server...
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center gap-1 py-1">
-                            <UploadCloud className="w-6 h-6 text-[#B89555]" />
-                            <span className="text-xs font-semibold text-[#241A16]">
-                              Click to browse photo from your device
-                            </span>
-                            <span className="text-[10px] text-[#6B4030]/70">
-                              Supports JPG, PNG, WEBP (Max 5MB)
-                            </span>
-                          </div>
-                        )}
-                      </label>
-                      {uploadError && (
-                        <p className="text-[11px] text-red-600 mt-1 font-medium">{uploadError}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* PRESETS GALLERY MODE (The pills from your screenshot!) */}
-                  {imageUploadMode === 'presets' && (
-                    <div className="space-y-1.5">
-                      <p className="text-[10.5px] text-[#6B4030]">
-                        Click any curated studio image to set it as cover:
-                      </p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {PRESET_IMAGES.map((img) => (
+                  {!courseFormData.image_url ? (
+                    /* STATE A: NO IMAGE SELECTED -> Show Choose Image / Browse Control */
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between flex-wrap gap-1">
+                        <span className="text-[10.5px] text-[#6B4030]">Choose image source:</span>
+                        <div className="inline-flex p-0.5 rounded-lg bg-[#FAF7F0] border border-[#6B4030]/15 text-[10.5px]">
                           <button
-                            key={img.url}
                             type="button"
-                            onClick={() => setCourseFormData((prev) => ({ ...prev, image_url: img.url }))}
-                            className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer ${
-                              courseFormData.image_url === img.url
-                                ? 'bg-[#4A2C20] text-white border-[#4A2C20] shadow-xs'
-                                : 'bg-[#FAF7F0] text-[#6B4030] border-[#6B4030]/20 hover:bg-[#eedfc8]/40'
+                            onClick={() => setImageUploadMode('upload')}
+                            className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                              imageUploadMode === 'upload'
+                                ? 'bg-[#4A2C20] text-white shadow-2xs'
+                                : 'text-[#6B4030] hover:text-[#241A16]'
                             }`}
                           >
-                            <img
-                              src={img.url}
-                              alt={img.label}
-                              className="w-8 h-8 rounded-lg object-cover shrink-0"
-                            />
-                            <span className="text-[10px] font-medium truncate">{img.label}</span>
+                            Device Browse
                           </button>
-                        ))}
+                          <button
+                            type="button"
+                            onClick={() => setImageUploadMode('presets')}
+                            className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                              imageUploadMode === 'presets'
+                                ? 'bg-[#4A2C20] text-white shadow-2xs'
+                                : 'text-[#6B4030] hover:text-[#241A16]'
+                            }`}
+                          >
+                            Preset Gallery
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setImageUploadMode('url')}
+                            className={`px-2.5 py-1 rounded-md font-semibold transition-all cursor-pointer ${
+                              imageUploadMode === 'url'
+                                ? 'bg-[#4A2C20] text-white shadow-2xs'
+                                : 'text-[#6B4030] hover:text-[#241A16]'
+                            }`}
+                          >
+                            Custom URL
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
 
-                  {/* CUSTOM URL MODE */}
-                  {imageUploadMode === 'url' && (
-                    <div>
-                      <input
-                        type="text"
-                        name="image_url"
-                        value={courseFormData.image_url}
-                        onChange={handleFormChange}
-                        placeholder="/artisan/workshop.jpg or https://..."
-                        className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] focus:outline-hidden focus:border-[#B89555]"
-                      />
-                    </div>
-                  )}
+                      {imageUploadMode === 'upload' && (
+                        <div>
+                          <input
+                            ref={fileInputRef}
+                            id="imageFileInput"
+                            type="file"
+                            accept="image/png, image/jpeg, image/webp"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            disabled={uploadingImage}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingImage}
+                            className={`w-full border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+                              uploadingImage
+                                ? 'border-[#B89555] bg-[#FAF7F0]'
+                                : 'border-[#6B4030]/25 hover:border-[#B89555] hover:bg-[#FAF7F0]/50'
+                            }`}
+                          >
+                            {uploadingImage ? (
+                              <div className="flex flex-col items-center gap-1.5 py-2">
+                                <Loader2 className="w-6 h-6 animate-spin text-[#B89555]" />
+                                <span className="text-xs font-semibold text-[#4A2C20]">
+                                  Uploading image to server...
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center gap-1 py-1">
+                                <div className="w-10 h-10 rounded-full bg-[#B89555]/15 text-[#B89555] flex items-center justify-center mb-1">
+                                  <UploadCloud className="w-5 h-5" />
+                                </div>
+                                <span className="text-xs font-bold text-[#4A2C20]">
+                                  Choose Image / Browse
+                                </span>
+                                <span className="text-[10px] text-[#6B4030]/70">
+                                  Supports JPG, PNG, WEBP (Max 5MB)
+                                </span>
+                              </div>
+                            )}
+                          </button>
+                        </div>
+                      )}
 
-                  {/* LIVE PREVIEW BOX */}
-                  {courseFormData.image_url && (
-                    <div className="p-2.5 rounded-xl bg-[#FAF7F0] border border-[#6B4030]/15 flex items-center justify-between gap-3 mt-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      {imageUploadMode === 'presets' && (
+                        <div className="space-y-1.5">
+                          <p className="text-[10.5px] text-[#6B4030]">
+                            Click any curated studio image to set it as cover:
+                          </p>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {PRESET_IMAGES.map((img) => (
+                              <button
+                                key={img.url}
+                                type="button"
+                                onClick={() => {
+                                  setCourseFormData((prev) => ({ ...prev, image_url: img.url }));
+                                  setUploadError('');
+                                }}
+                                className="p-2 rounded-xl border text-left flex items-center gap-2 transition-all cursor-pointer bg-[#FAF7F0] text-[#6B4030] border-[#6B4030]/20 hover:border-[#B89555] hover:bg-[#FAF7F0]/80"
+                              >
+                                <img
+                                  src={img.url}
+                                  alt={img.label}
+                                  className="w-8 h-8 rounded-lg object-cover shrink-0"
+                                />
+                                <span className="text-[10px] font-medium truncate">{img.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {imageUploadMode === 'url' && (
+                        <div>
+                          <input
+                            type="text"
+                            name="image_url"
+                            value={courseFormData.image_url}
+                            onChange={handleFormChange}
+                            placeholder="/artisan/workshop.jpg or https://..."
+                            className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                          />
+                        </div>
+                      )}
+
+                      {uploadError && (
+                        <p className="text-[11px] text-red-600 mt-1 font-medium flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{uploadError}</span>
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    /* STATE B: IMAGE SELECTED -> Hide Choose Image / Browse, Show Preview with Change Image & Remove Image */
+                    <div className="p-3 rounded-xl bg-[#FAF7F0] border border-[#B89555]/30 space-y-2.5">
+                      <div className="flex items-center gap-3">
                         <img
                           src={courseFormData.image_url}
-                          alt="Preview"
-                          className="w-12 h-12 rounded-lg object-cover shrink-0 border border-[#6B4030]/20 shadow-2xs"
+                          alt="Cover Preview"
+                          className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover shrink-0 border border-[#6B4030]/20 shadow-xs"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = '/artisan/workshop.jpg';
                           }}
                         />
-                        <div className="min-w-0">
-                          <span className="text-[10.5px] font-bold text-[#4A2C20] block">
-                            Active Cover Image:
-                          </span>
-                          <p className="text-[10.5px] text-[#6B4030] font-mono truncate">
-                            {courseFormData.image_url}
-                          </p>
+
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                          <div>
+                            <span className="text-[10px] font-semibold text-[#6B4030] uppercase tracking-wider block">
+                              Active Cover Preview
+                            </span>
+                            <p className="text-[11px] text-[#241A16] font-mono truncate bg-white px-2 py-0.5 rounded border border-[#6B4030]/15" title={courseFormData.image_url}>
+                              {courseFormData.image_url}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <input
+                              ref={changeFileInputRef}
+                              type="file"
+                              accept="image/png, image/jpeg, image/webp"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                              disabled={uploadingImage}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => changeFileInputRef.current?.click()}
+                              disabled={uploadingImage}
+                              className="px-2.5 py-1 rounded-lg bg-[#4A2C20] hover:bg-[#603929] text-[#F7F2E8] text-[10.5px] font-bold transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                            >
+                              {uploadingImage ? (
+                                <Loader2 className="w-3 h-3 animate-spin text-[#B89555]" />
+                              ) : (
+                                <RefreshCw className="w-3 h-3 text-[#B89555]" />
+                              )}
+                              <span>Change Image</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCourseFormData((prev) => ({ ...prev, image_url: '' }));
+                                setUploadError('');
+                              }}
+                              className="px-2.5 py-1 rounded-lg border border-red-300 bg-white hover:bg-red-50 text-red-700 text-[10.5px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3 text-red-600" />
+                              <span>Remove Image</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setCourseFormData((prev) => ({ ...prev, image_url: '' }))}
-                        className="text-[10.5px] font-semibold text-red-600 hover:text-red-800 shrink-0 cursor-pointer"
-                      >
-                        Clear
-                      </button>
+
+                      {uploadError && (
+                        <p className="text-[11px] text-red-600 font-medium flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{uploadError}</span>
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Seats & Active Status */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-1">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="block font-medium text-[#4A2C20]">Total Batch Seats</label>
-                    <span className="text-[10px] text-[#6B4030]/70 font-number">Max 500</span>
-                  </div>
-                  <input
-                    type="number"
-                    name="seats_total"
-                    value={courseFormData.seats_total}
-                    onChange={handleFormChange}
-                    placeholder="50"
-                    min="1"
-                    max="500"
-                    className="w-full px-3 py-1.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] font-number"
-                  />
+              {/* CARD 4: SEATS CAPACITY & BOOKING MANAGEMENT (Requirement 7) */}
+              <div className="p-3.5 rounded-2xl bg-white border border-[#6B4030]/15 space-y-3">
+                <div className="flex items-center justify-between border-b border-[#6B4030]/10 pb-1.5">
+                  <span className="text-xs font-bold text-[#4A2C20] uppercase tracking-wide">
+                    4. Seat Capacity &amp; Booking Management
+                  </span>
+                  <span className="text-[10.5px] text-[#6B4030] font-medium">
+                    Available = Total − Confirmed Bookings
+                  </span>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="block font-medium text-[#4A2C20]">Seats Available</label>
-                    <span className="text-[10px] text-[#6B4030]/70 font-number">≤ Total Seats</span>
-                  </div>
-                  <input
-                    type="number"
-                    name="seats_available"
-                    value={courseFormData.seats_available}
-                    onChange={handleFormChange}
-                    placeholder="30"
-                    min="0"
-                    max="500"
-                    className="w-full px-3 py-1.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] font-number"
-                  />
-                </div>
+
+                {(() => {
+                  const currentCourse = courses.find((c) => c.id === editingCourseId);
+                  const confirmedBookings = currentCourse?.booked_seats || 0;
+                  const totalSeatsVal = Number(courseFormData.seats_total) || 0;
+                  const calculatedAvailable = Math.max(0, totalSeatsVal - confirmedBookings);
+                  const isBelowConfirmed = modalMode === 'edit' && totalSeatsVal < confirmedBookings;
+
+                  return (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                        {/* Total Seats Input */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="block font-medium text-[#4A2C20] text-xs">
+                              Total Batch Seats <span className="text-red-600">*</span>
+                            </label>
+                            <span className="text-[10px] text-[#6B4030]/70 font-number">Max 500</span>
+                          </div>
+                          <input
+                            type="number"
+                            name="seats_total"
+                            value={courseFormData.seats_total}
+                            onChange={(e) => {
+                              const newTotal = parseInt(e.target.value, 10) || 0;
+                              setCourseFormData((prev) => ({
+                                ...prev,
+                                seats_total: e.target.value,
+                                seats_available: Math.max(0, newTotal - confirmedBookings),
+                              }));
+                            }}
+                            placeholder="50"
+                            min={modalMode === 'edit' ? confirmedBookings : 1}
+                            max="500"
+                            required
+                            className={`w-full px-3 py-2 rounded-xl border text-xs text-[#241A16] font-number focus:outline-hidden cursor-text select-text ${
+                              isBelowConfirmed
+                                ? 'border-red-500 bg-red-50 text-red-700'
+                                : 'border-[#6B4030]/20 bg-[#FAF7F0]/40 focus:border-[#B89555]'
+                            }`}
+                          />
+                          {isBelowConfirmed ? (
+                            <p className="text-[10px] text-red-600 font-bold leading-tight">
+                              ⚠️ Cannot reduce below {confirmedBookings} confirmed bookings!
+                            </p>
+                          ) : (
+                            <p className="text-[10px] text-[#6B4030]">
+                              {modalMode === 'edit' && confirmedBookings > 0
+                                ? `Minimum allowed: ${confirmedBookings} seats`
+                                : 'Batch capacity limit'}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Confirmed Bookings (Read-only) */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="block font-medium text-[#4A2C20] text-xs">Confirmed Bookings</label>
+                            <span className="text-[10px] text-[#6B4030]/70">Students</span>
+                          </div>
+                          <div className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/15 bg-[#FAF7F0] text-xs font-number font-bold text-[#4A2C20] flex items-center justify-between">
+                            <span>{confirmedBookings} Booked</span>
+                            <Users className="w-3.5 h-3.5 text-[#B89555]" />
+                          </div>
+                          <p className="text-[10px] text-[#6B4030]">From student applications</p>
+                        </div>
+
+                        {/* Available Seats (Auto-calculated) */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <label className="block font-medium text-[#4A2C20] text-xs">Available Seats</label>
+                            <span className="text-[10px] text-[#6B4030]/70 font-number">Dynamic</span>
+                          </div>
+                          <div
+                            className={`w-full px-3 py-2 rounded-xl border text-xs font-number font-bold flex items-center justify-between ${
+                              calculatedAvailable === 0
+                                ? 'bg-red-50 border-red-300 text-red-700'
+                                : calculatedAvailable <= 5
+                                ? 'bg-amber-50 border-amber-300 text-amber-800'
+                                : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                            }`}
+                          >
+                            <span>{calculatedAvailable} Seats Left</span>
+                            <span
+                              className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
+                                calculatedAvailable === 0
+                                  ? 'bg-red-200 text-red-800'
+                                  : calculatedAvailable <= 5
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'bg-emerald-200 text-emerald-900'
+                              }`}
+                            >
+                              {calculatedAvailable === 0
+                                ? 'Full'
+                                : calculatedAvailable <= 5
+                                ? 'Almost Full'
+                                : 'Available'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#6B4030]">Total ({totalSeatsVal}) − Booked ({confirmedBookings})</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </form>
 
