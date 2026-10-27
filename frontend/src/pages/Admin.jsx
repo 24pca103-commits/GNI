@@ -1125,13 +1125,13 @@ export default function Admin() {
       <div className="min-h-screen bg-[#F7F2E8] flex flex-col justify-center items-center px-4 py-12 font-['DM_Sans']">
         <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 border border-[#6B4030]/20 shadow-xl space-y-6">
           {/* Header Brand */}
-          <div className="text-center space-y-2">
-            <div className="w-16 h-16 rounded-2xl bg-[#4A2C20] text-[#B89555] flex items-center justify-center mx-auto shadow-sm">
-              {authView === 'login' && <Lock className="w-8 h-8" />}
-              {authView === 'verify_otp' && <ShieldCheck className="w-8 h-8 text-[#E5B869]" />}
-              {authView === 'forgot_password' && <Mail className="w-8 h-8 text-[#E5B869]" />}
-              {authView === 'verify_reset_otp' && <KeyRound className="w-8 h-8 text-[#E5B869]" />}
-              {authView === 'new_password' && <KeyRound className="w-8 h-8 text-[#E5B869]" />}
+          <div className="text-center space-y-2.5">
+            <div className="flex items-center justify-center">
+              <img
+                src="/artisan/logo.png"
+                alt="Global Nagas Institute"
+                className="w-16 h-16 object-contain drop-shadow-xs"
+              />
             </div>
             <h1 className="font-['Cormorant_Garamond'] text-2xl sm:text-3xl font-bold text-[#241A16]">
               {authView === 'login' && 'Faculty & Admin Workspace'}
@@ -1173,7 +1173,7 @@ export default function Admin() {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
-                  placeholder="admin@globalnagas.org"
+                  placeholder="kan93095@gmail.com"
                 />
               </div>
 
@@ -1310,7 +1310,7 @@ export default function Admin() {
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
-                  placeholder="admin@globalnagas.org"
+                  placeholder="kan93095@gmail.com"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
                 />
                 <span className="text-[10.5px] text-[#6B4030]/80 block">

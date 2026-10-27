@@ -158,7 +158,7 @@ export async function sendCustomerRegistrationEmail(data) {
  */
 export async function sendAdminRegistrationAlert(data) {
   const transporter = getTransporter();
-  const rawAdminEmail = process.env.ADMIN_EMAIL || '24pca103@anjaconline.org';
+  const rawAdminEmail = process.env.ADMIN_EMAIL || 'kan93095@gmail.com';
   const adminRecipients = rawAdminEmail
     .split(',')
     .map((s) => s.trim())

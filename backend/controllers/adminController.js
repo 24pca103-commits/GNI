@@ -76,7 +76,7 @@ function getStoredAdminCredentials() {
 /**
  * Save updated admin password hash
  */
-function saveAdminPasswordHash(newPassword) {
+function saveAdminPasswordHash(newPassword, adminEmail = 'kan93095@gmail.com') {
   try {
     const salt = crypto.randomBytes(16).toString('hex');
     const passwordHash = crypto
@@ -85,6 +85,7 @@ function saveAdminPasswordHash(newPassword) {
 
     const payload = {
       updatedAt: new Date().toISOString(),
+      adminEmail: adminEmail || 'kan93095@gmail.com',
       salt,
       passwordHash,
     };
@@ -118,14 +119,50 @@ function verifyPassword(inputPassword) {
 }
 
 /**
- * Get registered admin email address
+ * Helper to retrieve all recognized institutional admin emails
  */
-function getAdminEmail() {
-  return (
-    process.env.ADMIN_EMAIL ||
-    process.env.ADMIN_USER ||
-    'admin@globalnagas.org'
-  ).trim();
+export function getAdminEmails() {
+  const emails = new Set();
+
+  const addEmail = (raw) => {
+    if (!raw) return;
+    const items = String(raw).split(/[,;]/);
+    for (const item of items) {
+      const clean = item.replace(/["']/g, '').trim().toLowerCase();
+      if (clean && clean.includes('@')) {
+        emails.add(clean);
+      }
+    }
+  };
+
+  // 1. Explicit admin mail id specified for GNI administration
+  emails.add('kan93095@gmail.com');
+  emails.add('admin@globalnagas.org');
+  emails.add('24pca103@anjaconline.org');
+
+  // 2. From environment variables
+  addEmail(process.env.ADMIN_EMAIL);
+  addEmail(process.env.ADMIN_USER);
+  addEmail(process.env.SMTP_USER);
+
+  // 3. Stored credentials in admin_auth.json
+  const stored = getStoredAdminCredentials();
+  if (stored && stored.adminEmail) {
+    addEmail(stored.adminEmail);
+  }
+
+  return Array.from(emails);
+}
+
+/**
+ * Get registered primary admin email address
+ */
+export function getAdminEmail() {
+  const all = getAdminEmails();
+  if (all.includes('kan93095@gmail.com')) {
+    return 'kan93095@gmail.com';
+  }
+  return all[0] || 'kan93095@gmail.com';
 }
 
 /**
@@ -137,9 +174,6 @@ export const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const ADMIN_USER = (process.env.ADMIN_USER || 'admin@globalnagas.org').trim().toLowerCase();
-    const adminEmail = getAdminEmail();
-
     if (!username || !password) {
       return res.status(400).json({
         success: false,
@@ -148,9 +182,15 @@ export const adminLogin = async (req, res) => {
     }
 
     const inputUser = String(username).trim().toLowerCase();
-    const isUserMatch =
-      inputUser === ADMIN_USER || inputUser === adminEmail.toLowerCase();
+    const validEmails = getAdminEmails();
+    const allowedUsernames = new Set([
+      'admin',
+      'kan93095',
+      (process.env.ADMIN_USER || '').trim().toLowerCase(),
+      ...validEmails,
+    ]);
 
+    const isUserMatch = allowedUsernames.has(inputUser);
     const isPassMatch = verifyPassword(password);
 
     if (!isUserMatch || !isPassMatch) {
@@ -160,6 +200,13 @@ export const adminLogin = async (req, res) => {
       });
     }
 
+    // Determine target email for 2FA OTP:
+    // If the input is a valid admin email, dispatch OTP to that address.
+    // Otherwise, dispatch to the primary admin email (kan93095@gmail.com).
+    const targetEmail = validEmails.includes(inputUser)
+      ? inputUser
+      : getAdminEmail();
+
     // Generate secure 6-digit OTP
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpSessionId = crypto.randomUUID();
@@ -167,7 +214,7 @@ export const adminLogin = async (req, res) => {
 
     // Store hashed OTP
     loginOtpStore.set(otpSessionId, {
-      email: adminEmail,
+      email: targetEmail,
       hashedOtp: hashValue(otp),
       expiresAt,
       attempts: 0,
@@ -176,7 +223,7 @@ export const adminLogin = async (req, res) => {
     });
 
     // Send OTP email
-    sendAdminLoginOtpEmail(adminEmail, otp).catch((err) => {
+    sendAdminLoginOtpEmail(targetEmail, otp).catch((err) => {
       console.error('[AdminAuth] Error dispatching login OTP email:', err.message);
     });
 
@@ -184,8 +231,8 @@ export const adminLogin = async (req, res) => {
       success: true,
       requireOtp: true,
       otpSessionId,
-      maskedEmail: maskEmail(adminEmail),
-      message: `Verification code sent to ${maskEmail(adminEmail)}. Valid for 10 minutes.`,
+      maskedEmail: maskEmail(targetEmail),
+      message: `Verification code sent to ${maskEmail(targetEmail)}. Valid for 10 minutes.`,
     });
   } catch (error) {
     console.error('[AdminLogin] Error:', error);
@@ -358,11 +405,11 @@ export const adminForgotPassword = async (req, res) => {
       });
     }
 
-    const adminEmail = getAdminEmail();
     const inputEmail = String(email).trim().toLowerCase();
+    const validEmails = getAdminEmails();
 
     // Verify email matches registered admin email
-    if (inputEmail !== adminEmail.toLowerCase()) {
+    if (!validEmails.includes(inputEmail)) {
       return res.status(400).json({
         success: false,
         message: 'The email address provided does not match any registered institutional administrator.',
@@ -375,21 +422,21 @@ export const adminForgotPassword = async (req, res) => {
     const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
 
     passwordResetStore.set(resetSessionId, {
-      email: adminEmail,
+      email: inputEmail,
       hashedOtp: hashValue(resetOtp),
       expiresAt,
       attempts: 0,
     });
 
-    sendAdminPasswordResetOtpEmail(adminEmail, resetOtp).catch((err) => {
+    sendAdminPasswordResetOtpEmail(inputEmail, resetOtp).catch((err) => {
       console.error('[AdminAuth] Error sending reset OTP email:', err.message);
     });
 
     return res.status(200).json({
       success: true,
       resetSessionId,
-      maskedEmail: maskEmail(adminEmail),
-      message: `Password reset verification code sent to ${maskEmail(adminEmail)}. Valid for 15 minutes.`,
+      maskedEmail: maskEmail(inputEmail),
+      message: `Password reset verification code sent to ${maskEmail(inputEmail)}. Valid for 15 minutes.`,
     });
   } catch (error) {
     return res.status(500).json({
@@ -524,7 +571,7 @@ export const resetAdminPassword = async (req, res) => {
     }
 
     // Persist new password
-    const saved = saveAdminPasswordHash(newPassword);
+    const saved = saveAdminPasswordHash(newPassword, tokenSession.email || 'kan93095@gmail.com');
 
     // Invalidate reset token immediately
     resetTokenStore.delete(resetToken);
