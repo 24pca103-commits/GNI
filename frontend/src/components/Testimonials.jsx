@@ -116,7 +116,9 @@ export default function Testimonials() {
       } catch (_) {}
 
       if (combinedApproved.length > 0) {
-        const formatted = combinedApproved.map((f, i) => ({
+        // User requirement: newly added feedback appears at the LAST position
+        const sorted = [...combinedApproved].sort((a, b) => Number(a.id || 0) - Number(b.id || 0));
+        const formatted = sorted.map((f) => ({
           name: f.name,
           role: f.role || 'Heritage Creator',
           batch: f.batch || 'Cohort Alumni',
@@ -130,6 +132,14 @@ export default function Testimonials() {
     };
 
     loadApproved();
+
+    window.addEventListener('storage', loadApproved);
+    window.addEventListener('focus', loadApproved);
+
+    return () => {
+      window.removeEventListener('storage', loadApproved);
+      window.removeEventListener('focus', loadApproved);
+    };
   }, []);
 
   const handleInputChange = (e) => {

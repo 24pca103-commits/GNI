@@ -593,8 +593,10 @@ export default function Admin() {
     try {
       const allCourses = await fetchAllCourses();
       if (allCourses && allCourses.length > 0) {
-        setCourses(allCourses);
-        localStorage.setItem('gni_custom_courses', JSON.stringify(allCourses));
+        // Ensure chronological order so existing canonical offerings are first and new additions are at the end
+        const sortedCourses = [...allCourses].sort((a, b) => Number(a.id) - Number(b.id));
+        setCourses(sortedCourses);
+        localStorage.setItem('gni_custom_courses', JSON.stringify(sortedCourses));
       }
       const statsData = await fetchAdminStats();
       if (statsData) setStats(statsData);
@@ -1193,7 +1195,8 @@ export default function Admin() {
       if (modalMode === 'create') {
         const res = await createCourse(finalPayload);
         const created = res.data || { ...finalPayload, id: Date.now() };
-        const updated = [created, ...courses];
+        // User requirement: any newly added offering from admin MUST appear at the LAST position
+        const updated = [...courses, created];
         setCourses(updated);
         localStorage.setItem('gni_custom_courses', JSON.stringify(updated));
         window.dispatchEvent(new Event('storage'));

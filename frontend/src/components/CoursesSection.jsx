@@ -102,7 +102,9 @@ export default function CoursesSection() {
       try {
         const liveCourses = await fetchActiveCourses();
         if (isMounted && liveCourses && liveCourses.length > 0) {
-          setCourses(liveCourses);
+          // User requirement: newly added courses appear at the LAST position
+          const sorted = [...liveCourses].sort((a, b) => Number(a.id) - Number(b.id));
+          setCourses(sorted);
         }
       } catch (err) {
         console.warn('Using default courses list:', err);
@@ -110,9 +112,16 @@ export default function CoursesSection() {
         if (isMounted) setLoading(false);
       }
     };
+
     loadCourses();
+
+    window.addEventListener('storage', loadCourses);
+    window.addEventListener('focus', loadCourses);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('storage', loadCourses);
+      window.removeEventListener('focus', loadCourses);
     };
   }, []);
 

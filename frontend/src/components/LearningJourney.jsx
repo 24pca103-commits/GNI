@@ -395,7 +395,24 @@ export default function LearningJourney() {
         if (isMounted && liveOfferings && liveOfferings.length > 0) {
           const filtered = liveOfferings.filter(isJourneyOffering);
           if (filtered.length > 0) {
-            setJourneys(filtered.map(mapCourseToJourney));
+            // User requirement: newly added cohorts from admin MUST appear at the LAST position
+            const sorted = [...filtered].sort((a, b) => {
+              const aIsDefault =
+                a.id === 201 || (a.slug && a.slug.includes('60-day'))
+                  ? 1
+                  : a.id === 202 || (a.slug && a.slug.includes('30-day'))
+                  ? 2
+                  : 3;
+              const bIsDefault =
+                b.id === 201 || (b.slug && b.slug.includes('60-day'))
+                  ? 1
+                  : b.id === 202 || (b.slug && b.slug.includes('30-day'))
+                  ? 2
+                  : 3;
+              if (aIsDefault !== bIsDefault) return aIsDefault - bIsDefault;
+              return Number(a.id) - Number(b.id);
+            });
+            setJourneys(sorted.map(mapCourseToJourney));
           }
         }
       } catch (err) {

@@ -151,7 +151,7 @@ export const getActiveCourses = async (req, res) => {
 export const getAllCourses = async (req, res) => {
   try {
     const pool = getPool();
-    const [rows] = await pool.query('SELECT * FROM `courses` ORDER BY `id` DESC');
+    const [rows] = await pool.query('SELECT * FROM `courses` ORDER BY `id` ASC');
 
     const baseList = rows && rows.length > 0 ? rows : memoryCourses;
     const enriched = await enrichCoursesWithSeatMetrics(pool, baseList);
@@ -358,7 +358,8 @@ export const createCourse = async (req, res) => {
         offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
       };
-      memoryCourses.unshift(newCourse);
+      // Append newly added offering at the end
+      memoryCourses.push(newCourse);
 
       return res.status(201).json({
         success: true,

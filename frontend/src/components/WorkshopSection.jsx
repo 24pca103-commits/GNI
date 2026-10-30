@@ -483,7 +483,17 @@ export default function WorkshopSection() {
         if (isMounted && liveOfferings && liveOfferings.length > 0) {
           const filtered = liveOfferings.filter(isWorkshopOffering);
           if (filtered.length > 0) {
-            setWorkshops(filtered.map(mapCourseToWorkshop));
+            // User requirement: newly added workshops from admin MUST appear at the LAST position
+            const CANONICAL_IDS = [102, 101, 103, 104];
+            const sorted = [...filtered].sort((a, b) => {
+              const aIndex = CANONICAL_IDS.indexOf(Number(a.id));
+              const bIndex = CANONICAL_IDS.indexOf(Number(b.id));
+              const aRank = aIndex !== -1 ? aIndex : 999;
+              const bRank = bIndex !== -1 ? bIndex : 999;
+              if (aRank !== bRank) return aRank - bRank;
+              return Number(a.id) - Number(b.id);
+            });
+            setWorkshops(sorted.map(mapCourseToWorkshop));
           }
         }
       } catch (err) {

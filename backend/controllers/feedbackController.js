@@ -9,7 +9,7 @@ export const getPublicFeedbacks = async (req, res) => {
     const pool = getPool();
     if (pool) {
       const [rows] = await pool.query(
-        'SELECT * FROM `feedbacks` WHERE `status` = "approved" ORDER BY `id` DESC'
+        'SELECT * FROM `feedbacks` WHERE `status` = "approved" ORDER BY `id` ASC'
       );
       if (rows && rows.length > 0) {
         return res.json({ success: true, data: rows });
@@ -74,7 +74,7 @@ export const submitFeedback = async (req, res) => {
       newFeedback.id = Date.now();
     }
 
-    memoryFeedbacks.unshift(newFeedback);
+    memoryFeedbacks.push(newFeedback);
 
     return res.status(201).json({
       success: true,
