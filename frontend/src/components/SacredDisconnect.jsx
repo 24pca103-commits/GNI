@@ -14,6 +14,8 @@ export default function SacredDisconnect() {
               <img
                 src="/artisan/reconnect-bg-banner.png"
                 alt="Heritage Temple, Manuscripts & Gold Jewellery Drawing"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover sm:object-contain object-center sm:object-right opacity-85 md:opacity-90 mix-blend-multiply scale-110 sm:scale-95"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#FAF6EE]/80 via-[#FAF6EE]/30 to-[#FAF6EE]/45 sm:from-[#FAF6EE]/75 sm:via-[#FAF6EE]/25 sm:to-[#FAF6EE]/55" />

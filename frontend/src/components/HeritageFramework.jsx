@@ -1,10 +1,78 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Bookmark, ArrowRight } from 'lucide-react';
 import Reveal from './Reveal';
+import { fetchPillars } from '../services/api';
+
+const DEFAULT_PILLARS = [
+  {
+    number: '1',
+    title: 'Painting & Natural Mineral Pigments',
+    category: 'Art & Heritage',
+    badge: 'Core Studio Track',
+    image: '/artisan/pillar-painting.jpg',
+    description:
+      'Prehistoric rock painting, temple murals, sketching, and sacred deity iconography.',
+    subjects: 'Rock art, temple murals, sketching & iconography',
+    tags: ['Rock Painting', 'Temple Murals', 'Sketching', 'Iconography'],
+  },
+  {
+    number: '2',
+    title: 'Libi – Language, Scripts & Epigraphy',
+    category: 'Language & Epigraphy',
+    badge: 'Archival Epigraphy Track',
+    image: '/artisan/pillar-epigraphy.jpg',
+    description:
+      'Tamili Brahmi script deciphering, copper plate engraving, and stone inscription reading.',
+    subjects: 'Tamili script, copper plates & stone inscriptions',
+    tags: ['Tamili Script', 'Copper Plates', 'Stone Inscriptions'],
+  },
+  {
+    number: '3',
+    title: 'Sculpturing & Sacred Nagas Metal Art',
+    category: 'Sculpturing & Metal Art',
+    badge: 'Work Integrated Guild',
+    image: '/artisan/pillar-metal.jpg',
+    description:
+      'Handmade naga jewellery, copper/brass repousse, and sacred metal casting traditions.',
+    subjects: 'Naga jewellery, repousse & metal casting',
+    tags: ['Naga Jewellery', 'Copper/Brass', 'Metal Casting'],
+  },
+  {
+    number: '4',
+    title: 'Heritage Applications & Interior Crafts',
+    category: 'Design & Livelihood',
+    badge: 'Industry Incubation Track',
+    image: '/artisan/pillar-applications.jpg',
+    description:
+      'Blouse design, pooja room sanctums, jewellery motifs, and sacred architectural elements.',
+    subjects: 'Pooja interiors, blouse motifs & heritage decor',
+    tags: ['Pooja Interiors', 'Jewellery Motifs', 'Heritage Décor'],
+  },
+];
 
 export default function HeritageFramework() {
   const [activeDot, setActiveDot] = useState(0);
+  const [pillars, setPillars] = useState(DEFAULT_PILLARS);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchPillars()
+      .then((data) => {
+        if (isMounted && data && Array.isArray(data) && data.length > 0) {
+          const activeOnly = data.filter((p) => p.is_active !== false && p.is_active !== 0);
+          if (activeOnly.length > 0) {
+            setPillars(activeOnly);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('[HeritageFramework] Using fallback pillars:', err.message);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleScroll = (e) => {
     const el = e.currentTarget;
@@ -27,56 +95,21 @@ export default function HeritageFramework() {
     });
     setActiveDot(index);
   };
-  const pillars = [
-    {
-      number: '1',
-      title: 'Painting & Natural Mineral Pigments',
-      category: 'Art & Heritage',
-      badge: 'Core Studio Track',
-      image: '/artisan/pillar-painting.jpg',
-      description:
-        'Prehistoric rock painting, temple murals, sketching, and sacred deity iconography.',
-      subjects: 'Rock art, temple murals, sketching & iconography',
-      tags: ['Rock Painting', 'Temple Murals', 'Sketching', 'Iconography'],
-    },
-    {
-      number: '2',
-      title: 'Libi – Language, Scripts & Epigraphy',
-      category: 'Language & Epigraphy',
-      badge: 'Archival Epigraphy Track',
-      image: '/artisan/pillar-epigraphy.jpg',
-      description:
-        'Tamili Brahmi script deciphering, copper plate engraving, and stone inscription reading.',
-      subjects: 'Tamili script, copper plates & stone inscriptions',
-      tags: ['Tamili Script', 'Copper Plates', 'Stone Inscriptions'],
-    },
-    {
-      number: '3',
-      title: 'Sculpturing & Sacred Nagas Metal Art',
-      category: 'Sculpturing & Metal Art',
-      badge: 'Work Integrated Guild',
-      image: '/artisan/pillar-metal.jpg',
-      description:
-        'Handmade naga jewellery, copper/brass repousse, and sacred metal casting traditions.',
-      subjects: 'Naga jewellery, repousse & metal casting',
-      tags: ['Naga Jewellery', 'Copper/Brass', 'Metal Casting'],
-    },
-    {
-      number: '4',
-      title: 'Heritage Applications & Interior Crafts',
-      category: 'Design & Livelihood',
-      badge: 'Industry Incubation Track',
-      image: '/artisan/pillar-applications.jpg',
-      description:
-        'Blouse design, pooja room sanctums, jewellery motifs, and sacred architectural elements.',
-      subjects: 'Pooja interiors, blouse motifs & heritage decor',
-      tags: ['Pooja Interiors', 'Jewellery Motifs', 'Heritage Décor'],
-    },
-  ];
 
   const handleStaticClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
+    const workshopEl = document.querySelector('#workshop') || document.querySelector('#learning-journey');
+    if (workshopEl) {
+      workshopEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Helper for medium grid column layout depending on pillar count
+  const getGridColsClass = (count) => {
+    if (count <= 2) return 'sm:grid-cols-2 max-w-2xl mx-auto';
+    if (count === 3) return 'sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto';
+    return 'sm:grid-cols-2 lg:grid-cols-4';
   };
 
   return (
@@ -87,7 +120,7 @@ export default function HeritageFramework() {
           <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#4A2C20]/10 border border-[#6B4030]/20 text-[#6B4030] text-xs font-['DM_Sans'] font-medium mb-2.5">
               <Bookmark className="w-3.5 h-3.5 text-[#B89555]" />
-              <span>4 Heritage Skill Pillars • Premium + Structured</span>
+              <span>{pillars.length} Heritage Skill Pillars • Premium + Structured</span>
             </span>
             <h2 className="font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] tracking-tight leading-normal pb-1">
               <span className="block sm:inline">Programs Tailored to</span>{' '}
@@ -111,22 +144,24 @@ export default function HeritageFramework() {
           </div>
         </Reveal>
 
-        {/* 4 Cards Grid - Sliding on Mobile with Strictly Uniform Dimensions */}
+        {/* Medium-Sized Cards Grid - 4 Columns on Desktop / 2 on Tablet / Swipable on Mobile */}
         <Reveal direction="up" delay={150}>
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 md:gap-8 lg:gap-10 items-stretch"
+            className={`flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid ${getGridColsClass(
+              pillars.length
+            )} sm:gap-5 lg:gap-6 items-stretch`}
           >
             {pillars.map((pillar) => {
               return (
                 <div
                   key={pillar.number}
-                  className="w-[86vw] max-w-[340px] md:w-auto md:max-w-none shrink-0 snap-center flex flex-col h-full"
+                  className="w-[76vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col h-full"
                 >
-                  <div className="bg-white rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_18px_40px_-8px_rgba(74,44,32,0.16)] hover:shadow-[0_28px_55px_-10px_rgba(74,44,32,0.26)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
-                    {/* Card Featured Image - Fixed Proportions */}
-                    <div className="relative h-52 sm:h-64 overflow-hidden bg-[#241A16] shrink-0">
+                  <div className="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_12px_30px_-6px_rgba(74,44,32,0.12)] hover:shadow-[0_20px_45px_-8px_rgba(74,44,32,0.22)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
+                    {/* Card Featured Image - Proportional Medium Height */}
+                    <div className="relative h-40 sm:h-44 overflow-hidden bg-[#241A16] shrink-0">
                       <img
                         src={pillar.image}
                         alt={pillar.title}
@@ -136,61 +171,62 @@ export default function HeritageFramework() {
                       />
 
                       {/* Category Pill with Bookmark Icon */}
-                      <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#241A16]/90 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-xs font-['DM_Sans'] font-medium flex items-center gap-1 sm:gap-1.5 shadow-sm z-10">
+                      <div className="absolute top-2.5 left-2.5 bg-[#241A16]/90 px-2.5 py-0.5 rounded-full border border-[#B89555]/30 text-[#B89555] text-[10px] sm:text-[11px] font-['DM_Sans'] font-medium flex items-center gap-1 shadow-sm z-10">
                         <Bookmark className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#B89555]" />
                         <span>{pillar.badge}</span>
                       </div>
 
-                      {/* Bottom Dark Panel for Title - Sleek & Uniform Height */}
-                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/95 px-3 py-2 sm:px-4 sm:py-2.5 text-[#F7F2E8] z-10 border-t border-[#B89555]/20 min-h-[58px] sm:min-h-[64px] flex flex-col justify-center">
-                        <p className="font-['DM_Sans'] text-[9px] sm:text-[11px] text-[#B89555] font-medium leading-none mb-1">
+                      {/* Bottom Dark Panel for Title - Compact & Sleek */}
+                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/95 px-3 py-2 text-[#F7F2E8] z-10 border-t border-[#B89555]/20 min-h-[50px] sm:min-h-[54px] flex flex-col justify-center">
+                        <p className="font-['DM_Sans'] text-[9px] sm:text-[10px] text-[#B89555] font-medium leading-none mb-1">
                           {pillar.category}
                         </p>
-                        <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-lg lg:text-xl font-bold text-white tracking-tight leading-tight line-clamp-1">
+                        <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-base font-bold text-white tracking-tight leading-snug break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                           {pillar.title}
                         </h3>
                       </div>
                     </div>
 
-                    {/* Card Content Body - Uniform Flex Distribution */}
-                    <div className="p-4 sm:p-6 flex flex-col justify-between flex-1 space-y-3 sm:space-y-4 text-left">
-                      <p className="font-['DM_Sans'] text-xs sm:text-sm text-[#241A16]/85 leading-relaxed font-normal min-h-[44px] sm:min-h-[48px] line-clamp-2">
+                    {/* Card Content Body - Medium Compact Proportions */}
+                    <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 space-y-2.5 sm:space-y-3 text-left min-w-0">
+                      <p className="font-['DM_Sans'] text-[11.5px] sm:text-xs text-[#241A16]/85 leading-relaxed font-normal min-h-[34px] sm:min-h-[36px] break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                         {pillar.description}
                       </p>
 
-                      {/* Subject Curriculum Overview - Uniform Height */}
-                      <div className="p-2.5 sm:p-3 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-0.5 sm:space-y-1 min-h-[68px] sm:min-h-[72px] flex flex-col justify-center">
-                        <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
+                      {/* Subject Curriculum Overview - Compact */}
+                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-0.5 min-h-[54px] sm:min-h-[58px] flex flex-col justify-center min-w-0">
+                        <span className="text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
                           Modules &amp; Practicals:
                         </span>
-                        <p className="text-[11.5px] sm:text-xs font-['DM_Sans'] text-[#241A16]/80 leading-snug line-clamp-2">
+                        <p className="text-[11px] sm:text-[11.5px] font-['DM_Sans'] text-[#241A16]/80 leading-snug break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                           {pillar.subjects}
                         </p>
                       </div>
 
-                      {/* Tags - Uniform Height & Alignment */}
-                      <div className="min-h-[58px] sm:min-h-[62px] flex flex-wrap content-start items-center gap-1.5 pt-0.5">
-                        {pillar.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-md text-[10px] sm:text-xs font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                      {/* Tags - Medium Compact */}
+                      <div className="min-h-[40px] sm:min-h-[44px] flex flex-wrap content-start items-center gap-1 sm:gap-1.5 pt-0.5">
+                        {Array.isArray(pillar.tags) &&
+                          pillar.tags.map((tag, tagIdx) => (
+                            <span
+                              key={`${pillar.number || pillar.id || 'p'}-tag-${tagIdx}`}
+                              className="px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20 break-words [overflow-wrap:anywhere] max-w-full"
+                            >
+                              {tag}
+                            </span>
+                          ))}
                       </div>
 
                       {/* Know More Pill Button - Pinned to bottom */}
-                      <div className="pt-2.5 sm:pt-4 border-t border-[#6B4030]/15 flex items-center justify-between mt-auto">
-                        <span className="text-[10.5px] sm:text-xs font-['DM_Sans'] font-semibold text-[#6B4030]">
+                      <div className="pt-2.5 border-t border-[#6B4030]/15 flex items-center justify-between mt-auto">
+                        <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030]">
                           Cohort Track
                         </span>
                         <button
                           onClick={handleStaticClick}
-                          className="inline-flex items-center gap-1 sm:gap-2 px-3 py-1 sm:px-5 sm:py-2 rounded-full font-['DM_Sans'] text-[10.5px] sm:text-xs font-semibold text-[#241A16] border border-[#6B4030]/30 hover:border-[#B89555] hover:bg-[#B89555] transition-all cursor-pointer group/btn"
+                          className="inline-flex items-center gap-1 sm:gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full font-['DM_Sans'] text-[10px] sm:text-[11px] font-semibold text-[#241A16] border border-[#6B4030]/30 hover:border-[#B89555] hover:bg-[#B89555] transition-all cursor-pointer group/btn"
                         >
                           <span>Know More</span>
-                          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#241A16] group-hover/btn:translate-x-1 transition-transform" />
+                          <ArrowRight className="w-3 h-3 text-[#241A16] group-hover/btn:translate-x-1 transition-transform" />
                         </button>
                       </div>
                     </div>

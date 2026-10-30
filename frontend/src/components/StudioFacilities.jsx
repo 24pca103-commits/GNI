@@ -368,13 +368,13 @@ export default function StudioFacilities() {
         {/* Auto-Scrolling & Manual Drag/Swipe Icon Carousel with Slider Controls */}
         <Reveal direction="up" delay={150}>
           <div className="relative mb-4 sm:mb-8 max-w-4xl mx-auto py-2 flex items-center">
-            {/* Left Prev Slider Button */}
+            {/* Left Prev Slider Button - Centered exactly with the round facility icons */}
             <button
               type="button"
               onClick={handlePrev}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute left-0 sm:-left-3 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              className="absolute left-0 sm:-left-3 top-[46px] sm:top-[54px] -translate-y-1/2 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
               aria-label="Previous facility"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -395,7 +395,7 @@ export default function StudioFacilities() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-start gap-3 sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-8 sm:px-12 cursor-grab active:cursor-grabbing select-none w-full"
+              className="flex items-start gap-3 sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-8 sm:px-12 select-none w-full"
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
@@ -406,7 +406,7 @@ export default function StudioFacilities() {
                     key={`${fac.id}-${idx}`}
                     data-facility-id={fac.id}
                     onClick={(e) => handleItemClick(e, idx, fac.id)}
-                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[125px] min-w-[125px] sm:w-[150px] sm:min-w-[150px] py-1"
+                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[110px] min-w-[110px] sm:w-[130px] sm:min-w-[130px] py-1"
                   >
                     {/* Round Shape Icon Container */}
                     <div
@@ -443,13 +443,13 @@ export default function StudioFacilities() {
               })}
             </div>
 
-            {/* Right Next Slider Button */}
+            {/* Right Next Slider Button - Centered exactly with the round facility icons */}
             <button
               type="button"
               onClick={handleNext}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute right-0 sm:-right-3 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              className="absolute right-0 sm:-right-3 top-[46px] sm:top-[54px] -translate-y-1/2 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
               aria-label="Next facility"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />

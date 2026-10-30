@@ -1,11 +1,6 @@
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { getPool } from '../config/mysql.js';
 
 const router = express.Router();
 
@@ -15,21 +10,16 @@ const MIME_MAP = {
   'image/jpg': 'jpg',
   'image/png': 'png',
   'image/webp': 'webp',
+  'image/gif': 'gif',
 };
 
-// Target upload directories
-const backendUploadDir = path.resolve(__dirname, '../uploads');
-const frontendUploadDir = path.resolve(__dirname, '../../frontend/public/uploads');
+// In-memory fallback cache (used if MySQL connection is briefly interrupted)
+const memoryUploadedImages = new Map();
 
-// Ensure upload directories exist
-[backendUploadDir, frontendUploadDir].forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    try {
-      fs.mkdirSync(dir, { recursive: true });
-    } catch (_) {}
-  }
-});
-
+/**
+ * POST /api/upload
+ * Stores image directly in the MySQL database (LONGBLOB) - ZERO files written to frontend code
+ */
 router.post('/', async (req, res) => {
   try {
     const { image, filename: clientFilename } = req.body;
@@ -53,14 +43,7 @@ router.post('/', async (req, res) => {
     const mimeType = match[1].toLowerCase();
     const base64Data = match[2];
 
-    const ext = MIME_MAP[mimeType];
-    if (!ext) {
-      return res.status(400).json({
-        success: false,
-        message: 'Unsupported image type. Only PNG, JPG, and WEBP are allowed.',
-      });
-    }
-
+    const ext = MIME_MAP[mimeType] || 'jpg';
     const buffer = Buffer.from(base64Data, 'base64');
 
     // Max 5MB file size limit
@@ -76,33 +59,95 @@ router.post('/', async (req, res) => {
     const uniqueId = crypto.randomBytes(6).toString('hex');
     const safeFilename = `offering-${Date.now()}-${uniqueId}.${ext}`;
 
-    // Write to backend uploads directory
-    fs.writeFileSync(path.join(backendUploadDir, safeFilename), buffer);
+    let storedId = null;
 
-    // Also write to frontend public uploads directory for instant dev availability
-    if (fs.existsSync(path.dirname(frontendUploadDir))) {
-      if (!fs.existsSync(frontendUploadDir)) {
-        fs.mkdirSync(frontendUploadDir, { recursive: true });
-      }
-      fs.writeFileSync(path.join(frontendUploadDir, safeFilename), buffer);
+    // 1. Store directly in MySQL database
+    try {
+      const pool = getPool();
+      const [result] = await pool.query(
+        'INSERT INTO `uploaded_images` (`filename`, `mime_type`, `data`, `size`) VALUES (?, ?, ?, ?)',
+        [safeFilename, mimeType, buffer, buffer.length]
+      );
+      storedId = result.insertId;
+      console.log(`[Upload] Image saved to MySQL database (ID: ${storedId}, size: ${buffer.length} bytes, no files written to code)`);
+    } catch (dbErr) {
+      console.warn('[Upload] MySQL image insert error, using in-memory store:', dbErr.message);
     }
 
-    const publicUrl = `/uploads/${safeFilename}`;
+    // 2. Keep in memory cache for instant fallback
+    const key = storedId ? String(storedId) : `mem-${Date.now()}-${uniqueId}`;
+    memoryUploadedImages.set(key, {
+      filename: safeFilename,
+      mimeType,
+      data: buffer,
+      size: buffer.length,
+    });
+    memoryUploadedImages.set(safeFilename, {
+      filename: safeFilename,
+      mimeType,
+      data: buffer,
+      size: buffer.length,
+    });
+
+    // Public URL streams directly from database
+    const publicUrl = `/api/upload/${storedId || key}`;
 
     return res.status(200).json({
       success: true,
-      message: 'Image uploaded successfully',
+      message: 'Image stored in database successfully',
       url: publicUrl,
       size: buffer.length,
       mimeType,
     });
   } catch (error) {
-    console.error('[Upload] Error processing image:', error);
+    console.error('[Upload] Error storing image in database:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to process and save uploaded image.',
+      message: 'Failed to process and store image in database.',
       error: error.message,
     });
+  }
+});
+
+/**
+ * GET /api/upload/:id
+ * Streams image binary directly from MySQL database to client with aggressive caching
+ */
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // 1. Try MySQL database lookup
+    try {
+      const pool = getPool();
+      const isNumeric = /^\d+$/.test(id);
+      const query = isNumeric
+        ? 'SELECT `mime_type`, `data` FROM `uploaded_images` WHERE `id` = ? LIMIT 1'
+        : 'SELECT `mime_type`, `data` FROM `uploaded_images` WHERE `filename` = ? LIMIT 1';
+
+      const [rows] = await pool.query(query, [isNumeric ? Number(id) : id]);
+      if (rows && rows.length > 0) {
+        const item = rows[0];
+        res.setHeader('Content-Type', item.mime_type || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        return res.send(item.data);
+      }
+    } catch (dbErr) {
+      console.warn('[Upload] DB read error, checking memory cache:', dbErr.message);
+    }
+
+    // 2. Try in-memory fallback lookup
+    if (memoryUploadedImages.has(id)) {
+      const item = memoryUploadedImages.get(id);
+      res.setHeader('Content-Type', item.mimeType || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return res.send(item.data);
+    }
+
+    return res.status(404).json({ success: false, message: 'Image not found in database' });
+  } catch (err) {
+    console.error('[Upload] Error retrieving image from database:', err);
+    return res.status(500).json({ success: false, message: 'Server error retrieving image' });
   }
 });
 

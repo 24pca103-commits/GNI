@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Compass,
   Hammer,
@@ -154,6 +155,7 @@ export default function WhyJoinUs() {
                           src={item.image}
                           alt={item.title}
                           loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                         <div className="absolute inset-0 bg-[#241A16]/25 group-hover:bg-[#241A16]/15 transition-colors" />
@@ -239,13 +241,14 @@ export default function WhyJoinUs() {
                 Limited cohort size: 25 participants per batch to guarantee personal master artisan attention.
               </p>
             </div>
-            <a
-              href="#register"
-              className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-['DM_Sans'] font-semibold text-xs text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-sm shrink-0 self-stretch sm:self-auto justify-center"
+            <Link
+              to="/register?course=60-Day%20Heritage%20Creator%20Journey&duration=60%20Days"
+              onClick={() => window.scrollTo(0, 0)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-['DM_Sans'] font-semibold text-xs text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-sm shrink-0 self-stretch sm:self-auto justify-center cursor-pointer"
             >
               <span>Enroll In Next Cohort</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#B89555]" />
-            </a>
+            </Link>
           </div>
         </Reveal>
       </div>

@@ -1,18 +1,57 @@
+import { DEFAULT_PILLARS } from '../data/pillarData';
+import { DEFAULT_COURSES } from '../data/coursesData';
+
 const getApiBaseUrl = () => {
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL;
   }
   if (typeof window !== 'undefined') {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:5000/api';
-    }
-    // In production on Hostinger or custom domain
+    // Relative '/api' routes via Vite dev proxy on port 5173 or directly on port 5000/production
     return '/api';
   }
-  return 'https://api.globalnagasinstitute.in/api';
+  return 'https://api.globalnagasinstitute.com/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
+
+// Safe fetch with built-in timeout to prevent browser network timeouts / unresponsiveness
+async function fetchWithTimeout(url, options = {}, timeoutMs = 4000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return res;
+  } catch (e) {
+    clearTimeout(id);
+    throw e;
+  }
+}
+
+/**
+ * Check Real-time Registration Status & Eligibility for Email and/or Phone
+ */
+export const checkRegistrationEligibility = async ({ email = '', phone = '', courseName = '' } = {}) => {
+  try {
+    const params = new URLSearchParams();
+    if (email) params.append('email', email);
+    if (phone) params.append('phone', phone);
+    if (courseName) params.append('courseName', courseName);
+
+    const response = await fetchWithTimeout(`${API_BASE_URL}/check-registration?${params.toString()}`, {}, 3500);
+    if (!response.ok) {
+      return { success: true, eligible: true };
+    }
+    return await response.json();
+  } catch (err) {
+    console.warn('[checkRegistrationEligibility] Fallback / timeout:', err.message);
+    return { success: true, eligible: true };
+  }
+};
+
+export const checkEmailEligibility = async (email, courseName = '') => {
+  return checkRegistrationEligibility({ email, courseName });
+};
 
 /**
  * Register a new user at Global Nagas Institute
@@ -50,7 +89,7 @@ export const registerUser = async (userData) => {
  */
 export const fetchActiveCourses = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/courses`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/courses`, {}, 4000);
     if (!response.ok) throw new Error('Failed to fetch courses');
     const data = await response.json();
     return data.data || [];
@@ -59,12 +98,13 @@ export const fetchActiveCourses = async () => {
     const local = localStorage.getItem('gni_custom_courses');
     if (local) {
       try {
-        return JSON.parse(local).filter((c) => c.is_active);
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.filter((c) => c.is_active);
       } catch (e) {
         // fallback
       }
     }
-    return null;
+    return DEFAULT_COURSES.filter((c) => c.is_active);
   }
 };
 
@@ -107,7 +147,7 @@ export const calculateCourseFee = async (courseName, duration) => {
  */
 export const fetchAllCourses = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/courses/all`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/courses/all`, {}, 4000);
     if (!response.ok) throw new Error('Failed to fetch all courses');
     const data = await response.json();
     return data.data || [];
@@ -116,12 +156,13 @@ export const fetchAllCourses = async () => {
     const local = localStorage.getItem('gni_custom_courses');
     if (local) {
       try {
-        return JSON.parse(local);
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {
         // fallback
       }
     }
-    return null;
+    return DEFAULT_COURSES;
   }
 };
 
@@ -187,7 +228,7 @@ export const fetchAdminRegistrations = async (search = '', skill = '') => {
     const q = new URLSearchParams();
     if (search) q.append('search', search);
     if (skill) q.append('skill', skill);
-    const response = await fetch(`${API_BASE_URL}/admin/registrations?${q.toString()}`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/admin/registrations?${q.toString()}`, {}, 4000);
     if (!response.ok) throw new Error('Failed to fetch registrations');
     const data = await response.json();
     return data.data || [];
@@ -202,7 +243,7 @@ export const fetchAdminRegistrations = async (search = '', skill = '') => {
  */
 export const fetchAdminStats = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/admin/stats`);
+    const response = await fetchWithTimeout(`${API_BASE_URL}/admin/stats`, {}, 4000);
     if (!response.ok) throw new Error('Failed to fetch stats');
     const data = await response.json();
     return data.data || { totalRegistrations: 0, totalCourses: 4, activeOffers: 4 };
@@ -325,14 +366,21 @@ export const deleteRegistration = async (id) => {
  * Upload an offering image file to the server
  */
 export const uploadOfferingImage = async (base64Image, filename = 'image.jpg') => {
-  const response = await fetch(`${API_BASE_URL}/upload`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ image: base64Image, filename }),
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.message || 'Image upload failed');
-  return data;
+  try {
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64Image, filename }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.url) return data;
+    }
+  } catch (err) {
+    console.warn('[uploadOfferingImage] Server upload endpoint unavailable, using base64 directly:', err.message);
+  }
+  // Safe client fallback: return the base64 data URL directly so image is never lost
+  return { success: true, url: base64Image };
 };
 
 /**
@@ -363,7 +411,151 @@ export const notifyCourseStudents = async (courseId, payload) => {
   return data;
 };
 
+/**
+ * Public & Admin: Fetch all Heritage Skill Pillars
+ */
+export const fetchPillars = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/pillars`, {}, 4000);
+    if (!response.ok) {
+      console.warn(`[API] /pillars returned status ${response.status}, using default pillars.`);
+      const local = localStorage.getItem('gni_custom_pillars');
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (_) {}
+      }
+      return DEFAULT_PILLARS;
+    }
+    const data = await response.json();
+    return data.data && data.data.length > 0 ? data.data : DEFAULT_PILLARS;
+  } catch (err) {
+    console.warn('[API] Pillars fetch fallback:', err.message);
+    const local = localStorage.getItem('gni_custom_pillars');
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (_) {}
+    }
+    return DEFAULT_PILLARS;
+  }
+};
+
+/**
+ * Admin: Create a new Heritage Skill Pillar
+ */
+export const createPillar = async (pillarData) => {
+  const response = await fetch(`${API_BASE_URL}/pillars`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(pillarData),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to create pillar');
+  return data;
+};
+
+/**
+ * Admin: Update an existing Heritage Skill Pillar
+ */
+export const updatePillar = async (id, pillarData) => {
+  const response = await fetch(`${API_BASE_URL}/pillars/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(pillarData),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to update pillar');
+  return data;
+};
+
+/**
+ * Admin: Delete a Heritage Skill Pillar
+ */
+export const deletePillar = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/pillars/${id}`, {
+    method: 'DELETE',
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to delete pillar');
+  return data;
+};
+
+/**
+ * Public: Fetch approved feedbacks for user page
+ */
+export const fetchPublicFeedbacks = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/feedbacks`, {}, 3000);
+    if (!response.ok) throw new Error('Failed to fetch feedbacks');
+    const data = await response.json();
+    return data.data || [];
+  } catch (err) {
+    console.warn('[API] Feedbacks fetch warning:', err.message);
+    return [];
+  }
+};
+
+/**
+ * Public: Submit user review / feedback
+ */
+export const submitFeedback = async (payload) => {
+  const response = await fetch(`${API_BASE_URL}/feedbacks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to submit feedback');
+  return data;
+};
+
+/**
+ * Admin: Fetch all feedbacks (approved, pending, rejected)
+ */
+export const fetchAdminFeedbacks = async () => {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/feedbacks/admin`, {}, 4000);
+    if (!response.ok) throw new Error('Failed to fetch admin feedbacks');
+    const data = await response.json();
+    return data.data || [];
+  } catch (err) {
+    console.warn('[API] Admin feedbacks fetch error:', err.message);
+    return [];
+  }
+};
+
+/**
+ * Admin: Update feedback status ('approved' | 'rejected' | 'pending')
+ */
+export const updateFeedbackStatus = async (id, status) => {
+  const response = await fetch(`${API_BASE_URL}/feedbacks/${id}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to update feedback status');
+  return data;
+};
+
+/**
+ * Admin: Delete a feedback entry
+ */
+export const deleteFeedback = async (id) => {
+  const response = await fetch(`${API_BASE_URL}/feedbacks/${id}`, {
+    method: 'DELETE',
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Failed to delete feedback');
+  return data;
+};
+
 export default {
+  checkRegistrationEligibility,
+  checkEmailEligibility,
   registerUser,
   resendConfirmationEmail,
   fetchActiveCourses,
@@ -374,6 +566,15 @@ export default {
   updateCourse,
   toggleCourseStatus,
   deleteCourse,
+  fetchPillars,
+  createPillar,
+  updatePillar,
+  deletePillar,
+  fetchPublicFeedbacks,
+  submitFeedback,
+  fetchAdminFeedbacks,
+  updateFeedbackStatus,
+  deleteFeedback,
   fetchAdminRegistrations,
   updateRegistrationStatus,
   deleteRegistration,

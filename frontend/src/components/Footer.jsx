@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUp, MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   const sections = [
@@ -21,10 +21,6 @@ export default function Footer() {
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
 
@@ -79,8 +75,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Campus Address & Contact Info (3 cols) */}
-          <div className="md:col-span-3 space-y-2.5">
+          {/* Campus Address & Contact Info (4 cols) */}
+          <div className="md:col-span-4 space-y-2.5">
             <h4 className="font-['DM_Sans'] text-xs font-bold text-[#4A2C20]">
               Campus Address &amp; Contact
             </h4>
@@ -106,17 +102,6 @@ export default function Footer() {
                 <span>info@artisancoach.org</span>
               </a>
             </div>
-          </div>
-
-          {/* Back to top (1 col) */}
-          <div className="md:col-span-1 flex justify-end">
-            <button
-              onClick={scrollToTop}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white hover:bg-[#4A2C20] text-[#6B4030] hover:text-[#B89555] border border-[#6B4030]/20 shadow-xs transition-all duration-200 flex items-center justify-center cursor-pointer"
-              aria-label="Back to top"
-            >
-              <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
           </div>
         </div>
 

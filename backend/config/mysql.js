@@ -1,22 +1,44 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import { DEFAULT_COURSES } from '../models/defaultCourses.js';
+import { DEFAULT_PILLARS } from '../models/defaultPillars.js';
+import { DEFAULT_FEEDBACKS } from '../models/defaultFeedbacks.js';
 
 dotenv.config();
 
-// MySQL Configuration
-const dbConfig = process.env.DATABASE_URL || process.env.DB_URL
-  ? process.env.DATABASE_URL || process.env.DB_URL
-  : {
-      host: process.env.DB_HOST || '127.0.0.1',
-      port: Number(process.env.DB_PORT) || 3306,
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'gni_institute',
+// MySQL Configuration with connection timeout to prevent hanging requests
+const rawDbConfig = process.env.DATABASE_URL || process.env.DB_URL;
+let dbConfig;
+if (rawDbConfig) {
+  try {
+    const u = new URL(rawDbConfig);
+    dbConfig = {
+      host: u.hostname,
+      port: Number(u.port) || 3306,
+      user: decodeURIComponent(u.username),
+      password: decodeURIComponent(u.password),
+      database: u.pathname.replace(/^\//, ''),
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      connectTimeout: 4000,
     };
+  } catch (_) {
+    dbConfig = rawDbConfig;
+  }
+} else {
+  dbConfig = {
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'gni_institute',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    connectTimeout: 4000,
+  };
+}
 
 let pool = null;
 
@@ -25,7 +47,7 @@ export const initMySQL = async () => {
     CREATE TABLE IF NOT EXISTS \`registrations\` (
       \`id\` INT AUTO_INCREMENT PRIMARY KEY,
       \`full_name\` VARCHAR(255) NOT NULL,
-      \`email\` VARCHAR(255) NOT NULL UNIQUE,
+      \`email\` VARCHAR(255) NOT NULL,
       \`phone\` VARCHAR(50) NOT NULL,
       \`country\` VARCHAR(100) DEFAULT NULL,
       \`country_code\` VARCHAR(10) DEFAULT NULL,
@@ -66,6 +88,8 @@ export const initMySQL = async () => {
       \`image_url\` VARCHAR(500) DEFAULT '/artisan/workshop.jpg',
       \`seats_total\` INT DEFAULT 50,
       \`seats_available\` INT DEFAULT 18,
+      \`pillar_id\` INT DEFAULT NULL,
+      \`pillar_title\` VARCHAR(255) DEFAULT NULL,
       \`is_active\` TINYINT(1) DEFAULT 1,
       \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -73,6 +97,115 @@ export const initMySQL = async () => {
       INDEX \`idx_active\` (\`is_active\`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `;
+
+  const createPillarsTableQuery = `
+    CREATE TABLE IF NOT EXISTS \`pillars\` (
+      \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+      \`number\` VARCHAR(10) NOT NULL,
+      \`title\` VARCHAR(255) NOT NULL,
+      \`category\` VARCHAR(150) NOT NULL,
+      \`badge\` VARCHAR(100) DEFAULT 'Core Studio Track',
+      \`image\` VARCHAR(500) DEFAULT '/artisan/pillar-painting.jpg',
+      \`description\` TEXT NOT NULL,
+      \`subjects\` VARCHAR(255) DEFAULT NULL,
+      \`tags\` TEXT DEFAULT NULL,
+      \`is_active\` TINYINT(1) DEFAULT 1,
+      \`display_order\` INT DEFAULT 0,
+      \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX \`idx_order\` (\`display_order\`),
+      INDEX \`idx_active\` (\`is_active\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  // Direct Database Storage for Uploaded Images (Zero file modification to frontend codebase)
+  const createUploadedImagesTableQuery = `
+    CREATE TABLE IF NOT EXISTS \`uploaded_images\` (
+      \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+      \`filename\` VARCHAR(255) NOT NULL,
+      \`mime_type\` VARCHAR(100) NOT NULL,
+      \`data\` LONGBLOB NOT NULL,
+      \`size\` INT NOT NULL,
+      \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX \`idx_filename\` (\`filename\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  const createFeedbacksTableQuery = `
+    CREATE TABLE IF NOT EXISTS \`feedbacks\` (
+      \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+      \`name\` VARCHAR(150) NOT NULL,
+      \`role\` VARCHAR(150) DEFAULT NULL,
+      \`batch\` VARCHAR(150) DEFAULT NULL,
+      \`location\` VARCHAR(100) DEFAULT NULL,
+      \`review\` TEXT NOT NULL,
+      \`rating\` INT DEFAULT 5,
+      \`status\` ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+      \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX \`idx_status\` (\`status\`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
+
+  const seedFeedbacksIfEmpty = async (p) => {
+    try {
+      const [rows] = await p.query('SELECT COUNT(*) as cnt FROM `feedbacks`');
+      if (rows && rows[0]?.cnt === 0) {
+        console.log('[MySQL] Seeding default student feedbacks into feedbacks table...');
+        for (const fb of DEFAULT_FEEDBACKS) {
+          await p.query(
+            `INSERT INTO \`feedbacks\` (
+              \`name\`, \`role\`, \`batch\`, \`location\`, \`review\`, \`rating\`, \`status\`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+              fb.name,
+              fb.role,
+              fb.batch,
+              fb.location,
+              fb.review,
+              fb.rating || 5,
+              fb.status || 'approved',
+            ]
+          );
+        }
+        console.log('[MySQL] Seeded default feedbacks successfully.');
+      }
+    } catch (seedErr) {
+      console.warn('[MySQL] Feedback seeding skipped:', seedErr.message);
+    }
+  };
+
+  const seedPillarsIfEmpty = async (p) => {
+    try {
+      const [rows] = await p.query('SELECT COUNT(*) as cnt FROM `pillars`');
+      if (rows && rows[0]?.cnt === 0) {
+        console.log('[MySQL] Seeding default pillars into pillars table...');
+        for (const pl of DEFAULT_PILLARS) {
+          await p.query(
+            `INSERT INTO \`pillars\` (
+              \`number\`, \`title\`, \`category\`, \`badge\`, \`image\`,
+              \`description\`, \`subjects\`, \`tags\`, \`is_active\`, \`display_order\`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              pl.number,
+              pl.title,
+              pl.category,
+              pl.badge,
+              pl.image,
+              pl.description,
+              pl.subjects,
+              JSON.stringify(pl.tags),
+              pl.is_active,
+              pl.display_order,
+            ]
+          );
+        }
+        console.log('[MySQL] Seeded default heritage pillars successfully.');
+      }
+    } catch (seedErr) {
+      console.warn('[MySQL] Pillar seeding skipped:', seedErr.message);
+    }
+  };
 
   const seedCoursesIfEmpty = async (p) => {
     try {
@@ -82,15 +215,17 @@ export const initMySQL = async () => {
         for (const c of DEFAULT_COURSES) {
           await p.query(
             `INSERT INTO \`courses\` (
-              \`title\`, \`slug\`, \`category\`, \`badge\`, \`duration\`, \`mode\`,
+              \`title\`, \`slug\`, \`category\`, \`pillar_id\`, \`pillar_title\`, \`badge\`, \`duration\`, \`mode\`,
               \`original_price\`, \`discount_price\`, \`discount_percent\`,
               \`description\`, \`highlights\`, \`image_url\`, \`seats_total\`,
               \`seats_available\`, \`is_active\`
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               c.title,
               c.slug,
               c.category,
+              c.pillar_id || null,
+              c.pillar_title || null,
               c.badge,
               c.duration,
               c.mode,
@@ -113,25 +248,60 @@ export const initMySQL = async () => {
     }
   };
 
-  const ensureRegistrationColumns = async (p) => {
-    const columns = [
+  const ensureColumns = async (p) => {
+    const regCols = [
       '`course_duration` VARCHAR(100) DEFAULT NULL',
       '`course_fee` DECIMAL(10,2) DEFAULT NULL',
       '`total_amount` DECIMAL(10,2) DEFAULT NULL',
       '`application_ref` VARCHAR(100) DEFAULT NULL',
       '`payment_status` VARCHAR(100) DEFAULT \'Pending Verification\'',
       '`payment_ref` VARCHAR(150) DEFAULT NULL',
+      '`state` VARCHAR(150) DEFAULT NULL',
+      '`city` VARCHAR(150) DEFAULT NULL',
     ];
-    for (const col of columns) {
+    for (const col of regCols) {
       try {
         await p.query(`ALTER TABLE \`registrations\` ADD COLUMN ${col}`);
-      } catch (colErr) {
-        // Error 1060 (ER_DUP_FIELDNAME) means column already exists - ignore safely
-        if (colErr.errno !== 1060 && colErr.code !== 'ER_DUP_FIELDNAME') {
-          // Ignore other non-critical alter warnings
-        }
-      }
+      } catch (_) {}
     }
+
+    // Allow users to register for multiple different courses using the same email
+    // Drop standalone UNIQUE constraint on email if present
+    try {
+      await p.query('ALTER TABLE `registrations` DROP INDEX `email`');
+    } catch (_) {}
+    try {
+      await p.query('ALTER TABLE `registrations` DROP INDEX `idx_email`');
+    } catch (_) {}
+    try {
+      await p.query('ALTER TABLE `registrations` ADD INDEX `idx_email` (`email`)');
+    } catch (_) {}
+    try {
+      await p.query('ALTER TABLE `registrations` ADD UNIQUE KEY `uniq_email_course` (`email`, `interested_skill`)');
+    } catch (_) {}
+
+    const courseCols = [
+      '`pillar_id` INT DEFAULT NULL',
+      '`pillar_title` VARCHAR(255) DEFAULT NULL',
+    ];
+    for (const col of courseCols) {
+      try {
+        await p.query(`ALTER TABLE \`courses\` ADD COLUMN ${col}`);
+      } catch (_) {}
+    }
+
+    // Ensure image_url can hold database URLs or base64 without size limits
+    try {
+      await p.query('ALTER TABLE `courses` MODIFY COLUMN `image_url` LONGTEXT');
+    } catch (_) {}
+
+    // Backfill pillar associations for any existing courses with NULL pillar_id
+    try {
+      await p.query(`UPDATE \`courses\` SET \`pillar_id\` = 4, \`pillar_title\` = 'Heritage Applications & Interior Crafts' WHERE \`pillar_id\` IS NULL AND LOWER(\`title\`) LIKE '%ancient tamil%'`);
+      await p.query(`UPDATE \`courses\` SET \`pillar_id\` = 3, \`pillar_title\` = 'Sculpturing & Sacred Nagas Metal Art' WHERE \`pillar_id\` IS NULL AND (LOWER(\`title\`) LIKE '%metal%' OR LOWER(\`title\`) LIKE '%jeweller%' OR LOWER(\`title\`) LIKE '%sculptur%')`);
+      await p.query(`UPDATE \`courses\` SET \`pillar_id\` = 2, \`pillar_title\` = 'Libi – Language, Scripts & Epigraphy' WHERE \`pillar_id\` IS NULL AND (LOWER(\`title\`) LIKE '%epigraph%' OR LOWER(\`title\`) LIKE '%libi%' OR LOWER(\`title\`) LIKE '%script%')`);
+      await p.query(`UPDATE \`courses\` SET \`pillar_id\` = 1, \`pillar_title\` = 'Painting & Natural Mineral Pigments' WHERE \`pillar_id\` IS NULL`);
+    } catch (_) {}
   };
 
   try {
@@ -142,14 +312,19 @@ export const initMySQL = async () => {
     console.log(`[MySQL] Connected to database ${dbTarget}`);
     connection.release();
 
-    // 2. Ensure registrations and courses tables exist
+    // 2. Ensure registrations, courses, pillars, uploaded_images, and feedbacks tables exist
     await pool.query(createRegistrationsTableQuery);
-    await ensureRegistrationColumns(pool);
     await pool.query(createCoursesTableQuery);
-    console.log(`[MySQL] Verified 'registrations' and 'courses' tables structure.`);
+    await pool.query(createPillarsTableQuery);
+    await pool.query(createUploadedImagesTableQuery);
+    await pool.query(createFeedbacksTableQuery);
+    await ensureColumns(pool);
+    console.log(`[MySQL] Verified 'registrations', 'courses', 'pillars', 'uploaded_images', and 'feedbacks' tables structure.`);
 
-    // 3. Seed default courses if empty
+    // 3. Seed default courses, pillars, and feedbacks if empty
     await seedCoursesIfEmpty(pool);
+    await seedPillarsIfEmpty(pool);
+    await seedFeedbacksIfEmpty(pool);
 
     return pool;
   } catch (error) {

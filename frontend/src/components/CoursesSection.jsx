@@ -11,6 +11,7 @@ import {
   Flame,
 } from 'lucide-react';
 import Reveal from './Reveal';
+import GniLoader from './GniLoader';
 import { fetchActiveCourses } from '../services/api';
 
 // Fallback initial heritage courses in case API is offline
@@ -110,17 +111,8 @@ export default function CoursesSection() {
       }
     };
     loadCourses();
-
-    // Listen for storage changes if updated in admin tab
-    const handleStorageChange = (e) => {
-      if (e.key === 'gni_custom_courses') {
-        loadCourses();
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
     return () => {
       isMounted = false;
-      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -169,9 +161,14 @@ export default function CoursesSection() {
           </div>
         </Reveal>
 
-        {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
-          {filteredCourses.map((course, idx) => {
+        {/* Courses Grid or GNI Loader */}
+        {loading ? (
+          <div className="py-16 flex flex-col items-center justify-center">
+            <GniLoader size="md" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
+            {filteredCourses.map((course, idx) => {
             const origPrice = Number(course.original_price) || 0;
             const discPrice = Number(course.discount_price) || 0;
             const discPercent =
@@ -190,6 +187,8 @@ export default function CoursesSection() {
                     <img
                       src={course.image_url || '/artisan/workshop.jpg'}
                       alt={course.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => {
                         e.target.onerror = null;
@@ -226,30 +225,30 @@ export default function CoursesSection() {
                   </div>
 
                   {/* Course Body Content */}
-                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-                    <div className="space-y-2">
+                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4 min-w-0">
+                    <div className="space-y-2 min-w-0">
                       <span className="text-[11px] font-['DM_Sans'] font-bold uppercase tracking-wider text-[#B89555] block">
                         {course.category}
                       </span>
-                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] group-hover:text-[#4A2C20] transition-colors leading-tight min-h-[52px] flex items-center">
+                      <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] group-hover:text-[#4A2C20] transition-colors leading-tight min-h-[52px] flex items-center break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                         {course.title}
                       </h3>
-                      <p className="font-['DM_Sans'] text-xs text-[#241A16]/75 leading-relaxed line-clamp-2 min-h-[36px]">
+                      <p className="font-['DM_Sans'] text-xs text-[#241A16]/75 leading-relaxed break-words [overflow-wrap:anywhere] min-w-0 max-w-full min-h-[36px]">
                         {course.description}
                       </p>
                     </div>
 
                     {/* Highlights list - Uniform Height */}
-                    <div className="space-y-1.5 pt-1 border-t border-[#6B4030]/10 min-h-[82px] flex flex-col justify-center">
+                    <div className="space-y-1.5 pt-1 border-t border-[#6B4030]/10 min-h-[82px] flex flex-col justify-center min-w-0">
                       <span className="text-[11px] font-['DM_Sans'] font-bold text-[#4A2C20] block">
                         Key Takeaways &amp; Skills:
                       </span>
                       {highlightList.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11.5px] font-['DM_Sans'] text-[#6B4030]">
                           {highlightList.slice(0, 4).map((h, hIdx) => (
-                            <div key={hIdx} className="flex items-start gap-1.5">
+                            <div key={hIdx} className="flex items-start gap-1.5 min-w-0">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                              <span className="line-clamp-1">{h}</span>
+                              <span className="break-words [overflow-wrap:anywhere] min-w-0 max-w-full">{h}</span>
                             </div>
                           ))}
                         </div>
@@ -305,7 +304,8 @@ export default function CoursesSection() {
                         </span>
                       ) : (
                         <Link
-                          to={`/register?skill=${encodeURIComponent(course.title)}`}
+                          to={`/register?course=${encodeURIComponent(course.title)}&duration=${encodeURIComponent(course.duration || '60 Days')}`}
+                          onClick={() => window.scrollTo(0, 0)}
                           className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all border border-[#B89555] cursor-pointer shrink-0"
                         >
                           <span>Enroll Now</span>
@@ -319,6 +319,7 @@ export default function CoursesSection() {
             );
           })}
         </div>
+        )}
 
         {/* Bottom Banner */}
         <div className="mt-8 sm:mt-12 p-4 sm:p-5 rounded-2xl bg-[#4A2C20] text-[#F7F2E8] border border-[#B89555]/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
@@ -332,6 +333,7 @@ export default function CoursesSection() {
           </div>
           <Link
             to="/register"
+            onClick={() => window.scrollTo(0, 0)}
             className="px-5 py-2.5 rounded-xl bg-[#B89555] hover:bg-[#c8a565] text-[#241A16] text-xs font-['DM_Sans'] font-semibold shadow-xs shrink-0 transition-colors"
           >
             Apply for Custom Cohort

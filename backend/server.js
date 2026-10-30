@@ -5,12 +5,14 @@ import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import { initMySQL } from './config/mysql.js';
+import { initMySQL, getPool } from './config/mysql.js';
 import registrationRoutes from './routes/registrationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import pillarRoutes from './routes/pillarRoutes.js';
+import feedbackRoutes from './routes/feedbackRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -88,10 +90,28 @@ app.use(
   })
 );
 
-// Dedicated upload route with 10MB limit for image uploads
+// Dedicated upload route with 10MB limit for image uploads (stored in database)
 app.use('/api/upload', express.json({ limit: '10mb' }), uploadRoutes);
 
-// Static file serving for uploaded images
+// Support legacy /uploads/:filename requests by serving from database or disk
+app.get('/uploads/:filename', async (req, res, next) => {
+  const { filename } = req.params;
+  try {
+    const pool = getPool();
+    const [rows] = await pool.query(
+      'SELECT `mime_type`, `data` FROM `uploaded_images` WHERE `filename` = ? LIMIT 1',
+      [filename]
+    );
+    if (rows && rows.length > 0) {
+      res.setHeader('Content-Type', rows[0].mime_type || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return res.send(rows[0].data);
+    }
+  } catch (_) {}
+  next();
+});
+
+// Static file serving fallback for uploads
 const uploadsDir = path.resolve(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -115,6 +135,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api', registrationRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/pillars', pillarRoutes);
+app.use('/pillars', pillarRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Serve frontend static build (Production)

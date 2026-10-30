@@ -41,6 +41,10 @@ import {
   CheckSquare,
   XCircle,
   ImagePlus,
+  Star,
+  MessageSquareQuote,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
 import {
   fetchAllCourses,
@@ -59,6 +63,9 @@ import {
   verifyAdminResetOtp,
   resetAdminPassword,
   uploadOfferingImage,
+  fetchAdminFeedbacks,
+  updateFeedbackStatus,
+  deleteFeedback,
 } from '../services/api';
 
 // Initial preset studio images for quick selection
@@ -214,6 +221,51 @@ export function parsePhasesFromHighlights(highlights, courseTitle = '') {
       outcome: `Master ${title} with authentic hands-on execution.`,
     };
   });
+}
+
+// Helper to parse workshop practical stages & modules from highlights (JSON or delimited string)
+export function parseWorkshopStagesFromHighlights(highlights) {
+  if (!highlights) return [];
+  if (typeof highlights === 'string' && (highlights.trim().startsWith('[') || highlights.trim().startsWith('{'))) {
+    try {
+      const parsed = JSON.parse(highlights);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((item, idx) => ({
+          step: item.step || String(idx + 1).padStart(2, '0'),
+          day: item.day || item.period || `Day ${String(idx + 1).padStart(2, '0')}`,
+          title: item.title || item.name || '',
+          desc: item.desc || item.details || item.outcome || item.description || '',
+        }));
+      }
+    } catch (_) {}
+  }
+
+  if (typeof highlights === 'string') {
+    const parts = highlights.split(/[;\n]/).map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 0) {
+      return parts.map((part, idx) => {
+        let title = part;
+        let desc = '';
+        if (part.includes(':')) {
+          const split = part.split(':');
+          title = split[0].trim();
+          desc = split.slice(1).join(':').trim();
+        } else if (part.includes(' - ')) {
+          const split = part.split(' - ');
+          title = split[0].trim();
+          desc = split.slice(1).join(' - ').trim();
+        }
+        return {
+          step: String(idx + 1).padStart(2, '0'),
+          day: `Day ${String(idx + 1).padStart(2, '0')}`,
+          title,
+          desc: desc || '',
+        };
+      });
+    }
+  }
+
+  return [];
 }
 
 // Helper to extract numeric days from duration strings (e.g. "40 Days", "40", "40 days cohort")
@@ -416,6 +468,112 @@ export default function Admin() {
     setJourneyPhases((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Workshop Practical Stages Builder State (for configurable title & description per stage)
+  const [workshopStages, setWorkshopStages] = useState([]);
+
+  const handleAddWorkshopStage = () => {
+    setWorkshopStages((prev) => [
+      ...prev,
+      {
+        step: String(prev.length + 1).padStart(2, '0'),
+        day: `Day ${String(prev.length + 1).padStart(2, '0')}`,
+        title: '',
+        desc: '',
+      },
+    ]);
+  };
+
+  const handleUpdateWorkshopStage = (index, field, value) => {
+    setWorkshopStages((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleRemoveWorkshopStage = (index) => {
+    setWorkshopStages((prev) =>
+      prev.filter((_, i) => i !== index).map((s, idx) => ({
+        ...s,
+        step: String(idx + 1).padStart(2, '0'),
+      }))
+    );
+  };
+
+  // Student Feedbacks & Testimonials Moderation State
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbackFilter, setFeedbackFilter] = useState('all');
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackActionId, setFeedbackActionId] = useState(null);
+
+  const loadFeedbacks = async () => {
+    setFeedbackLoading(true);
+    try {
+      const data = await fetchAdminFeedbacks();
+      if (Array.isArray(data)) {
+        setFeedbacks(data);
+        localStorage.setItem('gni_feedbacks', JSON.stringify(data));
+      }
+    } catch (err) {
+      console.warn('[Admin] Failed to fetch feedbacks, using local fallback:', err);
+      const local = localStorage.getItem('gni_feedbacks');
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed)) setFeedbacks(parsed);
+        } catch (_) {}
+      }
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+
+  const handleApproveFeedback = async (id) => {
+    setFeedbackActionId(id);
+    try {
+      await updateFeedbackStatus(id, 'approved');
+      const updated = feedbacks.map((f) => (String(f.id) === String(id) ? { ...f, status: 'approved' } : f));
+      setFeedbacks(updated);
+      localStorage.setItem('gni_feedbacks', JSON.stringify(updated));
+      setFormSuccess('Feedback approved and published to website!');
+    } catch (err) {
+      setFormError(err.message || 'Failed to approve feedback.');
+    } finally {
+      setFeedbackActionId(null);
+    }
+  };
+
+  const handleRejectFeedback = async (id) => {
+    setFeedbackActionId(id);
+    try {
+      await updateFeedbackStatus(id, 'rejected');
+      const updated = feedbacks.map((f) => (String(f.id) === String(id) ? { ...f, status: 'rejected' } : f));
+      setFeedbacks(updated);
+      localStorage.setItem('gni_feedbacks', JSON.stringify(updated));
+      setFormSuccess('Feedback rejected.');
+    } catch (err) {
+      setFormError(err.message || 'Failed to reject feedback.');
+    } finally {
+      setFeedbackActionId(null);
+    }
+  };
+
+  const handleDeleteFeedback = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this feedback review?')) return;
+    setFeedbackActionId(id);
+    try {
+      await deleteFeedback(id);
+      const updated = feedbacks.filter((f) => String(f.id) !== String(id));
+      setFeedbacks(updated);
+      localStorage.setItem('gni_feedbacks', JSON.stringify(updated));
+      setFormSuccess('Feedback deleted successfully.');
+    } catch (err) {
+      setFormError(err.message || 'Failed to delete feedback.');
+    } finally {
+      setFeedbackActionId(null);
+    }
+  };
+
   // Countdown timer for OTP resend cooldown
   useEffect(() => {
     let timer = null;
@@ -470,17 +628,21 @@ export default function Admin() {
 
     loadDashboardData();
     loadRegistrations();
+    loadFeedbacks();
 
     const interval = setInterval(() => {
       loadDashboardData();
       if (activeTab === 'registrations') {
         loadRegistrations();
+      } else if (activeTab === 'feedbacks') {
+        loadFeedbacks();
       }
     }, 12000);
 
     const onWindowFocus = () => {
       loadDashboardData();
       loadRegistrations();
+      loadFeedbacks();
     };
 
     window.addEventListener('focus', onWindowFocus);
@@ -495,7 +657,7 @@ export default function Admin() {
   const handleSyncAllData = async () => {
     setIsSyncing(true);
     try {
-      await Promise.all([loadDashboardData(), loadRegistrations()]);
+      await Promise.all([loadDashboardData(), loadRegistrations(), loadFeedbacks()]);
     } finally {
       setTimeout(() => setIsSyncing(false), 500);
     }
@@ -684,6 +846,11 @@ export default function Admin() {
     setEditingCourseId(null);
     setFormOfferingType(initialType);
     setJourneyPhases([]);
+    setWorkshopStages([
+      { step: '01', day: 'Day 01', title: '', desc: '' },
+      { step: '02', day: 'Day 02', title: '', desc: '' },
+      { step: '03', day: 'Day 03', title: '', desc: '' },
+    ]);
     setCourseFormData({
       title: '',
       category: initialType === 'workshop' ? 'Workshop' : 'Learning Journey',
@@ -724,6 +891,15 @@ export default function Admin() {
     setEditingCourseId(course.id);
     setFormOfferingType(detectedType);
     setJourneyPhases(parsePhasesFromHighlights(course.highlights, course.title));
+    const parsedWsStages = parseWorkshopStagesFromHighlights(course.highlights);
+    setWorkshopStages(
+      parsedWsStages.length > 0
+        ? parsedWsStages
+        : [
+            { step: '01', title: '', desc: '' },
+            { step: '02', title: '', desc: '' },
+          ]
+    );
     setCourseFormData({
       title: course.title || '',
       category: course.category || (detectedType === 'workshop' ? 'Workshop' : 'Learning Journey'),
@@ -774,12 +950,18 @@ export default function Admin() {
       reader.onload = async () => {
         try {
           const base64Data = reader.result;
-          const res = await uploadOfferingImage(base64Data, file.name);
-          if (res?.url) {
-            setCourseFormData((prev) => ({ ...prev, image_url: res.url }));
+          let finalUrl = base64Data;
+          try {
+            const res = await uploadOfferingImage(base64Data, file.name);
+            if (res?.url) finalUrl = res.url;
+          } catch (_) {
+            // Server upload unavailable or network 502, use client base64 directly
           }
+          setCourseFormData((prev) => ({ ...prev, image_url: finalUrl }));
+          setUploadError('');
         } catch (err) {
-          setUploadError(err.message || 'Image upload failed. Please try again.');
+          setCourseFormData((prev) => ({ ...prev, image_url: reader.result }));
+          setUploadError('');
         } finally {
           setUploadingImage(false);
         }
@@ -790,7 +972,7 @@ export default function Admin() {
       };
       reader.readAsDataURL(file);
     } catch (err) {
-      setUploadError('Error processing file.');
+      setUploadError('Error reading file. Please select another image.');
       setUploadingImage(false);
     }
   };
@@ -933,15 +1115,16 @@ export default function Admin() {
       return;
     }
 
-    // 6. Highlights limitation for workshop (Character count)
+    // 6. Highlights / Practical Modules validation for workshop
+    let effectiveWorkshopHighlights = '';
     if (formOfferingType === 'workshop') {
-      const modChars = countChars(courseFormData.highlights);
-      if (modChars < CHAR_LIMITS.highlights.min) {
-        setFormError(`Practical modules text must be at least ${CHAR_LIMITS.highlights.min} characters.`);
-        return;
-      }
-      if (modChars > CHAR_LIMITS.highlights.max) {
-        setFormError(`Practical modules text cannot exceed ${CHAR_LIMITS.highlights.max} characters (currently ${modChars} chars).`);
+      const validStages = workshopStages.filter((s) => s.title && s.title.trim());
+      if (validStages.length > 0) {
+        effectiveWorkshopHighlights = JSON.stringify(validStages);
+      } else if (courseFormData.highlights && courseFormData.highlights.trim()) {
+        effectiveWorkshopHighlights = courseFormData.highlights.trim();
+      } else {
+        setFormError('Please configure at least 1 practical workshop stage with a title.');
         return;
       }
     }
@@ -987,6 +1170,11 @@ export default function Admin() {
     try {
       const finalPayload = {
         ...courseFormData,
+        offering_type: formOfferingType,
+        category:
+          courseFormData.category ||
+          (formOfferingType === 'workshop' ? 'Workshop' : 'Learning Journey'),
+        is_active: courseFormData.is_active !== undefined ? Number(courseFormData.is_active) : 1,
         original_price: Number(courseFormData.original_price) || 0,
         discount_price: Number(courseFormData.discount_price) || 0,
         seats_total: seatsTotal,
@@ -999,7 +1187,7 @@ export default function Admin() {
         highlights:
           formOfferingType === 'journey'
             ? JSON.stringify(journeyPhases)
-            : courseFormData.highlights,
+            : effectiveWorkshopHighlights,
       };
 
       if (modalMode === 'create') {
@@ -1749,6 +1937,19 @@ export default function Admin() {
             >
               Student Applications ({registrations.length})
             </button>
+            <button
+              onClick={() => {
+                setActiveTab('feedbacks');
+                loadFeedbacks();
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'feedbacks'
+                  ? 'bg-[#4A2C20] text-[#F7F2E8] shadow-xs'
+                  : 'bg-white text-[#6B4030] hover:bg-[#FAF7F0] border border-[#6B4030]/15'
+              }`}
+            >
+              Student Feedback ({feedbacks.length})
+            </button>
           </div>
 
           <div className="flex items-center gap-2.5">
@@ -2184,6 +2385,200 @@ export default function Admin() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* TAB 3: STUDENT FEEDBACK & REVIEWS */}
+        {activeTab === 'feedbacks' && (
+          <div className="space-y-4">
+            {/* Top Toolbar */}
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-white p-3.5 rounded-2xl border border-[#6B4030]/15 shadow-2xs">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-['DM_Sans'] text-xs font-bold text-[#4A2C20] uppercase tracking-wider flex items-center gap-1.5 mr-2">
+                  <MessageSquareQuote className="w-4 h-4 text-[#B89555]" />
+                  <span>Student Reviews ({feedbacks.length})</span>
+                </span>
+
+                {['all', 'approved', 'pending', 'rejected'].map((fKey) => {
+                  const count =
+                    fKey === 'all'
+                      ? feedbacks.length
+                      : fKey === 'pending'
+                      ? feedbacks.filter((f) => !f.status || f.status === 'pending').length
+                      : feedbacks.filter((f) => f.status === fKey).length;
+
+                  return (
+                    <button
+                      key={fKey}
+                      type="button"
+                      onClick={() => setFeedbackFilter(fKey)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer capitalize ${
+                        feedbackFilter === fKey
+                          ? 'bg-[#4A2C20] text-[#F7F2E8] shadow-xs'
+                          : 'bg-[#FAF7F0] text-[#6B4030] hover:bg-[#FAF7F0]/80 border border-[#6B4030]/15'
+                      }`}
+                    >
+                      {fKey} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={loadFeedbacks}
+                  disabled={feedbackLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-[#FAF7F0] text-[#4A2C20] border border-[#6B4030]/20 text-xs font-semibold cursor-pointer shadow-2xs disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#B89555] ${feedbackLoading ? 'animate-spin' : ''}`} />
+                  <span>Refresh Reviews</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Feedbacks Grid / List */}
+            {feedbackLoading && feedbacks.length === 0 ? (
+              <div className="p-12 text-center bg-white rounded-2xl border border-[#6B4030]/15">
+                <Loader2 className="w-6 h-6 text-[#B89555] animate-spin mx-auto mb-2" />
+                <p className="text-xs text-[#6B4030]">Loading student feedbacks...</p>
+              </div>
+            ) : (
+              (() => {
+                const filtered = feedbacks.filter((f) => {
+                  if (feedbackFilter === 'approved') return f.status === 'approved';
+                  if (feedbackFilter === 'pending') return !f.status || f.status === 'pending';
+                  if (feedbackFilter === 'rejected') return f.status === 'rejected';
+                  return true;
+                });
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="p-12 text-center bg-white rounded-2xl border border-[#6B4030]/15">
+                      <MessageSquareQuote className="w-8 h-8 text-[#B89555]/40 mx-auto mb-2" />
+                      <h3 className="font-['Cormorant_Garamond'] text-lg font-bold text-[#241A16]">
+                        No {feedbackFilter !== 'all' ? feedbackFilter : ''} feedbacks found
+                      </h3>
+                      <p className="text-xs text-[#6B4030] mt-1">
+                        When students submit reviews through the public website, they will appear here for moderation.
+                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filtered.map((fb) => {
+                      const isPending = !fb.status || fb.status === 'pending';
+                      const isApproved = fb.status === 'approved';
+                      const isRejected = fb.status === 'rejected';
+                      const isActionBusy = feedbackActionId === fb.id;
+
+                      return (
+                        <div
+                          key={fb.id}
+                          className="bg-white rounded-2xl p-5 border border-[#6B4030]/15 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group text-left"
+                        >
+                          <div>
+                            {/* Card Header: Author initial badge & Rating */}
+                            <div className="flex items-start justify-between gap-3 mb-3 pb-3 border-b border-[#6B4030]/10">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-xl bg-[#4A2C20] text-[#E5B869] font-['Cormorant_Garamond'] font-bold text-base flex items-center justify-center shrink-0 border border-[#B89555]/30">
+                                  {(fb.name || 'G').trim().charAt(0).toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                  <h4 className="font-['Cormorant_Garamond'] font-bold text-base text-[#241A16] leading-tight break-words">
+                                    {fb.name}
+                                  </h4>
+                                  <p className="text-xs text-[#6B4030] font-medium break-words">
+                                    {fb.role || 'Heritage Creator'} &bull; {fb.batch || 'Cohort Alumni'}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Status Badge */}
+                              <span
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-bold uppercase tracking-wider shrink-0 ${
+                                  isApproved
+                                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                    : isRejected
+                                    ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                                    : 'bg-amber-50 text-amber-800 border border-amber-200'
+                                }`}
+                              >
+                                {isApproved && <CheckCircle2 className="w-3 h-3 text-emerald-600" />}
+                                {isRejected && <XCircle className="w-3 h-3 text-rose-600" />}
+                                {isPending && <Clock className="w-3 h-3 text-amber-600" />}
+                                <span>{fb.status || 'Pending'}</span>
+                              </span>
+                            </div>
+
+                            {/* Rating Stars & Date */}
+                            <div className="flex items-center justify-between mb-2.5">
+                              <div className="flex items-center gap-1">
+                                {[...Array(Number(fb.rating) || 5)].map((_, i) => (
+                                  <Star key={i} className="w-3.5 h-3.5 fill-[#B89555] text-[#B89555]" />
+                                ))}
+                                <span className="text-xs font-semibold text-[#4A2C20] ml-1">
+                                  {fb.rating || 5}.0
+                                </span>
+                              </div>
+                              <span className="text-[11px] text-[#6B4030]/70 font-number">
+                                {fb.created_at ? new Date(fb.created_at).toLocaleDateString('en-IN') : 'Recent'}
+                              </span>
+                            </div>
+
+                            {/* Review Text */}
+                            <p className="font-['DM_Sans'] text-xs text-[#241A16] leading-relaxed italic bg-[#FAF7F0]/60 p-3 rounded-xl border border-[#6B4030]/10 mb-4 break-words">
+                              &ldquo;{fb.review}&rdquo;
+                            </p>
+                          </div>
+
+                          {/* Action Footer */}
+                          <div className="flex items-center justify-between gap-2 pt-3 border-t border-[#6B4030]/10">
+                            <div className="flex items-center gap-2">
+                              {!isApproved && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleApproveFeedback(fb.id)}
+                                  disabled={isActionBusy}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                                >
+                                  <ThumbsUp className="w-3 h-3" />
+                                  <span>Approve &amp; Publish</span>
+                                </button>
+                              )}
+
+                              {!isRejected && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRejectFeedback(fb.id)}
+                                  disabled={isActionBusy}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                                >
+                                  <ThumbsDown className="w-3 h-3" />
+                                  <span>Reject</span>
+                                </button>
+                              )}
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteFeedback(fb.id)}
+                              disabled={isActionBusy}
+                              className="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                              title="Delete Feedback"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()
+            )}
           </div>
         )}
       </main>
@@ -2754,32 +3149,110 @@ export default function Admin() {
                   )}
                 </div>
               ) : (
-                  <div className="space-y-1 text-left">
-                    <div className="flex items-center justify-between">
-                      <label className="block font-medium text-[#4A2C20]">
-                        Practical Modules <span className="text-[10px] text-[#6B4030]/70">(Separate with ;)</span>
-                      </label>
-                      <span
-                        className={`text-[10px] font-number ${
-                          countChars(courseFormData.highlights) > CHAR_LIMITS.highlights.max
-                            ? 'text-red-600 font-bold'
-                            : 'text-[#6B4030]/70'
-                        }`}
+                  /* PRACTICAL WORKSHOP SYLLABUS & DAILY LEARNING (1-9 DAYS) */
+                  <div className="space-y-3 text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#6B4030]/15 pb-2">
+                      <div>
+                        <label className="block font-bold text-xs uppercase tracking-wider text-[#4A2C20]">
+                          Workshop Curriculum &amp; Daily Syllabus ({workshopStages.length} Modules / 1–9 Days)
+                        </label>
+                        <p className="text-[10.5px] text-[#6B4030]">
+                          Specify what is taught across the 1–9 days. Configure the Day/Session timeline, module title, and detailed hands-on learning guidance.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddWorkshopStage}
+                        className="self-start sm:self-auto inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#4A2C20] hover:bg-[#603929] text-[#F7F2E8] text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                       >
-                        {countChars(courseFormData.highlights)} / {CHAR_LIMITS.highlights.max} characters
-                      </span>
+                        <Plus className="w-3.5 h-3.5 text-[#B89555]" />
+                        <span>Add Day / Stage</span>
+                      </button>
                     </div>
-                    <input
-                      type="text"
-                      name="highlights"
-                      value={courseFormData.highlights}
-                      onChange={handleFormChange}
-                      placeholder="Rock Painting; Tamili Writing; Iconography Basics; Copper Plate Inscription"
-                      className="w-full px-3 py-2 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/40 text-xs text-[#241A16] cursor-text select-text"
-                    />
-                    <p className="text-[10.5px] text-[#6B4030]">
-                      Add up to 6–8 hands-on activities separated by a semicolon (;) (max {CHAR_LIMITS.highlights.max} characters).
-                    </p>
+
+                    {workshopStages.length === 0 ? (
+                      <div className="p-4 rounded-xl border border-dashed border-[#6B4030]/30 bg-[#FAF7F0]/40 text-center">
+                        <p className="text-xs text-[#6B4030] mb-2">No workshop syllabus modules added yet.</p>
+                        <button
+                          type="button"
+                          onClick={handleAddWorkshopStage}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#4A2C20] text-[#F7F2E8] text-xs font-semibold cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5 text-[#B89555]" />
+                          <span>Add First Day / Stage</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                        {workshopStages.map((stage, idx) => (
+                          <div
+                            key={idx}
+                            className="p-3 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/60 space-y-2 relative group hover:border-[#B89555]/60 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#4A2C20] text-[#E5B869] text-[11px] font-bold font-['DM_Sans']">
+                                <span>Module {String(idx + 1).padStart(2, '0')}</span>
+                              </span>
+                              {workshopStages.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveWorkshopStage(idx)}
+                                  className="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition-colors cursor-pointer"
+                                  title="Delete Stage"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <div className="sm:col-span-1">
+                                  <label className="block text-[10.5px] font-semibold text-[#4A2C20]">
+                                    Day / Session <span className="text-red-600">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={stage.day || `Day ${String(idx + 1).padStart(2, '0')}`}
+                                    onChange={(e) => handleUpdateWorkshopStage(idx, 'day', e.target.value)}
+                                    placeholder="e.g. Day 01 or Day 1-2"
+                                    className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                                  />
+                                </div>
+                                <div className="sm:col-span-2">
+                                  <label className="block text-[10.5px] font-semibold text-[#4A2C20]">
+                                    What Is Taught (Module / Skill Title) <span className="text-red-600">*</span>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={stage.title || ''}
+                                    onChange={(e) => handleUpdateWorkshopStage(idx, 'title', e.target.value)}
+                                    placeholder="e.g. Prehistoric Rock Painting & Earth Pigment Formulation"
+                                    className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="block text-[10.5px] font-semibold text-[#4A2C20]">
+                                  Detailed Hands-on Learning &amp; Practice Description
+                                </label>
+                                <textarea
+                                  rows="2"
+                                  value={stage.desc || ''}
+                                  onChange={(e) => handleUpdateWorkshopStage(idx, 'desc', e.target.value)}
+                                  placeholder="e.g. Direct hands-on exploration of ancient rock pigments, granite pestle wet-grinding, and authentic tree gum binder blending."
+                                  className="w-full px-2.5 py-1.5 rounded-lg border border-[#6B4030]/20 bg-white text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
+                                />
+                                <p className="text-[9.5px] text-[#6B4030] leading-snug">
+                                  💡 Displays directly inside this module card on the public workshop page under &quot;What You Learn (1–9 Days)&quot;.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 

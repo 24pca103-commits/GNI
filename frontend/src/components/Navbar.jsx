@@ -202,7 +202,7 @@ export default function Navbar() {
               />
               <div className="flex flex-col justify-center min-w-0">
                 <div className="flex items-center">
-                  <span className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-2xl lg:text-3xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight truncate">
+                  <span className="font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-2xl lg:text-3xl font-bold tracking-tight text-[#4A2C20] group-hover:text-[#6B4030] transition-colors leading-tight whitespace-nowrap">
                     Global Nagas Institute
                   </span>
                 </div>
@@ -448,7 +448,7 @@ export default function Navbar() {
                     />
                   </div>
                   <span
-                    className={`text-[9.5px] font-['DM_Sans'] font-bold mt-0.5 truncate max-w-full transition-colors ${
+                    className={`text-[9.5px] font-['DM_Sans'] font-bold mt-0.5 whitespace-nowrap transition-colors ${
                       isActive
                         ? 'text-[#E5B869] font-extrabold drop-shadow-[0_0_6px_rgba(229,184,105,0.8)]'
                         : 'text-[#B89555] animate-text-glow'
@@ -484,7 +484,7 @@ export default function Navbar() {
                   {Icon && <Icon className="w-4.5 h-4.5" />}
                 </div>
                 <span
-                  className={`text-[9.5px] font-['DM_Sans'] mt-0.5 truncate max-w-full transition-colors ${
+                  className={`text-[9.5px] font-['DM_Sans'] mt-0.5 whitespace-nowrap transition-colors ${
                     isActive
                       ? 'font-bold text-[#E5B869] drop-shadow-[0_0_4px_rgba(229,184,105,0.6)]'
                       : 'font-medium text-[#F7F2E8]/75 group-hover:text-[#B89555]'
@@ -525,7 +525,7 @@ export default function Navbar() {
                   <MoreHorizontal className="w-4.5 h-4.5" />
                 </div>
                 <span
-                  className={`text-[9.5px] font-['DM_Sans'] mt-0.5 truncate max-w-full transition-colors ${
+                  className={`text-[9.5px] font-['DM_Sans'] mt-0.5 whitespace-nowrap transition-colors ${
                     isMoreActive
                       ? 'font-bold text-[#E5B869] drop-shadow-[0_0_4px_rgba(229,184,105,0.6)]'
                       : 'font-medium text-[#F7F2E8]/75 group-hover:text-[#B89555]'

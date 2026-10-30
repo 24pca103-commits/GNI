@@ -670,6 +670,33 @@ export const updateRegistrationStatus = async (req, res) => {
     const reg = rows[0];
     const newStatus = status.trim();
 
+    // Check allowed statuses
+    const validStatuses = [
+      'Pending Offline Payment at Campus',
+      'Pending Verification',
+      'Pending',
+      'Approved',
+      'Confirmed',
+      'Completed',
+      'Cancelled',
+      'Rejected',
+    ];
+
+    if (!validStatuses.includes(newStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status "${newStatus}". Must be a recognized registration lifecycle status.`,
+      });
+    }
+
+    // Skip redundant updates
+    if (reg.payment_status === newStatus) {
+      return res.status(200).json({
+        success: true,
+        message: `Application is already '${newStatus}'.`,
+      });
+    }
+
     await pool.query('UPDATE `registrations` SET `payment_status` = ? WHERE `id` = ?', [
       newStatus,
       id,

@@ -4,6 +4,8 @@ import {
   registerUser,
   getRegistrationStatus,
   resendConfirmationEmail,
+  checkRegistrationEligibility,
+  checkEmailEligibility,
 } from '../controllers/registrationController.js';
 
 const router = express.Router();
@@ -31,6 +33,12 @@ const resendLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// GET & POST /api/check-email and /api/check-registration (Real-time email & phone eligibility check)
+router.get('/check-email', checkEmailEligibility);
+router.post('/check-email', checkEmailEligibility);
+router.get('/check-registration', checkRegistrationEligibility);
+router.post('/check-registration', checkRegistrationEligibility);
 
 // POST /api/register
 router.post('/register', registerLimiter, registerUser);

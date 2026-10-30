@@ -165,13 +165,12 @@ export default function Hero() {
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#241A16]" />
             </Link>
 
-            <button
-              onClick={handleStaticClick}
-              className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] border border-[#B89555]/40 transition-colors cursor-pointer shadow-sm shrink-0"
+            <div
+              className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] border border-[#B89555]/40 shadow-sm shrink-0 cursor-default select-none"
             >
               <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E5B869]" />
               <span>{current.secondaryBtn}</span>
-            </button>
+            </div>
           </div>
 
           {/* Core Highlights Placed Directly Below Register Button - Strictly Single Line on Mobile */}

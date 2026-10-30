@@ -101,7 +101,7 @@ export default function Process() {
                   key={item.title}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
-                  className="relative flex items-center md:justify-between group/row cursor-pointer"
+                  className="relative flex items-center md:justify-between group/row"
                 >
                   {/* Desktop Layout: Left Card or Empty Space */}
                   <div className={`hidden md:block md:w-[45%] ${isEven ? 'pr-8' : 'order-2 pl-8'}`}>

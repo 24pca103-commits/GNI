@@ -17,6 +17,8 @@ export const registerUser = async (req, res, next) => {
       countryDial,
       fullPhone,
       location,
+      state,
+      city,
       profession,
       courseName,
       interestedSkill,
@@ -27,6 +29,10 @@ export const registerUser = async (req, res, next) => {
       paymentRef,
     } = req.body;
 
+    const resolvedLocation = (location && location.trim())
+      ? location.trim()
+      : [city, state, country].filter(Boolean).join(', ') || 'Not Specified';
+
     const chosenCourse = (courseName || interestedSkill || '').trim();
     const chosenDuration = (courseDuration || duration || '').trim();
 
@@ -35,7 +41,7 @@ export const registerUser = async (req, res, next) => {
       !fullName ||
       !email ||
       !phone ||
-      !location ||
+      !resolvedLocation ||
       !profession ||
       !chosenCourse ||
       !chosenDuration ||
@@ -50,17 +56,38 @@ export const registerUser = async (req, res, next) => {
 
     const pool = getPool();
     const normalizedEmail = email.toLowerCase().trim();
+    const cleanPhone = phone.trim();
 
-    // 1. Check for existing registration with same email using parameterized query to prevent duplicates
-    const [existingRows] = await pool.execute(
-      'SELECT id, email FROM `registrations` WHERE `email` = ? LIMIT 1',
-      [normalizedEmail]
+    // 1. One Active Course Rule:
+    // A student can only be enrolled in one active course at a time.
+    // Before applying for their next course, their current course must be completed (or cancelled/rejected).
+    const [activeRows] = await pool.execute(
+      `SELECT id, full_name, email, phone, interested_skill, payment_status 
+       FROM \`registrations\` 
+       WHERE (\`email\` = ? OR \`phone\` = ?) 
+         AND \`payment_status\` NOT IN ('Completed', 'Cancelled', 'Rejected') 
+       ORDER BY \`id\` DESC LIMIT 1`,
+      [normalizedEmail, cleanPhone]
     );
 
-    if (existingRows && existingRows.length > 0) {
+    if (activeRows && activeRows.length > 0) {
+      const activeCourseName = activeRows[0].interested_skill || 'an active program';
       return res.status(409).json({
         success: false,
-        message: 'An application with this email address already exists. Please use another email or contact admissions support.',
+        message: `You already have an active course enrollment in progress ("${activeCourseName}"). You can register for your next course once your current course is completed.`,
+      });
+    }
+
+    // 2. Duplicate check for exact same course (if not completed)
+    const [existingSameCourse] = await pool.execute(
+      'SELECT id, email, interested_skill, payment_status FROM `registrations` WHERE `email` = ? AND `interested_skill` = ? LIMIT 1',
+      [normalizedEmail, chosenCourse.trim()]
+    );
+
+    if (existingSameCourse && existingSameCourse.length > 0 && existingSameCourse[0].payment_status !== 'Completed') {
+      return res.status(409).json({
+        success: false,
+        message: `You have already registered for "${chosenCourse}" with this email address.`,
       });
     }
 
@@ -144,7 +171,7 @@ export const registerUser = async (req, res, next) => {
         countryCode || 'IN',
         countryDial || '+91',
         fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
-        location.trim(),
+        resolvedLocation.trim(),
         profession.trim(),
         courseTitle,
         validatedDuration,
@@ -186,7 +213,7 @@ export const registerUser = async (req, res, next) => {
         countryCode || 'IN',
         countryDial || '+91',
         fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
-        location.trim(),
+        resolvedLocation.trim(),
         profession.trim(),
         `${courseTitle} — ${validatedDuration} (${formattedTotal}) [Ref: ${applicationRef}]`,
         experienceLevel,
@@ -290,10 +317,10 @@ export const registerUser = async (req, res, next) => {
   } catch (error) {
     console.error('[Registration Controller Error]', error);
     // Handle MySQL duplicate key error (ER_DUP_ENTRY)
-    if (error.code === 'ER_DUP_ENTRY') {
+    if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
       return res.status(409).json({
         success: false,
-        message: 'An application with this email address already exists.',
+        message: `An application for "${chosenCourse}" with this email address already exists. If you have finished this course, please ensure it is marked completed before re-enrolling.`,
       });
     }
     return res.status(500).json({
@@ -402,3 +429,132 @@ export const resendConfirmationEmail = async (req, res) => {
     });
   }
 };
+
+/**
+ * Check Real-time Registration Status & Eligibility for Email and/or Phone Number
+ * Evaluates whether student has an active/ongoing course or is eligible to enroll.
+ */
+export const checkRegistrationEligibility = async (req, res) => {
+  try {
+    const rawEmail = req.query.email || req.body?.email || '';
+    const rawPhone = req.query.phone || req.body?.phone || '';
+    const courseName = req.query.courseName || req.body?.courseName || '';
+
+    const normalizedEmail = String(rawEmail).trim().toLowerCase();
+    const cleanPhone = String(rawPhone).replace(/\D/g, '');
+
+    const hasValidEmail = Boolean(normalizedEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail));
+    const hasValidPhone = Boolean(cleanPhone && cleanPhone.length >= 7);
+
+    if (!hasValidEmail && !hasValidPhone) {
+      return res.status(200).json({
+        success: true,
+        eligible: true,
+        message: 'Provide valid email or phone number to check',
+      });
+    }
+
+    const pool = getPool();
+    let whereClauses = [];
+    let params = [];
+
+    if (hasValidEmail && hasValidPhone) {
+      whereClauses.push('(`email` = ? OR `phone` LIKE ? OR `full_phone` LIKE ?)');
+      params.push(normalizedEmail, `%${cleanPhone}`, `%${cleanPhone}`);
+    } else if (hasValidEmail) {
+      whereClauses.push('`email` = ?');
+      params.push(normalizedEmail);
+    } else if (hasValidPhone) {
+      whereClauses.push('(`phone` LIKE ? OR `full_phone` LIKE ?)');
+      params.push(`%${cleanPhone}`, `%${cleanPhone}`);
+    }
+
+    const [rows] = await pool.execute(
+      `SELECT id, full_name, email, phone, full_phone, interested_skill, payment_status, created_at 
+       FROM \`registrations\` 
+       WHERE ${whereClauses.join(' AND ')} 
+       ORDER BY \`id\` DESC`,
+      params
+    );
+
+    if (!rows || rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        registered: false,
+        eligible: true,
+        message: hasValidPhone && !hasValidEmail ? 'Phone number is eligible for registration.' : 'Email is eligible for registration.',
+      });
+    }
+
+    // Check for active enrollment (not Completed, Cancelled, or Rejected)
+    const activeReg = rows.find(
+      (r) => !['Completed', 'Cancelled', 'Rejected'].includes(r.payment_status)
+    );
+
+    if (activeReg) {
+      const activeSkill = activeReg.interested_skill || 'an active program';
+      const isEmailMatch = hasValidEmail && activeReg.email?.toLowerCase() === normalizedEmail;
+      const isPhoneMatch = hasValidPhone && (activeReg.phone?.includes(cleanPhone) || activeReg.full_phone?.includes(cleanPhone));
+
+      let matchedBy = 'email and phone number';
+      if (isEmailMatch && !isPhoneMatch) matchedBy = 'email address';
+      else if (!isEmailMatch && isPhoneMatch) matchedBy = 'phone number';
+
+      return res.status(200).json({
+        success: true,
+        registered: true,
+        hasActiveCourse: true,
+        eligible: false,
+        field: isPhoneMatch && !isEmailMatch ? 'phone' : 'email',
+        matchedBy,
+        activeCourse: activeSkill,
+        paymentStatus: activeReg.payment_status,
+        message: `This ${matchedBy} already has an active course enrollment in progress ("${activeSkill}"). You can register for your next course once your current course is completed.`,
+      });
+    }
+
+    // If specific course is passed, check if exact same course was already registered and not completed
+    if (courseName && courseName.trim()) {
+      const sameCourse = rows.find(
+        (r) =>
+          r.interested_skill?.trim().toLowerCase() === courseName.trim().toLowerCase() &&
+          r.payment_status !== 'Completed'
+      );
+      if (sameCourse) {
+        return res.status(200).json({
+          success: true,
+          registered: true,
+          hasActiveCourse: true,
+          eligible: false,
+          activeCourse: sameCourse.interested_skill,
+          message: `You have already registered for "${sameCourse.interested_skill}" with these details.`,
+        });
+      }
+    }
+
+    // All previous courses are Completed
+    const completedList = rows
+      .filter((r) => r.payment_status === 'Completed')
+      .map((r) => r.interested_skill);
+
+    return res.status(200).json({
+      success: true,
+      registered: true,
+      hasActiveCourse: false,
+      eligible: true,
+      completedCourses: completedList,
+      message: 'Previous course completed. Eligible to enroll in a new course.',
+    });
+  } catch (error) {
+    console.error('[checkRegistrationEligibility Error]', error);
+    return res.status(500).json({
+      success: false,
+      eligible: true,
+      message: 'Error verifying registration status',
+      error: error.message,
+    });
+  }
+};
+
+// Backward-compatible alias
+export const checkEmailEligibility = checkRegistrationEligibility;

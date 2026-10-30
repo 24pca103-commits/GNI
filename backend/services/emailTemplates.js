@@ -706,6 +706,11 @@ export function generateApplicationStatusUpdateEmail(data, newStatus) {
     badgeLabel = '✓ Application Approved';
     statusExplanation =
       'Congratulations! Your application has been approved by our master sthapathis and faculty. Your seat allocation has been finalized.';
+  } else if (normStatus.includes('complete') || normStatus.includes('finish')) {
+    badgeType = 'green';
+    badgeLabel = '★ Course Successfully Completed';
+    statusExplanation =
+      'Hearty congratulations on successfully completing your course with Global Nagas Institute! Your guild certificate is in preparation. You are now fully eligible to enroll in your next heritage workshop or cohort journey.';
   } else if (normStatus.includes('cancel')) {
     badgeType = 'red';
     badgeLabel = 'Application Cancelled';

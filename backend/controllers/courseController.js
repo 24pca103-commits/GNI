@@ -5,6 +5,30 @@ import { GNI_COURSE_PRICING, calculateTrustedFee } from '../models/pricingConfig
 // In-memory fallback cache if MySQL is temporarily offline
 let memoryCourses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
 
+/**
+ * Requirement 6: Automatically classify offering based strictly on Duration
+ * 1–9 Days -> Workshop
+ * 10+ Days -> Learning Journey
+ */
+export function determineOfferingType(durationStr) {
+  if (!durationStr) return 'Workshop';
+  const str = String(durationStr).trim();
+  const dayMatch = str.match(/(\d+)\s*day/i);
+  if (dayMatch) {
+    const days = parseInt(dayMatch[1], 10);
+    return days <= 9 ? 'Workshop' : 'Learning Journey';
+  }
+  const pureNum = str.match(/^(\d+)$/);
+  if (pureNum) {
+    const days = parseInt(pureNum[1], 10);
+    return days <= 9 ? 'Workshop' : 'Learning Journey';
+  }
+  if (/month|cohort|year/i.test(str)) {
+    return 'Learning Journey';
+  }
+  return 'Workshop';
+}
+
 function generateSlug(text) {
   return (
     text
@@ -56,8 +80,12 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         availabilityStatus = 'Almost Full';
       }
 
+      const offType = determineOfferingType(c.duration);
       return {
         ...c,
+        pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
+        pillar_title: c.pillar_title || '',
+        offering_type: offType,
         seats_total: total,
         booked_seats: booked,
         seats_available: available,
@@ -78,8 +106,12 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         availabilityStatus = 'Almost Full';
       }
 
+      const offType = determineOfferingType(c.duration);
       return {
         ...c,
+        pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
+        pillar_title: c.pillar_title || '',
+        offering_type: offType,
         seats_total: total,
         booked_seats: booked,
         seats_available: available,
@@ -149,23 +181,35 @@ export const createCourse = async (req, res) => {
       image_url = '/artisan/workshop.jpg',
       seats_total = 50,
       seats_available = 20,
+      pillar_id = null,
+      pillar_title = '',
       is_active = 1,
     } = req.body;
 
-    if (!title || !category || !description) {
+    if (!title || !description) {
       return res.status(400).json({
         success: false,
-        message: 'Offering Title, Category, and Description are required.',
+        message: 'Offering Title and Description are required.',
       });
     }
 
     const trimmedTitle = String(title).trim();
-    const trimmedCategory = String(category).trim();
     const trimmedDesc = String(description).trim();
     const trimmedBadge = String(badge || '').trim();
-    const trimmedDuration = String(duration || '').trim();
-    const trimmedMode = String(mode || '').trim();
+    const trimmedDuration = String(duration || '60 Days').trim();
+    const trimmedMode = String(mode || 'Studio Hands-on').trim();
     const trimmedHighlights = String(highlights || '').trim();
+
+    // Automatically classify offering based on duration
+    const autoType = determineOfferingType(trimmedDuration);
+    let trimmedCategory = category ? String(category).trim() : '';
+    if (!trimmedCategory || trimmedCategory === 'Workshop' || trimmedCategory === 'Learning Journey') {
+      trimmedCategory = pillar_title ? `${pillar_title} • ${autoType}` : autoType;
+    }
+
+    const resolvedImageUrl = image_url && typeof image_url === 'string' && image_url.trim()
+      ? image_url.trim()
+      : (autoType === 'workshop' ? '/artisan/workshop.jpg' : null);
 
     // CHARACTER COUNT VALIDATION (Not word count)
     if (trimmedTitle.length < 5 || trimmedTitle.length > 100) {
@@ -174,10 +218,10 @@ export const createCourse = async (req, res) => {
         message: `Offering Title must be between 5 and 100 characters (${trimmedTitle.length} entered).`,
       });
     }
-    if (trimmedCategory.length < 3 || trimmedCategory.length > 50) {
+    if (trimmedCategory.length < 3 || trimmedCategory.length > 60) {
       return res.status(400).json({
         success: false,
-        message: `Category must be between 3 and 50 characters (${trimmedCategory.length} entered).`,
+        message: `Category must be between 3 and 60 characters (${trimmedCategory.length} entered).`,
       });
     }
     if (trimmedBadge && trimmedBadge.length > 40) {
@@ -233,8 +277,8 @@ export const createCourse = async (req, res) => {
           \`title\`, \`slug\`, \`category\`, \`badge\`, \`duration\`, \`mode\`,
           \`original_price\`, \`discount_price\`, \`discount_percent\`,
           \`description\`, \`highlights\`, \`image_url\`, \`seats_total\`,
-          \`seats_available\`, \`is_active\`
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          \`seats_available\`, \`pillar_id\`, \`pillar_title\`, \`is_active\`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -249,9 +293,11 @@ export const createCourse = async (req, res) => {
         discPercent,
         trimmedDesc,
         trimmedHighlights,
-        image_url.trim() || '/artisan/workshop.jpg',
+        resolvedImageUrl,
         parsedTotalSeats,
         parsedAvailSeats,
+        pillar_id ? Number(pillar_id) : null,
+        pillar_title ? String(pillar_title).trim() : null,
         Number(is_active) ? 1 : 0,
       ];
 
@@ -269,11 +315,14 @@ export const createCourse = async (req, res) => {
         discount_percent: discPercent,
         description: trimmedDesc,
         highlights: trimmedHighlights,
-        image_url: image_url.trim() || '/artisan/workshop.jpg',
+        image_url: resolvedImageUrl,
         seats_total: parsedTotalSeats,
         booked_seats: 0,
         seats_available: parsedAvailSeats,
         availability_status: parsedAvailSeats > 5 ? 'Available' : parsedAvailSeats > 0 ? 'Almost Full' : 'Full',
+        pillar_id: pillar_id ? Number(pillar_id) : null,
+        pillar_title: pillar_title ? String(pillar_title).trim() : '',
+        offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
       };
 
@@ -299,11 +348,14 @@ export const createCourse = async (req, res) => {
         discount_percent: discPercent,
         description: trimmedDesc,
         highlights: trimmedHighlights,
-        image_url: image_url.trim() || '/artisan/workshop.jpg',
+        image_url: resolvedImageUrl,
         seats_total: parsedTotalSeats,
         booked_seats: 0,
         seats_available: parsedAvailSeats,
         availability_status: parsedAvailSeats > 5 ? 'Available' : parsedAvailSeats > 0 ? 'Almost Full' : 'Full',
+        pillar_id: pillar_id ? Number(pillar_id) : null,
+        pillar_title: pillar_title ? String(pillar_title).trim() : '',
+        offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
       };
       memoryCourses.unshift(newCourse);
@@ -341,16 +393,23 @@ export const updateCourse = async (req, res) => {
       highlights,
       image_url,
       seats_total,
+      pillar_id,
+      pillar_title,
       is_active,
     } = req.body;
 
     const trimmedTitle = title ? String(title).trim() : null;
-    const trimmedCategory = category ? String(category).trim() : null;
     const trimmedDesc = description ? String(description).trim() : null;
     const trimmedBadge = badge !== undefined ? String(badge).trim() : null;
     const trimmedDuration = duration ? String(duration).trim() : null;
     const trimmedMode = mode ? String(mode).trim() : null;
     const trimmedHighlights = highlights !== undefined ? String(highlights).trim() : null;
+
+    let trimmedCategory = category ? String(category).trim() : null;
+    if (trimmedDuration && (!trimmedCategory || trimmedCategory === 'Workshop' || trimmedCategory === 'Learning Journey')) {
+      const autoType = determineOfferingType(trimmedDuration);
+      trimmedCategory = pillar_title ? `${pillar_title} • ${autoType}` : autoType;
+    }
 
     // CHARACTER COUNT VALIDATION (Not word count)
     if (trimmedTitle && (trimmedTitle.length < 5 || trimmedTitle.length > 100)) {
@@ -359,10 +418,10 @@ export const updateCourse = async (req, res) => {
         message: `Offering Title must be between 5 and 100 characters (${trimmedTitle.length} entered).`,
       });
     }
-    if (trimmedCategory && (trimmedCategory.length < 3 || trimmedCategory.length > 50)) {
+    if (trimmedCategory && (trimmedCategory.length < 3 || trimmedCategory.length > 60)) {
       return res.status(400).json({
         success: false,
-        message: `Category must be between 3 and 50 characters (${trimmedCategory.length} entered).`,
+        message: `Category must be between 3 and 60 characters (${trimmedCategory.length} entered).`,
       });
     }
     if (trimmedBadge && trimmedBadge.length > 40) {
@@ -448,6 +507,8 @@ export const updateCourse = async (req, res) => {
           \`image_url\` = COALESCE(?, \`image_url\`),
           \`seats_total\` = ?,
           \`seats_available\` = ?,
+          \`pillar_id\` = COALESCE(?, \`pillar_id\`),
+          \`pillar_title\` = COALESCE(?, \`pillar_title\`),
           \`is_active\` = ?
         WHERE \`id\` = ?
       `;
@@ -463,9 +524,11 @@ export const updateCourse = async (req, res) => {
         discPercent,
         trimmedDesc,
         trimmedHighlights,
-        image_url ? image_url.trim() : null,
+        image_url && typeof image_url === 'string' ? image_url.trim() : null,
         requestedTotalSeats,
         calculatedAvailableSeats,
+        pillar_id !== undefined ? (pillar_id ? Number(pillar_id) : null) : null,
+        pillar_title !== undefined ? String(pillar_title).trim() : null,
         is_active !== undefined ? (Number(is_active) ? 1 : 0) : 1,
         id,
       ];
@@ -495,10 +558,13 @@ export const updateCourse = async (req, res) => {
         discount_percent: discPercent,
         ...(trimmedDesc && { description: trimmedDesc }),
         ...(trimmedHighlights !== null && { highlights: trimmedHighlights }),
-        ...(image_url && { image_url: image_url.trim() }),
+        ...(image_url !== undefined && { image_url: image_url && typeof image_url === 'string' ? image_url.trim() : null }),
         seats_total: newTotal,
         seats_available: newAvailable,
         availability_status: newAvailable === 0 ? 'Full' : newAvailable <= 5 ? 'Almost Full' : 'Available',
+        ...(pillar_id !== undefined && { pillar_id: pillar_id ? Number(pillar_id) : null }),
+        ...(pillar_title !== undefined && { pillar_title }),
+        offering_type: determineOfferingType(trimmedDuration || prev.duration),
         is_active: is_active !== undefined ? (Number(is_active) ? 1 : 0) : prev.is_active,
       };
     }
