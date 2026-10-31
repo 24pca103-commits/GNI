@@ -234,63 +234,21 @@ export function FactRow({ facts }) {
   );
 }
 
-// Full-width rows use as many columns as there are facts (up to 4), so no cell is left empty
-const WIDE_GRID = {
-  1: 'grid-cols-1',
-  2: 'sm:grid-cols-2',
-  3: 'sm:grid-cols-3',
-  4: 'sm:grid-cols-2 lg:grid-cols-4',
-};
-
-/** `layout`: 'stack' for a narrow side column, 'pairs' (default) or 'wide' for a full-width row. */
-export function SpecList({ specs, layout = 'pairs' }) {
-  if (!specs.length) return null;
-  const gridClass =
-    layout === 'stack'
-      ? 'grid-cols-1'
-      : layout === 'wide' && specs.length <= 4
-      ? WIDE_GRID[specs.length]
-      : 'sm:grid-cols-2';
-  // In two-column grids, let a lone final item fill the row instead of leaving a gap
-  const spanLast = gridClass === 'sm:grid-cols-2' && specs.length % 2 === 1;
+/**
+ * Layout rule for repeated content (workshop steps, journey phases, and anything
+ * added later): a two-column grid where every card stretches to its row's height
+ * and a lone last card spans the full row. This way no blank space is ever left
+ * beside or under a card. Cards rendered here should use `h-full w-full`.
+ */
+export function CardGrid({ items, renderItem }) {
   return (
-    <dl className={`grid ${gridClass} gap-px bg-[#6B4030]/10 rounded-2xl overflow-hidden border border-[#6B4030]/10`}>
-      {specs.map((s, i) => (
-        <div
-          key={`${s.label}-${i}`}
-          className={`bg-white p-4 sm:p-5 ${spanLast && i === specs.length - 1 ? 'sm:col-span-2' : ''}`}
-        >
-          <dt className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6B4030]/80">
-            {s.label}
-          </dt>
-          <dd className="mt-1 font-['DM_Sans'] text-sm font-medium text-[#241A16] leading-snug">{s.value}</dd>
-        </div>
+    <ol className="grid gap-4 md:grid-cols-2">
+      {items.map((item, i) => (
+        <li key={i} className={`flex ${items.length % 2 === 1 && i === items.length - 1 ? 'md:col-span-2' : ''}`}>
+          {renderItem(item, i)}
+        </li>
       ))}
-    </dl>
-  );
-}
-
-/** `bare` renders without its own card, for use inside another card. */
-export function TakeawayList({ title, items, bare = false }) {
-  if (!items.length) return null;
-  return (
-    <div className={bare ? '' : 'rounded-3xl bg-white border border-[#6B4030]/12 p-6'}>
-      {bare ? (
-        <SubHeading title={title} />
-      ) : (
-        <h4 className="font-['Cormorant_Garamond'] text-2xl font-bold text-[#241A16]">{title}</h4>
-      )}
-      <ul className={bare ? 'mt-5 space-y-3' : 'mt-4 space-y-3'}>
-        {items.map((t, i) => (
-          <li key={i} className="flex items-start gap-3 font-['DM_Sans'] text-sm text-[#241A16] leading-snug">
-            <span className="mt-0.5 w-5 h-5 rounded-full bg-[#B89555]/15 text-[#8A6A30] flex items-center justify-center shrink-0">
-              <Check className="w-3 h-3 stroke-[3]" />
-            </span>
-            {t}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </ol>
   );
 }
 

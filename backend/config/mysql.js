@@ -308,6 +308,13 @@ export const initMySQL = async () => {
       } catch (_) {}
     }
 
+    // "At a glance" (specs) and takeaways were removed from offerings; drop any stored copies
+    try {
+      await p.query(
+        "UPDATE `courses` SET `details` = JSON_REMOVE(`details`, '$.specs', '$.takeaways') WHERE `details` IS NOT NULL AND JSON_VALID(`details`) AND (JSON_CONTAINS_PATH(`details`, 'one', '$.specs', '$.takeaways'))"
+      );
+    } catch (_) {}
+
     // Ensure image_url can hold database URLs or base64 without size limits
     try {
       await p.query('ALTER TABLE `courses` MODIFY COLUMN `image_url` LONGTEXT');

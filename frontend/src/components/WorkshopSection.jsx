@@ -11,44 +11,35 @@ import {
   OverviewCard,
   SectionHeader,
   SectionSkeleton,
-  SpecList,
   SubHeading,
-  TakeawayList,
+  CardGrid,
 } from './offerings/OfferingUI';
 
 // Established display order for the original workshops; new ones from admin follow by id
 const CANONICAL_IDS = [102, 101, 103, 104];
 const FALLBACK_IMAGE = '/artisan/workshop.jpg';
 
-function ModuleTimeline({ modules }) {
+function StepCard({ step, index }) {
   return (
-    <ol className="mt-6">
-      {modules.map((m, i) => {
-        const isLast = i === modules.length - 1;
-        return (
-          <li key={`${m.title}-${i}`} className={`relative grid grid-cols-[auto_1fr] gap-4 ${isLast ? '' : 'pb-6'}`}>
-            {!isLast && <span aria-hidden="true" className="absolute left-[17px] top-10 bottom-0 w-px bg-[#B89555]/30" />}
-            <span className="relative w-9 h-9 rounded-full bg-[#FAF7F0] border border-[#B89555]/50 text-[#4A2C20] font-['DM_Sans'] text-xs font-bold flex items-center justify-center">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <div className="min-w-0 pt-1.5">
-              {m.day && (
-                <span className="block font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#B89555] mb-0.5">
-                  {m.day}
-                </span>
-              )}
-              <h5 className="font-['DM_Sans'] text-[15px] font-semibold text-[#241A16] leading-snug">{m.title}</h5>
-              {m.desc && <p className="mt-1 font-['DM_Sans'] text-sm text-[#6B4030] leading-relaxed">{m.desc}</p>}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+    <article className="flex h-full w-full items-start gap-4 rounded-2xl border border-[#6B4030]/10 bg-[#FCFAF6] p-5">
+      <span className="w-9 h-9 rounded-full bg-white border border-[#B89555]/50 text-[#4A2C20] font-['DM_Sans'] text-xs font-bold flex items-center justify-center shrink-0">
+        {String(index + 1).padStart(2, '0')}
+      </span>
+      <div className="min-w-0 pt-1">
+        {step.day && (
+          <span className="block font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#B89555] mb-0.5">
+            {step.day}
+          </span>
+        )}
+        <h5 className="font-['DM_Sans'] text-[15px] font-semibold text-[#241A16] leading-snug">{step.title}</h5>
+        {step.desc && <p className="mt-1 font-['DM_Sans'] text-sm text-[#6B4030] leading-relaxed">{step.desc}</p>}
+      </div>
+    </article>
   );
 }
 
 /**
- * Workshop detail rows (overview + booking, then steps and extras). Used by the
+ * Workshop detail rows (overview + booking, then the steps). Used by the
  * website section and by the admin editor's preview, so both always match.
  * `preview` disables the booking link.
  */
@@ -83,39 +74,14 @@ export function WorkshopDetail({ course, preview = false }) {
         </div>
       </div>
 
-      {/* Row 2: steps beside facts and takeaways, in one full-width card */}
-      {(modules.length > 0 || (details.specs.length > 0 || details.takeaways.length > 0)) && (
-        <div className={`rounded-3xl bg-white border border-[#6B4030]/12 p-6 sm:p-8 lg:p-10 ${CARD_SHADOW}`}>
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
-            {modules.length > 0 && (
-              <section className={(details.specs.length > 0 || details.takeaways.length > 0) ? 'lg:col-span-7' : 'lg:col-span-12'}>
-                <SubHeading
-                  title="What you'll do"
-                  meta={`${modules.length} ${modules.length === 1 ? 'step' : 'steps'}`}
-                />
-                <ModuleTimeline modules={modules} />
-              </section>
-            )}
-
-            {(details.specs.length > 0 || details.takeaways.length > 0) && (
-              <div
-                className={`space-y-10 ${
-                  modules.length > 0 ? 'lg:col-span-5 lg:border-l lg:border-[#6B4030]/10 lg:pl-12' : 'lg:col-span-12'
-                }`}
-              >
-                {details.specs.length > 0 && (
-                  <section>
-                    <SubHeading title="At a glance" />
-                    <div className="mt-5">
-                      <SpecList specs={details.specs} layout={modules.length > 0 ? 'stack' : 'wide'} />
-                    </div>
-                  </section>
-                )}
-                <TakeawayList bare title="What you take home" items={details.takeaways} />
-              </div>
-            )}
+      {/* Row 2: the steps, full width */}
+      {modules.length > 0 && (
+        <section className={`rounded-3xl bg-white border border-[#6B4030]/12 p-6 sm:p-8 lg:p-10 ${CARD_SHADOW}`}>
+          <SubHeading title="What you'll do" meta={`${modules.length} ${modules.length === 1 ? 'step' : 'steps'}`} />
+          <div className="mt-6">
+            <CardGrid items={modules} renderItem={(m, i) => <StepCard step={m} index={i} />} />
           </div>
-        </div>
+        </section>
       )}
     </>
   );

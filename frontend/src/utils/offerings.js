@@ -7,8 +7,6 @@
 export function emptyDetails() {
   return {
     inclusions: '',
-    specs: [],
-    takeaways: [],
     field_visit: { enabled: false, title: '', description: '' },
   };
 }
@@ -27,12 +25,6 @@ export function parseDetails(raw) {
   const fv = obj.field_visit && typeof obj.field_visit === 'object' ? obj.field_visit : {};
   return {
     inclusions: String(obj.inclusions || '').trim(),
-    specs: (Array.isArray(obj.specs) ? obj.specs : [])
-      .map((s) => ({ label: String(s?.label || '').trim(), value: String(s?.value || '').trim() }))
-      .filter((s) => s.label && s.value),
-    takeaways: (Array.isArray(obj.takeaways) ? obj.takeaways : [])
-      .map((t) => String(t || '').trim())
-      .filter(Boolean),
     field_visit: {
       enabled: Boolean(fv.enabled),
       title: String(fv.title || '').trim(),

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { BookOpen, Clock, GraduationCap, Hand, MapPin, Sparkles } from 'lucide-react';
 import Reveal from './Reveal';
 import useOfferings from '../hooks/useOfferings';
@@ -18,9 +18,7 @@ import {
   OverviewCard,
   SectionHeader,
   SectionSkeleton,
-  SpecList,
   SubHeading,
-  TakeawayList,
 } from './offerings/OfferingUI';
 
 // Established display order for the original journeys; new ones from admin follow by id
@@ -30,7 +28,7 @@ const FIELD_VISIT_IMAGE = '/artisan/field-visit-banner.png';
 
 function PhaseDetail({ phase, index, className = '' }) {
   return (
-    <div className={`rounded-2xl bg-[#FAF7F0] border border-[#6B4030]/10 p-5 sm:p-7 ${className}`}>
+    <div className={`flex flex-col rounded-2xl bg-[#FAF7F0] border border-[#6B4030]/10 p-5 sm:p-7 ${className}`}>
       <p className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#B89555]">
         Phase {index + 1}
         {phase.period && ` · ${phase.period}`}
@@ -59,17 +57,19 @@ function PhaseDetail({ phase, index, className = '' }) {
       )}
 
       {phase.outcome && (
-        <div className="mt-5 rounded-xl bg-white border border-[#B89555]/40 p-4 flex items-start gap-3">
-          <span className="w-8 h-8 rounded-lg bg-[#4A2C20] text-[#E5B869] flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4" />
-          </span>
-          <div className="min-w-0">
-            <p className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6B4030]/80">
-              You'll create
-            </p>
-            <p className="mt-0.5 font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
-              {phase.outcome}
-            </p>
+        <div className="mt-5">
+          <div className="rounded-xl bg-white border border-[#B89555]/40 p-4 flex items-start gap-3">
+            <span className="w-8 h-8 rounded-lg bg-[#4A2C20] text-[#E5B869] flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6B4030]/80">
+                You&apos;ll create
+              </p>
+              <p className="mt-0.5 font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
+                {phase.outcome}
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -77,9 +77,52 @@ function PhaseDetail({ phase, index, className = '' }) {
   );
 }
 
+/**
+ * List + detail roadmap. On large screens the detail panel sets the row height and
+ * the phase list scrolls inside that height, so both columns always end on the same
+ * line (no blank space). On small screens the detail opens under the selected phase.
+ */
 function Roadmap({ phases, totalDays }) {
   const [active, setActive] = useState(0);
   const safeActive = active < phases.length ? active : 0;
+  const listRef = useRef(null);
+  const [scrollHint, setScrollHint] = useState({ top: false, bottom: false });
+
+  const updateHint = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const scrollable = el.scrollHeight > el.clientHeight + 2;
+    setScrollHint({
+      top: scrollable && el.scrollTop > 4,
+      bottom: scrollable && el.scrollTop + el.clientHeight < el.scrollHeight - 4,
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return undefined;
+    updateHint();
+    el.addEventListener('scroll', updateHint, { passive: true });
+    const ro = new ResizeObserver(updateHint);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', updateHint);
+      ro.disconnect();
+    };
+  }, [updateHint]);
+
+  const select = (i) => {
+    setActive(i);
+    // Keep the chosen phase visible inside the list (scrolls the list only, never the page)
+    const el = listRef.current;
+    const item = el?.children[i];
+    if (el && item && el.scrollHeight > el.clientHeight) {
+      const top = item.offsetTop;
+      if (top < el.scrollTop || top + item.offsetHeight > el.scrollTop + el.clientHeight) {
+        el.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <section className={`rounded-3xl bg-white border border-[#6B4030]/12 p-6 sm:p-8 lg:p-10 ${CARD_SHADOW}`}>
@@ -96,7 +139,7 @@ function Roadmap({ phases, totalDays }) {
               <button
                 key={i}
                 type="button"
-                onClick={() => setActive(i)}
+                onClick={() => select(i)}
                 aria-label={`Show phase ${i + 1}: ${p.title}`}
                 style={{ flex: `${periodLength(p.period)} 1 0%` }}
                 className={`h-full rounded-full transition-colors cursor-pointer ${
@@ -114,53 +157,71 @@ function Roadmap({ phases, totalDays }) {
         </div>
       )}
 
-      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 items-start">
-        <ol className="lg:col-span-5 space-y-2">
-          {phases.map((p, i) => {
-            const isActive = i === safeActive;
-            return (
-              <li key={i}>
-                <button
-                  type="button"
-                  onClick={() => setActive(i)}
-                  aria-expanded={isActive}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
-                    isActive
-                      ? 'bg-[#4A2C20] border-[#4A2C20] text-white'
-                      : 'bg-white border-[#6B4030]/10 hover:border-[#B89555]/50 hover:bg-[#FAF7F0]'
-                  }`}
-                >
-                  <span
-                    className={`w-8 h-8 rounded-full font-['DM_Sans'] text-xs font-bold flex items-center justify-center shrink-0 ${
-                      isActive ? 'bg-[#B89555] text-[#241A16]' : 'bg-[#FAF7F0] border border-[#B89555]/40 text-[#4A2C20]'
+      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 lg:items-stretch">
+        {/* Phase list: fills its column absolutely on lg, so the detail panel decides the row height */}
+        <div className="relative lg:col-span-5">
+          <ol
+            ref={listRef}
+            className="space-y-2 lg:absolute lg:inset-0 lg:overflow-y-auto lg:pr-2 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent]"
+          >
+            {phases.map((p, i) => {
+              const isActive = i === safeActive;
+              return (
+                <li key={i}>
+                  <button
+                    type="button"
+                    onClick={() => select(i)}
+                    aria-expanded={isActive}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
+                      isActive
+                        ? 'bg-[#4A2C20] border-[#4A2C20] text-white'
+                        : 'bg-white border-[#6B4030]/10 hover:border-[#B89555]/50 hover:bg-[#FAF7F0]'
                     }`}
                   >
-                    {i + 1}
-                  </span>
-                  <span className="min-w-0">
-                    {p.period && (
-                      <span
-                        className={`block font-['DM_Sans'] text-[11px] font-medium ${isActive ? 'text-[#E5B869]' : 'text-[#6B4030]/80'}`}
-                      >
-                        {p.period}
-                      </span>
-                    )}
                     <span
-                      className={`block font-['DM_Sans'] text-sm font-semibold leading-snug ${isActive ? 'text-white' : 'text-[#241A16]'}`}
+                      className={`w-8 h-8 rounded-full font-['DM_Sans'] text-xs font-bold flex items-center justify-center shrink-0 ${
+                        isActive ? 'bg-[#B89555] text-[#241A16]' : 'bg-[#FAF7F0] border border-[#B89555]/40 text-[#4A2C20]'
+                      }`}
                     >
-                      {p.title}
+                      {i + 1}
                     </span>
-                  </span>
-                </button>
-                {/* On small screens the detail opens directly under the selected phase */}
-                {isActive && <PhaseDetail phase={p} index={i} className="gni-fade-up mt-2 lg:hidden" />}
-              </li>
-            );
-          })}
-        </ol>
+                    <span className="min-w-0">
+                      {p.period && (
+                        <span
+                          className={`block font-['DM_Sans'] text-[11px] font-medium ${isActive ? 'text-[#E5B869]' : 'text-[#6B4030]/80'}`}
+                        >
+                          {p.period}
+                        </span>
+                      )}
+                      <span
+                        className={`block font-['DM_Sans'] text-sm font-semibold leading-snug ${isActive ? 'text-white' : 'text-[#241A16]'}`}
+                      >
+                        {p.title}
+                      </span>
+                    </span>
+                  </button>
+                  {/* On small screens the detail opens directly under the selected phase */}
+                  {isActive && <PhaseDetail phase={p} index={i} className="gni-fade-up mt-2 lg:hidden" />}
+                </li>
+              );
+            })}
+          </ol>
+          {/* Fades hint that more phases are available by scrolling (lg only) */}
+          {scrollHint.top && (
+            <div className="pointer-events-none absolute inset-x-0 top-0 hidden h-8 bg-gradient-to-b from-white to-transparent lg:block" />
+          )}
+          {scrollHint.bottom && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-10 bg-gradient-to-t from-white to-transparent lg:block" />
+          )}
+        </div>
 
         <div className="hidden lg:block lg:col-span-7">
-          <PhaseDetail key={safeActive} phase={phases[safeActive]} index={safeActive} className="gni-fade-up" />
+          <PhaseDetail
+            key={safeActive}
+            phase={phases[safeActive]}
+            index={safeActive}
+            className="gni-fade-up w-full"
+          />
         </div>
       </div>
     </section>
@@ -199,7 +260,7 @@ function FieldVisitBanner({ visit }) {
 }
 
 /**
- * Journey detail rows (overview + booking, roadmap, extras, field visit). Used by
+ * Journey detail rows (overview + booking, roadmap, field visit). Used by
  * the website section and by the admin editor's preview, so both always match.
  * `preview` disables the application link.
  */
@@ -239,33 +300,6 @@ export function JourneyDetail({ course, preview = false }) {
 
       {/* Row 2: full-width roadmap */}
       {phases.length > 0 && <Roadmap key={course.id} phases={phases} totalDays={totalDays} />}
-
-      {/* Row 3: facts and takeaways */}
-      {(details.specs.length > 0 || details.takeaways.length > 0) && (
-        <div className={`rounded-3xl bg-white border border-[#6B4030]/12 p-6 sm:p-8 lg:p-10 ${CARD_SHADOW}`}>
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
-            {details.specs.length > 0 && (
-              <section className={details.takeaways.length > 0 ? 'lg:col-span-7' : 'lg:col-span-12'}>
-                <SubHeading title="At a glance" />
-                <div className="mt-5">
-                  <SpecList specs={details.specs} layout={details.takeaways.length > 0 ? 'pairs' : 'wide'} />
-                </div>
-              </section>
-            )}
-            {details.takeaways.length > 0 && (
-              <div
-                className={
-                  details.specs.length > 0
-                    ? 'lg:col-span-5 lg:border-l lg:border-[#6B4030]/10 lg:pl-12'
-                    : 'lg:col-span-12'
-                }
-              >
-                <TakeawayList bare title="By the end you'll have" items={details.takeaways} />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {details.field_visit.enabled && <FieldVisitBanner visit={details.field_visit} />}
     </>
