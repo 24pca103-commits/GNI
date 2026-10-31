@@ -11,9 +11,6 @@ export const LIMITS = {
   mode: { min: 3, max: 30 },
   durationLabel: { min: 0, max: 20 },
   inclusions: { min: 0, max: 160 },
-  specLabel: { min: 2, max: 24 },
-  specValue: { min: 2, max: 70 },
-  takeaway: { min: 3, max: 70 },
   moduleDay: { min: 0, max: 16 },
   moduleTitle: { min: 3, max: 60 },
   moduleDesc: { min: 0, max: 180 },
@@ -27,8 +24,6 @@ export const LIMITS = {
 
 export const MAX_MODULES = 12;
 export const MAX_PHASES = 10;
-export const MAX_SPECS = 6;
-export const MAX_TAKEAWAYS = 8;
 export const MAX_PRICE = 500000;
 export const MAX_SEATS = 500;
 

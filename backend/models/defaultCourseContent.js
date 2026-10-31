@@ -5,7 +5,7 @@
  *   Workshops: [{ day, title, desc }]
  *   Journeys:  [{ period, title, details, outcome, materials: [] }]
  * - `details` is stored as a JSON object in `courses.details`
- *   { inclusions, specs: [{ label, value }], takeaways: [], field_visit: { enabled, title, description } }
+ *   { inclusions, field_visit: { enabled, title, description } }
  *
  * Used to seed a fresh database and to backfill rows created before these fields existed.
  * Everything here stays editable from the admin panel afterwards.
@@ -26,18 +26,6 @@ export const DEFAULT_COURSE_CONTENT = {
     ],
     details: {
       inclusions: 'Raw mineral pigments, copper plate and a complete scribing kit are included.',
-      specs: [
-        { label: 'Technique', value: 'Natural pigments & epigraphic scribing' },
-        { label: 'Materials', value: 'Annealed pure copper & mineral ochre' },
-        { label: 'Mentor ratio', value: '1 epigraphist : 8 participants' },
-        { label: 'Tools provided', value: 'Granite mortar, hardened stylus, archival rubbing ink' },
-      ],
-      takeaways: [
-        'Hand-engraved copper inscription charter',
-        'Mineral fresco artwork tablet',
-        'GNI guild certificate',
-        'Studio documentary photos',
-      ],
       field_visit: { enabled: false, title: '', description: '' },
     },
   },
@@ -53,18 +41,6 @@ export const DEFAULT_COURSE_CONTENT = {
     ],
     details: {
       inclusions: 'Brass alloy stock, chasing tools, fireproof apron and eye protection are included.',
-      specs: [
-        { label: 'Technique', value: 'Lost-wax (cire-perdue) casting & repoussé' },
-        { label: 'Metals', value: 'Solid brass & traditional bell metal' },
-        { label: 'Mentor ratio', value: '1 master sthapathi : 6 apprentices' },
-        { label: 'Tools provided', value: 'Pitch bowl, steel chisels, wooden mallet, fire apron' },
-      ],
-      takeaways: [
-        'Handcrafted antique Naga brass medallion',
-        'Repoussé chasing & punch tool',
-        'GNI guild apprenticeship certificate',
-        'Studio documentary photos',
-      ],
       field_visit: { enabled: false, title: '', description: '' },
     },
   },
@@ -80,18 +56,6 @@ export const DEFAULT_COURSE_CONTENT = {
     ],
     details: {
       inclusions: 'Raw mineral stones, a limestone mortar slab and natural binder extracts are included.',
-      specs: [
-        { label: 'Technique', value: 'Buon fresco & natural earth pigments' },
-        { label: 'Pigments', value: 'Natural ochres, malachite & lapis lazuli' },
-        { label: 'Mentor ratio', value: '1 fresco master : 8 apprentices' },
-        { label: 'Tools provided', value: 'Granite pestle, lime plaster tablet, squirrel-hair brushes' },
-      ],
-      takeaways: [
-        'Finished natural mineral fresco plaque',
-        'Curated earth pigment sample palette',
-        'GNI certificate in traditional mural arts',
-        'Studio documentary photos',
-      ],
       field_visit: { enabled: false, title: '', description: '' },
     },
   },
@@ -107,18 +71,6 @@ export const DEFAULT_COURSE_CONTENT = {
     ],
     details: {
       inclusions: 'A polished copper plate, palm leaves, stylus and archival ink are included.',
-      specs: [
-        { label: 'Technique', value: 'Tamili inscription & palm-leaf scribing' },
-        { label: 'Materials', value: 'Annealed pure copper & dried palm folios' },
-        { label: 'Mentor ratio', value: '1 epigraphist : 7 apprentices' },
-        { label: 'Tools provided', value: 'Iron stylus, soot ink, rubbing pads, stone chisels' },
-      ],
-      takeaways: [
-        'Hand-engraved copper charter plate',
-        'Inscribed palm-leaf manuscript folio',
-        'Tamili script alphabet chart',
-        'GNI guild certificate',
-      ],
       field_visit: { enabled: false, title: '', description: '' },
     },
   },
@@ -173,13 +125,6 @@ export const DEFAULT_COURSE_CONTENT = {
     ],
     details: {
       inclusions: 'All studio materials, tools and the guided field visit are included.',
-      specs: [
-        { label: 'Total hours', value: '360 hours (90 theory · 270 studio)' },
-        { label: 'Mentors', value: 'Traditional temple sthapathis' },
-        { label: 'Assessment', value: 'Direct guild critique at each phase' },
-        { label: 'Credential', value: 'GNI guild milestone credit' },
-      ],
-      takeaways: [],
       field_visit: {
         enabled: true,
         title: 'Includes an on-site field visit',
@@ -214,12 +159,6 @@ export const DEFAULT_COURSE_CONTENT = {
     ],
     details: {
       inclusions: 'All studio materials and tools are included.',
-      specs: [
-        { label: 'Total hours', value: '180 hours (45 theory · 135 studio)' },
-        { label: 'Mentors', value: 'Traditional temple sthapathis' },
-        { label: 'Credential', value: 'GNI guild milestone credit' },
-      ],
-      takeaways: [],
       field_visit: { enabled: false, title: '', description: '' },
     },
   },

@@ -36,8 +36,6 @@ import {
   MAX_PHASES,
   MAX_PRICE,
   MAX_SEATS,
-  MAX_SPECS,
-  MAX_TAKEAWAYS,
   PRESET_IMAGES,
 } from './offeringLimits';
 
@@ -205,8 +203,6 @@ function initialState(course, type) {
     modules: modules.length ? modules : [{ day: '', title: '', desc: '' }],
     phases: course && kind === 'journey' ? phasesFromCourse(course, getDayCount(course.duration)) : [],
     inclusions: details.inclusions,
-    specs: details.specs,
-    takeaways: details.takeaways,
     field_visit: details.field_visit,
   };
 }
@@ -276,11 +272,6 @@ function validate(s, bookedSeats) {
   }
 
   checkText(e, 'inclusions', s.inclusions, LIMITS.inclusions, 'Fee inclusions', false);
-  s.specs.forEach((sp, i) => {
-    checkText(e, `specs.${i}.label`, sp.label, LIMITS.specLabel, 'Label', true);
-    checkText(e, `specs.${i}.value`, sp.value, LIMITS.specValue, 'Value', true);
-  });
-  s.takeaways.forEach((t, i) => checkText(e, `takeaways.${i}`, t, LIMITS.takeaway, 'Item', true));
   if (s.type === 'journey' && s.field_visit.enabled) {
     checkText(e, 'fv.title', s.field_visit.title, LIMITS.fieldVisitTitle, 'Banner title', false);
     checkText(e, 'fv.description', s.field_visit.description, LIMITS.fieldVisitDescription, 'Field visit description', true);
@@ -384,8 +375,6 @@ function buildPayload(state, pillars, bookedSeats) {
     highlights: JSON.stringify(highlights),
     details: {
       inclusions: state.inclusions.trim(),
-      specs: state.specs.map((sp) => ({ label: sp.label.trim(), value: sp.value.trim() })),
-      takeaways: state.takeaways.map((t) => t.trim()),
       field_visit: (state.type === 'journey')
         ? {
             enabled: state.field_visit.enabled,
@@ -1301,91 +1290,6 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                     className={inputClass(err('inclusions'))}
                   />
                 </Field>
-
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-[13px] font-semibold text-[#241A16]">
-                      At a glance <span className="font-normal text-[#6B4030]/60">(optional, up to {MAX_SPECS})</span>
-                    </p>
-                    <p className="text-xs text-[#6B4030]/80">
-                      Short facts as label + value. Label up to {LIMITS.specLabel.max} characters, value up to {LIMITS.specValue.max}.
-                    </p>
-                  </div>
-                  {state.specs.map((sp, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[180px_1fr_auto]">
-                      <Field value={sp.label} limit={LIMITS.specLabel} error={err(`specs.${i}.label`)} label="Label">
-                        <input
-                          type="text"
-                          value={sp.label}
-                          maxLength={LIMITS.specLabel.max}
-                          onChange={(e) => setItem('specs', i, 'label', e.target.value)}
-                          placeholder="e.g. Technique"
-                          className={inputClass(err(`specs.${i}.label`))}
-                        />
-                      </Field>
-                      <div className="order-3 col-span-2 sm:order-none sm:col-span-1">
-                        <Field value={sp.value} limit={LIMITS.specValue} error={err(`specs.${i}.value`)} label="Value">
-                          <input
-                            type="text"
-                            value={sp.value}
-                            maxLength={LIMITS.specValue.max}
-                            onChange={(e) => setItem('specs', i, 'value', e.target.value)}
-                            placeholder="e.g. Lost-wax casting & repoussé"
-                            className={inputClass(err(`specs.${i}.value`))}
-                          />
-                        </Field>
-                      </div>
-                      <div className="pt-7">
-                        <IconButton title="Remove fact" tone="danger" onClick={() => removeItem('specs', i)}>
-                          <Trash2 className="h-4 w-4" />
-                        </IconButton>
-                      </div>
-                    </div>
-                  ))}
-                  <AddButton
-                    onClick={() => set('specs', [...state.specs, { label: '', value: '' }])}
-                    disabled={state.specs.length >= MAX_SPECS}
-                  >
-                    Add fact ({state.specs.length}/{MAX_SPECS})
-                  </AddButton>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-[13px] font-semibold text-[#241A16]">
-                      {isJourney ? "By the end you'll have" : 'What you take home'}{' '}
-                      <span className="font-normal text-[#6B4030]/60">(optional, up to {MAX_TAKEAWAYS})</span>
-                    </p>
-                    <p className="text-xs text-[#6B4030]/80">
-                      Things the student keeps: finished pieces, certificates, kits. {LIMITS.takeaway.min}–{LIMITS.takeaway.max} characters each.
-                    </p>
-                  </div>
-                  {state.takeaways.map((t, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_auto] items-start gap-2">
-                      <Field value={t} limit={LIMITS.takeaway} error={err(`takeaways.${i}`)} label={`Item ${i + 1}`}>
-                        <input
-                          type="text"
-                          value={t}
-                          maxLength={LIMITS.takeaway.max}
-                          onChange={(e) => setItem('takeaways', i, null, e.target.value)}
-                          placeholder="e.g. Handcrafted Naga brass medallion"
-                          className={inputClass(err(`takeaways.${i}`))}
-                        />
-                      </Field>
-                      <div className="pt-7">
-                        <IconButton title="Remove item" tone="danger" onClick={() => removeItem('takeaways', i)}>
-                          <Trash2 className="h-4 w-4" />
-                        </IconButton>
-                      </div>
-                    </div>
-                  ))}
-                  <AddButton
-                    onClick={() => set('takeaways', [...state.takeaways, ''])}
-                    disabled={state.takeaways.length >= MAX_TAKEAWAYS}
-                  >
-                    Add item ({state.takeaways.length}/{MAX_TAKEAWAYS})
-                  </AddButton>
-                </div>
 
                 {isJourney && (
                   <div className="space-y-4 rounded-2xl border border-[#6B4030]/12 bg-[#FCFAF6] p-4 sm:p-5">
