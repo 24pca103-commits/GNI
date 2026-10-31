@@ -1,10 +1,10 @@
+import './loadEnv.js';
 import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
 import { DEFAULT_COURSES } from '../models/defaultCourses.js';
+import { DEFAULT_COURSE_CONTENT } from '../models/defaultCourseContent.js';
 import { DEFAULT_PILLARS } from '../models/defaultPillars.js';
 import { DEFAULT_FEEDBACKS } from '../models/defaultFeedbacks.js';
 
-dotenv.config();
 
 // MySQL Configuration with connection timeout to prevent hanging requests
 const rawDbConfig = process.env.DATABASE_URL || process.env.DB_URL;
@@ -90,6 +90,7 @@ export const initMySQL = async () => {
       \`seats_available\` INT DEFAULT 18,
       \`pillar_id\` INT DEFAULT NULL,
       \`pillar_title\` VARCHAR(255) DEFAULT NULL,
+      \`details\` LONGTEXT DEFAULT NULL,
       \`is_active\` TINYINT(1) DEFAULT 1,
       \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -218,8 +219,8 @@ export const initMySQL = async () => {
               \`title\`, \`slug\`, \`category\`, \`pillar_id\`, \`pillar_title\`, \`badge\`, \`duration\`, \`mode\`,
               \`original_price\`, \`discount_price\`, \`discount_percent\`,
               \`description\`, \`highlights\`, \`image_url\`, \`seats_total\`,
-              \`seats_available\`, \`is_active\`
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              \`seats_available\`, \`is_active\`, \`details\`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               c.title,
               c.slug,
@@ -238,6 +239,7 @@ export const initMySQL = async () => {
               c.seats_total,
               c.seats_available,
               c.is_active,
+              c.details ? JSON.stringify(c.details) : null,
             ]
           );
         }
@@ -283,10 +285,26 @@ export const initMySQL = async () => {
     const courseCols = [
       '`pillar_id` INT DEFAULT NULL',
       '`pillar_title` VARCHAR(255) DEFAULT NULL',
+      '`details` LONGTEXT DEFAULT NULL',
     ];
     for (const col of courseCols) {
       try {
         await p.query(`ALTER TABLE \`courses\` ADD COLUMN ${col}`);
+      } catch (_) {}
+    }
+
+    // Backfill structured content for canonical offerings created before these fields existed.
+    // Only touches rows that were never edited through the structured admin form.
+    for (const [slug, content] of Object.entries(DEFAULT_COURSE_CONTENT)) {
+      try {
+        await p.query(
+          "UPDATE `courses` SET `details` = ? WHERE `slug` = ? AND (`details` IS NULL OR `details` = '')",
+          [JSON.stringify(content.details), slug]
+        );
+        await p.query(
+          "UPDATE `courses` SET `highlights` = ? WHERE `slug` = ? AND (`highlights` IS NULL OR `highlights` NOT LIKE '[%')",
+          [JSON.stringify(content.highlights), slug]
+        );
       } catch (_) {}
     }
 

@@ -1,6 +1,7 @@
 import { getPool } from '../config/mysql.js';
 import { DEFAULT_COURSES } from '../models/defaultCourses.js';
 import { GNI_COURSE_PRICING, calculateTrustedFee } from '../models/pricingConfig.js';
+import { parseDetails, serializeDetails } from '../models/courseDetails.js';
 
 // In-memory fallback cache if MySQL is temporarily offline
 let memoryCourses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
@@ -85,6 +86,7 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         ...c,
         pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
         pillar_title: c.pillar_title || '',
+        details: parseDetails(c.details),
         offering_type: offType,
         seats_total: total,
         booked_seats: booked,
@@ -111,6 +113,7 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         ...c,
         pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
         pillar_title: c.pillar_title || '',
+        details: parseDetails(c.details),
         offering_type: offType,
         seats_total: total,
         booked_seats: booked,
@@ -140,7 +143,9 @@ export const getActiveCourses = async (req, res) => {
     return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
-    const active = memoryCourses.filter((c) => c.is_active === 1 || c.is_active === true);
+    const active = memoryCourses
+      .filter((c) => c.is_active === 1 || c.is_active === true)
+      .map((c) => ({ ...c, details: parseDetails(c.details) }));
     return res.status(200).json({ success: true, count: active.length, data: active, fallback: true });
   }
 };
@@ -159,7 +164,8 @@ export const getAllCourses = async (req, res) => {
     return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
-    return res.status(200).json({ success: true, count: memoryCourses.length, data: memoryCourses, fallback: true });
+    const all = memoryCourses.map((c) => ({ ...c, details: parseDetails(c.details) }));
+    return res.status(200).json({ success: true, count: all.length, data: all, fallback: true });
   }
 };
 
@@ -184,6 +190,7 @@ export const createCourse = async (req, res) => {
       pillar_id = null,
       pillar_title = '',
       is_active = 1,
+      details,
     } = req.body;
 
     if (!title || !description) {
@@ -248,10 +255,10 @@ export const createCourse = async (req, res) => {
         message: `Description must be between 15 and 500 characters (${trimmedDesc.length} entered).`,
       });
     }
-    if (trimmedHighlights && trimmedHighlights.length > 2000) {
+    if (trimmedHighlights && trimmedHighlights.length > 8000) {
       return res.status(400).json({
         success: false,
-        message: `Curriculum highlights / roadmap cannot exceed 2000 characters (${trimmedHighlights.length} entered).`,
+        message: `Curriculum highlights / roadmap cannot exceed 8000 characters (${trimmedHighlights.length} entered).`,
       });
     }
 
@@ -269,6 +276,8 @@ export const createCourse = async (req, res) => {
     }
 
     const slug = req.body.slug ? String(req.body.slug).trim() : generateSlug(trimmedTitle);
+    const detailsJson = serializeDetails(details);
+    const parsedDetails = parseDetails(detailsJson);
 
     try {
       const pool = getPool();
@@ -277,8 +286,8 @@ export const createCourse = async (req, res) => {
           \`title\`, \`slug\`, \`category\`, \`badge\`, \`duration\`, \`mode\`,
           \`original_price\`, \`discount_price\`, \`discount_percent\`,
           \`description\`, \`highlights\`, \`image_url\`, \`seats_total\`,
-          \`seats_available\`, \`pillar_id\`, \`pillar_title\`, \`is_active\`
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          \`seats_available\`, \`pillar_id\`, \`pillar_title\`, \`is_active\`, \`details\`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -299,6 +308,7 @@ export const createCourse = async (req, res) => {
         pillar_id ? Number(pillar_id) : null,
         pillar_title ? String(pillar_title).trim() : null,
         Number(is_active) ? 1 : 0,
+        detailsJson,
       ];
 
       const [result] = await pool.query(insertQuery, values);
@@ -324,6 +334,7 @@ export const createCourse = async (req, res) => {
         pillar_title: pillar_title ? String(pillar_title).trim() : '',
         offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
+        details: parsedDetails,
       };
 
       memoryCourses.unshift(newCourse);
@@ -357,6 +368,7 @@ export const createCourse = async (req, res) => {
         pillar_title: pillar_title ? String(pillar_title).trim() : '',
         offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
+        details: parsedDetails,
       };
       // Append newly added offering at the end
       memoryCourses.push(newCourse);
@@ -397,8 +409,10 @@ export const updateCourse = async (req, res) => {
       pillar_id,
       pillar_title,
       is_active,
+      details,
     } = req.body;
 
+    const detailsJson = serializeDetails(details);
     const trimmedTitle = title ? String(title).trim() : null;
     const trimmedDesc = description ? String(description).trim() : null;
     const trimmedBadge = badge !== undefined ? String(badge).trim() : null;
@@ -449,10 +463,10 @@ export const updateCourse = async (req, res) => {
         message: `Description must be between 15 and 500 characters (${trimmedDesc.length} entered).`,
       });
     }
-    if (trimmedHighlights && trimmedHighlights.length > 2000) {
+    if (trimmedHighlights && trimmedHighlights.length > 8000) {
       return res.status(400).json({
         success: false,
-        message: `Curriculum highlights / roadmap cannot exceed 2000 characters (${trimmedHighlights.length} entered).`,
+        message: `Curriculum highlights / roadmap cannot exceed 8000 characters (${trimmedHighlights.length} entered).`,
       });
     }
 
@@ -510,7 +524,8 @@ export const updateCourse = async (req, res) => {
           \`seats_available\` = ?,
           \`pillar_id\` = COALESCE(?, \`pillar_id\`),
           \`pillar_title\` = COALESCE(?, \`pillar_title\`),
-          \`is_active\` = ?
+          \`is_active\` = ?,
+          \`details\` = COALESCE(?, \`details\`)
         WHERE \`id\` = ?
       `;
 
@@ -531,6 +546,7 @@ export const updateCourse = async (req, res) => {
         pillar_id !== undefined ? (pillar_id ? Number(pillar_id) : null) : null,
         pillar_title !== undefined ? String(pillar_title).trim() : null,
         is_active !== undefined ? (Number(is_active) ? 1 : 0) : 1,
+        detailsJson,
         id,
       ];
 
@@ -567,6 +583,7 @@ export const updateCourse = async (req, res) => {
         ...(pillar_title !== undefined && { pillar_title }),
         offering_type: determineOfferingType(trimmedDuration || prev.duration),
         is_active: is_active !== undefined ? (Number(is_active) ? 1 : 0) : prev.is_active,
+        ...(detailsJson !== null && { details: parseDetails(detailsJson) }),
       };
     }
 
