@@ -37,12 +37,14 @@ function SeatsBar({ total, booked }) {
 }
 
 function contentSummary(course, kind) {
+  const options = Array.isArray(course.durations) ? course.durations.length : 0;
+  const extra = options > 1 ? ` · ${options} durations` : '';
   if (kind === 'journey') {
     const n = parseJourneyPhases(course.highlights, getDayCount(course.duration)).length;
-    return `${n} ${n === 1 ? 'phase' : 'phases'}`;
+    return `${n} ${n === 1 ? 'phase' : 'phases'}${extra}`;
   }
   const n = parseWorkshopModules(course.highlights).length;
-  return `${n} ${n === 1 ? 'step' : 'steps'}`;
+  return `${n} ${n === 1 ? 'step' : 'steps'}${extra}`;
 }
 
 export default function OfferingsView({ courses, loading, onCreate, onEdit, onToggle, onDelete }) {

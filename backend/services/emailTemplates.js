@@ -105,9 +105,14 @@ export function renderGniEmailWrapper({
             <td class="gni-header-box" style="background-color: #4A2C20; border-bottom: 3px solid #B89555; padding: 28px 24px; text-align: center; color: #FFFFFF;">
               ${
                 hasLogo
-                  ? `<div style="text-align: center; margin-bottom: 12px;">
-                      <img src="cid:gni_logo" alt="Global Nagas Institute" width="130" style="display: inline-block; margin: 0 auto; max-width: 130px; height: auto;" />
-                    </div>`
+                  ? `<!-- Text monogram in the institute colours (no image, so nothing is attached) -->
+                    <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 14px;">
+                      <tr>
+                        <td align="center" valign="middle">
+                          <div style="width: 54px; height: 54px; border: 2px solid #B89555; border-radius: 50%; font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 700; color: #E5B869; letter-spacing: 1.5px; line-height: 54px; text-align: center;">GNI</div>
+                        </td>
+                      </tr>
+                    </table>`
                   : ''
               }
               <h1 class="gni-header-title" style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 21px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.8px; line-height: 1.3;">

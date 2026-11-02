@@ -4,6 +4,7 @@ import { DEFAULT_COURSES } from '../models/defaultCourses.js';
 import { DEFAULT_COURSE_CONTENT } from '../models/defaultCourseContent.js';
 import { DEFAULT_PILLARS } from '../models/defaultPillars.js';
 import { DEFAULT_FEEDBACKS } from '../models/defaultFeedbacks.js';
+import { runMigrations } from './migrations.js';
 
 
 // MySQL Configuration with connection timeout to prevent hanging requests
@@ -286,6 +287,7 @@ export const initMySQL = async () => {
       '`pillar_id` INT DEFAULT NULL',
       '`pillar_title` VARCHAR(255) DEFAULT NULL',
       '`details` LONGTEXT DEFAULT NULL',
+      '`durations` LONGTEXT DEFAULT NULL',
     ];
     for (const col of courseCols) {
       try {
@@ -350,6 +352,9 @@ export const initMySQL = async () => {
     await seedCoursesIfEmpty(pool);
     await seedPillarsIfEmpty(pool);
     await seedFeedbacksIfEmpty(pool);
+
+    // 4. One-time data migrations (recorded in schema_migrations)
+    await runMigrations(pool);
 
     return pool;
   } catch (error) {

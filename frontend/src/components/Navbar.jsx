@@ -160,7 +160,8 @@ export default function Navbar() {
             <div className="flex items-center gap-3 sm:gap-5">
               <a
                 href="mailto:info@artisancoach.org"
-                className="hover:text-[#B89555] transition-colors flex items-center gap-1.5 text-[#F7F2E8]/85"
+                aria-label="Email info@artisancoach.org"
+                className="hover:text-[#B89555] transition-colors flex items-center gap-1.5 text-[#F7F2E8]/85 p-2 -m-2 sm:p-0 sm:m-0"
               >
                 <Mail className="w-3.5 h-3.5 text-[#B89555]" />
                 <span className="hidden sm:inline">info@artisancoach.org</span>

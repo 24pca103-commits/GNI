@@ -1,7 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle2, ChevronRight, Clock, Download, Inbox, Mail, Phone, Trash2, Users, X, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Clock, Download, Inbox, Lock, Mail, Phone, Trash2, Users, X, XCircle } from 'lucide-react';
 import { Button, EmptyState, IconAction, PageHeader, Panel, SearchInput, Select, StatCard } from './AdminUI';
-import { DEFAULT_STATUS, STATUS_OPTIONS, formatDate, formatINR, statusGroup } from './adminFormat';
+import {
+  DEFAULT_STATUS,
+  STATUS_ACTION,
+  allowedNextStatuses,
+  formatDate,
+  formatINR,
+  holdsSeat,
+  isFinalStatus,
+  statusGroup,
+  statusLabel,
+} from './adminFormat';
 
 const GROUP_STYLE = {
   pending: { select: 'bg-amber-50 text-amber-900 border-amber-200' },
@@ -13,22 +23,61 @@ const nameOf = (r) => r.full_name || r.fullName || 'Unnamed applicant';
 const phoneOf = (r) => r.full_phone || r.phone || '';
 const courseOf = (r) => r.interested_skill || r.course_name || '—';
 
-function StatusSelect({ value, onChange }) {
+/**
+ * Shows the current status and offers only the allowed next steps (see adminFormat
+ * lifecycle). Final statuses are shown locked. Every change is confirmed first
+ * because the student is emailed about it.
+ */
+function StatusSelect({ value, onChange, studentName }) {
   const current = value || DEFAULT_STATUS;
-  const style = current === 'Completed' ? { select: 'bg-sky-50 text-sky-900 border-sky-200' } : GROUP_STYLE[statusGroup(current)];
-  const known = STATUS_OPTIONS.some((o) => o.value === current);
+  const style = current === 'Completed' ? 'bg-sky-50 text-sky-900 border-sky-200' : GROUP_STYLE[statusGroup(current)].select;
+  const next = allowedNextStatuses(current);
+
+  if (next.length === 0) {
+    return (
+      <span
+        onClick={(e) => e.stopPropagation()}
+        title="Final status. It can no longer be changed."
+        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold ${style}`}
+      >
+        <Lock className="h-3 w-3 opacity-70" />
+        {statusLabel(current)}
+      </span>
+    );
+  }
+
+  const handleChange = (e) => {
+    const target = e.target.value;
+    if (!target) return;
+    const finalNote = isFinalStatus(target) ? ' This is final and cannot be undone.' : '';
+    const seatNote =
+      target === 'Approved'
+        ? ' This takes 1 seat.'
+        : (target === 'Cancelled' || target === 'Rejected') && holdsSeat(current)
+        ? ' Their seat will be released.'
+        : '';
+    const ok = window.confirm(
+      `${STATUS_ACTION[target]} for ${studentName || 'this student'}?
+
+Status: ${statusLabel(current)} → ${statusLabel(target)}.${seatNote} The student will be emailed.${finalNote}`
+    );
+    if (ok) onChange(target);
+  };
+
   return (
     <select
-      value={current}
-      onChange={(e) => onChange(e.target.value)}
+      value=""
+      onChange={handleChange}
       onClick={(e) => e.stopPropagation()}
-      aria-label="Application status"
-      className={`rounded-lg border py-1.5 pl-2.5 pr-7 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#B89555]/30 cursor-pointer ${style.select}`}
+      aria-label={`Application status: ${statusLabel(current)}. Choose the next step.`}
+      className={`rounded-lg border py-1.5 pl-2.5 pr-7 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#B89555]/30 cursor-pointer ${style}`}
     >
-      {!known && <option value={current}>{current}</option>}
-      {STATUS_OPTIONS.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
+      <option value="" disabled>
+        {statusLabel(current)}
+      </option>
+      {next.map((status) => (
+        <option key={status} value={status}>
+          → {STATUS_ACTION[status]}
         </option>
       ))}
     </select>
@@ -69,7 +118,7 @@ function ApplicationDrawer({ reg, onClose, onStatusChange, onDelete }) {
 
         <div className="flex-1 space-y-6 overflow-y-auto p-5">
           <div className="flex flex-wrap items-center gap-2">
-            <StatusSelect value={reg.payment_status} onChange={(v) => onStatusChange(reg.id, v)} />
+            <StatusSelect value={reg.payment_status} studentName={nameOf(reg)} onChange={(v) => onStatusChange(reg.id, v)} />
             <span className="text-xs text-[#6B4030]">Applied {formatDate(reg.created_at)}</span>
           </div>
 
@@ -139,7 +188,7 @@ function toCSV(rows) {
     ['Course', courseOf],
     ['Duration', (r) => r.course_duration],
     ['Fee', (r) => r.course_fee],
-    ['Status', (r) => r.payment_status || DEFAULT_STATUS],
+    ['Status', (r) => statusLabel(r.payment_status)],
     ['Experience', (r) => r.experience_level],
     ['Applied on', (r) => r.created_at],
   ];
@@ -279,7 +328,7 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                       <p className="text-xs text-[#6B4030]">{[r.course_duration, r.course_fee ? formatINR(r.course_fee) : ''].filter(Boolean).join(' · ')}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <StatusSelect value={r.payment_status} onChange={(v) => onStatusChange(r.id, v)} />
+                      <StatusSelect value={r.payment_status} studentName={nameOf(r)} onChange={(v) => onStatusChange(r.id, v)} />
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-[#6B4030]">{formatDate(r.created_at)}</td>
                     <td className="px-4 py-3 text-right">

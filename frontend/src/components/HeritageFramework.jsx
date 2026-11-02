@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bookmark, ArrowRight } from 'lucide-react';
 import Reveal from './Reveal';
+import ScrollRow from './ScrollRow';
 import { fetchPillars } from '../services/api';
 
 const DEFAULT_PILLARS = [
@@ -50,10 +51,11 @@ const DEFAULT_PILLARS = [
   },
 ];
 
+const COUNT_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+const countWord = (n) => COUNT_WORDS[n] || String(n);
+
 export default function HeritageFramework() {
-  const [activeDot, setActiveDot] = useState(0);
   const [pillars, setPillars] = useState(DEFAULT_PILLARS);
-  const scrollRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -74,28 +76,6 @@ export default function HeritageFramework() {
     };
   }, []);
 
-  const handleScroll = (e) => {
-    const el = e.currentTarget;
-    if (!el) return;
-    const cardWidth = el.firstElementChild?.offsetWidth || 1;
-    const gap = 16;
-    const scrollPosition = el.scrollLeft;
-    const newIndex = Math.round(scrollPosition / (cardWidth + gap));
-    setActiveDot(Math.min(Math.max(newIndex, 0), pillars.length - 1));
-  };
-
-  const scrollToCard = (index) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = el.firstElementChild?.offsetWidth || 1;
-    const gap = 16;
-    el.scrollTo({
-      left: index * (cardWidth + gap),
-      behavior: 'smooth',
-    });
-    setActiveDot(index);
-  };
-
   const handleStaticClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -105,15 +85,8 @@ export default function HeritageFramework() {
     }
   };
 
-  // Helper for medium grid column layout depending on pillar count
-  const getGridColsClass = (count) => {
-    if (count <= 2) return 'sm:grid-cols-2 max-w-2xl mx-auto';
-    if (count === 3) return 'sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto';
-    return 'sm:grid-cols-2 lg:grid-cols-4';
-  };
-
   return (
-    <section id="heritage-skills" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden">
+    <section id="heritage-skills" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden" style={{ '--row-bg': '#F7F2E8' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Centered Section Header */}
         <Reveal direction="up" delay={100}>
@@ -128,7 +101,7 @@ export default function HeritageFramework() {
             </h2>
             <div className="w-16 h-0.5 bg-[#B89555] mx-auto mt-2.5" />
             <p className="font-['DM_Sans'] mt-2.5 text-sm sm:text-base text-[#6B4030] font-normal leading-relaxed mb-3 text-center mx-auto max-w-2xl">
-              Four comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship.
+              {countWord(pillars.length)} comprehensive disciplines bridging ancient Tamil wisdom with practical livelihood and craftsmanship.
             </p>
 
             {/* Centered Repository Action Button */}
@@ -146,18 +119,12 @@ export default function HeritageFramework() {
 
         {/* Medium-Sized Cards Grid - 4 Columns on Desktop / 2 on Tablet / Swipable on Mobile */}
         <Reveal direction="up" delay={150}>
-          <div
-            ref={scrollRef}
-            onScroll={handleScroll}
-            className={`flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-1 gap-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid ${getGridColsClass(
-              pillars.length
-            )} sm:gap-5 lg:gap-6 items-stretch`}
-          >
+          <ScrollRow label="Heritage skill pillars" dots>
             {pillars.map((pillar) => {
               return (
                 <div
                   key={pillar.number}
-                  className="w-[76vw] max-w-[280px] sm:w-auto sm:max-w-none shrink-0 snap-center flex flex-col h-full"
+                  className="w-[78vw] max-w-[290px] sm:w-[290px] shrink-0 snap-start flex flex-col"
                 >
                   <div className="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-[#6B4030]/15 border-b-4 border-b-[#B89555] shadow-[0_12px_30px_-6px_rgba(74,44,32,0.12)] hover:shadow-[0_20px_45px_-8px_rgba(74,44,32,0.22)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full relative select-none">
                     {/* Card Featured Image - Proportional Medium Height */}
@@ -234,23 +201,7 @@ export default function HeritageFramework() {
                 </div>
               );
             })}
-          </div>
-
-          {/* Mobile Interactive Indicator Dots (Dynamic color change on manual scroll) */}
-          <div className="flex md:hidden items-center justify-center gap-2 mt-3">
-            {pillars.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => scrollToCard(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  activeDot === i
-                    ? 'w-6 bg-[#B89555]'
-                    : 'w-2 bg-[#6B4030]/30 hover:bg-[#6B4030]/60'
-                }`}
-                aria-label={`Go to track ${i + 1}`}
-              />
-            ))}
-          </div>
+          </ScrollRow>
         </Reveal>
       </div>
     </section>

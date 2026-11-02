@@ -12,13 +12,14 @@ import {
   Loader2,
   MapPin,
   Monitor,
-  Plus,
   Tag,
   Trash2,
   UploadCloud,
   X,
 } from 'lucide-react';
 import { createCourse, fetchPillars, updateCourse, uploadOfferingImage } from '../../services/api';
+import { AddButton, Field, IconButton, Section } from './FormUI';
+import { inputClass } from './adminFormat';
 import { WorkshopDetail } from '../WorkshopSection';
 import { JourneyDetail } from '../LearningJourney';
 import {
@@ -38,113 +39,6 @@ import {
   MAX_SEATS,
   PRESET_IMAGES,
 } from './offeringLimits';
-
-/* ------------------------------------------------------------------ */
-/* Small form primitives                                               */
-/* ------------------------------------------------------------------ */
-
-const inputBase =
-  'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-[#241A16] placeholder:text-[#6B4030]/40 transition-colors focus:outline-none focus:ring-2 cursor-text select-text';
-const inputOk = 'border-[#6B4030]/20 focus:border-[#B89555] focus:ring-[#B89555]/20';
-const inputBad = 'border-red-500 bg-red-50 focus:border-red-600 focus:ring-red-200';
-
-function inputClass(error, extra = '') {
-  return `${inputBase} ${error ? inputBad : inputOk} ${extra}`;
-}
-
-function Counter({ value, limit }) {
-  if (!limit) return null;
-  const len = String(value ?? '').length;
-  const over = len > limit.max;
-  const under = len > 0 && len < limit.min;
-  const near = !over && len >= limit.max * 0.9;
-  return (
-    <span
-      className={`text-[11px] tabular-nums ${
-        over || under ? 'text-red-600 font-semibold' : near ? 'text-amber-700 font-semibold' : 'text-[#6B4030]/60'
-      }`}
-    >
-      {len}/{limit.max}
-    </span>
-  );
-}
-
-function Field({ label, required, optional, hint, value, limit, error, children, htmlFor }) {
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-end justify-between gap-3">
-        <label htmlFor={htmlFor} className="text-[13px] font-semibold text-[#241A16]">
-          {label}
-          {required && <span className="text-red-600"> *</span>}
-          {optional && <span className="ml-1 font-normal text-[#6B4030]/60">(optional)</span>}
-        </label>
-        <Counter value={value} limit={limit} />
-      </div>
-      {children}
-      {error ? (
-        <p className="flex items-start gap-1.5 text-xs font-medium text-red-600">
-          <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" />
-          {error}
-        </p>
-      ) : (
-        hint && <p className="text-xs leading-relaxed text-[#6B4030]/80">{hint}</p>
-      )}
-    </div>
-  );
-}
-
-function Section({ id, number, icon: Icon, title, description, children }) {
-  return (
-    <section id={`oe-section-${id}`} className="scroll-mt-4 rounded-2xl border border-[#6B4030]/12 bg-white">
-      <header className="flex items-start gap-3 border-b border-[#6B4030]/10 px-5 py-4 sm:px-6">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#4A2C20] text-[#E5B869]">
-          <Icon className="h-4 w-4" />
-        </span>
-        <div>
-          <h3 className="text-[15px] font-bold text-[#241A16]">
-            <span className="mr-1.5 text-[#B89555]">{number}.</span>
-            {title}
-          </h3>
-          <p className="mt-0.5 text-xs leading-relaxed text-[#6B4030]">{description}</p>
-        </div>
-      </header>
-      <div className="space-y-5 px-5 py-5 sm:px-6">{children}</div>
-    </section>
-  );
-}
-
-function IconButton({ onClick, title, children, tone = 'neutral', disabled }) {
-  const tones = {
-    neutral: 'text-[#6B4030] hover:bg-[#FAF7F0] hover:text-[#241A16]',
-    danger: 'text-red-500 hover:bg-red-50 hover:text-red-700',
-  };
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      aria-label={title}
-      disabled={disabled}
-      className={`rounded-lg p-1.5 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 ${tones[tone]}`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function AddButton({ onClick, disabled, children }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="inline-flex items-center gap-1.5 rounded-xl border border-dashed border-[#B89555]/70 bg-[#FAF7F0] px-3.5 py-2 text-xs font-semibold text-[#4A2C20] transition-colors hover:border-[#B89555] hover:bg-[#F3EBDC] cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
-    >
-      <Plus className="h-3.5 w-3.5 text-[#B89555]" />
-      {children}
-    </button>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /* State helpers                                                       */
@@ -181,9 +75,27 @@ function phasesFromCourse(course, totalDays) {
   });
 }
 
+const blankOption = (days = '') => ({ days, label: '', fee: '', original_price: '' });
+
+/** Duration options from the API, or built from an older offering's single duration and prices. */
+function durationsFromCourse(course, kind) {
+  if (Array.isArray(course?.durations) && course.durations.length) {
+    return course.durations.map((o) => ({
+      days: Number(o.days) || '',
+      label: o.label || '',
+      fee: Number(o.fee) || '',
+      original_price: Number(o.original_price) > Number(o.fee) ? Number(o.original_price) : '',
+    }));
+  }
+  if (!course) return [blankOption(kind === 'workshop' ? 1 : 30)];
+  const { days, label } = splitDuration(course.duration);
+  const fee = Number(course.discount_price) || '';
+  const regular = Number(course.original_price);
+  return [{ days, label, fee, original_price: regular > fee ? regular : '' }];
+}
+
 function initialState(course, type) {
   const kind = course ? getOfferingKind(course) : type;
-  const { days, label } = splitDuration(course?.duration);
   const details = parseDetails(course?.details);
   const modules = course && kind === 'workshop' ? parseWorkshopModules(course.highlights) : [];
   return {
@@ -192,11 +104,8 @@ function initialState(course, type) {
     badge: course?.badge || '',
     pillar_id: course?.pillar_id ? String(course.pillar_id) : '',
     description: course?.description || '',
-    days: days === '' ? (kind === 'workshop' ? 1 : '') : days,
-    durationLabel: label,
+    durations: durationsFromCourse(course, kind),
     mode: course?.mode || '',
-    original_price: course ? Number(course.original_price) || '' : '',
-    discount_price: course ? Number(course.discount_price) || '' : '',
     seats_total: course ? Number(course.seats_total) || '' : '',
     image_url: course?.image_url || '',
     is_active: course ? (Number(course.is_active) ? 1 : 0) : 1,
@@ -223,23 +132,31 @@ function validate(s, bookedSeats) {
   checkText(e, 'badge', s.badge, LIMITS.badge, 'Badge', false);
   checkText(e, 'description', s.description, LIMITS.description, 'Description', true);
   checkText(e, 'mode', s.mode, LIMITS.mode, 'Learning format', true);
-  checkText(e, 'durationLabel', s.durationLabel, LIMITS.durationLabel, 'Duration label', false);
 
-  const days = Number(s.days);
-  if (!Number.isInteger(days) || days < range.min || days > range.max) {
-    e.days =
-      s.type === 'workshop'
-        ? `Workshops run 1–9 days. For 10 days or more, switch the type to Learning Journey.`
-        : `Learning journeys run 10–365 days. For shorter courses, switch the type to Workshop.`;
-  }
-
-  const offer = Number(s.discount_price);
-  const regular = Number(s.original_price);
-  if (!offer || offer <= 0) e.discount_price = 'Enter the fee students pay (greater than ₹0).';
-  else if (offer > MAX_PRICE) e.discount_price = `Fee cannot exceed ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
-  if (s.original_price !== '' && regular > 0 && offer > regular)
-    e.original_price = 'Regular fee must be equal to or higher than the offer fee.';
-  if (regular > MAX_PRICE) e.original_price = `Fee cannot exceed ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+  // Duration options: the first is the main one (decides the type and the website price)
+  const seen = new Set();
+  s.durations.forEach((o, i) => {
+    const d = Number(o.days);
+    const r = i === 0 ? range : { min: 1, max: 365 };
+    if (!Number.isInteger(d) || d < r.min || d > r.max) {
+      e[`durations.${i}.days`] =
+        i > 0
+          ? 'Days must be 1–365.'
+          : s.type === 'workshop'
+          ? 'A workshop main duration is 1–9 days. For 10+ days switch the type to Learning Journey.'
+          : 'A journey main duration is 10–365 days. For shorter courses switch the type to Workshop.';
+    }
+    checkText(e, `durations.${i}.label`, o.label, LIMITS.durationLabel, 'Label', false);
+    const offer = Number(o.fee);
+    const regular = Number(o.original_price);
+    if (!offer || offer <= 0) e[`durations.${i}.fee`] = 'Enter the fee students pay.';
+    else if (offer > MAX_PRICE) e[`durations.${i}.fee`] = `Max ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+    if (o.original_price !== '' && (regular < offer || regular > MAX_PRICE))
+      e[`durations.${i}.original_price`] = 'Must be equal to or above the offer fee.';
+    const key = Number.isInteger(d) ? buildDuration(d, o.label || '').toLowerCase() : '';
+    if (key && seen.has(key)) e[`durations.${i}.days`] = 'This duration is already listed.';
+    if (key) seen.add(key);
+  });
 
   const seats = Number(s.seats_total);
   if (!Number.isInteger(seats) || seats < 1 || seats > MAX_SEATS) e.seats_total = `Enter total seats between 1 and ${MAX_SEATS}.`;
@@ -256,6 +173,8 @@ function validate(s, bookedSeats) {
     });
   } else {
     if (s.phases.length === 0) e.phases = 'Add at least one phase to the roadmap.';
+    // The roadmap follows the main duration (row 1 of the duration options)
+    const days = Number(s.durations[0]?.days);
     let prevEnd = 0;
     s.phases.forEach((p, i) => {
       checkText(e, `phases.${i}.title`, p.title, LIMITS.phaseTitle, 'Phase title', true);
@@ -280,11 +199,127 @@ function validate(s, bookedSeats) {
 }
 
 const SECTION_OF = (key) => {
-  if (/^(title|badge|description|mode|days|durationLabel)$/.test(key)) return 'basics';
-  if (/^(original_price|discount_price|seats_total)$/.test(key)) return 'pricing';
+  if (/^(title|badge|description|mode)$/.test(key)) return 'basics';
+  if (/^(durations|seats_total)/.test(key)) return 'pricing';
   if (/^(modules|phases)/.test(key)) return 'curriculum';
   return 'details';
 };
+
+/**
+ * Duration options table: each row is a duration students can pick on the Register page,
+ * with its own fee. Row 1 is the main option (sets the type and the price on the website).
+ */
+function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove }) {
+  const range = DAY_RANGE[type];
+  const cellErr = (i, key) => err(`durations.${i}.${key}`);
+  return (
+    <div className="space-y-3">
+      <div>
+        <p className="text-[13px] font-semibold text-[#241A16]">
+          Duration options & fees <span className="text-red-600">*</span>
+        </p>
+        <p className="text-xs leading-relaxed text-[#6B4030]/80">
+          Add each duration students can choose, with its fee. The first row is the main option: it is shown on the website and its days must be{' '}
+          {range.min}–{range.max} for a {type === 'workshop' ? 'workshop' : 'learning journey'}. Label is optional, up to{' '}
+          {LIMITS.durationLabel.max} characters (e.g. “Intensive” → “1 Day Intensive”).
+        </p>
+      </div>
+
+      <div className="hidden grid-cols-[88px_1fr_120px_120px_88px] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
+        <span>Days</span>
+        <span>Label (optional)</span>
+        <span>Offer fee ₹</span>
+        <span>Regular fee ₹</span>
+        <span />
+      </div>
+
+      {options.map((o, i) => {
+        const days = Number(o.days);
+        const fee = Number(o.fee);
+        const regular = Number(o.original_price);
+        const save = regular > fee && fee > 0 ? Math.round(((regular - fee) / regular) * 100) : 0;
+        const rowErrors = ['days', 'label', 'fee', 'original_price'].map((k) => cellErr(i, k)).filter(Boolean);
+        return (
+          <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-[88px_1fr_120px_120px_88px] md:items-center">
+              <label className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Days</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={i === 0 ? range.min : 1}
+                  max={i === 0 ? range.max : 365}
+                  value={o.days}
+                  onChange={(e) => onChange(i, 'days', e.target.value === '' ? '' : Number(e.target.value))}
+                  aria-label={`Option ${i + 1} days`}
+                  className={inputClass(cellErr(i, 'days'), 'tabular-nums')}
+                />
+              </label>
+              <label className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Label (optional)</span>
+                <input
+                  type="text"
+                  value={o.label}
+                  maxLength={LIMITS.durationLabel.max}
+                  onChange={(e) => onChange(i, 'label', e.target.value)}
+                  placeholder="e.g. Intensive"
+                  aria-label={`Option ${i + 1} label`}
+                  className={inputClass(cellErr(i, 'label'))}
+                />
+              </label>
+              <label className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Offer fee ₹</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min="1"
+                  max={MAX_PRICE}
+                  value={o.fee}
+                  onChange={(e) => onChange(i, 'fee', e.target.value)}
+                  placeholder="5499"
+                  aria-label={`Option ${i + 1} offer fee`}
+                  className={inputClass(cellErr(i, 'fee'), 'tabular-nums font-semibold')}
+                />
+              </label>
+              <label className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Regular fee ₹</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  max={MAX_PRICE}
+                  value={o.original_price}
+                  onChange={(e) => onChange(i, 'original_price', e.target.value)}
+                  placeholder="optional"
+                  aria-label={`Option ${i + 1} regular fee`}
+                  className={inputClass(cellErr(i, 'original_price'), 'tabular-nums')}
+                />
+              </label>
+              <div className="col-span-2 flex items-center justify-end md:col-span-1">
+                <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
+                <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
+                <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
+                  <Trash2 className="h-4 w-4" />
+                </IconButton>
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-[#6B4030]">
+              {i === 0 && <span className="mr-1.5 rounded bg-[#4A2C20] px-1.5 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN</span>}
+              {Number.isInteger(days) && days > 0 ? buildDuration(days, o.label || '') : 'Set the days'}
+              {fee > 0 && ` · ₹${fee.toLocaleString('en-IN')}`}
+              {save > 0 && ` · Save ${save}%`}
+            </p>
+            {rowErrors.length > 0 && <p className="mt-1 text-xs font-medium text-red-600">{rowErrors.join(' ')}</p>}
+          </div>
+        );
+      })}
+
+      <AddButton onClick={onAdd} disabled={options.length >= 6}>
+        Add duration option ({options.length}/6)
+      </AddButton>
+    </div>
+  );
+}
 
 /** Full-screen preview using the same components as the public website. */
 function PreviewPage({ course, isJourney, onClose, onSave, saveLabel }) {
@@ -322,7 +357,7 @@ function PreviewPage({ course, isJourney, onClose, onSave, saveLabel }) {
         </div>
       </header>
       <div className="flex-1 overflow-y-auto">
-        <section className="gni-offering py-10 md:py-14" style={{ '--picker-bg': bg }}>
+        <section className="gni-offering py-10 md:py-14" style={{ '--row-bg': bg }}>
           <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:space-y-8 lg:px-8">
             {isJourney ? <JourneyDetail course={course} preview /> : <WorkshopDetail course={course} preview />}
           </div>
@@ -361,11 +396,17 @@ function buildPayload(state, pillars, bookedSeats) {
     category: (state.type === 'journey') ? 'Learning Journey' : 'Workshop',
     offering_type: state.type,
     badge: state.badge.trim(),
-    duration: buildDuration(state.days, state.durationLabel),
+    duration: buildDuration(state.durations[0]?.days, state.durations[0]?.label || ''),
     mode: state.mode.trim(),
     description: state.description.trim(),
-    original_price: Number(state.original_price) || Number(state.discount_price),
-    discount_price: Number(state.discount_price),
+    original_price: Number(state.durations[0]?.original_price) || Number(state.durations[0]?.fee),
+    discount_price: Number(state.durations[0]?.fee),
+    durations: state.durations.map((o) => ({
+      days: Number(o.days),
+      label: String(o.label || '').trim(),
+      fee: Number(o.fee),
+      original_price: Number(o.original_price) || Number(o.fee),
+    })),
     seats_total: seatsTotal,
     seats_available: Math.max(0, seatsTotal - bookedSeats),
     image_url: state.image_url.trim() || ((state.type === 'journey') ? '/artisan/pedagogy-practice.jpg' : '/artisan/workshop.jpg'),
@@ -411,7 +452,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
   const errorCount = Object.keys(errors).length;
   const sectionHasError = (id) => showErrors && Object.keys(errors).some((k) => SECTION_OF(k) === id);
   const isDirty = JSON.stringify(state) !== snapshot;
-  const days = Number(state.days) || 0;
+  const days = Number(state.durations[0]?.days) || 0;
   const isJourney = state.type === 'journey';
 
   useEffect(() => {
@@ -466,7 +507,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
     setState((s) => ({
       ...s,
       type,
-      days: type === 'workshop' ? 1 : 30,
+      durations: s.durations.map((o, i) => (i === 0 ? { ...o, days: type === 'workshop' ? 1 : 30 } : o)),
       modules: s.modules.length ? s.modules : [{ day: '', title: '', desc: '' }],
       phases: s.phases,
     }));
@@ -558,11 +599,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
   };
 
   /* ---- derived values ---- */
-  const offer = Number(state.discount_price) || 0;
-  const regular = Number(state.original_price) || 0;
-  const savePercent = regular > offer && offer > 0 ? Math.round(((regular - offer) / regular) * 100) : 0;
   const seatsTotal = Number(state.seats_total) || 0;
-  const durationPreview = days ? buildDuration(days, state.durationLabel) : '';
 
   const nav = [
     { id: 'basics', label: 'Basics' },
@@ -765,46 +802,6 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                   />
                 </Field>
 
-                <div className="grid gap-5 sm:grid-cols-[140px_1fr]">
-                  <Field
-                    label="Days"
-                    required
-                    htmlFor="oe-days"
-                    error={err('days')}
-                    hint={isJourney ? '10–365 days.' : '1–9 days.'}
-                  >
-                    <input
-                      id="oe-days"
-                      type="number"
-                      inputMode="numeric"
-                      min={DAY_RANGE[state.type].min}
-                      max={DAY_RANGE[state.type].max}
-                      value={state.days}
-                      onChange={(e) => set('days', e.target.value === '' ? '' : Number(e.target.value))}
-                      className={inputClass(err('days'), 'tabular-nums')}
-                    />
-                  </Field>
-                  <Field
-                    label="Duration label"
-                    optional
-                    htmlFor="oe-durlabel"
-                    value={state.durationLabel}
-                    limit={LIMITS.durationLabel}
-                    error={err('durationLabel')}
-                    hint={durationPreview ? `Shown as “${durationPreview}”.` : 'Word after the days, e.g. “Intensive” → “1 Day Intensive”.'}
-                  >
-                    <input
-                      id="oe-durlabel"
-                      type="text"
-                      value={state.durationLabel}
-                      maxLength={LIMITS.durationLabel.max}
-                      onChange={(e) => set('durationLabel', e.target.value)}
-                      placeholder={isJourney ? 'e.g. Cohort' : 'e.g. Intensive'}
-                      className={inputClass(err('durationLabel'))}
-                    />
-                  </Field>
-                </div>
-
                 <Field
                   label="Learning format"
                   required
@@ -832,52 +829,17 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                 number={2}
                 icon={Tag}
                 title="Fee & seats"
-                description="Shown on the booking card. Seats left update automatically from confirmed bookings."
+                description="Durations and fees students can choose on the Register page. The first option is shown on the website. Seats left update automatically."
               >
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Field
-                    label="Offer fee (₹)"
-                    required
-                    htmlFor="oe-offer"
-                    error={err('discount_price')}
-                    hint="The amount students pay."
-                  >
-                    <input
-                      id="oe-offer"
-                      type="number"
-                      inputMode="numeric"
-                      min="1"
-                      max={MAX_PRICE}
-                      value={state.discount_price}
-                      onChange={(e) => set('discount_price', e.target.value)}
-                      placeholder="5499"
-                      className={inputClass(err('discount_price'), 'tabular-nums font-semibold')}
-                    />
-                  </Field>
-                  <Field
-                    label="Regular fee (₹)"
-                    optional
-                    htmlFor="oe-regular"
-                    error={err('original_price')}
-                    hint={
-                      savePercent > 0
-                        ? `Shown crossed out with “Save ${savePercent}%”.`
-                        : 'Higher than the offer fee to show a discount. Leave empty for no discount.'
-                    }
-                  >
-                    <input
-                      id="oe-regular"
-                      type="number"
-                      inputMode="numeric"
-                      min="0"
-                      max={MAX_PRICE}
-                      value={state.original_price}
-                      onChange={(e) => set('original_price', e.target.value)}
-                      placeholder="10999"
-                      className={inputClass(err('original_price'), 'tabular-nums')}
-                    />
-                  </Field>
-                </div>
+                <DurationOptions
+                  options={state.durations}
+                  type={state.type}
+                  err={err}
+                  onChange={(i, key, value) => setItem('durations', i, key, value)}
+                  onAdd={() => set('durations', [...state.durations, blankOption()])}
+                  onRemove={(i) => removeItem('durations', i)}
+                  onMove={(i, dir) => moveItem('durations', i, dir)}
+                />
 
                 <div className="grid gap-5 sm:grid-cols-3">
                   <Field label="Total seats" required htmlFor="oe-seats" error={err('seats_total')} hint={`1–${MAX_SEATS} per batch.`}>
@@ -898,7 +860,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                     <div className="rounded-xl border border-[#6B4030]/10 bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-semibold tabular-nums text-[#4A2C20]">
                       {bookedSeats}
                     </div>
-                    <p className="text-xs text-[#6B4030]/80">From applications.</p>
+                    <p className="text-xs text-[#6B4030]/80">Approved, confirmed and completed students.</p>
                   </div>
                   <div className="space-y-1.5">
                     <span className="text-[13px] font-semibold text-[#241A16]">Seats left</span>
@@ -1043,7 +1005,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#FAF7F0] px-4 py-3">
                       <div className="text-xs text-[#4A2C20]">
                         <span className="font-semibold">
-                          {days ? `${Math.min(lastEnd, days)} of ${days} days planned` : 'Set the number of days in Basics first'}
+                          {days ? `${Math.min(lastEnd, days)} of ${days} days planned` : 'Set the main duration in Fee & seats first'}
                         </span>
                         {days > 0 && lastEnd < days && state.phases.length > 0 && (
                           <span className="text-amber-700"> · Days {lastEnd + 1}–{days} have no phase yet</span>

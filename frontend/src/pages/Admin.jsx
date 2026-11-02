@@ -6,6 +6,7 @@ import OfferingsView from '../components/admin/OfferingsView';
 import ApplicationsView from '../components/admin/ApplicationsView';
 import { statusGroup } from '../components/admin/adminFormat';
 import FeedbackView from '../components/admin/FeedbackView';
+import PillarsView from '../components/admin/PillarsView';
 import { getOfferingKind } from '../utils/offerings';
 import {
   CheckCircle2,
@@ -30,6 +31,8 @@ import {
   verifyAdminResetOtp,
   resetAdminPassword,
   fetchAdminFeedbacks,
+  fetchPillars,
+  deletePillar,
   updateFeedbackStatus,
   deleteFeedback,
 } from '../services/api';
@@ -96,6 +99,37 @@ export default function Admin() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackActionId, setFeedbackActionId] = useState(null);
+
+  // Heritage pillars (home page cards, Register page skill pillar list, offering grouping)
+  const [pillars, setPillars] = useState([]);
+  const [pillarsLoading, setPillarsLoading] = useState(false);
+
+  const loadPillars = async () => {
+    setPillarsLoading(true);
+    try {
+      const list = await fetchPillars();
+      if (Array.isArray(list)) setPillars(list);
+    } finally {
+      setPillarsLoading(false);
+    }
+  };
+
+  const handleDeletePillar = async (pillar, offeringCount) => {
+    if (offeringCount > 0) {
+      setFormError(
+        `"${pillar.title}" has ${offeringCount} offering${offeringCount === 1 ? '' : 's'}. Move ${offeringCount === 1 ? 'it' : 'them'} to another pillar first, or hide the pillar instead.`
+      );
+      return;
+    }
+    if (!window.confirm(`Delete the pillar "${pillar.title}"? It will disappear from the website.`)) return;
+    try {
+      await deletePillar(pillar.id);
+      await loadPillars();
+      setFormSuccess('Pillar deleted.');
+    } catch (err) {
+      setFormError(err.message || 'Failed to delete pillar.');
+    }
+  };
 
   const loadFeedbacks = async () => {
     setFeedbackLoading(true);
@@ -220,6 +254,7 @@ export default function Admin() {
     loadDashboardData();
     loadRegistrations();
     loadFeedbacks();
+    loadPillars();
 
     const interval = setInterval(() => {
       loadDashboardData();
@@ -248,7 +283,7 @@ export default function Admin() {
   const handleSyncAllData = async () => {
     setIsSyncing(true);
     try {
-      await Promise.all([loadDashboardData(), loadRegistrations(), loadFeedbacks()]);
+      await Promise.all([loadDashboardData(), loadRegistrations(), loadFeedbacks(), loadPillars()]);
     } finally {
       setTimeout(() => setIsSyncing(false), 500);
     }
@@ -849,6 +884,7 @@ export default function Admin() {
         setActiveTab(tab);
         if (tab === 'registrations') loadRegistrations();
         if (tab === 'feedbacks') loadFeedbacks();
+        if (tab === 'pillars') loadPillars();
       }}
       badges={{
         courses: { count: courses.length },
@@ -885,6 +921,19 @@ export default function Admin() {
           loading={regLoading}
           onStatusChange={handleStatusChange}
           onDelete={handleDeleteRegistration}
+        />
+      )}
+
+      {activeTab === 'pillars' && (
+        <PillarsView
+          pillars={pillars}
+          courses={courses}
+          loading={pillarsLoading}
+          onChanged={async () => {
+            await Promise.all([loadPillars(), loadDashboardData()]);
+          }}
+          onDelete={handleDeletePillar}
+          notify={(msg, isError) => (isError ? setFormError(msg) : setFormSuccess(msg))}
         />
       )}
 

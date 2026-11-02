@@ -199,7 +199,7 @@ export default function Hero() {
           <button
             key={idx}
             onClick={() => goToSlide(idx)}
-            className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 cursor-pointer ${
+            className={`gni-dot h-1.5 sm:h-2 rounded-full transition-all duration-300 cursor-pointer ${
               idx === currentSlide
                 ? 'w-7 sm:w-8 bg-[#B89555]'
                 : 'w-2 sm:w-2.5 bg-[#F7F2E8]/40 hover:bg-[#F7F2E8]/70'

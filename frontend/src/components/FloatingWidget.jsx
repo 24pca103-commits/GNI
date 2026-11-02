@@ -3,21 +3,34 @@ import { Link, useLocation } from 'react-router-dom';
 import { ArrowUp, Phone, GraduationCap } from 'lucide-react';
 
 export default function FloatingWidget() {
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  // Shown only once the visitor reaches the bottom of the site (the footer is on screen),
+  // so the buttons never sit on top of page content while reading.
+  const [atBottom, setAtBottom] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 280) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const footer = document.querySelector('footer');
+      const reached = footer
+        ? footer.getBoundingClientRect().top < window.innerHeight
+        : window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 120;
+      setAtBottom(reached);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(check);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    check();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [location.pathname]);
 
   // Hide widget completely on Admin dashboard and Register page (Requirement 4)
   if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/register')) {
@@ -36,10 +49,13 @@ export default function FloatingWidget() {
   return (
     <aside
       aria-label="Quick actions and contact options"
-      className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2.5 print:hidden"
+      aria-hidden={!atBottom}
+      className={`fixed right-4 bottom-[84px] sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2.5 print:hidden transition-all duration-300 ease-out ${
+        atBottom ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none invisible'
+      }`}
     >
       {/* Scroll to Top Action Button (Icon Only - Requirement 1) */}
-      {showScrollTop && (
+      {atBottom && (
         <button
           type="button"
           onClick={scrollToTop}

@@ -318,3 +318,13 @@
 .gni-offering :where(h2, h3, h4, h5, p, li, dt, dd, span) {
   overflow-wrap: anywhere;
 }
+
+/* Carousel dots: keep the small visual dot but give it a finger-sized tap area */
+.gni-dot {
+  position: relative;
+}
+.gni-dot::before {
+  content: '';
+  position: absolute;
+  inset: -16px -4px;
+}

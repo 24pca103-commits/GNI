@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Inbox, Layers, LogOut, Menu, MessageSquareQuote, RefreshCw, X } from 'lucide-react';
+import { ExternalLink, Inbox, Landmark, Layers, LogOut, Menu, MessageSquareQuote, RefreshCw, X } from 'lucide-react';
 
 const NAV = [
   { id: 'courses', label: 'Offerings', icon: Layers },
   { id: 'registrations', label: 'Applications', icon: Inbox },
   { id: 'feedbacks', label: 'Reviews', icon: MessageSquareQuote },
+  { id: 'pillars', label: 'Pillars', icon: Landmark },
 ];
 
 function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync, onLogout }) {
