@@ -107,7 +107,7 @@ export default function WorkshopSection() {
   });
 
   return (
-    <section id="workshop" className="gni-offering py-16 md:py-24 bg-[#FAF7F0] relative overflow-hidden" style={{ '--picker-bg': '#FAF7F0' }}>
+    <section id="workshop" className="gni-offering py-16 md:py-24 bg-[#FAF7F0] relative overflow-hidden" style={{ '--row-bg': '#FAF7F0' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeader
           icon={Flame}

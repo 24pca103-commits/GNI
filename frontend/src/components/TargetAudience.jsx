@@ -186,7 +186,7 @@ export default function TargetAudience() {
               <button
                 key={i}
                 onClick={() => scrollToCard(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                className={`gni-dot h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   activeDot === i
                     ? 'w-6 bg-[#B89555]'
                     : 'w-2 bg-[#6B4030]/30 hover:bg-[#6B4030]/60'

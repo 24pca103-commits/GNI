@@ -1,7 +1,8 @@
 import { getPool } from '../config/mysql.js';
 import { DEFAULT_COURSES } from '../models/defaultCourses.js';
-import { GNI_COURSE_PRICING, calculateTrustedFee } from '../models/pricingConfig.js';
+import { catalogEntry, mainOptionColumns, parseDurations, priceForCourse, validateDurations } from '../models/courseDurations.js';
 import { parseDetails, serializeDetails } from '../models/courseDetails.js';
+import { SEAT_HOLDING_SQL } from '../models/registrationStatus.js';
 
 // In-memory fallback cache if MySQL is temporarily offline
 let memoryCourses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
@@ -44,15 +45,31 @@ function generateSlug(text) {
 }
 
 /**
+ * When the admin sends duration options, validate them and fill the main-option
+ * columns (duration, offer fee, regular fee) from the first option.
+ * Returns { body, durationsJson } or { error }.
+ */
+function prepareDurations(body) {
+  if (body.durations === undefined || body.durations === null) return { body, durationsJson: null };
+  const type = String(body.offering_type || '').toLowerCase().includes('journey') ? 'journey' : 'workshop';
+  const { options, error } = validateDurations(body.durations, type);
+  if (error) return { error };
+  return {
+    body: { ...body, ...mainOptionColumns(options) },
+    durationsJson: JSON.stringify(options),
+  };
+}
+
+/**
  * Calculate dynamic seat metrics & availability status for courses list
- * Available Seats = Total Seat Capacity − Confirmed Bookings
+ * Available Seats = Total Seat Capacity − seat-holding applications (Approved / Confirmed / Completed)
  */
 async function enrichCoursesWithSeatMetrics(pool, coursesList) {
   try {
     const [bookingRows] = await pool.query(
       `SELECT LOWER(interested_skill) as skill, COUNT(*) as cnt 
        FROM \`registrations\` 
-       WHERE payment_status NOT IN ('Cancelled', 'Rejected') 
+       WHERE ${SEAT_HOLDING_SQL}
        GROUP BY LOWER(interested_skill)`
     );
 
@@ -87,6 +104,7 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
         pillar_title: c.pillar_title || '',
         details: parseDetails(c.details),
+        durations: parseDurations(c.durations, c),
         offering_type: offType,
         seats_total: total,
         booked_seats: booked,
@@ -114,6 +132,7 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
         pillar_title: c.pillar_title || '',
         details: parseDetails(c.details),
+        durations: parseDurations(c.durations, c),
         offering_type: offType,
         seats_total: total,
         booked_seats: booked,
@@ -145,7 +164,7 @@ export const getActiveCourses = async (req, res) => {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
     const active = memoryCourses
       .filter((c) => c.is_active === 1 || c.is_active === true)
-      .map((c) => ({ ...c, details: parseDetails(c.details) }));
+      .map((c) => ({ ...c, details: parseDetails(c.details), durations: parseDurations(c.durations, c) }));
     return res.status(200).json({ success: true, count: active.length, data: active, fallback: true });
   }
 };
@@ -164,7 +183,7 @@ export const getAllCourses = async (req, res) => {
     return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
-    const all = memoryCourses.map((c) => ({ ...c, details: parseDetails(c.details) }));
+    const all = memoryCourses.map((c) => ({ ...c, details: parseDetails(c.details), durations: parseDurations(c.durations, c) }));
     return res.status(200).json({ success: true, count: all.length, data: all, fallback: true });
   }
 };
@@ -174,6 +193,11 @@ export const getAllCourses = async (req, res) => {
  */
 export const createCourse = async (req, res) => {
   try {
+    const prepared = prepareDurations(req.body);
+    if (prepared.error) {
+      return res.status(400).json({ success: false, message: prepared.error });
+    }
+    const { durationsJson } = prepared;
     const {
       title,
       category,
@@ -191,7 +215,7 @@ export const createCourse = async (req, res) => {
       pillar_title = '',
       is_active = 1,
       details,
-    } = req.body;
+    } = prepared.body;
 
     if (!title || !description) {
       return res.status(400).json({
@@ -286,8 +310,8 @@ export const createCourse = async (req, res) => {
           \`title\`, \`slug\`, \`category\`, \`badge\`, \`duration\`, \`mode\`,
           \`original_price\`, \`discount_price\`, \`discount_percent\`,
           \`description\`, \`highlights\`, \`image_url\`, \`seats_total\`,
-          \`seats_available\`, \`pillar_id\`, \`pillar_title\`, \`is_active\`, \`details\`
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          \`seats_available\`, \`pillar_id\`, \`pillar_title\`, \`is_active\`, \`details\`, \`durations\`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -309,6 +333,7 @@ export const createCourse = async (req, res) => {
         pillar_title ? String(pillar_title).trim() : null,
         Number(is_active) ? 1 : 0,
         detailsJson,
+        durationsJson,
       ];
 
       const [result] = await pool.query(insertQuery, values);
@@ -335,6 +360,7 @@ export const createCourse = async (req, res) => {
         offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
         details: parsedDetails,
+        durations: parseDurations(durationsJson, { duration: trimmedDuration, discount_price: discPrice, original_price: origPrice }),
       };
 
       memoryCourses.unshift(newCourse);
@@ -369,6 +395,7 @@ export const createCourse = async (req, res) => {
         offering_type: autoType,
         is_active: Number(is_active) ? 1 : 0,
         details: parsedDetails,
+        durations: parseDurations(durationsJson, { duration: trimmedDuration, discount_price: discPrice, original_price: origPrice }),
       };
       // Append newly added offering at the end
       memoryCourses.push(newCourse);
@@ -394,6 +421,11 @@ export const createCourse = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
+    const prepared = prepareDurations(req.body);
+    if (prepared.error) {
+      return res.status(400).json({ success: false, message: prepared.error });
+    }
+    const { durationsJson } = prepared;
     const {
       title,
       category,
@@ -410,7 +442,7 @@ export const updateCourse = async (req, res) => {
       pillar_title,
       is_active,
       details,
-    } = req.body;
+    } = prepared.body;
 
     const detailsJson = serializeDetails(details);
     const trimmedTitle = title ? String(title).trim() : null;
@@ -488,7 +520,7 @@ export const updateCourse = async (req, res) => {
       const [bookingRows] = await pool.query(
         `SELECT COUNT(*) as cnt FROM \`registrations\` 
          WHERE (LOWER(interested_skill) LIKE ? OR interested_skill = ?) 
-         AND payment_status NOT IN ('Cancelled', 'Rejected')`,
+         AND ${SEAT_HOLDING_SQL}`,
         [`%${courseTitleToMatch.toLowerCase()}%`, courseTitleToMatch]
       );
       const confirmedBookings = bookingRows[0]?.cnt || 0;
@@ -525,7 +557,8 @@ export const updateCourse = async (req, res) => {
           \`pillar_id\` = COALESCE(?, \`pillar_id\`),
           \`pillar_title\` = COALESCE(?, \`pillar_title\`),
           \`is_active\` = ?,
-          \`details\` = COALESCE(?, \`details\`)
+          \`details\` = COALESCE(?, \`details\`),
+          \`durations\` = COALESCE(?, \`durations\`)
         WHERE \`id\` = ?
       `;
 
@@ -547,6 +580,7 @@ export const updateCourse = async (req, res) => {
         pillar_title !== undefined ? String(pillar_title).trim() : null,
         is_active !== undefined ? (Number(is_active) ? 1 : 0) : 1,
         detailsJson,
+        durationsJson,
         id,
       ];
 
@@ -584,6 +618,7 @@ export const updateCourse = async (req, res) => {
         offering_type: determineOfferingType(trimmedDuration || prev.duration),
         is_active: is_active !== undefined ? (Number(is_active) ? 1 : 0) : prev.is_active,
         ...(detailsJson !== null && { details: parseDetails(detailsJson) }),
+        ...(durationsJson !== null && { durations: JSON.parse(durationsJson) }),
       };
     }
 
@@ -667,49 +702,49 @@ export const deleteCourse = async (req, res) => {
 /**
  * Public: Get course pricing configuration with supported durations & fees
  */
+/**
+ * Public: Register-page catalog. Every live offering with its duration options and
+ * fees, exactly as set in the admin.
+ */
 export const getPricingConfig = async (req, res) => {
   try {
-    return res.status(200).json({
-      success: true,
-      count: GNI_COURSE_PRICING.length,
-      data: GNI_COURSE_PRICING,
-    });
+    const pool = getPool();
+    const [rows] = await pool.query('SELECT * FROM `courses` WHERE `is_active` = 1 ORDER BY `id` ASC');
+    const data = rows
+      .map((c) => catalogEntry(c, determineOfferingType(c.duration) === 'Learning Journey'))
+      .filter((entry) => entry.durations.length > 0);
+    return res.status(200).json({ success: true, count: data.length, data });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Failed to retrieve pricing configuration',
+      message: 'Failed to retrieve the course catalog',
       error: error.message,
     });
   }
 };
 
 /**
- * Public/Protected: Calculate trusted course fee based on course and duration
+ * Public: Fee for a course + duration, from the admin's offering.
  */
 export const calculateCourseFee = async (req, res) => {
   try {
-    const { courseId, courseName, duration } = req.body;
-    const identifier = courseName || courseId;
-
-    if (!identifier) {
+    const { courseName, duration } = req.body;
+    if (!courseName) {
       return res.status(400).json({
         success: false,
-        message: 'Course Name or Course ID is required.',
+        message: 'Course name is required.',
       });
     }
 
-    const calculated = calculateTrustedFee(identifier, duration);
+    const calculated = await priceForCourse(getPool(), courseName, duration);
     if (!calculated) {
       return res.status(404).json({
         success: false,
-        message: 'Pricing not found for the requested course/duration.',
+        message: 'This course or duration is not currently offered.',
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      data: calculated,
-    });
+    return res.status(200).json({ success: true, data: calculated });
   } catch (error) {
     return res.status(500).json({
       success: false,

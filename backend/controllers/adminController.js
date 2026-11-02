@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getPool } from '../config/mysql.js';
+import { SEAT_HOLDING_SQL, SEAT_HOLDING_STATUSES, allowedNextStatuses } from '../models/registrationStatus.js';
 import {
   sendAdminLoginOtpEmail,
   sendAdminPasswordResetOtpEmail,
@@ -641,6 +642,26 @@ export const getAdminRegistrations = async (req, res) => {
   }
 };
 
+// Matches an application's course name to its offering the same way registration does
+async function findCourseForSkill(pool, skill) {
+  const name = String(skill || '').trim();
+  if (!name) return null;
+  const [rows] = await pool.query(
+    "SELECT `id`, `title`, `seats_total` FROM `courses` WHERE LOWER(`title`) LIKE ? OR ? LIKE CONCAT('%', LOWER(`title`), '%') ORDER BY (`title` = ?) DESC, `id` ASC LIMIT 1",
+    [`%${name.toLowerCase()}%`, name.toLowerCase(), name]
+  );
+  return rows && rows[0] ? rows[0] : null;
+}
+
+// Number of seats currently taken for an offering (Approved / Confirmed / Completed applications)
+async function countSeatsHeld(pool, courseTitle) {
+  const [rows] = await pool.query(
+    `SELECT COUNT(*) AS cnt FROM \`registrations\` WHERE (LOWER(interested_skill) LIKE ? OR ? LIKE CONCAT('%', LOWER(interested_skill), '%')) AND ${SEAT_HOLDING_SQL}`,
+    [`%${String(courseTitle).toLowerCase()}%`, String(courseTitle).toLowerCase()]
+  );
+  return Number(rows[0]?.cnt || 0);
+}
+
 /**
  * -------------------------------------------------------------
  * Admin: Update student registration status
@@ -697,10 +718,48 @@ export const updateRegistrationStatus = async (req, res) => {
       });
     }
 
+    // Enforce the lifecycle order (one step forward, cancel any time, final states locked)
+    const allowed = allowedNextStatuses(reg.payment_status);
+    if (!allowed.includes(newStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: allowed.length
+          ? `An application that is '${reg.payment_status}' can only be moved to: ${allowed.join(', ')}.`
+          : `This application is '${reg.payment_status}', which is final and can no longer be changed.`,
+      });
+    }
+
+    // Seats: approving takes a seat, so there must be one free for this course
+    const course = await findCourseForSkill(pool, reg.interested_skill);
+    const takesSeat = SEAT_HOLDING_STATUSES.includes(newStatus) && !SEAT_HOLDING_STATUSES.includes(reg.payment_status);
+    if (course && takesSeat) {
+      const held = await countSeatsHeld(pool, course.title);
+      const total = Number(course.seats_total) || 0;
+      if (held >= total) {
+        return res.status(409).json({
+          success: false,
+          message: `No seats left for '${course.title}' (${held}/${total} taken). Increase the total seats for this offering before approving.`,
+        });
+      }
+    }
+
     await pool.query('UPDATE `registrations` SET `payment_status` = ? WHERE `id` = ?', [
       newStatus,
       id,
     ]);
+
+    // Keep the stored seat count in step (cancelling an approved application releases its seat)
+    if (course) {
+      try {
+        const held = await countSeatsHeld(pool, course.title);
+        await pool.query('UPDATE `courses` SET `seats_available` = GREATEST(0, `seats_total` - ?) WHERE `id` = ?', [
+          held,
+          course.id,
+        ]);
+      } catch (seatErr) {
+        console.warn('[Admin] Seat count refresh skipped:', seatErr.message);
+      }
+    }
 
     // Send corresponding branded email notification
     let emailResult = null;

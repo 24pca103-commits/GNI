@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Clock, Hand, Users } from 'lucide-react';
+import { ArrowRight, Check, Clock, Hand, Users } from 'lucide-react';
 import Reveal from '../Reveal';
-import { formatINR, getPricing, getSeats, registerLink } from '../../utils/offerings';
+import ScrollRow from '../ScrollRow';
+import { formatINR, getDurationOptions, getPricing, getSeats, registerLink } from '../../utils/offerings';
 
 const FALLBACK_IMAGE = '/artisan/workshop.jpg';
 
@@ -54,128 +55,59 @@ export function SubHeading({ title, meta }) {
   );
 }
 
-/** One scrollable row of equally sized cards; arrows appear when the row overflows. */
+/** Selector cards in one centred row that scrolls sideways when there are more than fit. */
 export function OfferingPicker({ label, items, activeIndex, onSelect }) {
-  const trackRef = useRef(null);
-  const [edges, setEdges] = useState({ left: false, right: false });
-
-  const updateEdges = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    setEdges({
-      left: el.scrollLeft > 4,
-      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
-    });
-  }, []);
-
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return undefined;
-    updateEdges();
-    el.addEventListener('scroll', updateEdges, { passive: true });
-    const ro = new ResizeObserver(updateEdges);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener('scroll', updateEdges);
-      ro.disconnect();
-    };
-  }, [updateEdges, items.length]);
-
-  // Keep the selected card fully visible (horizontal scroll only, never moves the page)
-  useEffect(() => {
-    const el = trackRef.current;
-    const card = el?.children[activeIndex];
-    if (!el || !card) return;
-    const left = card.offsetLeft; // track is the offset parent
-    if (left < el.scrollLeft || left + card.offsetWidth > el.scrollLeft + el.clientWidth) {
-      el.scrollTo({ left: Math.max(0, left - 16), behavior: 'smooth' });
-    }
-  }, [activeIndex]);
-
   if (items.length < 2) return null;
-
-  const scrollByCards = (dir) => {
-    const el = trackRef.current;
-    if (el) el.scrollBy({ left: dir * Math.max(300, el.clientWidth * 0.8), behavior: 'smooth' });
-  };
-
-  const arrowClass =
-    'hidden sm:flex absolute top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-[#6B4030]/15 shadow-md items-center justify-center text-[#4A2C20] hover:bg-[#4A2C20] hover:text-[#E5B869] transition-colors cursor-pointer';
-
   return (
-    <div className="relative mb-8">
-      {edges.left && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[var(--picker-bg)] to-transparent z-[5]" />
-          <button type="button" aria-label="Scroll left" onClick={() => scrollByCards(-1)} className={`${arrowClass} -left-3`}>
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-        </>
-      )}
-      {edges.right && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[var(--picker-bg)] to-transparent z-[5]" />
-          <button type="button" aria-label="Scroll right" onClick={() => scrollByCards(1)} className={`${arrowClass} -right-3`}>
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </>
-      )}
-
-      <div
-        ref={trackRef}
-        role="tablist"
-        aria-label={label}
-        className="relative flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      >
-        {items.map((item, idx) => {
-          const isActive = idx === activeIndex;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              title={item.title}
-              onClick={() => onSelect(idx)}
-              className={`snap-start shrink-0 w-[272px] sm:w-[300px] h-[88px] flex items-center gap-3 p-3 rounded-2xl border text-left transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
-                isActive
-                  ? 'bg-[#4A2C20] border-[#4A2C20] shadow-lg shadow-[#4A2C20]/20'
-                  : 'bg-white border-[#6B4030]/12 hover:border-[#B89555]/60'
-              }`}
-            >
-              <OfferingImage
-                src={item.image}
-                alt=""
-                fallback={item.fallbackImage}
-                className="w-16 h-16 rounded-xl object-cover shrink-0"
-              />
-              <span className="min-w-0 flex-1">
-                <span
-                  className={`font-['DM_Sans'] text-[13.5px] font-semibold leading-snug line-clamp-2 [overflow-wrap:anywhere] ${
-                    isActive ? 'text-white' : 'text-[#241A16]'
-                  }`}
-                >
-                  {item.title}
-                </span>
-                <span
-                  className={`block font-['DM_Sans'] text-xs mt-1 truncate ${isActive ? 'text-[#E5B869]' : 'text-[#6B4030]'}`}
-                >
-                  {item.meta}
-                </span>
-              </span>
-              {/* Check slot is always reserved so cards keep the same layout when selected */}
+    <ScrollRow label={label} role="tablist" activeIndex={activeIndex} className="mb-6">
+      {items.map((item, idx) => {
+        const isActive = idx === activeIndex;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            title={item.title}
+            onClick={() => onSelect(idx)}
+            className={`snap-start shrink-0 w-[268px] sm:w-[300px] h-[88px] flex items-center gap-3 p-3 rounded-2xl border text-left transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
+              isActive
+                ? 'bg-[#4A2C20] border-[#4A2C20] shadow-md shadow-[#4A2C20]/20'
+                : 'bg-white border-[#6B4030]/12 hover:border-[#B89555]/60'
+            }`}
+          >
+            <OfferingImage
+              src={item.image}
+              alt=""
+              fallback={item.fallbackImage}
+              className="w-16 h-16 rounded-xl object-cover shrink-0"
+            />
+            <span className="min-w-0 flex-1">
               <span
-                className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border transition-colors ${
-                  isActive ? 'bg-[#B89555] border-[#B89555] text-[#241A16]' : 'border-[#6B4030]/20 text-transparent'
+                className={`font-['DM_Sans'] text-[13.5px] font-semibold leading-snug line-clamp-2 [overflow-wrap:anywhere] ${
+                  isActive ? 'text-white' : 'text-[#241A16]'
                 }`}
               >
-                <Check className="w-3 h-3 stroke-[3]" />
+                {item.title}
               </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
+              <span
+                className={`block font-['DM_Sans'] text-xs mt-1 truncate ${isActive ? 'text-[#E5B869]' : 'text-[#6B4030]'}`}
+              >
+                {item.meta}
+              </span>
+            </span>
+            {/* Check slot is always reserved so cards keep the same layout when selected */}
+            <span
+              className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border transition-colors ${
+                isActive ? 'bg-[#B89555] border-[#B89555] text-[#241A16]' : 'border-[#6B4030]/20 text-transparent'
+              }`}
+            >
+              <Check className="w-3 h-3 stroke-[3]" />
+            </span>
+          </button>
+        );
+      })}
+    </ScrollRow>
   );
 }
 
@@ -291,6 +223,7 @@ function SeatMeter({ seats }) {
 export function BookingCard({ course, inclusions, ctaLabel, className = '', preview = false }) {
   const { price, original, savePercent } = getPricing(course);
   const seats = getSeats(course);
+  const durationOptions = getDurationOptions(course);
 
   return (
     <div className={`relative overflow-hidden rounded-3xl bg-[#241A16] text-[#F7F2E8] p-6 sm:p-7 shadow-xl shadow-[#241A16]/15 flex flex-col ${className}`}>
@@ -321,11 +254,25 @@ export function BookingCard({ course, inclusions, ctaLabel, className = '', prev
         <SeatMeter seats={seats} />
 
         <ul className="mt-6 space-y-2 font-['DM_Sans'] text-[13px] text-[#F7F2E8]/80 border-t border-white/10 pt-5">
-          {course.duration && (
-            <li className="flex items-center gap-2.5">
-              <Clock className="w-3.5 h-3.5 text-[#B89555]" />
-              {course.duration}
+          {durationOptions.length > 1 ? (
+            <li className="flex items-start gap-2.5">
+              <Clock className="w-3.5 h-3.5 mt-1 text-[#B89555] shrink-0" />
+              <ul className="min-w-0 flex-1 space-y-1">
+                {durationOptions.map((o) => (
+                  <li key={o.text} className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0">{o.text}</span>
+                    <span className="font-semibold text-white tabular-nums whitespace-nowrap">{formatINR(o.fee)}</span>
+                  </li>
+                ))}
+              </ul>
             </li>
+          ) : (
+            course.duration && (
+              <li className="flex items-center gap-2.5">
+                <Clock className="w-3.5 h-3.5 text-[#B89555]" />
+                {course.duration}
+              </li>
+            )
           )}
           {course.mode && (
             <li className="flex items-center gap-2.5">

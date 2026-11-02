@@ -329,7 +329,7 @@ export default function LearningJourney() {
 
 
   return (
-    <section id="learning-journey" className="gni-offering py-16 md:py-24 bg-[#F7F2E8] relative overflow-hidden" style={{ '--picker-bg': '#F7F2E8' }}>
+    <section id="learning-journey" className="gni-offering py-16 md:py-24 bg-[#F7F2E8] relative overflow-hidden" style={{ '--row-bg': '#F7F2E8' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeader
           icon={GraduationCap}

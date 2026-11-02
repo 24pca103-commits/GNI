@@ -41,3 +41,23 @@ export const PRESET_IMAGES = [
   { label: 'Architectural Craft Applications', url: '/artisan/pillar-applications.jpg' },
   { label: 'Heritage Creator Journey', url: '/artisan/pedagogy-practice.jpg' },
 ];
+
+/** Heritage pillar fields, sized to the pillar cards on the home page and the Register page dropdown. */
+export const PILLAR_LIMITS = {
+  title: { min: 3, max: 50 },
+  category: { min: 3, max: 32 },
+  badge: { min: 0, max: 24 },
+  description: { min: 20, max: 160 },
+  subjects: { min: 0, max: 90 },
+  tag: { min: 2, max: 20 },
+};
+export const MAX_PILLAR_TAGS = 5;
+
+export const PILLAR_IMAGES = [
+  { label: 'Painting', url: '/artisan/pillar-painting.jpg' },
+  { label: 'Epigraphy', url: '/artisan/pillar-epigraphy.jpg' },
+  { label: 'Metal art', url: '/artisan/pillar-metal.jpg' },
+  { label: 'Applications', url: '/artisan/pillar-applications.jpg' },
+  { label: 'Iconography', url: '/artisan/studio-iconography.jpg' },
+  { label: 'Pigments', url: '/artisan/studio-pigments.jpg' },
+];

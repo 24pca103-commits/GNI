@@ -1,7 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import {
   generateCustomerRegistrationEmail,
@@ -63,31 +62,6 @@ function getTransporter() {
 }
 
 /**
- * Resolves the official GNI logo attachment for inline CID embedding
- */
-function getLogoAttachment() {
-  const possiblePaths = [
-    path.resolve(__dirname, '../assets/logo.png'),
-    path.resolve(__dirname, '../../frontend/public/logo.png'),
-    path.resolve(__dirname, '../public/logo.png'),
-  ];
-
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      return [
-        {
-          filename: 'gni-logo.png',
-          path: p,
-          cid: 'gni_logo',
-        },
-      ];
-    }
-  }
-
-  return [];
-}
-
-/**
  * Formats sender address with institutional display name
  */
 function getFromAddress(displayName = 'Global Nagas Institute') {
@@ -114,7 +88,6 @@ export async function sendCustomerRegistrationEmail(data) {
 
   const template = generateCustomerRegistrationEmail(data);
   const fromAddress = getFromAddress('Global Nagas Institute');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.warn(`[EmailService] SMTP not configured. Customer confirmation simulated for: ${customerEmail}`);
@@ -133,7 +106,6 @@ export async function sendCustomerRegistrationEmail(data) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -166,7 +138,6 @@ export async function sendAdminRegistrationAlert(data) {
 
   const template = generateAdminRegistrationAlert(data);
   const fromAddress = getFromAddress('GNI Admissions Directorate');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.warn(`[EmailService] SMTP not configured. Admin alert simulated for: ${adminRecipients.join(', ')}`);
@@ -184,7 +155,6 @@ export async function sendAdminRegistrationAlert(data) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -245,7 +215,6 @@ export async function sendAdminLoginOtpEmail(adminEmail, otp) {
   const transporter = getTransporter();
   const template = generateAdminLoginOtpEmail(otp);
   const fromAddress = getFromAddress('GNI Admin Security');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.log(
@@ -261,7 +230,6 @@ export async function sendAdminLoginOtpEmail(adminEmail, otp) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -280,7 +248,6 @@ export async function sendAdminPasswordResetOtpEmail(adminEmail, otp) {
   const transporter = getTransporter();
   const template = generateAdminPasswordResetOtpEmail(otp);
   const fromAddress = getFromAddress('GNI Admin Security');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.log(
@@ -296,7 +263,6 @@ export async function sendAdminPasswordResetOtpEmail(adminEmail, otp) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -321,7 +287,6 @@ export async function sendPaymentConfirmationEmail(data) {
 
   const template = generatePaymentConfirmationEmail(data);
   const fromAddress = getFromAddress('Global Nagas Institute');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.warn(`[EmailService] SMTP not configured. Payment confirmation simulated for: ${customerEmail}`);
@@ -335,7 +300,6 @@ export async function sendPaymentConfirmationEmail(data) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -360,7 +324,6 @@ export async function sendApplicationStatusUpdateEmail(data, newStatus) {
 
   const template = generateApplicationStatusUpdateEmail(data, newStatus);
   const fromAddress = getFromAddress('Global Nagas Institute Admissions');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.warn(`[EmailService] SMTP not configured. Status update simulated for: ${customerEmail}`);
@@ -374,7 +337,6 @@ export async function sendApplicationStatusUpdateEmail(data, newStatus) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -399,7 +361,6 @@ export async function sendCourseUpdateEmail(data, updateNotice) {
 
   const template = generateCourseUpdateEmail(data, updateNotice);
   const fromAddress = getFromAddress('Global Nagas Institute');
-  const logoAttachments = getLogoAttachment();
 
   if (!transporter) {
     console.warn(`[EmailService] SMTP not configured. Course update simulated for: ${customerEmail}`);
@@ -413,7 +374,6 @@ export async function sendCourseUpdateEmail(data, updateNotice) {
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: logoAttachments,
     };
 
     const info = await transporter.sendMail(mailOptions);

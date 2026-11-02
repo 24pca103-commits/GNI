@@ -4,7 +4,8 @@ import {
   sendAdminRegistrationAlert,
   sendRegistrationNotifications,
 } from '../services/emailService.js';
-import { calculateTrustedFee } from '../models/pricingConfig.js';
+import { priceForCourse } from '../models/courseDurations.js';
+import { SEAT_HOLDING_SQL } from '../models/registrationStatus.js';
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -91,17 +92,23 @@ export const registerUser = async (req, res, next) => {
       });
     }
 
-    // 2. Server-side trusted calculation of course fee and total payable
-    const pricing = calculateTrustedFee(chosenCourse, chosenDuration);
-    const trustedFee = pricing ? pricing.fee : 4999;
-    const formattedTrustedFee = pricing ? pricing.formattedFee : '₹4,999';
-    const totalAmount = pricing ? pricing.totalPayable : trustedFee;
-    const formattedTotal = pricing ? pricing.formattedTotal : formattedTrustedFee;
-    const discountAmount = pricing ? pricing.discount : 0;
-    const formattedDiscount = pricing ? pricing.formattedDiscount : '₹0';
-    const taxes = pricing ? pricing.taxes : 0;
-    const courseTitle = pricing ? pricing.courseName : chosenCourse;
-    const validatedDuration = pricing ? pricing.duration : chosenDuration;
+    // 2. Server-side trusted fee, from the live offering and duration option set in the admin
+    const pricing = await priceForCourse(pool, chosenCourse, chosenDuration);
+    if (!pricing) {
+      return res.status(400).json({
+        success: false,
+        message: `"${chosenCourse}" (${chosenDuration || 'no duration'}) is not currently open for registration. Please choose another course or duration.`,
+      });
+    }
+    const trustedFee = pricing.fee;
+    const formattedTrustedFee = pricing.formattedFee;
+    const totalAmount = pricing.totalPayable;
+    const formattedTotal = pricing.formattedTotal;
+    const discountAmount = pricing.discount;
+    const formattedDiscount = pricing.formattedDiscount;
+    const taxes = pricing.taxes;
+    const courseTitle = pricing.courseName;
+    const validatedDuration = pricing.duration;
 
     // 2b. Check seat capacity & availability to prevent overbooking
     try {
@@ -112,7 +119,7 @@ export const registerUser = async (req, res, next) => {
       if (courseRows && courseRows.length > 0) {
         const c = courseRows[0];
         const [bookRows] = await pool.query(
-          `SELECT COUNT(*) as cnt FROM \`registrations\` WHERE (LOWER(interested_skill) LIKE ? OR interested_skill = ?) AND payment_status NOT IN ('Cancelled', 'Rejected')`,
+          `SELECT COUNT(*) as cnt FROM \`registrations\` WHERE (LOWER(interested_skill) LIKE ? OR interested_skill = ?) AND ${SEAT_HOLDING_SQL}`,
           [`%${c.title.toLowerCase()}%`, c.title]
         );
         const booked = bookRows[0]?.cnt || 0;
@@ -223,15 +230,8 @@ export const registerUser = async (req, res, next) => {
       result = resQueryFallback;
     }
 
-    // 4b. Atomically decrement seats_available for this offering
-    try {
-      await pool.query(
-        `UPDATE \`courses\` SET \`seats_available\` = GREATEST(0, \`seats_available\` - 1) WHERE (LOWER(title) LIKE ? OR title = ?) AND is_active = 1`,
-        [`%${courseTitle.toLowerCase()}%`, courseTitle]
-      );
-    } catch (e) {
-      console.warn('[RegistrationController] Seat decrement fallback:', e.message);
-    }
+    // A new application does not take a seat; seats are taken when an admin approves it
+    // (see updateRegistrationStatus in adminController).
 
     // 5. Dispatch real-time confirmation email to customer & alert to admin
     const registrationDetails = {

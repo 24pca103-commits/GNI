@@ -193,3 +193,19 @@ export function sortOfferings(list, canonicalIds = []) {
     return Number(a.id) - Number(b.id);
   });
 }
+
+/** Duration options set in the admin: [{ text: '7 Days', fee, original_price }] (main option first). */
+export function getDurationOptions(course) {
+  const list = Array.isArray(course?.durations) ? course.durations : [];
+  return list
+    .filter((o) => Number(o.days) > 0 && Number(o.fee) > 0)
+    .map((o) => {
+      const days = Number(o.days);
+      const label = String(o.label || '').trim();
+      return {
+        text: `${days} ${days === 1 ? 'Day' : 'Days'}${label ? ` ${label}` : ''}`,
+        fee: Number(o.fee),
+        original_price: Number(o.original_price) || Number(o.fee),
+      };
+    });
+}
