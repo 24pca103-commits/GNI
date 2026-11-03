@@ -1,4 +1,6 @@
-export const DEFAULT_COURSES = [
+import { DEFAULT_COURSE_CONTENT } from './defaultCourseContent.js';
+
+const BASE_COURSES = [
   // ==========================================
   // WORKSHOPS (1-9 Days)
   // ==========================================
@@ -207,5 +209,16 @@ export const DEFAULT_COURSES = [
     is_active: 1,
   },
 ];
+
+// Attach structured modules/phases and customer-facing details where available
+export const DEFAULT_COURSES = BASE_COURSES.map((c) => {
+  const content = DEFAULT_COURSE_CONTENT[c.slug];
+  if (!content) return { ...c, details: null };
+  return {
+    ...c,
+    highlights: JSON.stringify(content.highlights),
+    details: content.details,
+  };
+});
 
 export default DEFAULT_COURSES;

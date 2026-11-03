@@ -197,8 +197,17 @@ export const updatePillar = async (req, res) => {
       is_active,
     } = req.body;
 
-    const existingMem = memoryPillars.find((p) => String(p.id) === String(id) || String(p.number) === String(id));
-    const current = existingMem || {};
+    // Fill unspecified fields from the stored pillar (so partial updates, e.g. hiding it, keep everything else)
+    let current = memoryPillars.find((p) => String(p.id) === String(id)) || {};
+    try {
+      const [rows] = await getPool().query('SELECT * FROM `pillars` WHERE `id` = ?', [id]);
+      if (rows && rows[0]) current = formatPillar(rows[0]);
+      else if (!current.id) {
+        return res.status(404).json({ success: false, message: 'Heritage Pillar not found.' });
+      }
+    } catch (_) {
+      // database offline: fall back to the in-memory copy
+    }
 
     const updatedTitle = title !== undefined ? String(title).trim() : (current.title || '');
     const updatedCat = category !== undefined ? String(category).trim() : (current.category || 'Traditional Crafts & Epigraphy');
@@ -241,6 +250,8 @@ export const updatePillar = async (req, res) => {
             id,
           ]
         );
+        // Offerings store the pillar name too; keep it in step when the pillar is renamed
+        await pool.query('UPDATE `courses` SET `pillar_title` = ? WHERE `pillar_id` = ?', [updatedTitle, id]);
       }
     } catch (dbErr) {
       console.warn('[Pillars] MySQL update error (saving to memory fallback):', dbErr.message);
@@ -288,8 +299,12 @@ export const deletePillar = async (req, res) => {
       const pool = getPool();
       if (pool) {
         const [linkedCourses] = await pool.query('SELECT COUNT(*) as cnt FROM `courses` WHERE `pillar_id` = ?', [id]);
-        if (linkedCourses && linkedCourses[0]?.cnt > 0) {
-          await pool.query('UPDATE `courses` SET `pillar_id` = NULL, `pillar_title` = NULL WHERE `pillar_id` = ?', [id]);
+        const linked = Number(linkedCourses?.[0]?.cnt || 0);
+        if (linked > 0) {
+          return res.status(409).json({
+            success: false,
+            message: `${linked} offering${linked === 1 ? ' uses' : 's use'} this pillar. Move ${linked === 1 ? 'it' : 'them'} to another pillar (or hide this pillar) before deleting.`,
+          });
         }
         await pool.query('DELETE FROM `pillars` WHERE `id` = ?', [id]);
       }

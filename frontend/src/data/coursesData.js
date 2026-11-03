@@ -3,7 +3,9 @@
  * Serves as reliable immediate frontend cache & offline fallback
  */
 
-export const DEFAULT_COURSES = [
+import { DEFAULT_COURSE_CONTENT } from './offeringContent';
+
+const BASE_COURSES = [
   // Workshops (1-9 Days)
   {
     id: 101,
@@ -128,3 +130,10 @@ export const DEFAULT_COURSES = [
     pillar_title: 'Sculpturing & Sacred Nagas Metal Art',
   },
 ];
+
+// Attach structured modules/phases and customer-facing details where available
+export const DEFAULT_COURSES = BASE_COURSES.map((c) => {
+  const content = DEFAULT_COURSE_CONTENT[c.slug];
+  if (!content) return c;
+  return { ...c, highlights: JSON.stringify(content.highlights), details: content.details };
+});
