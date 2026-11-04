@@ -207,7 +207,7 @@ function SeatMeter({ seats }) {
       >
         <div
           className={`h-full rounded-full transition-all duration-500 ${seats.isLow || seats.isFull ? 'bg-[#E58A5A]' : 'bg-[#B89555]'}`}
-          style={{ width: `${Math.max(seats.filledPercent, 4)}%` }}
+          style={{ width: `${seats.filledPercent > 0 ? Math.max(seats.filledPercent, 4) : 0}%` }}
         />
       </div>
       {seats.isLow && (

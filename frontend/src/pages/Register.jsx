@@ -55,27 +55,34 @@ import { DEFAULT_PILLARS } from '../data/pillarData';
 // Helper to determine if an offering qualifies as a Journey (10+ days or journey/cohort keywords)
 export function isJourneyOffering(item) {
   if (!item) return false;
-  const cat = (item.category || '').toLowerCase();
-  const title = (item.title || item.courseName || '').toLowerCase();
-  const dur = (item.duration || '').toLowerCase();
-  const dayMatch = dur.match(/(\d+)\s*day/i);
-  const dayCount = dayMatch ? parseInt(dayMatch[1], 10) : null;
 
-  if (dayCount !== null && dayCount <= 9) return false;
-  if (cat.includes('workshop') || title.includes('workshop')) return false;
-  if (dayCount !== null && dayCount >= 10) return true;
-  if (
-    cat.includes('journey') ||
-    cat.includes('cohort') ||
-    title.includes('60-day') ||
-    title.includes('60 day') ||
-    title.includes('30-day') ||
-    title.includes('30 day') ||
-    dur.includes('60') ||
-    dur.includes('30')
-  ) {
-    return true;
+  // 1. Strict primary rule: 1–9 days is Workshop (false), 10+ days is Learning Journey (true)
+  const dur = String(item.duration || '').trim().toLowerCase();
+  const dayMatch = dur.match(/(\d+)\s*day/i) || dur.match(/^(\d+)$/);
+  const dayCount = dayMatch ? parseInt(dayMatch[1], 10) : null;
+  if (dayCount !== null) {
+    return dayCount >= 10;
   }
+
+  // 2. Check durations array if present
+  if (Array.isArray(item.durations) && item.durations.length > 0) {
+    const primaryDays = Number(item.durations[0]?.days);
+    if (!isNaN(primaryDays) && primaryDays > 0) {
+      return primaryDays >= 10;
+    }
+  }
+
+  // 3. Keywords in duration string
+  if (/month|cohort|year/i.test(dur)) return true;
+
+  const offType = String(item.offering_type || '').toLowerCase();
+  if (offType.includes('journey')) return true;
+  if (offType.includes('workshop')) return false;
+
+  const cat = String(item.category || '').toLowerCase();
+  const title = String(item.title || item.courseName || '').toLowerCase();
+  if (cat.includes('journey') || title.includes('journey') || cat.includes('cohort')) return true;
+
   return false;
 }
 
@@ -86,18 +93,30 @@ export function isJourneyOffering(item) {
 export function resolveCoursePillarId(course, activeCourses = [], allPillars = DEFAULT_PILLARS) {
   if (!course) return 1;
 
-  // 1. Direct pillarId or pillar_id property
+  // 1. Direct pillarId or pillar_id property if matched to an actual pillar
   const directId = course.pillarId !== undefined && course.pillarId !== null
     ? course.pillarId
     : course.pillar_id;
 
   if (directId && directId !== 'all') {
-    return Number(directId);
+    const matched = (allPillars || []).find(
+      (p) => String(p.id) === String(directId) || String(p.number) === String(directId)
+    );
+    if (matched) return Number(matched.id || matched.number);
+  }
+
+  // 2. Direct match by course pillar_title
+  const cPillarTitle = String(course.pillar_title || course.pillarTitle || '').trim().toLowerCase();
+  if (cPillarTitle && allPillars && allPillars.length > 0) {
+    const matchByTitle = allPillars.find(
+      (p) => String(p.title || '').trim().toLowerCase() === cPillarTitle
+    );
+    if (matchByTitle) return Number(matchByTitle.id || matchByTitle.number);
   }
 
   const cTitle = String(course.courseName || course.title || '').trim().toLowerCase();
 
-  // 2. Active courses lookup
+  // 3. Active courses lookup
   const seat = (activeCourses || []).find((ac) => {
     if (!ac) return false;
     const acTitle = String(ac.title || ac.courseName || '').trim().toLowerCase();
@@ -106,17 +125,20 @@ export function resolveCoursePillarId(course, activeCourses = [], allPillars = D
 
   if (seat) {
     if (seat.pillar_id && seat.pillar_id !== 'all') {
-      return Number(seat.pillar_id);
+      const matchPillar = (allPillars || []).find(
+        (p) => String(p.id) === String(seat.pillar_id) || String(p.number) === String(seat.pillar_id)
+      );
+      if (matchPillar) return Number(matchPillar.id || matchPillar.number);
     }
     if (seat.pillar_title) {
       const matchByTitle = (allPillars || []).find(
-        (p) => String(p.title).toLowerCase() === String(seat.pillar_title).toLowerCase()
+        (p) => String(p.title || '').trim().toLowerCase() === String(seat.pillar_title).trim().toLowerCase()
       );
       if (matchByTitle) return Number(matchByTitle.id || matchByTitle.number);
     }
   }
 
-  // 3. Match pillarTitle / category against allPillars
+  // 4. Match pillarTitle / category against allPillars
   const coursePillarTitle = String(course.pillarTitle || course.category || '').toLowerCase();
   if (coursePillarTitle) {
     const matchByTitle = (allPillars || []).find((p) => {
@@ -128,24 +150,44 @@ export function resolveCoursePillarId(course, activeCourses = [], allPillars = D
     if (matchByTitle) return Number(matchByTitle.id || matchByTitle.number);
   }
 
-  // 4. Keyword inference by title
-  // Pillar 2: Epigraphy, Libi, Tamili, Brahmi, Scripts, Inscription, Palm leaf
+  // 5. Dynamic keyword inference mapped to live pillars
+  const findPillarByRegex = (regex) => {
+    return (allPillars || []).find((p) => {
+      const pTitle = String(p.title || '').toLowerCase();
+      const pCat = String(p.category || '').toLowerCase();
+      const pDesc = String(p.description || '').toLowerCase();
+      return regex.test(pTitle) || regex.test(pCat) || regex.test(pDesc);
+    });
+  };
+
+  // Libi, Scripts, Epigraphy
   if (/epigraph|script|tamili|brahmi|libi|inscription|palm leaf|palm-leaf/i.test(cTitle)) {
+    const p = findPillarByRegex(/libi|script|epigraph|inscript/i);
+    if (p) return Number(p.id || p.number);
     return 2;
   }
-  // Pillar 3: Sculpturing, Metal, Jewellery, Jewelry, Nakshi, Casting, Foundry, Forge, Bronze, Brass, Chasing
+  // Sculpturing & Sacred Metal
   if (/metal|sculptur|jewell|jewelry|nakshi|casting|foundry|forge|bronze|brass|chasing|anvil/i.test(cTitle)) {
+    const p = findPillarByRegex(/metal|sculptur|naga|casting|forge/i);
+    if (p) return Number(p.id || p.number);
     return 3;
   }
-  // Pillar 4: Heritage Applications, Interior, Woodwork, Terracotta, Ancient Tamil Art, Architecture, Stucco
+  // Heritage Applications & Crafts
   if (/interior|decor|woodwork|terracotta|architecture|ancient tamil art|pedagogy|application/i.test(cTitle)) {
+    const p = findPillarByRegex(/application|interior|craft|woodwork|terracotta|architecture/i);
+    if (p) return Number(p.id || p.number);
     return 4;
   }
-  // Pillar 1: Painting, Pigments, Rock Art, Fresco, Creator Journey, Foundation Track, Shilpa
+  // Painting & Mineral Pigments
   if (/paint|pigment|fresco|rock art|drawing|creator|foundation|shilpa/i.test(cTitle)) {
+    const p = findPillarByRegex(/paint|pigment|fresco|rock art/i);
+    if (p) return Number(p.id || p.number);
     return 1;
   }
 
+  if (allPillars && allPillars.length > 0) {
+    return Number(allPillars[0].id || allPillars[0].number || 1);
+  }
   return 1;
 }
 
@@ -153,7 +195,7 @@ export function resolveCoursePillarId(course, activeCourses = [], allPillars = D
  * Builds a unified catalog by merging backend pricing config with live active courses
  * and localStorage custom courses (from Admin).
  */
-export function buildUnifiedCatalog(baseCatalog, activeCourses) {
+export function buildUnifiedCatalog(baseCatalog, activeCourses, allPillars = DEFAULT_PILLARS) {
   const catalog = [...baseCatalog];
 
   (activeCourses || []).forEach((ac) => {
@@ -173,9 +215,7 @@ export function buildUnifiedCatalog(baseCatalog, activeCourses) {
     const dur = ac.duration || (isJourney ? '60 Days' : '1 Day');
     const adminOptions = Array.isArray(ac.durations) ? ac.durations.filter((o) => Number(o.days) > 0 && Number(o.fee) > 0) : [];
 
-    const resolvedPillar = ac.pillar_id !== undefined && ac.pillar_id !== null && ac.pillar_id !== ''
-      ? ac.pillar_id
-      : resolveCoursePillarId(ac, [], DEFAULT_PILLARS);
+    const resolvedPillar = resolveCoursePillarId(ac, activeCourses, allPillars);
 
     if (existingIndex >= 0) {
       catalog[existingIndex] = {
@@ -325,13 +365,15 @@ export default function Register() {
         }
 
         if (isMounted) {
-          setActiveCoursesWithSeats(allActive);
-          const unified = buildUnifiedCatalog(baseCatalog, allActive);
-          setCoursesCatalog(unified);
-
+          const livePillars = (livePillarsRes.status === 'fulfilled' && livePillarsRes.value && livePillarsRes.value.length > 0)
+            ? livePillarsRes.value
+            : DEFAULT_PILLARS;
           if (livePillarsRes.status === 'fulfilled' && livePillarsRes.value && livePillarsRes.value.length > 0) {
             setPillars(livePillarsRes.value);
           }
+          setActiveCoursesWithSeats(allActive);
+          const unified = buildUnifiedCatalog(baseCatalog, allActive, livePillars);
+          setCoursesCatalog(unified);
         }
       } catch (err) {
         console.warn('[Register] Using local catalog fallback:', err);
@@ -1751,19 +1793,12 @@ export default function Register() {
                       onChange={handlePillarChange}
                       className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-[#6B4030]/20 bg-white text-xs font-semibold text-[#241A16] cursor-pointer appearance-none focus:outline-hidden focus:border-[#B89555]"
                     >
-                      <option value="all">
-                        All Heritage Pillars ({coursesCatalog.length} Programs)
-                      </option>
-                      {allPillars.map((p, pIdx) => {
-                        const pCount = coursesCatalog.filter(
-                          (c) => String(resolveCoursePillarId(c, activeCoursesWithSeats, allPillars)) === String(p.id)
-                        ).length;
-                        return (
-                          <option key={p.id} value={p.id}>
-                            Pillar {pIdx + 1}: {p.title} ({pCount} Programs)
-                          </option>
-                        );
-                      })}
+                      <option value="all">All Heritage Pillars</option>
+                      {allPillars.map((p, pIdx) => (
+                        <option key={p.id} value={p.id}>
+                          Pillar {pIdx + 1}: {p.title}
+                        </option>
+                      ))}
                     </select>
                     <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
                   </div>
@@ -1903,11 +1938,13 @@ export default function Register() {
                   <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                     Course Fee <span className="text-[10px] text-[#6B4030]">(Official Approved Fee • Read-Only)</span>
                   </label>
-                  <div className="relative">
+                  <div className="relative cursor-default select-none">
                     <Receipt className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
                     <input
                       type="text"
                       readOnly
+                      tabIndex={-1}
+                      onFocus={(e) => e.target.blur()}
                       aria-readonly="true"
                       value={
                         selectedCourseName && selectedDuration && currentFeeDetails
@@ -1915,7 +1952,7 @@ export default function Register() {
                           : ''
                       }
                       placeholder="Choose course & duration"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#6B4030]/20 bg-white text-sm font-semibold text-[#4A2C20] placeholder-[#6B4030]/50 cursor-not-allowed select-none focus:outline-hidden"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/80 text-sm font-semibold text-[#4A2C20] placeholder-[#6B4030]/50 cursor-default select-none caret-transparent pointer-events-none focus:outline-hidden focus:ring-0"
                     />
                   </div>
                 </div>

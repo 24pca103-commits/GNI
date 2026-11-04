@@ -146,12 +146,33 @@ export function getDayCount(duration) {
 /** Mirrors backend `determineOfferingType`: 1–9 days → workshop, 10+ → journey. */
 export function getOfferingKind(course) {
   if (!course) return 'workshop';
+
+  // 1. Strict primary rule: 1–9 days => workshop, 10+ days => journey
+  const days = getDayCount(course.duration);
+  if (days !== null) {
+    return days <= 9 ? 'workshop' : 'journey';
+  }
+
+  // 2. Primary duration row if durations array exists
+  if (Array.isArray(course.durations) && course.durations.length > 0) {
+    const primaryDays = Number(course.durations[0]?.days);
+    if (!isNaN(primaryDays) && primaryDays > 0) {
+      return primaryDays <= 9 ? 'workshop' : 'journey';
+    }
+  }
+
+  // 3. Keyword check in duration string
+  const durStr = String(course.duration || '').toLowerCase();
+  if (/month|cohort|year/i.test(durStr)) return 'journey';
+
+  // 4. Fallback on offering_type and category
   const type = String(course.offering_type || '').toLowerCase();
   if (type.includes('journey')) return 'journey';
   if (type.includes('workshop')) return 'workshop';
-  const days = getDayCount(course.duration);
-  if (days !== null) return days <= 9 ? 'workshop' : 'journey';
-  if (/month|cohort|year/i.test(String(course.duration || ''))) return 'journey';
+
+  const cat = String(course.category || '').toLowerCase();
+  if (cat.includes('journey') || cat.includes('cohort')) return 'journey';
+
   return 'workshop';
 }
 

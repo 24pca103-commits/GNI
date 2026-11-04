@@ -102,7 +102,7 @@ function initialState(course, type) {
     type: kind,
     title: course?.title || '',
     badge: course?.badge || '',
-    pillar_id: course?.pillar_id ? String(course.pillar_id) : '',
+    pillar_id: course?.pillar_id !== undefined && course?.pillar_id !== null ? String(Number(course.pillar_id) === 0 ? 'all' : course.pillar_id) : '',
     description: course?.description || '',
     durations: durationsFromCourse(course, kind),
     mode: course?.mode || '',
@@ -130,22 +130,34 @@ function validate(s, bookedSeats) {
   const range = DAY_RANGE[s.type];
   checkText(e, 'title', s.title, LIMITS.title, 'Title', true);
   checkText(e, 'badge', s.badge, LIMITS.badge, 'Badge', false);
+  if (!s.pillar_id || String(s.pillar_id).trim() === '') e.pillar_id = 'Please select a heritage pillar.';
   checkText(e, 'description', s.description, LIMITS.description, 'Description', true);
   checkText(e, 'mode', s.mode, LIMITS.mode, 'Learning format', true);
 
   // Duration options: the first is the main one (decides the type and the website price)
   const seen = new Set();
   s.durations.forEach((o, i) => {
-    const d = Number(o.days);
-    const r = i === 0 ? range : { min: 1, max: 365 };
-    if (!Number.isInteger(d) || d < r.min || d > r.max) {
-      e[`durations.${i}.days`] =
-        i > 0
-          ? 'Days must be 1–365.'
-          : s.type === 'workshop'
-          ? 'A workshop main duration is 1–9 days. For 10+ days switch the type to Learning Journey.'
-          : 'A journey main duration is 10–365 days. For shorter courses switch the type to Workshop.';
+    const rawDays = o.days;
+    const r = range;
+
+    if (rawDays === '' || rawDays === null || rawDays === undefined) {
+      e[`durations.${i}.days`] = s.type === 'workshop'
+        ? 'Days is required (must be 1–9 days for workshops).'
+        : 'Days is required (must be at least 10 days for learning journeys).';
+      return;
     }
+
+    const d = Number(rawDays);
+    if (!Number.isInteger(d)) {
+      e[`durations.${i}.days`] = 'Days must be a valid whole number.';
+    } else if (s.type === 'workshop' && (d < 1 || d > 9)) {
+      e[`durations.${i}.days`] = 'Workshop duration must strictly be 1–9 days. For 10+ days, switch offering type to Learning Journey.';
+    } else if (s.type === 'journey' && d < 10) {
+      e[`durations.${i}.days`] = 'Learning Journey duration must start from 10 days (10+ days). For 1–9 days, switch offering type to Workshop.';
+    } else if (d < r.min || d > r.max) {
+      e[`durations.${i}.days`] = `Days must be between ${r.min} and ${r.max}.`;
+    }
+
     checkText(e, `durations.${i}.label`, o.label, LIMITS.durationLabel, 'Label', false);
     const offer = Number(o.fee);
     const regular = Number(o.original_price);
@@ -199,7 +211,7 @@ function validate(s, bookedSeats) {
 }
 
 const SECTION_OF = (key) => {
-  if (/^(title|badge|description|mode)$/.test(key)) return 'basics';
+  if (/^(title|badge|description|mode|pillar_id)$/.test(key)) return 'basics';
   if (/^(durations|seats_total)/.test(key)) return 'pricing';
   if (/^(modules|phases)/.test(key)) return 'curriculum';
   return 'details';
@@ -219,14 +231,14 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
           Duration options & fees <span className="text-red-600">*</span>
         </p>
         <p className="text-xs leading-relaxed text-[#6B4030]/80">
-          Add each duration students can choose, with its fee. The first row is the main option: it is shown on the website and its days must be{' '}
-          {range.min}–{range.max} for a {type === 'workshop' ? 'workshop' : 'learning journey'}. Label is optional, up to{' '}
-          {LIMITS.durationLabel.max} characters (e.g. “Intensive” → “1 Day Intensive”).
+          Add each duration students can choose, with its fee. <strong className="text-[#4A2C20]">Days is required</strong>: it must strictly be{' '}
+          <strong className="text-[#B89555]">{type === 'workshop' ? '1–9 days for Workshops' : '10+ days (starting from 10 days) for Learning Journeys'}</strong>.
+          The first row is the main duration shown on the website.
         </p>
       </div>
 
       <div className="hidden grid-cols-[88px_1fr_120px_120px_88px] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
-        <span>Days</span>
+        <span>Days <span className="text-red-600">*</span></span>
         <span>Label (optional)</span>
         <span>Offer fee ₹</span>
         <span>Regular fee ₹</span>
@@ -243,16 +255,20 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-[88px_1fr_120px_120px_88px] md:items-center">
               <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Days</span>
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">
+                  Days <span className="text-red-600">*</span>
+                </span>
                 <input
                   type="number"
                   inputMode="numeric"
-                  min={i === 0 ? range.min : 1}
-                  max={i === 0 ? range.max : 365}
+                  required
+                  min={range.min}
+                  max={range.max}
                   value={o.days}
                   onChange={(e) => onChange(i, 'days', e.target.value === '' ? '' : Number(e.target.value))}
-                  aria-label={`Option ${i + 1} days`}
-                  className={inputClass(cellErr(i, 'days'), 'tabular-nums')}
+                  placeholder={type === 'workshop' ? '1–9' : '10+'}
+                  aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
+                  className={inputClass(cellErr(i, 'days'), 'tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -369,7 +385,18 @@ function PreviewPage({ course, isJourney, onClose, onSave, saveLabel }) {
 
 /** Shape the editor state into the course record that is saved (and previewed). */
 function buildPayload(state, pillars, bookedSeats) {
-  const pillar = pillars.find((p) => String(p.id) === String(state.pillar_id));
+  let pillarId = null;
+  let pillarTitle = '';
+  if (state.pillar_id === 'all' || state.pillar_id === '0' || Number(state.pillar_id) === 0) {
+    pillarId = 0;
+    pillarTitle = 'All Heritage Pillars';
+  } else {
+    const pillar = pillars.find((p) => String(p.id) === String(state.pillar_id));
+    if (pillar) {
+      pillarId = Number(pillar.id);
+      pillarTitle = pillar.title;
+    }
+  }
   const seatsTotal = Number(state.seats_total);
   const highlights = (state.type === 'journey')
     ? state.phases.map((p) => ({
@@ -504,10 +531,18 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
 
   const switchType = (type) => {
     if (type === state.type) return;
+    const newRange = DAY_RANGE[type];
     setState((s) => ({
       ...s,
       type,
-      durations: s.durations.map((o, i) => (i === 0 ? { ...o, days: type === 'workshop' ? 1 : 30 } : o)),
+      durations: s.durations.map((o, i) => {
+        const d = Number(o.days);
+        let newDays = o.days;
+        if (!Number.isInteger(d) || d < newRange.min || d > newRange.max) {
+          newDays = type === 'workshop' ? Math.min(Math.max(d || 1, 1), 9) : Math.max(d || (i === 0 ? 30 : 10), 10);
+        }
+        return { ...o, days: newDays };
+      }),
       modules: s.modules.length ? s.modules : [{ day: '', title: '', desc: '' }],
       phases: s.phases,
     }));
@@ -762,20 +797,22 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                   </Field>
                   <Field
                     label="Heritage pillar"
-                    optional
+                    required
                     htmlFor="oe-pillar"
-                    hint="Shown in gold above the title. Pick the pillar this belongs to."
+                    error={err('pillar_id')}
+                    hint="Pick the specific pillar this belongs to, or choose 'All Heritage Pillars' if common across disciplines."
                   >
                     <select
                       id="oe-pillar"
                       value={state.pillar_id}
                       onChange={(e) => set('pillar_id', e.target.value)}
-                      className={inputClass(false, 'cursor-pointer')}
+                      className={inputClass(Boolean(err('pillar_id')), 'cursor-pointer')}
                     >
-                      <option value="">No pillar</option>
-                      {pillars.map((p) => (
+                      <option value="" disabled>— Select Heritage Pillar —</option>
+                      <option value="all">All Heritage Pillars (Common to all pillars)</option>
+                      {pillars.map((p, pIdx) => (
                         <option key={p.id} value={p.id}>
-                          {p.title}
+                          Pillar {pIdx + 1}: {p.title}
                         </option>
                       ))}
                     </select>

@@ -101,7 +101,7 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
       const offType = determineOfferingType(c.duration);
       return {
         ...c,
-        pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
+        pillar_id: c.pillar_id !== null && c.pillar_id !== undefined ? (Number(c.pillar_id) === 0 ? 'all' : Number(c.pillar_id)) : null,
         pillar_title: c.pillar_title || '',
         details: parseDetails(c.details),
         durations: parseDurations(c.durations, c),
@@ -129,7 +129,7 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
       const offType = determineOfferingType(c.duration);
       return {
         ...c,
-        pillar_id: c.pillar_id ? Number(c.pillar_id) : null,
+        pillar_id: c.pillar_id !== null && c.pillar_id !== undefined ? (Number(c.pillar_id) === 0 ? 'all' : Number(c.pillar_id)) : null,
         pillar_title: c.pillar_title || '',
         details: parseDetails(c.details),
         durations: parseDurations(c.durations, c),
@@ -329,8 +329,8 @@ export const createCourse = async (req, res) => {
         resolvedImageUrl,
         parsedTotalSeats,
         parsedAvailSeats,
-        pillar_id ? Number(pillar_id) : null,
-        pillar_title ? String(pillar_title).trim() : null,
+        (pillar_id === 'all' || pillar_id === 0 || pillar_id === '0') ? 0 : (pillar_id ? Number(pillar_id) : null),
+        (pillar_id === 'all' || pillar_id === 0 || pillar_id === '0') ? 'All Heritage Pillars' : (pillar_title ? String(pillar_title).trim() : null),
         Number(is_active) ? 1 : 0,
         detailsJson,
         durationsJson,
