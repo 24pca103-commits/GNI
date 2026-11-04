@@ -19,6 +19,14 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Prevent unhandled crashes from closing the backend server
+process.on('uncaughtException', (err) => {
+  console.error('[Server] Uncaught Exception:', err?.stack || err?.message || err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Server] Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
