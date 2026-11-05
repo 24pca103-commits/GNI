@@ -143,40 +143,43 @@ export default function HeritageFramework() {
                         <span>{pillar.badge}</span>
                       </div>
 
-                      {/* Bottom Dark Panel for Title - Compact & Sleek */}
-                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/95 px-3 py-2 text-[#F7F2E8] z-10 border-t border-[#B89555]/20 min-h-[50px] sm:min-h-[54px] flex flex-col justify-center">
-                        <p className="font-['DM_Sans'] text-[9px] sm:text-[10px] text-[#B89555] font-medium leading-none mb-1">
+                      {/* Bottom Dark Panel for Title - Unified Fixed Slot */}
+                      <div className="absolute inset-x-0 bottom-0 bg-[#241A16]/95 px-3 py-2 text-[#F7F2E8] z-10 border-t border-[#B89555]/20 h-[56px] sm:h-[62px] flex flex-col justify-center">
+                        <p className="font-['DM_Sans'] text-[9px] sm:text-[10px] text-[#B89555] font-medium leading-none mb-1 truncate">
                           {pillar.category}
                         </p>
-                        <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-base font-bold text-white tracking-tight leading-snug break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                        <h3 className="font-['Cormorant_Garamond'] text-sm sm:text-base font-bold text-white tracking-tight leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                           {pillar.title}
                         </h3>
                       </div>
                     </div>
 
-                    {/* Card Content Body - Medium Compact Proportions */}
-                    <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 space-y-2.5 sm:space-y-3 text-left min-w-0">
-                      <p className="font-['DM_Sans'] text-[11.5px] sm:text-xs text-[#241A16]/85 leading-relaxed font-normal min-h-[34px] sm:min-h-[36px] break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
-                        {pillar.description}
-                      </p>
+                    {/* Card Content Body - Medium Compact Proportions with Equal Height Slots */}
+                    <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 text-left min-w-0 gap-2.5 sm:gap-3">
+                      {/* Description Slot - Unified Height */}
+                      <div className="h-[44px] sm:h-[48px] flex items-start overflow-hidden">
+                        <p className="font-['DM_Sans'] text-[11.5px] sm:text-xs text-[#241A16]/85 leading-relaxed font-normal line-clamp-2 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                          {pillar.description}
+                        </p>
+                      </div>
 
-                      {/* Subject Curriculum Overview - Compact */}
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 space-y-0.5 min-h-[54px] sm:min-h-[58px] flex flex-col justify-center min-w-0">
-                        <span className="text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-semibold text-[#6B4030] block">
+                      {/* Subject Curriculum Overview Inner Card - Unified Fixed Height Across All Cards */}
+                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 h-[64px] sm:h-[68px] shrink-0 flex flex-col justify-center min-w-0">
+                        <span className="text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-semibold text-[#6B4030] block shrink-0 leading-tight mb-0.5">
                           Modules &amp; Practicals:
                         </span>
-                        <p className="text-[11px] sm:text-[11.5px] font-['DM_Sans'] text-[#241A16]/80 leading-snug break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
+                        <p className="text-[11px] sm:text-[11.5px] font-['DM_Sans'] text-[#241A16]/80 leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                           {pillar.subjects}
                         </p>
                       </div>
 
-                      {/* Tags - Medium Compact */}
-                      <div className="min-h-[40px] sm:min-h-[44px] flex flex-wrap content-start items-center gap-1 sm:gap-1.5 pt-0.5">
+                      {/* Tags Slot - Unified Fixed Height with Hidden Overflow */}
+                      <div className="h-[50px] sm:h-[54px] shrink-0 flex flex-wrap content-start items-center gap-1 sm:gap-1.5 pt-0.5 overflow-hidden">
                         {Array.isArray(pillar.tags) &&
                           pillar.tags.map((tag, tagIdx) => (
                             <span
                               key={`${pillar.number || pillar.id || 'p'}-tag-${tagIdx}`}
-                              className="px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20 break-words [overflow-wrap:anywhere] max-w-full"
+                              className="px-2 py-0.5 rounded-md text-[9.5px] sm:text-[10px] font-['DM_Sans'] font-medium bg-[#F7F2E8] text-[#6B4030] border border-[#6B4030]/20 truncate max-w-[130px]"
                             >
                               {tag}
                             </span>
@@ -184,7 +187,7 @@ export default function HeritageFramework() {
                       </div>
 
                       {/* Know More Pill Button - Pinned to bottom */}
-                      <div className="pt-2.5 border-t border-[#6B4030]/15 flex items-center justify-between mt-auto">
+                      <div className="pt-2.5 border-t border-[#6B4030]/15 flex items-center justify-between mt-auto shrink-0">
                         <span className="text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold text-[#6B4030]">
                           Cohort Track
                         </span>
