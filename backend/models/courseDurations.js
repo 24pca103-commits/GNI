@@ -90,6 +90,8 @@ export function validateDurations(raw, type) {
     const original = o.original_price === '' || o.original_price === undefined || o.original_price === null ? fee : toInt(o.original_price);
     const n = i + 1;
     if (!(days >= L.minDays && days <= L.maxDays)) return { error: `Duration option ${n}: days must be between ${L.minDays} and ${L.maxDays}.` };
+    if (type === 'workshop' && days > 9) return { error: `Duration option ${n}: Double digits not allowed for Workshop (${days} days). Workshops must strictly be 1–9 days (single digit).` };
+    if (type === 'journey' && days < 10) return { error: `Duration option ${n}: Single digit not allowed for Learning Journey (${days} days). Learning journeys must start from 10 days (10+ days).` };
     if (label.length > L.labelMax) return { error: `Duration option ${n}: label can be at most ${L.labelMax} characters.` };
     if (!(fee > 0 && fee <= L.maxPrice)) return { error: `Duration option ${n}: enter an offer fee between ₹1 and ₹${L.maxPrice.toLocaleString('en-IN')}.` };
     if (!(original >= fee && original <= L.maxPrice)) return { error: `Duration option ${n}: regular fee must be equal to or higher than the offer fee.` };

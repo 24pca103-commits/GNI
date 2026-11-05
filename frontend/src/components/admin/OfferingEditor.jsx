@@ -59,6 +59,22 @@ function buildDuration(days, label) {
   return `${n} ${n === 1 ? 'Day' : 'Days'}${label.trim() ? ` ${label.trim()}` : ''}`;
 }
 
+export const handleOnlyNumericKeyDown = (e) => {
+  if (
+    ['Backspace', 'Tab', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Enter'].includes(
+      e.key
+    )
+  ) {
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) {
+    return;
+  }
+  if (!/^[0-9]$/.test(e.key)) {
+    e.preventDefault();
+  }
+};
+
 function phasesFromCourse(course, totalDays) {
   return parseJourneyPhases(course?.highlights, totalDays).map((p) => {
     const nums = String(p.period).match(/\d+/g) || [];
@@ -151,9 +167,9 @@ function validate(s, bookedSeats) {
     if (!Number.isInteger(d)) {
       e[`durations.${i}.days`] = 'Days must be a valid whole number.';
     } else if (s.type === 'workshop' && (d < 1 || d > 9)) {
-      e[`durations.${i}.days`] = 'Workshop duration must strictly be 1–9 days. For 10+ days, switch offering type to Learning Journey.';
+      e[`durations.${i}.days`] = 'Double digits not allowed for Workshop! Workshop duration must strictly be 1–9 days (single digit). For 10+ days, switch offering type to Learning Journey.';
     } else if (s.type === 'journey' && d < 10) {
-      e[`durations.${i}.days`] = 'Learning Journey duration must start from 10 days (10+ days). For 1–9 days, switch offering type to Workshop.';
+      e[`durations.${i}.days`] = 'Single digit not allowed for Learning Journey! Duration must start from 10 days (10+ days). Single digits (1–9 days) are strictly for Workshops.';
     } else if (d < r.min || d > r.max) {
       e[`durations.${i}.days`] = `Days must be between ${r.min} and ${r.max}.`;
     }
@@ -232,7 +248,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
         </p>
         <p className="text-xs leading-relaxed text-[#6B4030]/80">
           Add each duration students can choose, with its fee. <strong className="text-[#4A2C20]">Days is required</strong>: it must strictly be{' '}
-          <strong className="text-[#B89555]">{type === 'workshop' ? '1–9 days for Workshops' : '10+ days (starting from 10 days) for Learning Journeys'}</strong>.
+          <strong className="text-[#B89555]">{type === 'workshop' ? '1–9 days (single digit) for Workshops' : '10+ days (double digits starting from 10) for Learning Journeys'}</strong>.
           The first row is the main duration shown on the website.
         </p>
       </div>
@@ -250,7 +266,30 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
         const fee = Number(o.fee);
         const regular = Number(o.original_price);
         const save = regular > fee && fee > 0 ? Math.round(((regular - fee) / regular) * 100) : 0;
-        const rowErrors = ['days', 'label', 'fee', 'original_price'].map((k) => cellErr(i, k)).filter(Boolean);
+
+        // Immediate live error validation while typing
+        const rawDaysStr = String(o.days ?? '').trim();
+        let liveDaysError = '';
+        if (rawDaysStr !== '') {
+          const d = Number(rawDaysStr);
+          if (type === 'workshop') {
+            if (d >= 10 || rawDaysStr.length >= 2) {
+              liveDaysError = 'Double digits not allowed for Workshop! Workshop duration must strictly be 1–9 days (single digit). For 10+ days, switch offering type to Learning Journey.';
+            } else if (d < 1) {
+              liveDaysError = 'Workshop days must be between 1 and 9.';
+            }
+          } else if (type === 'journey') {
+            if (d < 10) {
+              liveDaysError = 'Single digit not allowed for Learning Journey! Duration must start from 10 days (10+ days). Single digits (1–9 days) are strictly for Workshops.';
+            } else if (d > 365) {
+              liveDaysError = 'Learning Journey days cannot exceed 365.';
+            }
+          }
+        }
+
+        const effectiveDaysError = liveDaysError || cellErr(i, 'days');
+        const rowErrors = [effectiveDaysError, cellErr(i, 'label'), cellErr(i, 'fee'), cellErr(i, 'original_price')].filter(Boolean);
+
         return (
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-[88px_1fr_120px_120px_88px] md:items-center">
@@ -259,16 +298,19 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   Days <span className="text-red-600">*</span>
                 </span>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   required
-                  min={range.min}
-                  max={range.max}
-                  value={o.days}
-                  onChange={(e) => onChange(i, 'days', e.target.value === '' ? '' : Number(e.target.value))}
+                  value={o.days ?? ''}
+                  onKeyDown={handleOnlyNumericKeyDown}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    onChange(i, 'days', val === '' ? '' : Number(val));
+                  }}
                   placeholder={type === 'workshop' ? '1–9' : '10+'}
                   aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
-                  className={inputClass(cellErr(i, 'days'), 'tabular-nums font-semibold')}
+                  className={inputClass(effectiveDaysError, 'tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -286,12 +328,15 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">Offer fee ₹</span>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="numeric"
-                  min="1"
-                  max={MAX_PRICE}
-                  value={o.fee}
-                  onChange={(e) => onChange(i, 'fee', e.target.value)}
+                  pattern="[0-9]*"
+                  value={o.fee ?? ''}
+                  onKeyDown={handleOnlyNumericKeyDown}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    onChange(i, 'fee', val);
+                  }}
                   placeholder="5499"
                   aria-label={`Option ${i + 1} offer fee`}
                   className={inputClass(cellErr(i, 'fee'), 'tabular-nums font-semibold')}
@@ -300,12 +345,15 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">Regular fee ₹</span>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="numeric"
-                  min="0"
-                  max={MAX_PRICE}
-                  value={o.original_price}
-                  onChange={(e) => onChange(i, 'original_price', e.target.value)}
+                  pattern="[0-9]*"
+                  value={o.original_price ?? ''}
+                  onKeyDown={handleOnlyNumericKeyDown}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    onChange(i, 'original_price', val);
+                  }}
                   placeholder="optional"
                   aria-label={`Option ${i + 1} regular fee`}
                   className={inputClass(cellErr(i, 'original_price'), 'tabular-nums')}
@@ -325,7 +373,12 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
               {fee > 0 && ` · ₹${fee.toLocaleString('en-IN')}`}
               {save > 0 && ` · Save ${save}%`}
             </p>
-            {rowErrors.length > 0 && <p className="mt-1 text-xs font-medium text-red-600">{rowErrors.join(' ')}</p>}
+            {rowErrors.length > 0 && (
+              <div className="mt-1.5 flex items-start gap-1 text-xs font-medium text-red-600">
+                <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-red-600" />
+                <span>{rowErrors[0]}</span>
+              </div>
+            )}
           </div>
         );
       })}
@@ -882,12 +935,15 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                   <Field label="Total seats" required htmlFor="oe-seats" error={err('seats_total')} hint={`1–${MAX_SEATS} per batch.`}>
                     <input
                       id="oe-seats"
-                      type="number"
+                      type="text"
                       inputMode="numeric"
-                      min={Math.max(1, bookedSeats)}
-                      max={MAX_SEATS}
-                      value={state.seats_total}
-                      onChange={(e) => set('seats_total', e.target.value)}
+                      pattern="[0-9]*"
+                      value={state.seats_total ?? ''}
+                      onKeyDown={handleOnlyNumericKeyDown}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        set('seats_total', val);
+                      }}
                       placeholder="35"
                       className={inputClass(err('seats_total'), 'tabular-nums')}
                     />
@@ -1079,21 +1135,29 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                         <div className="grid gap-4 sm:grid-cols-[1fr_1fr_2fr]">
                           <Field label="From day" required error={err(`phases.${i}.days`)}>
                             <input
-                              type="number"
-                              min="1"
-                              max={days || undefined}
-                              value={p.start}
-                              onChange={(e) => setItem('phases', i, 'start', e.target.value === '' ? '' : Number(e.target.value))}
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              value={p.start ?? ''}
+                              onKeyDown={handleOnlyNumericKeyDown}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '');
+                                setItem('phases', i, 'start', val === '' ? '' : Number(val));
+                              }}
                               className={inputClass(err(`phases.${i}.days`), 'tabular-nums')}
                             />
                           </Field>
                           <Field label="To day" required>
                             <input
-                              type="number"
-                              min="1"
-                              max={days || undefined}
-                              value={p.end}
-                              onChange={(e) => setItem('phases', i, 'end', e.target.value === '' ? '' : Number(e.target.value))}
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              value={p.end ?? ''}
+                              onKeyDown={handleOnlyNumericKeyDown}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '');
+                                setItem('phases', i, 'end', val === '' ? '' : Number(val));
+                              }}
                               className={inputClass(err(`phases.${i}.days`), 'tabular-nums')}
                             />
                           </Field>
