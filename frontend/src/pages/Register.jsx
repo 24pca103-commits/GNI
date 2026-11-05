@@ -196,89 +196,115 @@ export function resolveCoursePillarId(course, activeCourses = [], allPillars = D
  * and localStorage custom courses (from Admin).
  */
 export function buildUnifiedCatalog(baseCatalog, activeCourses, allPillars = DEFAULT_PILLARS) {
-  const catalog = [...baseCatalog];
+  const hasActive = Array.isArray(activeCourses) && activeCourses.length > 0;
 
-  (activeCourses || []).forEach((ac) => {
-    if (!ac || !ac.title) return;
-    const acTitle = String(ac.title).trim();
-    const acTitleLower = acTitle.toLowerCase();
-    const isJourney = isJourneyOffering(ac);
+  if (hasActive) {
+    return activeCourses
+      .filter((ac) => ac && ac.title && (ac.is_active === 1 || ac.is_active === true || ac.is_active === undefined))
+      .map((ac) => {
+        const acTitle = String(ac.title).trim();
+        const acTitleLower = acTitle.toLowerCase();
+        const isJourney = isJourneyOffering(ac);
+        const resolvedPillar = resolveCoursePillarId(ac, activeCourses, allPillars);
 
-    const existingIndex = catalog.findIndex((c) => {
-      const cnLower = String(c.courseName || '').toLowerCase().trim();
-      return cnLower === acTitleLower;
-    });
+        // Find optional baseEntry metadata (takeHome, description)
+        const baseEntry = (baseCatalog || []).find((c) => {
+          const cnLower = String(c.courseName || '').toLowerCase().trim();
+          return cnLower === acTitleLower;
+        });
 
-    const price = Number(ac.discount_price || ac.original_price || (isJourney ? 9999 : 4999));
-    const origPrice = Number(ac.original_price || (isJourney ? 19999 : 9999));
-    const discount = Math.max(0, origPrice - price);
-    const dur = ac.duration || (isJourney ? '60 Days' : '1 Day');
-    const adminOptions = Array.isArray(ac.durations) ? ac.durations.filter((o) => Number(o.days) > 0 && Number(o.fee) > 0) : [];
-
-    const resolvedPillar = resolveCoursePillarId(ac, activeCourses, allPillars);
-
-    if (existingIndex >= 0) {
-      catalog[existingIndex] = {
-        ...catalog[existingIndex],
-        pillarId: resolvedPillar || catalog[existingIndex].pillarId,
-        pillarTitle: ac.pillar_title || catalog[existingIndex].pillarTitle,
-        category: isJourney ? 'Learning Journey' : (ac.category || catalog[existingIndex].category || 'Workshop'),
-      };
-    } else {
-      catalog.push({
-        id: String(ac.slug || ac.id || `course-${acTitle}`),
-        courseName: acTitle,
-        pillarId: resolvedPillar || 1,
-        pillarTitle: ac.pillar_title || (isJourney ? 'Comprehensive Guild Syllabus' : 'Heritage Studio Workshop'),
-        category: isJourney ? 'Learning Journey' : (ac.category || 'Workshop'),
-        description: ac.description || (isJourney ? 'Hands-on heritage learning journey & tactile craft immersion.' : 'Hands-on heritage workshop.'),
-        takeHome: isJourney
-          ? 'Comprehensive structured cohort portfolio, physical guild artifact & certificate'
-          : 'Handcrafted heritage artifact, studio tools kit & certificate',
-        durations: adminOptions.length
-          ? adminOptions.map((o) => {
-              const days = Number(o.days);
-              const fee = Number(o.fee);
-              const original = Math.max(fee, Number(o.original_price) || fee);
-              const label = String(o.label || '').trim();
-              return {
-                duration: `${days} ${days === 1 ? 'Day' : 'Days'}${label ? ` ${label}` : ''}`,
-                fee,
-                originalPrice: original,
-                discount: original - fee,
-                taxes: 0,
-                totalPayable: fee,
-                formattedFee: `₹${fee.toLocaleString('en-IN')}`,
-                formattedOriginal: `₹${original.toLocaleString('en-IN')}`,
-                formattedDiscount: `₹${(original - fee).toLocaleString('en-IN')}`,
-                formattedTotal: `₹${fee.toLocaleString('en-IN')}`,
-                mode: ac.mode || '',
-                note: '',
-              };
+        // Determine duration options:
+        // 1. Admin custom duration options on the course
+        const adminOptions = Array.isArray(ac.durations)
+          ? ac.durations.filter((o) => {
+              const d = Number(o.days);
+              const f = Number(o.fee);
+              if (!d || !f) return false;
+              // Workshop strictly 1–9 days, Learning Journey strictly 10+ days
+              if (!isJourney && d > 9) return false;
+              if (isJourney && d < 10) return false;
+              return true;
             })
-          : [
-          {
-            duration: dur,
-            fee: price,
-            originalPrice: origPrice,
-            discount: discount,
-            taxes: 0,
-            totalPayable: price,
-            formattedFee: `₹${price.toLocaleString('en-IN')}`,
-            formattedOriginal: `₹${origPrice.toLocaleString('en-IN')}`,
-            formattedDiscount: `₹${discount.toLocaleString('en-IN')}`,
-            formattedTotal: `₹${price.toLocaleString('en-IN')}`,
-            mode: ac.mode || (isJourney ? 'Full Cohort Immersion' : 'Studio Hands-on'),
-            note: isJourney
-              ? 'Complete structured curriculum modules, master sthapathi guidance & field visit.'
-              : 'Raw materials, inscription plate, and certified craft kit.',
-          },
-        ],
-      });
-    }
-  });
+          : [];
 
-  return catalog;
+        let durations = [];
+        if (adminOptions.length > 0) {
+          durations = adminOptions.map((o) => {
+            const days = Number(o.days);
+            const fee = Number(o.fee);
+            const original = Math.max(fee, Number(o.original_price) || fee);
+            const label = String(o.label || '').trim();
+            return {
+              duration: `${days} ${days === 1 ? 'Day' : 'Days'}${label ? ` ${label}` : ''}`,
+              fee,
+              originalPrice: original,
+              discount: original - fee,
+              taxes: 0,
+              totalPayable: fee,
+              formattedFee: `₹${fee.toLocaleString('en-IN')}`,
+              formattedOriginal: `₹${original.toLocaleString('en-IN')}`,
+              formattedDiscount: `₹${(original - fee).toLocaleString('en-IN')}`,
+              formattedTotal: `₹${fee.toLocaleString('en-IN')}`,
+              mode: ac.mode || '',
+              note: '',
+            };
+          });
+        } else if (baseEntry && Array.isArray(baseEntry.durations) && baseEntry.durations.length > 0) {
+          // Use baseEntry durations if strictly conforming to offering category
+          durations = baseEntry.durations.filter((d) => {
+            const dayMatch = String(d.duration || '').match(/(\d+)\s*day/i);
+            const count = dayMatch ? parseInt(dayMatch[1], 10) : null;
+            if (count !== null) {
+              if (!isJourney && count > 9) return false;
+              if (isJourney && count < 10) return false;
+            }
+            return true;
+          });
+        }
+
+        // Fallback to the exact single duration shown on the website
+        if (!durations.length) {
+          const price = Number(ac.discount_price || ac.original_price || (isJourney ? 9999 : 4999));
+          const origPrice = Number(ac.original_price || (isJourney ? 19999 : 9999));
+          const discount = Math.max(0, origPrice - price);
+          const dur = ac.duration || (isJourney ? '60 Days' : '1 Day');
+          durations = [
+            {
+              duration: dur,
+              fee: price,
+              originalPrice: origPrice,
+              discount: discount,
+              taxes: 0,
+              totalPayable: price,
+              formattedFee: `₹${price.toLocaleString('en-IN')}`,
+              formattedOriginal: `₹${origPrice.toLocaleString('en-IN')}`,
+              formattedDiscount: `₹${discount.toLocaleString('en-IN')}`,
+              formattedTotal: `₹${price.toLocaleString('en-IN')}`,
+              mode: ac.mode || (isJourney ? 'Full Cohort Immersion' : 'Studio Hands-on'),
+              note: isJourney
+                ? 'Complete structured curriculum modules, master sthapathi guidance & field visit.'
+                : 'Raw materials, inscription plate, and certified craft kit.',
+            },
+          ];
+        }
+
+        return {
+          id: String(ac.slug || ac.id || `course-${acTitle}`),
+          courseName: acTitle,
+          pillarId: resolvedPillar || 1,
+          pillarTitle: ac.pillar_title || (isJourney ? 'Comprehensive Guild Syllabus' : 'Heritage Studio Workshop'),
+          category: isJourney ? 'Learning Journey' : (ac.category || 'Workshop'),
+          description: ac.description || (isJourney ? 'Hands-on heritage learning journey & tactile craft immersion.' : 'Hands-on heritage workshop.'),
+          takeHome: baseEntry?.takeHome || (isJourney
+            ? 'Comprehensive structured cohort portfolio, physical guild artifact & certificate'
+            : 'Handcrafted heritage artifact, studio tools kit & certificate'),
+          durations,
+        };
+      });
+  }
+
+  // Fallback if active courses not yet loaded
+  return Array.isArray(baseCatalog) ? baseCatalog : [];
 }
 
 export default function Register() {

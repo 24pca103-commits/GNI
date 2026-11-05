@@ -16,7 +16,7 @@ import {
 } from './offerings/OfferingUI';
 
 // Established display order for the original workshops; new ones from admin follow by id
-const CANONICAL_IDS = [102, 101, 103, 104];
+const CANONICAL_IDS = [101, 102];
 const FALLBACK_IMAGE = '/artisan/workshop.jpg';
 
 function StepCard({ step, index }) {

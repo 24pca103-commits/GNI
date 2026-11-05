@@ -1,12 +1,14 @@
 /**
  * Default Canonical Course Offerings for Global Nagas Institute (GNI)
- * Serves as reliable immediate frontend cache & offline fallback
+ * Exactly 4 canonical offerings: 2 Workshops + 2 Learning Journeys
  */
 
 import { DEFAULT_COURSE_CONTENT } from './offeringContent';
 
 const BASE_COURSES = [
-  // Workshops (1-9 Days)
+  // ==========================================
+  // Workshops (1-9 Days) — Exactly 2
+  // ==========================================
   {
     id: 101,
     title: 'Ancient Tamil Art & Heritage Experience Workshop',
@@ -24,8 +26,8 @@ const BASE_COURSES = [
     seats_total: 50,
     seats_available: 28,
     is_active: 1,
-    pillar_id: 1,
-    pillar_title: 'Painting & Natural Mineral Pigments',
+    pillar_id: 4,
+    pillar_title: 'Heritage Applications & Interior Crafts',
   },
   {
     id: 102,
@@ -47,48 +49,10 @@ const BASE_COURSES = [
     pillar_id: 3,
     pillar_title: 'Sculpturing & Sacred Nagas Metal Art',
   },
-  {
-    id: 103,
-    title: 'Traditional Painting & Natural Mineral Pigments Workshop',
-    slug: 'traditional-painting-workshop',
-    category: 'Workshop',
-    badge: 'Fresco Masterclass',
-    duration: '1 Day Intensive',
-    mode: 'Studio Hands-on',
-    original_price: 8500.00,
-    discount_price: 4500.00,
-    discount_percent: 47,
-    description: 'Ancient natural mineral rock pigments preparation, fresco grounds, and authentic temple mural painting techniques.',
-    highlights: 'Mineral Pigments; Fresco Grounds; Iconography Sketching; Temple Fresco Canvas',
-    image_url: '/artisan/studio-pigments.jpg',
-    seats_total: 40,
-    seats_available: 20,
-    is_active: 1,
-    pillar_id: 1,
-    pillar_title: 'Painting & Natural Mineral Pigments',
-  },
-  {
-    id: 104,
-    title: 'Epigraphy & Ancient Tamili Inscriptions Workshop',
-    slug: 'epigraphy-ancient-scripts',
-    category: 'Workshop',
-    badge: 'Archival Epigraphy',
-    duration: '1 Day Intensive',
-    mode: 'Studio Hands-on',
-    original_price: 7999.00,
-    discount_price: 3999.00,
-    discount_percent: 50,
-    description: 'Deciphering Brahmi, Tamili scripts, royal copper plate engraving, and palm leaf manuscript scribing.',
-    highlights: 'Tamili Brahmi; Copper Plate Engraving; Palm Leaf Scribing; Stone Inscriptions',
-    image_url: '/artisan/pillar-epigraphy.jpg',
-    seats_total: 35,
-    seats_available: 15,
-    is_active: 1,
-    pillar_id: 2,
-    pillar_title: 'Libi – Language, Scripts & Epigraphy',
-  },
 
-  // Learning Journeys / Cohorts (10+ Days)
+  // ==========================================
+  // Learning Journeys (10+ Days) — Exactly 2
+  // ==========================================
   {
     id: 201,
     title: '60-Day Heritage Creator Journey',
