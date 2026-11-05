@@ -119,8 +119,8 @@ export function renderGniEmailWrapper({
               <h1 class="gni-header-title" style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 21px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.8px; line-height: 1.3;">
                 ${escapeHtml(headerTitle)}
               </h1>
-              <p style="margin: 5px 0 0; font-size: 11.5px; color: #E5B869; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">
-                ${escapeHtml(headerSubtitle)}
+              <p style="margin: 5px 0 0; font-size: 11.5px; color: #E5B869; letter-spacing: 1.5px; font-weight: 600;">
+                ${escapeHtml(String(headerSubtitle || '').toUpperCase())}
               </p>
               ${
                 badgeText
@@ -383,7 +383,7 @@ export function generateAdminRegistrationAlert(data) {
           </td>
         </tr>
         <tr>
-          <td style="padding: 5px 0; color: #8C6832; font-weight: 700; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.5px;">Location &amp; Country:</td>
+          <td style="padding: 5px 0; color: #8C6832; font-weight: 700; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.5px;">Location and Country:</td>
           <td style="padding: 5px 0; color: #241A16;">${escapeHtml(location)}</td>
         </tr>
         <tr>
