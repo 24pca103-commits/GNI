@@ -17,6 +17,7 @@
 export function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str)
+    .replace(/&amp;/g, '&') // Normalize any pre-existing &amp; to avoid double-escaping to &amp;amp;
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -35,7 +36,7 @@ export function renderGniEmailWrapper({
   title = 'Global Nagas Institute',
   preheader = 'Global Nagas Institute — Traditional Heritage Arts & Repository',
   headerTitle = 'GLOBAL NAGAS INSTITUTE',
-  headerSubtitle = 'Heritage Framework &amp; Traditional Arts Repository',
+  headerSubtitle = 'Heritage Framework & Traditional Arts Repository',
   badgeText = '',
   badgeType = 'gold', // 'green' | 'gold' | 'red' | 'neutral'
   contentHtml = '',
@@ -224,7 +225,7 @@ export function generateCustomerRegistrationEmail(data) {
 
     <!-- Registration Details Card -->
     <div style="background-color: #FAF7F0; border: 1px solid #E6DCD0; border-left: 4px solid #B89555; border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;">
-      <div style="font-size: 12px; font-weight: 700; color: #8C6832; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; border-bottom: 1px solid #E6DCD0; pb-1;">
+      <div style="font-size: 12px; font-weight: 700; color: #8C6832; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; border-bottom: 1px solid #E6DCD0; padding-bottom: 6px;">
         Official Registration Details
       </div>
 
@@ -288,7 +289,7 @@ export function generateCustomerRegistrationEmail(data) {
     title: 'Registration Confirmation — Global Nagas Institute',
     preheader: `Vanakkam ${userName}, your registration has been successfully confirmed. Ref: ${registrationId}`,
     headerTitle: 'GLOBAL NAGAS INSTITUTE',
-    headerSubtitle: 'Admissions &amp; Guild Registry',
+    headerSubtitle: 'Admissions & Guild Registry',
     badgeText: '✓ Registration Confirmed',
     badgeType: 'green',
     contentHtml,
@@ -502,7 +503,7 @@ export function generateAdminLoginOtpEmail(otp) {
     title: 'GNI Admin Login Verification Code',
     preheader: `Your GNI Admin verification code is ${otp}. Valid for 10 minutes.`,
     headerTitle: 'GLOBAL NAGAS INSTITUTE',
-    headerSubtitle: 'Admissions &amp; Security Directorate',
+    headerSubtitle: 'Admissions & Security Directorate',
     badgeText: '🛡️ Admin Login 2FA',
     badgeType: 'gold',
     contentHtml,
@@ -562,7 +563,7 @@ export function generateAdminPasswordResetOtpEmail(otp) {
     title: 'GNI Admin Password Reset Code',
     preheader: `Your password reset code is ${otp}. Valid for 15 minutes.`,
     headerTitle: 'GLOBAL NAGAS INSTITUTE',
-    headerSubtitle: 'Admissions &amp; Security Directorate',
+    headerSubtitle: 'Admissions & Security Directorate',
     badgeText: '🔑 Password Reset Verification',
     badgeType: 'gold',
     contentHtml,
@@ -610,7 +611,7 @@ export function generatePaymentConfirmationEmail(data) {
 
     <!-- Payment Receipt Card -->
     <div style="background-color: #FAF7F0; border: 1px solid #E6DCD0; border-left: 4px solid #2D6A4F; border-radius: 10px; padding: 16px 18px; margin-bottom: 20px;">
-      <div style="font-size: 11.5px; font-weight: 700; color: #2D6A4F; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; border-bottom: 1px solid #E6DCD0; pb-1;">
+      <div style="font-size: 11.5px; font-weight: 700; color: #2D6A4F; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; border-bottom: 1px solid #E6DCD0; padding-bottom: 6px;">
         Official Payment Receipt
       </div>
 
@@ -656,8 +657,8 @@ export function generatePaymentConfirmationEmail(data) {
     title: 'Payment Confirmation — Global Nagas Institute',
     preheader: `Payment verified for ${userName}. Ref: ${refId}. Seat confirmed.`,
     headerTitle: 'GLOBAL NAGAS INSTITUTE',
-    headerSubtitle: 'Admissions &amp; Bursary Directorate',
-    badgeText: '✓ Payment Verified &amp; Confirmed',
+    headerSubtitle: 'Admissions & Bursary Directorate',
+    badgeText: '✓ Payment Verified & Confirmed',
     badgeType: 'green',
     contentHtml,
     ctaText: 'Visit Institute Portal →',
@@ -886,8 +887,8 @@ export function generateCourseUpdateEmail(data, updateNotice) {
     title: `Cohort Update: ${program} — GNI`,
     preheader: `Important cohort update for ${userName} regarding ${program}.`,
     headerTitle: 'GLOBAL NAGAS INSTITUTE',
-    headerSubtitle: 'Faculty &amp; Studio Directorate',
-    badgeText: '📅 Cohort &amp; Schedule Update',
+    headerSubtitle: 'Faculty & Studio Directorate',
+    badgeText: '📅 Cohort & Schedule Update',
     badgeType: 'gold',
     contentHtml,
     ctaText: 'Review Program Details →',
