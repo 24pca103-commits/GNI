@@ -334,27 +334,27 @@ function DurationRoadmapEditor({
   const durErr = err(`durations.${durationIndex}.phases`);
 
   return (
-    <div className="mt-3.5 border-t border-[#6B4030]/15 pt-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3 bg-[#FAF7F0] p-2.5 rounded-xl border border-[#6B4030]/12">
+    <div className="mt-2.5 border-t border-[#6B4030]/15 pt-2">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 bg-[#FAF7F0] px-2.5 py-1.5 rounded-lg border border-[#6B4030]/12">
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-[#4A2C20] hover:text-[#B89555] cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4A2C20] hover:text-[#B89555] cursor-pointer"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold">
             {phases.length}
           </span>
-          <span className="font-['Cormorant_Garamond'] text-sm sm:text-base font-bold text-[#241A16]">
-            Roadmap Phases for {days} Days Cohort
+          <span className="font-['Cormorant_Garamond'] text-sm font-bold text-[#241A16]">
+            Roadmap Phases ({days} Days Cohort)
           </span>
-          <span className="text-[10px] text-[#6B4030]/80 font-normal">
-            ({open ? 'Collapse ▲' : 'Expand ▼'})
+          <span className="text-[10px] text-[#6B4030]/70 font-normal">
+            ({open ? '▲ Collapse' : '▼ Expand'})
           </span>
         </button>
 
-        <div className="flex items-center gap-3 text-xs">
-          <span className={`tabular-nums font-semibold ${lastEnd >= days && days > 0 ? 'text-emerald-700' : 'text-[#B89555]'}`}>
-            {Math.min(lastEnd, days)} of {days} days planned
+        <div className="flex items-center gap-2.5 text-xs">
+          <span className={`tabular-nums text-[11px] font-semibold ${lastEnd >= days && days > 0 ? 'text-emerald-700' : 'text-[#B89555]'}`}>
+            {Math.min(lastEnd, days)}/{days}d planned
             {days > 0 && lastEnd < days && ` (Missing ${days - lastEnd}d)`}
             {days > 0 && lastEnd >= days && ' ✓'}
           </span>
@@ -362,35 +362,84 @@ function DurationRoadmapEditor({
             <button
               type="button"
               onClick={onSpreadDays}
-              className="text-xs font-semibold text-[#4A2C20] underline decoration-[#B89555] underline-offset-2 hover:text-[#B89555] cursor-pointer"
+              className="text-[11px] font-semibold text-[#4A2C20] underline decoration-[#B89555] underline-offset-2 hover:text-[#B89555] cursor-pointer"
             >
-              Split {days} days evenly
+              Split evenly
             </button>
           )}
         </div>
       </div>
 
       {durErr && (
-        <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-medium text-red-600 flex items-center gap-1.5">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+        <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 flex items-center gap-1.5">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600" />
           <span>{durErr}</span>
         </div>
       )}
 
       {open && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {phases.map((p, pIdx) => {
             const pKey = `durations.${durationIndex}.phases.${pIdx}`;
+            const phaseDaysErr = err(`${pKey}.days`);
+            const phaseTitleErr = err(`${pKey}.title`);
+            const phaseDetailsErr = err(`${pKey}.details`);
+            const anyPhaseErr = phaseDaysErr || phaseTitleErr || phaseDetailsErr || err(`${pKey}.outcome`) || err(`${pKey}.materials`);
+
             return (
-              <div key={pIdx} className="space-y-3 rounded-xl border border-[#6B4030]/15 bg-white p-3.5 shadow-2xs">
-                <div className="flex items-center justify-between gap-2 border-b border-[#6B4030]/10 pb-2">
-                  <span className="inline-flex items-center gap-2 text-xs font-bold text-[#241A16]">
+              <div key={pIdx} className="space-y-1.5 rounded-lg border border-[#6B4030]/15 bg-white p-2.5 shadow-2xs">
+                {/* Row 1: Phase Number + From Day + To Day + Phase Title + Actions */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#241A16] shrink-0">
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold">
                       {pIdx + 1}
                     </span>
-                    Phase {pIdx + 1}
+                    <span className="hidden sm:inline">Phase {pIdx + 1}:</span>
                   </span>
-                  <div className="flex items-center">
+
+                  <div className="flex items-center gap-1 text-xs shrink-0">
+                    <span className="text-[11px] text-[#6B4030] font-medium">Day</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={p.start ?? ''}
+                      placeholder="1"
+                      onKeyDown={handleOnlyNumericKeyDown}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
+                      }}
+                      className={inputClass(phaseDaysErr, 'w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
+                    />
+                    <span className="text-[11px] text-[#6B4030]">to</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={p.end ?? ''}
+                      placeholder="15"
+                      onKeyDown={handleOnlyNumericKeyDown}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
+                      }}
+                      className={inputClass(phaseDaysErr, 'w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-[160px]">
+                    <input
+                      type="text"
+                      value={p.title}
+                      maxLength={LIMITS.phaseTitle.max}
+                      onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
+                      placeholder="Phase Title (e.g. Tamili Brahmi & Epigraphy)*"
+                      className={inputClass(phaseTitleErr, 'w-full py-0.5 px-2 text-xs font-semibold')}
+                    />
+                  </div>
+
+                  <div className="flex items-center shrink-0">
                     <IconButton title="Move up" onClick={() => onMovePhase(pIdx, -1)} disabled={pIdx === 0}>↑</IconButton>
                     <IconButton title="Move down" onClick={() => onMovePhase(pIdx, 1)} disabled={pIdx === phases.length - 1}>↓</IconButton>
                     <IconButton title="Remove phase" tone="danger" onClick={() => onRemovePhase(pIdx)} disabled={phases.length === 1}>
@@ -399,108 +448,45 @@ function DurationRoadmapEditor({
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-[85px_85px_1fr]">
-                  <Field label="From day" required error={err(`${pKey}.days`)}>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={p.start ?? ''}
-                      onKeyDown={handleOnlyNumericKeyDown}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
-                      }}
-                      className={inputClass(err(`${pKey}.days`), 'tabular-nums text-xs')}
-                    />
-                  </Field>
-                  <Field label="To day" required>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={p.end ?? ''}
-                      onKeyDown={handleOnlyNumericKeyDown}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
-                      }}
-                      className={inputClass(err(`${pKey}.days`), 'tabular-nums text-xs')}
-                    />
-                  </Field>
-                  <Field
-                    label="Phase title"
-                    required
-                    value={p.title}
-                    limit={LIMITS.phaseTitle}
-                    error={err(`${pKey}.title`)}
-                    hint="E.g. “Tamili Brahmi & Epigraphy”"
-                  >
-                    <input
-                      type="text"
-                      value={p.title}
-                      maxLength={LIMITS.phaseTitle.max}
-                      onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
-                      placeholder="e.g. Tamili Brahmi & Epigraphy"
-                      className={inputClass(err(`${pKey}.title`), 'text-xs')}
-                    />
-                  </Field>
-                </div>
-
-                <Field
-                  label="What is covered"
-                  required
-                  value={p.details}
-                  limit={LIMITS.phaseDetails}
-                  error={err(`${pKey}.details`)}
-                  hint="Short sentence on the skills covered (max 150 chars)."
-                >
-                  <textarea
-                    rows={2}
+                {/* Row 2: What is covered */}
+                <div>
+                  <input
+                    type="text"
                     value={p.details}
                     maxLength={LIMITS.phaseDetails.max}
                     onChange={(e) => onChangePhase(pIdx, 'details', e.target.value)}
-                    placeholder="e.g. Decipher Tamil Brahmi scripts, study copper plate charters and practise rock scribing."
-                    className={inputClass(err(`${pKey}.details`), 'resize-none leading-relaxed text-xs')}
+                    placeholder="What is covered (e.g. Decipher Tamil Brahmi scripts, study charters & practise rock scribing)*"
+                    className={inputClass(phaseDetailsErr, 'w-full py-0.5 px-2 text-xs leading-normal')}
                   />
-                </Field>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Field
-                    label="You'll create"
-                    optional
-                    value={p.outcome}
-                    limit={LIMITS.phaseOutcome}
-                    error={err(`${pKey}.outcome`)}
-                    hint="Finished piece"
-                  >
-                    <input
-                      type="text"
-                      value={p.outcome}
-                      maxLength={LIMITS.phaseOutcome.max}
-                      onChange={(e) => onChangePhase(pIdx, 'outcome', e.target.value)}
-                      placeholder="e.g. Hand-scribed copper tablet"
-                      className={inputClass(err(`${pKey}.outcome`), 'text-xs')}
-                    />
-                  </Field>
-                  <Field
-                    label="Materials"
-                    optional
-                    value={p.materials}
-                    limit={LIMITS.phaseMaterials}
-                    error={err(`${pKey}.materials`)}
-                    hint="Comma separated"
-                  >
-                    <input
-                      type="text"
-                      value={p.materials}
-                      maxLength={LIMITS.phaseMaterials.max}
-                      onChange={(e) => onChangePhase(pIdx, 'materials', e.target.value)}
-                      placeholder="e.g. Copper sheets, Stylus, Ink pads"
-                      className={inputClass(err(`${pKey}.materials`), 'text-xs')}
-                    />
-                  </Field>
                 </div>
+
+                {/* Row 3: You'll create + Materials in 2 tight columns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={p.outcome}
+                    maxLength={LIMITS.phaseOutcome.max}
+                    onChange={(e) => onChangePhase(pIdx, 'outcome', e.target.value)}
+                    placeholder="You'll create: e.g. Hand-scribed copper tablet (optional)"
+                    className={inputClass(err(`${pKey}.outcome`), 'w-full py-0.5 px-2 text-xs')}
+                  />
+                  <input
+                    type="text"
+                    value={p.materials}
+                    maxLength={LIMITS.phaseMaterials.max}
+                    onChange={(e) => onChangePhase(pIdx, 'materials', e.target.value)}
+                    placeholder="Materials: e.g. Copper sheets, Stylus (optional)"
+                    className={inputClass(err(`${pKey}.materials`), 'w-full py-0.5 px-2 text-xs')}
+                  />
+                </div>
+
+                {/* Row 4: Error notification if any */}
+                {anyPhaseErr && (
+                  <p className="text-[11px] font-medium text-red-600 flex items-center gap-1 pt-0.5">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    <span>{anyPhaseErr}</span>
+                  </p>
+                )}
               </div>
             );
           })}
@@ -510,8 +496,8 @@ function DurationRoadmapEditor({
             disabled={!days || lastEnd >= days || phases.length >= MAX_PHASES}
           >
             {lastEnd >= days && days > 0
-              ? `All ${days} days are planned`
-              : `Add phase for ${days} days (${phases.length}/${MAX_PHASES})`}
+              ? `All ${days} days planned`
+              : `+ Add Phase (${phases.length}/${MAX_PHASES})`}
           </AddButton>
         </div>
       )}
