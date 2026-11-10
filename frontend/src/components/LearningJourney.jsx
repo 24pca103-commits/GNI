@@ -266,10 +266,30 @@ function FieldVisitBanner({ visit }) {
  */
 export function JourneyDetail({ course, preview = false }) {
   const details = parseDetails(course.details);
-  const durationDays = getDayCount(course.duration);
-  const phases = parseJourneyPhases(course.highlights, durationDays);
-  const totalDays =
-    durationDays || (phases.length ? phases.reduce((sum, p) => sum + periodLength(p.period), 0) : null);
+  const durationsList = Array.isArray(course.durations) && course.durations.length ? course.durations : [];
+  const [selectedDurationIdx, setSelectedDurationIdx] = useState(0);
+
+  const safeIdx = selectedDurationIdx < durationsList.length ? selectedDurationIdx : 0;
+  const activeDuration = durationsList[safeIdx] || null;
+  const activeDays = activeDuration ? Number(activeDuration.days) : getDayCount(course.duration);
+  const activeFee = activeDuration ? Number(activeDuration.fee) : (Number(course.discount_price) || Number(course.original_price));
+  const activeOriginal = activeDuration && Number(activeDuration.original_price) ? Number(activeDuration.original_price) : Number(course.original_price);
+
+  const activeRawPhases = (activeDuration && Array.isArray(activeDuration.phases) && activeDuration.phases.length)
+    ? activeDuration.phases
+    : null;
+  const phases = activeRawPhases
+    ? parseJourneyPhases(JSON.stringify(activeRawPhases), activeDays)
+    : parseJourneyPhases(course.highlights, activeDays);
+
+  const totalDays = activeDays || (phases.length ? phases.reduce((sum, p) => sum + periodLength(p.period), 0) : null);
+
+  const activeCourse = {
+    ...course,
+    duration: `${activeDays} Days`,
+    discount_price: activeFee,
+    original_price: activeOriginal,
+  };
 
   return (
     <>
@@ -277,10 +297,10 @@ export function JourneyDetail({ course, preview = false }) {
       <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         <div className="lg:col-span-8">
           <OverviewCard
-            course={course}
+            course={activeCourse}
             fallbackImage={FALLBACK_IMAGE}
             facts={[
-              { icon: Clock, label: course.duration },
+              { icon: Clock, label: activeCourse.duration },
               { icon: BookOpen, label: phases.length ? `${phases.length} phases` : '' },
               { icon: Hand, label: course.mode },
               { icon: MapPin, label: details.field_visit.enabled ? 'Field visit included' : '' },
@@ -289,7 +309,7 @@ export function JourneyDetail({ course, preview = false }) {
         </div>
         <div className="lg:col-span-4">
           <BookingCard
-            course={course}
+            course={activeCourse}
             inclusions={details.inclusions}
             ctaLabel="Apply for this journey"
             preview={preview}
@@ -298,8 +318,33 @@ export function JourneyDetail({ course, preview = false }) {
         </div>
       </div>
 
+      {/* Duration selector tabs when multiple durations exist */}
+      {durationsList.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2.5 pt-4">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#B89555]">
+            Select Cohort Duration:
+          </span>
+          <div className="inline-flex rounded-xl bg-[#FAF7F0] p-1 border border-[#6B4030]/15">
+            {durationsList.map((d, dIdx) => (
+              <button
+                key={dIdx}
+                type="button"
+                onClick={() => setSelectedDurationIdx(dIdx)}
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                  safeIdx === dIdx
+                    ? 'bg-[#4A2C20] text-[#E5B869] shadow-sm'
+                    : 'text-[#6B4030] hover:text-[#241A16]'
+                }`}
+              >
+                {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Row 2: full-width roadmap */}
-      {phases.length > 0 && <Roadmap key={course.id} phases={phases} totalDays={totalDays} />}
+      {phases.length > 0 && <Roadmap key={`${course.id}-${activeDays}`} phases={phases} totalDays={totalDays} />}
 
       {details.field_visit.enabled && <FieldVisitBanner visit={details.field_visit} />}
     </>

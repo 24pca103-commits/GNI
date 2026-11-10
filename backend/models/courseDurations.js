@@ -55,6 +55,7 @@ export function parseDurations(raw, course = {}) {
         label: String(o.label || '').trim().slice(0, L.labelMax),
         fee,
         original_price: Number.isFinite(original) && original > fee ? original : fee,
+        ...(Array.isArray(o.phases) ? { phases: o.phases } : {}),
       };
     })
     .filter((o) => o.days >= L.minDays && o.days <= L.maxDays && o.fee > 0 && o.fee <= L.maxPrice)
@@ -106,7 +107,7 @@ export function validateDurations(raw, type) {
     const key = durationText({ days, label }).toLowerCase();
     if (seen.has(key)) return { error: `Duration option ${n} repeats "${durationText({ days, label })}".` };
     seen.add(key);
-    options.push({ days, label, fee, original_price: original });
+    options.push({ days, label, fee, original_price: original, ...(Array.isArray(o.phases) ? { phases: o.phases } : {}) });
   }
 
   const main = options[0].days;

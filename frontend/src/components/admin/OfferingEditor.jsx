@@ -91,23 +91,68 @@ function phasesFromCourse(course, totalDays) {
   });
 }
 
-const blankOption = (days = '') => ({ days, label: '', fee: '', original_price: '' });
+function phasesFromRaw(rawPhases) {
+  if (!Array.isArray(rawPhases) || !rawPhases.length) return [];
+  return rawPhases.map((p) => {
+    const nums = String(p.period || '').match(/\d+/g) || [];
+    const start = p.start !== undefined && p.start !== '' ? Number(p.start) : (nums[0] ? Number(nums[0]) : '');
+    const end = p.end !== undefined && p.end !== '' ? Number(p.end) : (nums[1] ? Number(nums[1]) : start);
+    return {
+      start,
+      end,
+      title: p.title || '',
+      details: p.details || p.desc || '',
+      outcome: p.outcome || '',
+      materials: Array.isArray(p.materials) ? p.materials.join(', ') : (p.materials || ''),
+    };
+  });
+}
+
+const blankOption = (days = '', kind = 'journey') => {
+  const d = Number(days);
+  return {
+    days,
+    label: '',
+    fee: '',
+    original_price: '',
+    phases: kind === 'journey' && d >= 10 ? [{ start: 1, end: d, title: '', details: '', outcome: '', materials: '' }] : [],
+  };
+};
 
 /** Duration options from the API, or built from an older offering's single duration and prices. */
 function durationsFromCourse(course, kind) {
+  const globalPhases = course && kind === 'journey' ? phasesFromCourse(course, getDayCount(course.duration)) : [];
   if (Array.isArray(course?.durations) && course.durations.length) {
-    return course.durations.map((o) => ({
-      days: Number(o.days) || '',
-      label: o.label || '',
-      fee: Number(o.fee) || '',
-      original_price: Number(o.original_price) > Number(o.fee) ? Number(o.original_price) : '',
-    }));
+    return course.durations.map((o, idx) => {
+      const dDays = Number(o.days) || '';
+      let dPhases = [];
+      if (Array.isArray(o.phases) && o.phases.length) {
+        dPhases = phasesFromRaw(o.phases);
+      } else if (idx === 0 && globalPhases.length) {
+        dPhases = globalPhases;
+      } else if (kind === 'journey' && dDays >= 10) {
+        dPhases = [{ start: 1, end: dDays, title: '', details: '', outcome: '', materials: '' }];
+      }
+      return {
+        days: dDays,
+        label: o.label || '',
+        fee: Number(o.fee) || '',
+        original_price: Number(o.original_price) > Number(o.fee) ? Number(o.original_price) : '',
+        phases: dPhases,
+      };
+    });
   }
-  if (!course) return [blankOption(kind === 'workshop' ? 1 : 30)];
+  if (!course) return [blankOption(kind === 'workshop' ? 1 : 30, kind)];
   const { days, label } = splitDuration(course.duration);
   const fee = Number(course.discount_price) || '';
   const regular = Number(course.original_price);
-  return [{ days, label, fee, original_price: regular > fee ? regular : '' }];
+  return [{
+    days,
+    label,
+    fee,
+    original_price: regular > fee ? regular : '',
+    phases: globalPhases.length ? globalPhases : (kind === 'journey' && days ? [{ start: 1, end: days, title: '', details: '', outcome: '', materials: '' }] : []),
+  }];
 }
 
 function initialState(course, type) {
@@ -209,41 +254,52 @@ function validate(s, bookedSeats) {
       checkText(e, `modules.${i}.day`, m.day, LIMITS.moduleDay, 'Day / session', false);
     });
   } else {
-    if (s.phases.length === 0) e.phases = 'Add at least one phase to the roadmap.';
-    // The roadmap follows the main duration (row 1 of the duration options)
-    const days = Number(s.durations[0]?.days);
-    let prevEnd = 0;
-    s.phases.forEach((p, i) => {
-      checkText(e, `phases.${i}.title`, p.title, LIMITS.phaseTitle, 'Phase title', true);
-      checkText(e, `phases.${i}.details`, p.details, LIMITS.phaseDetails, 'What is covered', true);
-      checkText(e, `phases.${i}.outcome`, p.outcome, LIMITS.phaseOutcome, 'Outcome', false);
-      checkText(e, `phases.${i}.materials`, p.materials, LIMITS.phaseMaterials, 'Materials', false);
-      const start = Number(p.start);
-      const end = Number(p.end);
-      if (!start || !end || end < start) {
-        e[`phases.${i}.days`] = 'Enter a valid day range (end day ≥ start day).';
-      } else if (i === 0 && start !== 1) {
-        e[`phases.${i}.days`] = 'Phase 1 must start from Day 1.';
-      } else if (i > 0 && start !== prevEnd + 1) {
-        e[`phases.${i}.days`] = `Must follow Phase ${i} contiguously without gap. Start from Day ${prevEnd + 1}.`;
-      } else if (Number.isInteger(days) && end > days) {
-        e[`phases.${i}.days`] = `Ends after the last day of the journey (Day ${days}).`;
-      } else if (start <= prevEnd) {
-        e[`phases.${i}.days`] = `Overlaps the previous phase. Start from Day ${prevEnd + 1}.`;
-      }
-      if (end) prevEnd = Math.max(prevEnd, end);
-    });
+    // Validate roadmap phases for each duration option
+    s.durations.forEach((dOpt, dIdx) => {
+      const durDays = Number(dOpt.days);
+      const phases = dOpt.phases || [];
+      if (!Number.isInteger(durDays) || durDays < 10) return;
 
-    // STRICT VALIDATION: The phases MUST cover all `days` of the journey!
-    if (Number.isInteger(days) && days >= 10 && s.phases.length > 0) {
-      if (prevEnd < days) {
-        e.phases = `Roadmap phases must cover the full ${days} days of this Learning Journey! Currently only planned up to Day ${prevEnd}. Please complete all ${days} days.`;
-        const lastIdx = s.phases.length - 1;
-        if (!e[`phases.${lastIdx}.days`]) {
-          e[`phases.${lastIdx}.days`] = `Final phase must end at Day ${days} (currently ends at Day ${prevEnd}).`;
+      if (phases.length === 0) {
+        e[`durations.${dIdx}.phases`] = `Add at least one phase for the ${durDays}-day roadmap.`;
+        return;
+      }
+
+      let prevEnd = 0;
+      phases.forEach((p, pIdx) => {
+        const pKey = `durations.${dIdx}.phases.${pIdx}`;
+        checkText(e, `${pKey}.title`, p.title, LIMITS.phaseTitle, `Phase ${pIdx + 1} title (${durDays}D)`, true);
+        checkText(e, `${pKey}.details`, p.details, LIMITS.phaseDetails, `Phase ${pIdx + 1} details (${durDays}D)`, true);
+        checkText(e, `${pKey}.outcome`, p.outcome, LIMITS.phaseOutcome, `Phase ${pIdx + 1} outcome (${durDays}D)`, false);
+        checkText(e, `${pKey}.materials`, p.materials, LIMITS.phaseMaterials, `Phase ${pIdx + 1} materials (${durDays}D)`, false);
+
+        const start = Number(p.start);
+        const end = Number(p.end);
+        if (!start || !end || end < start) {
+          e[`${pKey}.days`] = 'Enter a valid day range (end day ≥ start day).';
+        } else if (pIdx === 0 && start !== 1) {
+          e[`${pKey}.days`] = 'Phase 1 must start from Day 1.';
+        } else if (pIdx > 0 && start !== prevEnd + 1) {
+          e[`${pKey}.days`] = `Must follow Phase ${pIdx} contiguously without gap. Start from Day ${prevEnd + 1}.`;
+        } else if (Number.isInteger(durDays) && end > durDays) {
+          e[`${pKey}.days`] = `Ends after Day ${durDays} (last day of this cohort).`;
+        } else if (start <= prevEnd) {
+          e[`${pKey}.days`] = `Overlaps the previous phase. Start from Day ${prevEnd + 1}.`;
+        }
+        if (end) prevEnd = Math.max(prevEnd, end);
+      });
+
+      // STRICT VALIDATION: The phases MUST cover all `durDays` of this duration!
+      if (Number.isInteger(durDays) && durDays >= 10 && phases.length > 0) {
+        if (prevEnd < durDays) {
+          e[`durations.${dIdx}.phases`] = `Roadmap phases must cover all ${durDays} days (currently planned up to Day ${prevEnd}).`;
+          const lastIdx = phases.length - 1;
+          if (!e[`durations.${dIdx}.phases.${lastIdx}.days`]) {
+            e[`durations.${dIdx}.phases.${lastIdx}.days`] = `Final phase must end at Day ${durDays} (currently ends at Day ${prevEnd}).`;
+          }
         }
       }
-    }
+    });
   }
 
   checkText(e, 'inclusions', s.inclusions, LIMITS.inclusions, 'Fee inclusions', false);
@@ -260,6 +316,208 @@ const SECTION_OF = (key) => {
   if (/^(modules|phases)/.test(key)) return 'curriculum';
   return 'details';
 };
+
+/** Dedicated Roadmap Phases manager nested directly under each Duration option for Learning Journeys */
+function DurationRoadmapEditor({
+  durationIndex,
+  days,
+  phases = [],
+  err,
+  onChangePhase,
+  onAddPhase,
+  onRemovePhase,
+  onMovePhase,
+  onSpreadDays,
+}) {
+  const [open, setOpen] = useState(true);
+  const lastEnd = phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
+  const durErr = err(`durations.${durationIndex}.phases`);
+
+  return (
+    <div className="mt-3.5 border-t border-[#6B4030]/15 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3 bg-[#FAF7F0] p-2.5 rounded-xl border border-[#6B4030]/12">
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#4A2C20] hover:text-[#B89555] cursor-pointer"
+        >
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold">
+            {phases.length}
+          </span>
+          <span className="font-['Cormorant_Garamond'] text-sm sm:text-base font-bold text-[#241A16]">
+            Roadmap Phases for {days} Days Cohort
+          </span>
+          <span className="text-[10px] text-[#6B4030]/80 font-normal">
+            ({open ? 'Collapse ▲' : 'Expand ▼'})
+          </span>
+        </button>
+
+        <div className="flex items-center gap-3 text-xs">
+          <span className={`tabular-nums font-semibold ${lastEnd >= days && days > 0 ? 'text-emerald-700' : 'text-[#B89555]'}`}>
+            {Math.min(lastEnd, days)} of {days} days planned
+            {days > 0 && lastEnd < days && ` (Missing ${days - lastEnd}d)`}
+            {days > 0 && lastEnd >= days && ' ✓'}
+          </span>
+          {phases.length > 1 && days > 0 && (
+            <button
+              type="button"
+              onClick={onSpreadDays}
+              className="text-xs font-semibold text-[#4A2C20] underline decoration-[#B89555] underline-offset-2 hover:text-[#B89555] cursor-pointer"
+            >
+              Split {days} days evenly
+            </button>
+          )}
+        </div>
+      </div>
+
+      {durErr && (
+        <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-medium text-red-600 flex items-center gap-1.5">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+          <span>{durErr}</span>
+        </div>
+      )}
+
+      {open && (
+        <div className="space-y-3">
+          {phases.map((p, pIdx) => {
+            const pKey = `durations.${durationIndex}.phases.${pIdx}`;
+            return (
+              <div key={pIdx} className="space-y-3 rounded-xl border border-[#6B4030]/15 bg-white p-3.5 shadow-2xs">
+                <div className="flex items-center justify-between gap-2 border-b border-[#6B4030]/10 pb-2">
+                  <span className="inline-flex items-center gap-2 text-xs font-bold text-[#241A16]">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold">
+                      {pIdx + 1}
+                    </span>
+                    Phase {pIdx + 1}
+                  </span>
+                  <div className="flex items-center">
+                    <IconButton title="Move up" onClick={() => onMovePhase(pIdx, -1)} disabled={pIdx === 0}>↑</IconButton>
+                    <IconButton title="Move down" onClick={() => onMovePhase(pIdx, 1)} disabled={pIdx === phases.length - 1}>↓</IconButton>
+                    <IconButton title="Remove phase" tone="danger" onClick={() => onRemovePhase(pIdx)} disabled={phases.length === 1}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </IconButton>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-[85px_85px_1fr]">
+                  <Field label="From day" required error={err(`${pKey}.days`)}>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={p.start ?? ''}
+                      onKeyDown={handleOnlyNumericKeyDown}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
+                      }}
+                      className={inputClass(err(`${pKey}.days`), 'tabular-nums text-xs')}
+                    />
+                  </Field>
+                  <Field label="To day" required>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={p.end ?? ''}
+                      onKeyDown={handleOnlyNumericKeyDown}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
+                      }}
+                      className={inputClass(err(`${pKey}.days`), 'tabular-nums text-xs')}
+                    />
+                  </Field>
+                  <Field
+                    label="Phase title"
+                    required
+                    value={p.title}
+                    limit={LIMITS.phaseTitle}
+                    error={err(`${pKey}.title`)}
+                    hint="E.g. “Tamili Brahmi & Epigraphy”"
+                  >
+                    <input
+                      type="text"
+                      value={p.title}
+                      maxLength={LIMITS.phaseTitle.max}
+                      onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
+                      placeholder="e.g. Tamili Brahmi & Epigraphy"
+                      className={inputClass(err(`${pKey}.title`), 'text-xs')}
+                    />
+                  </Field>
+                </div>
+
+                <Field
+                  label="What is covered"
+                  required
+                  value={p.details}
+                  limit={LIMITS.phaseDetails}
+                  error={err(`${pKey}.details`)}
+                  hint="Short sentence on the skills covered (max 150 chars)."
+                >
+                  <textarea
+                    rows={2}
+                    value={p.details}
+                    maxLength={LIMITS.phaseDetails.max}
+                    onChange={(e) => onChangePhase(pIdx, 'details', e.target.value)}
+                    placeholder="e.g. Decipher Tamil Brahmi scripts, study copper plate charters and practise rock scribing."
+                    className={inputClass(err(`${pKey}.details`), 'resize-none leading-relaxed text-xs')}
+                  />
+                </Field>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field
+                    label="You'll create"
+                    optional
+                    value={p.outcome}
+                    limit={LIMITS.phaseOutcome}
+                    error={err(`${pKey}.outcome`)}
+                    hint="Finished piece"
+                  >
+                    <input
+                      type="text"
+                      value={p.outcome}
+                      maxLength={LIMITS.phaseOutcome.max}
+                      onChange={(e) => onChangePhase(pIdx, 'outcome', e.target.value)}
+                      placeholder="e.g. Hand-scribed copper tablet"
+                      className={inputClass(err(`${pKey}.outcome`), 'text-xs')}
+                    />
+                  </Field>
+                  <Field
+                    label="Materials"
+                    optional
+                    value={p.materials}
+                    limit={LIMITS.phaseMaterials}
+                    error={err(`${pKey}.materials`)}
+                    hint="Comma separated"
+                  >
+                    <input
+                      type="text"
+                      value={p.materials}
+                      maxLength={LIMITS.phaseMaterials.max}
+                      onChange={(e) => onChangePhase(pIdx, 'materials', e.target.value)}
+                      placeholder="e.g. Copper sheets, Stylus, Ink pads"
+                      className={inputClass(err(`${pKey}.materials`), 'text-xs')}
+                    />
+                  </Field>
+                </div>
+              </div>
+            );
+          })}
+
+          <AddButton
+            onClick={onAddPhase}
+            disabled={!days || lastEnd >= days || phases.length >= MAX_PHASES}
+          >
+            {lastEnd >= days && days > 0
+              ? `All ${days} days are planned`
+              : `Add phase for ${days} days (${phases.length}/${MAX_PHASES})`}
+          </AddButton>
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * Duration options table: each row is a duration students can pick on the Register page,
@@ -430,6 +688,52 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                 ))}
               </div>
             )}
+
+            {/* Dedicated Roadmap Phases for this specific duration */}
+            {type === 'journey' && Number.isInteger(days) && days >= 10 && (
+              <DurationRoadmapEditor
+                durationIndex={i}
+                days={days}
+                phases={o.phases || []}
+                err={err}
+                onChangePhase={(pIdx, field, val) => {
+                  const curPhases = [...(o.phases || [])];
+                  curPhases[pIdx] = { ...curPhases[pIdx], [field]: val };
+                  onChange(i, 'phases', curPhases);
+                }}
+                onAddPhase={() => {
+                  const curPhases = o.phases || [];
+                  const lastEnd = curPhases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
+                  const start = lastEnd ? lastEnd + 1 : 1;
+                  const end = days && days > start ? Math.min(start + 14, days) : days || (start + 9);
+                  onChange(i, 'phases', [...curPhases, { start, end, title: '', details: '', outcome: '', materials: '' }]);
+                }}
+                onRemovePhase={(pIdx) => {
+                  onChange(i, 'phases', (o.phases || []).filter((_, idx) => idx !== pIdx));
+                }}
+                onMovePhase={(pIdx, dir) => {
+                  const cur = [...(o.phases || [])];
+                  const target = pIdx + dir;
+                  if (target < 0 || target >= cur.length) return;
+                  [cur[pIdx], cur[target]] = [cur[target], cur[pIdx]];
+                  onChange(i, 'phases', cur);
+                }}
+                onSpreadDays={() => {
+                  const cur = o.phases || [];
+                  if (!cur.length || !days) return;
+                  const ranges = evenDayRanges(days, cur.length);
+                  const next = cur.map((p, idx) => {
+                    const nums = String(ranges[idx] || '').match(/\d+/g) || [];
+                    return {
+                      ...p,
+                      start: nums[0] ? Number(nums[0]) : p.start,
+                      end: nums[1] ? Number(nums[1]) : (nums[0] ? Number(nums[0]) : p.end),
+                    };
+                  });
+                  onChange(i, 'phases', next);
+                }}
+              />
+            )}
           </div>
         );
       })}
@@ -502,16 +806,16 @@ function buildPayload(state, pillars, bookedSeats) {
     }
   }
   const seatsTotal = Number(state.seats_total);
+  const mainPhases = state.durations[0]?.phases || [];
   const highlights = (state.type === 'journey')
-    ? state.phases.map((p) => ({
+    ? mainPhases.filter((p) => len(p.title)).map((p) => ({
         period: dayLabel(Number(p.start), Number(p.end)),
         title: p.title.trim(),
         details: p.details.trim(),
-        outcome: p.outcome.trim(),
+        outcome: p.outcome ? p.outcome.trim() : '',
         materials: p.materials
-          .split(',')
-          .map((m) => m.trim())
-          .filter(Boolean),
+          ? (Array.isArray(p.materials) ? p.materials : p.materials.split(',').map((m) => m.trim()).filter(Boolean))
+          : [],
       }))
     : state.modules
         .filter((m) => len(m.title))
@@ -537,13 +841,22 @@ function buildPayload(state, pillars, bookedSeats) {
       label: String(o.label || '').trim(),
       fee: Number(o.fee),
       original_price: Number(o.original_price) || Number(o.fee),
+      phases: (o.phases || []).filter((p) => len(p.title)).map((p) => ({
+        period: dayLabel(Number(p.start), Number(p.end)),
+        title: p.title.trim(),
+        details: p.details.trim(),
+        outcome: p.outcome ? p.outcome.trim() : '',
+        materials: p.materials
+          ? (Array.isArray(p.materials) ? p.materials : p.materials.split(',').map((m) => m.trim()).filter(Boolean))
+          : [],
+      })),
     })),
     seats_total: seatsTotal,
     seats_available: Math.max(0, seatsTotal - bookedSeats),
     image_url: state.image_url.trim() || ((state.type === 'journey') ? '/artisan/pedagogy-practice.jpg' : '/artisan/workshop.jpg'),
     is_active: state.is_active,
-    pillar_id: pillar ? Number(pillar.id) : null,
-    pillar_title: pillar ? pillar.title : '',
+    pillar_id: pillarId,
+    pillar_title: pillarTitle,
     highlights: JSON.stringify(highlights),
     details: {
       inclusions: state.inclusions.trim(),
@@ -969,15 +1282,15 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                 id="pricing"
                 number={2}
                 icon={Tag}
-                title="Fee & seats"
-                description="Durations and fees students can choose on the Register page. The first option is shown on the website. Seats left update automatically."
+                title={isJourney ? "Durations, Fees & Roadmaps" : "Fee & seats"}
+                description={isJourney ? "Set durations and fees. Each duration has its own dedicated roadmap phases configured directly below it." : "Durations and fees students can choose on the Register page. The first option is shown on the website. Seats left update automatically."}
               >
                 <DurationOptions
                   options={state.durations}
                   type={state.type}
                   err={err}
                   onChange={(i, key, value) => setItem('durations', i, key, value)}
-                  onAdd={() => set('durations', [...state.durations, blankOption()])}
+                  onAdd={() => set('durations', [...state.durations, blankOption('', state.type)])}
                   onRemove={(i) => removeItem('durations', i)}
                   onMove={(i, dir) => moveItem('durations', i, dir)}
                 />
@@ -1145,156 +1458,22 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                 }
               >
                 {isJourney ? (
-                  <>
-                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#FAF7F0] px-4 py-3">
-                      <div className="text-xs text-[#4A2C20]">
-                        <span className="font-semibold">
-                          {days ? `${Math.min(lastEnd, days)} of ${days} days planned` : 'Set the main duration in Fee & seats first'}
-                        </span>
-                        {days > 0 && lastEnd < days && state.phases.length > 0 && (
-                          <span className="text-amber-700 font-semibold"> · Incomplete: Missing {days - lastEnd} days (Days {lastEnd + 1}–{days} not planned yet)</span>
-                        )}
-                        {days > 0 && lastEnd === days && (
-                          <span className="text-emerald-700 font-semibold"> · ✓ All {days} days fully planned</span>
-                        )}
-                      </div>
-                      {state.phases.length > 1 && days > 0 && (
-                        <button
-                          type="button"
-                          onClick={spreadDays}
-                          className="text-xs font-semibold text-[#4A2C20] underline decoration-[#B89555] underline-offset-2 hover:text-[#B89555] cursor-pointer"
-                        >
-                          Split {days} days evenly across {state.phases.length} phases
-                        </button>
-                      )}
-                    </div>
-                    {err('phases') && <p className="text-xs font-medium text-red-600">{err('phases')}</p>}
-
-                    {state.phases.map((p, i) => (
-                      <div key={i} className="space-y-4 rounded-2xl border border-[#6B4030]/12 bg-[#FCFAF6] p-4 sm:p-5">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="inline-flex items-center gap-2 text-sm font-bold text-[#241A16]">
-                            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#4A2C20] text-xs text-[#E5B869]">{i + 1}</span>
-                            Phase {i + 1}
-                          </span>
-                          <div className="flex items-center">
-                            <IconButton title="Move up" onClick={() => moveItem('phases', i, -1)} disabled={i === 0}>↑</IconButton>
-                            <IconButton title="Move down" onClick={() => moveItem('phases', i, 1)} disabled={i === state.phases.length - 1}>↓</IconButton>
-                            <IconButton title="Remove phase" tone="danger" onClick={() => removeItem('phases', i)}>
-                              <Trash2 className="h-4 w-4" />
-                            </IconButton>
-                          </div>
-                        </div>
-
-                        <div className="grid gap-4 sm:grid-cols-[1fr_1fr_2fr]">
-                          <Field label="From day" required error={err(`phases.${i}.days`)}>
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              value={p.start ?? ''}
-                              onKeyDown={handleOnlyNumericKeyDown}
-                              onChange={(e) => {
-                                const val = e.target.value.replace(/\D/g, '');
-                                setItem('phases', i, 'start', val === '' ? '' : Number(val));
-                              }}
-                              className={inputClass(err(`phases.${i}.days`), 'tabular-nums')}
-                            />
-                          </Field>
-                          <Field label="To day" required>
-                            <input
-                              type="text"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              value={p.end ?? ''}
-                              onKeyDown={handleOnlyNumericKeyDown}
-                              onChange={(e) => {
-                                const val = e.target.value.replace(/\D/g, '');
-                                setItem('phases', i, 'end', val === '' ? '' : Number(val));
-                              }}
-                              className={inputClass(err(`phases.${i}.days`), 'tabular-nums')}
-                            />
-                          </Field>
-                          <Field
-                            label="Phase title"
-                            required
-                            value={p.title}
-                            limit={LIMITS.phaseTitle}
-                            error={err(`phases.${i}.title`)}
-                            hint="E.g. “Drawing & Sacred Proportions”."
-                          >
-                            <input
-                              type="text"
-                              value={p.title}
-                              maxLength={LIMITS.phaseTitle.max}
-                              onChange={(e) => setItem('phases', i, 'title', e.target.value)}
-                              placeholder="e.g. Tamili Brahmi & Epigraphy"
-                              className={inputClass(err(`phases.${i}.title`))}
-                            />
-                          </Field>
-                        </div>
-
-                        <Field
-                          label="What is covered"
-                          required
-                          value={p.details}
-                          limit={LIMITS.phaseDetails}
-                          error={err(`phases.${i}.details`)}
-                          hint="One or two sentences on the skills and techniques in this phase."
-                        >
-                          <textarea
-                            rows={2}
-                            value={p.details}
-                            maxLength={LIMITS.phaseDetails.max}
-                            onChange={(e) => setItem('phases', i, 'details', e.target.value)}
-                            placeholder="e.g. Decipher Tamil Brahmi scripts, study copper plate charters and practise rock scribing."
-                            className={inputClass(err(`phases.${i}.details`), 'resize-none leading-relaxed')}
-                          />
-                        </Field>
-
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <Field
-                            label="You'll create"
-                            optional
-                            value={p.outcome}
-                            limit={LIMITS.phaseOutcome}
-                            error={err(`phases.${i}.outcome`)}
-                            hint="The finished piece from this phase."
-                          >
-                            <input
-                              type="text"
-                              value={p.outcome}
-                              maxLength={LIMITS.phaseOutcome.max}
-                              onChange={(e) => setItem('phases', i, 'outcome', e.target.value)}
-                              placeholder="e.g. Hand-scribed copper inscription tablet"
-                              className={inputClass(err(`phases.${i}.outcome`))}
-                            />
-                          </Field>
-                          <Field
-                            label="Materials"
-                            optional
-                            value={p.materials}
-                            limit={LIMITS.phaseMaterials}
-                            error={err(`phases.${i}.materials`)}
-                            hint="Separate items with commas. Each becomes a small tag."
-                          >
-                            <input
-                              type="text"
-                              value={p.materials}
-                              maxLength={LIMITS.phaseMaterials.max}
-                              onChange={(e) => setItem('phases', i, 'materials', e.target.value)}
-                              placeholder="e.g. Copper sheets, Steel stylus, Ink pads"
-                              className={inputClass(err(`phases.${i}.materials`))}
-                            />
-                          </Field>
-                        </div>
-                      </div>
-                    ))}
-
-                    <AddButton onClick={addPhase} disabled={!days || lastEnd >= days || state.phases.length >= MAX_PHASES}>
-                      {lastEnd >= days && days > 0 ? 'All days are planned' : `Add phase (${state.phases.length}/${MAX_PHASES})`}
-                    </AddButton>
-                  </>
+                  <div className="rounded-2xl border border-[#B89555]/30 bg-[#FAF7F0] p-6 text-center">
+                    <Compass className="w-8 h-8 mx-auto text-[#B89555] mb-2.5" />
+                    <h3 className="font-['Cormorant_Garamond'] text-xl font-bold text-[#241A16]">
+                      Multi-Duration Roadmaps Active
+                    </h3>
+                    <p className="text-xs text-[#6B4030] mt-1.5 max-w-md mx-auto leading-relaxed">
+                      Each duration option (e.g. 60 Days, 30 Days) has its own dedicated roadmap phases configured directly above under each duration card in <strong className="text-[#4A2C20]">Section 2 (Durations, Fees & Roadmaps)</strong>.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => scrollTo('pricing')}
+                      className="mt-3.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#4A2C20] text-xs font-semibold text-[#E5B869] hover:bg-[#603929] cursor-pointer shadow-xs"
+                    >
+                      <span>Jump to Durations & Roadmaps ↑</span>
+                    </button>
+                  </div>
                 ) : (
                   <>
                     {err('modules') && <p className="text-xs font-medium text-red-600">{err('modules')}</p>}
