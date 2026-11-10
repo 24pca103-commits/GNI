@@ -177,13 +177,18 @@ function validate(s, bookedSeats) {
     checkText(e, `durations.${i}.label`, o.label, LIMITS.durationLabel, 'Label', false);
     const offer = Number(o.fee);
     const regular = Number(o.original_price);
-    if (!offer || offer <= 0) e[`durations.${i}.fee`] = 'Enter the fee students pay.';
-    else if (offer > MAX_PRICE) e[`durations.${i}.fee`] = `Max ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
-    if (o.original_price !== '') {
-      if (regular < offer) {
-        e[`durations.${i}.original_price`] = 'Must be equal to or above the offer fee.';
+    if (!offer || offer <= 0) {
+      e[`durations.${i}.fee`] = 'Enter the fee students pay (must be greater than ₹0).';
+    } else if (offer > MAX_PRICE) {
+      e[`durations.${i}.fee`] = `Offer fee cannot exceed ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+    }
+    if (o.original_price !== '' && o.original_price !== null && o.original_price !== undefined) {
+      if (!regular || regular <= 0) {
+        e[`durations.${i}.original_price`] = 'Regular fee must be greater than ₹0.';
+      } else if (regular < offer) {
+        e[`durations.${i}.original_price`] = `Regular fee (₹${regular.toLocaleString('en-IN')}) must be equal to or higher than offer fee (₹${offer.toLocaleString('en-IN')}).`;
       } else if (regular > MAX_PRICE) {
-        e[`durations.${i}.original_price`] = `Max ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+        e[`durations.${i}.original_price`] = `Regular fee cannot exceed ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
       }
     }
     const key = Number.isInteger(d) ? buildDuration(d, o.label || '').toLowerCase() : '';
@@ -311,8 +316,36 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
           }
         }
 
+        // Live fee validation while typing
+        const rawFeeStr = String(o.fee ?? '').trim();
+        let liveFeeError = '';
+        if (rawFeeStr !== '') {
+          const f = Number(rawFeeStr);
+          if (f <= 0) {
+            liveFeeError = 'Offer fee must be greater than ₹0.';
+          } else if (f > MAX_PRICE) {
+            liveFeeError = `Offer fee cannot exceed ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+          }
+        }
+
+        const rawRegStr = String(o.original_price ?? '').trim();
+        let liveRegError = '';
+        if (rawRegStr !== '') {
+          const r = Number(rawRegStr);
+          const f = Number(rawFeeStr);
+          if (r <= 0) {
+            liveRegError = 'Regular fee must be greater than ₹0.';
+          } else if (r > MAX_PRICE) {
+            liveRegError = `Regular fee cannot exceed ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+          } else if (f > 0 && r < f) {
+            liveRegError = `Regular fee (₹${r.toLocaleString('en-IN')}) must be equal to or higher than offer fee (₹${f.toLocaleString('en-IN')}).`;
+          }
+        }
+
         const effectiveDaysError = liveDaysError || cellErr(i, 'days');
-        const rowErrors = [effectiveDaysError, cellErr(i, 'label'), cellErr(i, 'fee'), cellErr(i, 'original_price')].filter(Boolean);
+        const effectiveFeeError = liveFeeError || cellErr(i, 'fee');
+        const effectiveRegError = liveRegError || cellErr(i, 'original_price');
+        const rowErrors = [effectiveDaysError, cellErr(i, 'label'), effectiveFeeError, effectiveRegError].filter(Boolean);
 
         return (
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
@@ -363,7 +396,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   }}
                   placeholder="5499"
                   aria-label={`Option ${i + 1} offer fee`}
-                  className={inputClass(cellErr(i, 'fee'), 'tabular-nums font-semibold')}
+                  className={inputClass(effectiveFeeError, 'tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -380,7 +413,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   }}
                   placeholder="optional"
                   aria-label={`Option ${i + 1} regular fee`}
-                  className={inputClass(cellErr(i, 'original_price'), 'tabular-nums')}
+                  className={inputClass(effectiveRegError, 'tabular-nums')}
                 />
               </label>
               <div className="col-span-2 flex items-center justify-end md:col-span-1">
@@ -391,16 +424,24 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                 </IconButton>
               </div>
             </div>
-            <p className="mt-2 text-xs text-[#6B4030]">
-              {i === 0 && <span className="mr-1.5 rounded bg-[#4A2C20] px-1.5 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN</span>}
-              {Number.isInteger(days) && days > 0 ? buildDuration(days, o.label || '') : 'Set the days'}
-              {fee > 0 && ` · ₹${fee.toLocaleString('en-IN')}`}
-              {save > 0 && ` · Save ${save}%`}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[#6B4030]">
+              {i === 0 && <span className="rounded bg-[#4A2C20] px-1.5 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN</span>}
+              <span className="font-medium">{Number.isInteger(days) && days > 0 ? buildDuration(days, o.label || '') : 'Set the days'}</span>
+              {fee > 0 && <span className="font-semibold text-[#241A16]">· ₹{fee.toLocaleString('en-IN')}</span>}
+              {save > 0 && (
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                  Save {save}% (Discount ₹{(regular - fee).toLocaleString('en-IN')})
+                </span>
+              )}
+            </div>
             {rowErrors.length > 0 && (
-              <div className="mt-1.5 flex items-start gap-1 text-xs font-medium text-red-600">
-                <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-red-600" />
-                <span>{rowErrors[0]}</span>
+              <div className="mt-2 space-y-1 border-t border-red-100 pt-1.5">
+                {rowErrors.map((errText, errIdx) => (
+                  <div key={errIdx} className="flex items-start gap-1 text-xs font-medium text-red-600">
+                    <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-red-600" />
+                    <span>{errText}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -1472,8 +1513,11 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
               </span>
             ) : showErrors && errorCount > 0 ? (
               <span className="inline-flex items-center gap-1.5 font-semibold text-red-600">
-                <AlertCircle className="h-4 w-4" />
-                {errorCount === 1 ? '1 field needs attention' : `${errorCount} fields need attention`}. They are marked in red.
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span className="truncate max-w-md sm:max-w-xl">
+                  {errorCount === 1 ? '1 field needs attention: ' : `${errorCount} fields need attention: `}
+                  {Object.values(errors)[0]}
+                </span>
               </span>
             ) : (
               <span className="text-[#6B4030]/80">{isDirty ? 'You have unsaved changes.' : 'Fields marked * are required.'}</span>

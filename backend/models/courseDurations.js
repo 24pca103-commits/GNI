@@ -13,7 +13,7 @@ export const DURATION_LIMITS = {
   minDays: 1,
   maxDays: 365,
   labelMax: 20,
-  maxPrice: 500000,
+  maxPrice: 2000000,
 };
 
 const toInt = (v) => {
@@ -93,8 +93,16 @@ export function validateDurations(raw, type) {
     if (type === 'workshop' && days > 9) return { error: `Duration option ${n}: Double digits not allowed for Workshop (${days} days). Workshops must strictly be 1–9 days (single digit).` };
     if (type === 'journey' && days < 10) return { error: `Duration option ${n}: Single digit not allowed for Learning Journey (${days} days). Learning journeys must start from 10 days (10+ days).` };
     if (label.length > L.labelMax) return { error: `Duration option ${n}: label can be at most ${L.labelMax} characters.` };
-    if (!(fee > 0 && fee <= L.maxPrice)) return { error: `Duration option ${n}: enter an offer fee between ₹1 and ₹${L.maxPrice.toLocaleString('en-IN')}.` };
-    if (!(original >= fee && original <= L.maxPrice)) return { error: `Duration option ${n}: regular fee must be equal to or higher than the offer fee.` };
+    if (!Number.isFinite(fee) || fee <= 0) return { error: `Duration option ${n}: enter an offer fee greater than ₹0.` };
+    if (fee > L.maxPrice) return { error: `Duration option ${n}: offer fee cannot exceed ₹${L.maxPrice.toLocaleString('en-IN')}.` };
+    if (o.original_price !== '' && o.original_price !== undefined && o.original_price !== null) {
+      if (!Number.isFinite(original) || original < fee) {
+        return { error: `Duration option ${n}: regular fee (₹${Number(original || 0).toLocaleString('en-IN')}) must be equal to or higher than offer fee (₹${fee.toLocaleString('en-IN')}).` };
+      }
+      if (original > L.maxPrice) {
+        return { error: `Duration option ${n}: regular fee cannot exceed ₹${L.maxPrice.toLocaleString('en-IN')}.` };
+      }
+    }
     const key = durationText({ days, label }).toLowerCase();
     if (seen.has(key)) return { error: `Duration option ${n} repeats "${durationText({ days, label })}".` };
     seen.add(key);
