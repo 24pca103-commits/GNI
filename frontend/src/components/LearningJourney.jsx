@@ -333,9 +333,9 @@ export default function LearningJourney() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeader
           icon={GraduationCap}
-          eyebrow="Learning Journeys · 10+ Days"
-          title="Go deeper with a structured journey"
-          subtitle="Multi-week cohorts that build your skills phase by phase, guided by traditional sthapathis, from first principles to a finished portfolio."
+          eyebrow="Structured Learning Journeys · 10+ Days"
+          title="Master Traditional Arts Through Structured Studio Immersion"
+          subtitle="Rigorous multi-phase cohorts guided by hereditary master sthapathis — bridging classical Shastric canons, hands-on workshop practice, and field visits into an authenticated heritage portfolio."
         />
 
         {journeys === null ? (

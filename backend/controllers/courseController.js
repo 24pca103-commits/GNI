@@ -303,6 +303,25 @@ export const createCourse = async (req, res) => {
     const detailsJson = serializeDetails(details);
     const parsedDetails = parseDetails(detailsJson);
 
+    // Validate roadmap phases coverage for Learning Journeys
+    if (autoType === 'learning-journey' || autoType === 'journey' || autoType === 'Learning Journey') {
+      const matchDays = trimmedDuration.match(/\d+/);
+      const totalDays = matchDays ? Number(matchDays[0]) : 0;
+      if (totalDays >= 10 && Array.isArray(parsedDetails?.phases) && parsedDetails.phases.length > 0) {
+        let maxEnd = 0;
+        for (const p of parsedDetails.phases) {
+          const end = Number(p.end || 0);
+          if (end > maxEnd) maxEnd = end;
+        }
+        if (maxEnd < totalDays) {
+          return res.status(400).json({
+            success: false,
+            message: `Roadmap phases must cover the full ${totalDays} days of the journey (currently only covers up to Day ${maxEnd}).`,
+          });
+        }
+      }
+    }
+
     try {
       const pool = getPool();
       const insertQuery = `
@@ -538,6 +557,29 @@ export const updateCourse = async (req, res) => {
       // Automatically calculate available seats:
       // Available Seats = Total Seat Capacity − Confirmed Bookings
       const calculatedAvailableSeats = Math.max(0, requestedTotalSeats - confirmedBookings);
+
+      // Validate roadmap phases coverage for Learning Journeys
+      if (details !== undefined) {
+        const parsedDetails = parseDetails(serializeDetails(details));
+        const effectiveType = determineOfferingType(trimmedDuration || current.duration);
+        if (effectiveType === 'learning-journey' || effectiveType === 'journey' || effectiveType === 'Learning Journey') {
+          const matchDays = (trimmedDuration || current.duration || '').match(/\d+/);
+          const totalDays = matchDays ? Number(matchDays[0]) : 0;
+          if (totalDays >= 10 && Array.isArray(parsedDetails?.phases) && parsedDetails.phases.length > 0) {
+            let maxEnd = 0;
+            for (const p of parsedDetails.phases) {
+              const end = Number(p.end || 0);
+              if (end > maxEnd) maxEnd = end;
+            }
+            if (maxEnd < totalDays) {
+              return res.status(400).json({
+                success: false,
+                message: `Roadmap phases must cover the full ${totalDays} days of the journey (currently only covers up to Day ${maxEnd}).`,
+              });
+            }
+          }
+        }
+      }
 
       const updateQuery = `
         UPDATE \`courses\` SET

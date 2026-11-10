@@ -15,7 +15,7 @@ export const LIMITS = {
   moduleTitle: { min: 3, max: 60 },
   moduleDesc: { min: 0, max: 180 },
   phaseTitle: { min: 3, max: 50 },
-  phaseDetails: { min: 10, max: 220 },
+  phaseDetails: { min: 5, max: 150 },
   phaseOutcome: { min: 0, max: 90 },
   phaseMaterials: { min: 0, max: 160 },
   fieldVisitTitle: { min: 0, max: 60 },

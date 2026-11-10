@@ -8,7 +8,7 @@ export default function Team() {
     {
       name: 'Mr. Kandaswamy',
       designation: 'Director | Master Artisan – Nakshi Metal Craft & Repousse',
-      image: '',
+      image: '/artisan/team/kandaswamy.png',
       description:
         'Fourth-generation craftsman specializing in traditional brass and copper repoussé, handcrafted metal artistry, and Nakshi techniques.',
       specialty: 'Nakshi Metal Craft & Repousse',

@@ -211,11 +211,30 @@ function validate(s, bookedSeats) {
       checkText(e, `phases.${i}.materials`, p.materials, LIMITS.phaseMaterials, 'Materials', false);
       const start = Number(p.start);
       const end = Number(p.end);
-      if (!start || !end || end < start) e[`phases.${i}.days`] = 'Enter a valid day range (end day ≥ start day).';
-      else if (Number.isInteger(days) && end > days) e[`phases.${i}.days`] = `Ends after the last day of the journey (Day ${days}).`;
-      else if (start <= prevEnd) e[`phases.${i}.days`] = `Overlaps the previous phase. Start from Day ${prevEnd + 1}.`;
+      if (!start || !end || end < start) {
+        e[`phases.${i}.days`] = 'Enter a valid day range (end day ≥ start day).';
+      } else if (i === 0 && start !== 1) {
+        e[`phases.${i}.days`] = 'Phase 1 must start from Day 1.';
+      } else if (i > 0 && start !== prevEnd + 1) {
+        e[`phases.${i}.days`] = `Must follow Phase ${i} contiguously without gap. Start from Day ${prevEnd + 1}.`;
+      } else if (Number.isInteger(days) && end > days) {
+        e[`phases.${i}.days`] = `Ends after the last day of the journey (Day ${days}).`;
+      } else if (start <= prevEnd) {
+        e[`phases.${i}.days`] = `Overlaps the previous phase. Start from Day ${prevEnd + 1}.`;
+      }
       if (end) prevEnd = Math.max(prevEnd, end);
     });
+
+    // STRICT VALIDATION: The phases MUST cover all `days` of the journey!
+    if (Number.isInteger(days) && days >= 10 && s.phases.length > 0) {
+      if (prevEnd < days) {
+        e.phases = `Roadmap phases must cover the full ${days} days of this Learning Journey! Currently only planned up to Day ${prevEnd}. Please complete all ${days} days.`;
+        const lastIdx = s.phases.length - 1;
+        if (!e[`phases.${lastIdx}.days`]) {
+          e[`phases.${lastIdx}.days`] = `Final phase must end at Day ${days} (currently ends at Day ${prevEnd}).`;
+        }
+      }
+    }
   }
 
   checkText(e, 'inclusions', s.inclusions, LIMITS.inclusions, 'Fee inclusions', false);
@@ -1101,7 +1120,10 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                           {days ? `${Math.min(lastEnd, days)} of ${days} days planned` : 'Set the main duration in Fee & seats first'}
                         </span>
                         {days > 0 && lastEnd < days && state.phases.length > 0 && (
-                          <span className="text-amber-700"> · Days {lastEnd + 1}–{days} have no phase yet</span>
+                          <span className="text-amber-700 font-semibold"> · Incomplete: Missing {days - lastEnd} days (Days {lastEnd + 1}–{days} not planned yet)</span>
+                        )}
+                        {days > 0 && lastEnd === days && (
+                          <span className="text-emerald-700 font-semibold"> · ✓ All {days} days fully planned</span>
                         )}
                       </div>
                       {state.phases.length > 1 && days > 0 && (
