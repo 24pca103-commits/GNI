@@ -292,8 +292,52 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left text-sm">
+          <>
+            {/* Mobile card list */}
+            <ul className="divide-y divide-[#6B4030]/8 md:hidden">
+              {visible.map((r) => (
+                <li
+                  key={r.id}
+                  onClick={() => setOpenId(r.id)}
+                  className="space-y-2.5 p-4 transition-colors hover:bg-[#FCFAF6] cursor-pointer"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#4A2C20] text-xs font-bold text-[#E5B869]">
+                        {nameOf(r).trim().charAt(0).toUpperCase()}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-[#241A16]">{nameOf(r)}</p>
+                        <p className="truncate text-[11px] text-[#6B4030]">{r.email}</p>
+                      </div>
+                    </div>
+                    <span className="shrink-0 text-[11px] text-[#6B4030]/70">{formatDate(r.created_at)}</span>
+                  </div>
+
+                  <div className="rounded-lg bg-[#FAF7F0] p-2.5 text-xs">
+                    <p className="font-medium text-[#241A16] line-clamp-1">{courseOf(r)}</p>
+                    <p className="mt-0.5 text-[#6B4030]/80">
+                      {[r.course_duration, r.course_fee ? formatINR(r.course_fee) : ''].filter(Boolean).join(' · ')}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1" onClick={(e) => e.stopPropagation()}>
+                    <StatusSelect value={r.payment_status} studentName={nameOf(r)} onChange={(v) => onStatusChange(r.id, v)} />
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(r.id)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#4A2C20] hover:text-[#B89555] cursor-pointer"
+                    >
+                      Details <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="whitespace-nowrap border-b border-[#6B4030]/10 bg-[#FCFAF6] text-xs font-semibold uppercase tracking-wide text-[#6B4030]">
                 <tr>
                   <th className="px-4 py-3">Applicant</th>
@@ -338,7 +382,8 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </Panel>
 

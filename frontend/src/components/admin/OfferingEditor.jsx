@@ -362,7 +362,7 @@ function DurationRoadmapEditor({
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-[#4A2C20] cursor-pointer"
+          className="inline-flex flex-wrap items-center gap-2 text-xs font-bold text-[#4A2C20] cursor-pointer"
         >
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold shrink-0">
             {phases.length}
@@ -371,7 +371,7 @@ function DurationRoadmapEditor({
             Roadmap Phases ({days ? `${days} Days Cohort` : 'Set Days'})
           </span>
           <span className="inline-flex items-center gap-1 rounded-md bg-[#6B4030]/10 px-2 py-0.5 text-[11px] font-semibold text-[#4A2C20]">
-            {open ? 'Hide Phases' : 'Dropdown: View / Edit Phases'}
+            {open ? 'Hide Phases' : <><span className="hidden sm:inline">Dropdown: </span>View / Edit Phases</>}
             {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </span>
         </button>
@@ -414,45 +414,55 @@ function DurationRoadmapEditor({
               <div key={pIdx} className="space-y-1.5 rounded-lg border border-[#6B4030]/15 bg-white p-2.5 shadow-2xs">
                 {/* Row 1: Phase Number + From Day + To Day + Phase Title + Actions */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#241A16] shrink-0">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold">
-                      {pIdx + 1}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#241A16] shrink-0">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold">
+                        {pIdx + 1}
+                      </span>
+                      <span className="hidden sm:inline">Phase {pIdx + 1}:</span>
                     </span>
-                    <span className="hidden sm:inline">Phase {pIdx + 1}:</span>
-                  </span>
 
-                  <div className="flex items-center gap-1 text-xs shrink-0">
-                    <span className="text-[11px] text-[#6B4030] font-medium">Day</span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={p.start ?? ''}
-                      placeholder="1"
-                      onKeyDown={handleOnlyNumericKeyDown}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
-                      }}
-                      className={inputClass(phaseDaysErr, 'w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
-                    />
-                    <span className="text-[11px] text-[#6B4030]">to</span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={p.end ?? ''}
-                      placeholder="15"
-                      onKeyDown={handleOnlyNumericKeyDown}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
-                      }}
-                      className={inputClass(phaseDaysErr, 'w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
-                    />
+                    <div className="flex items-center gap-1 text-xs shrink-0">
+                      <span className="text-[11px] text-[#6B4030] font-medium">Day</span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={p.start ?? ''}
+                        placeholder="1"
+                        onKeyDown={handleOnlyNumericKeyDown}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
+                        }}
+                        className={inputClass(phaseDaysErr, 'w-10 sm:w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
+                      />
+                      <span className="text-[11px] text-[#6B4030]">to</span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={p.end ?? ''}
+                        placeholder="15"
+                        onKeyDown={handleOnlyNumericKeyDown}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
+                        }}
+                        className={inputClass(phaseDaysErr, 'w-10 sm:w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex-1 min-w-[180px] max-w-md">
+                  <div className="flex items-center shrink-0 ml-auto sm:order-last">
+                    <IconButton title="Move up" onClick={() => onMovePhase(pIdx, -1)} disabled={pIdx === 0}>↑</IconButton>
+                    <IconButton title="Move down" onClick={() => onMovePhase(pIdx, 1)} disabled={pIdx === phases.length - 1}>↓</IconButton>
+                    <IconButton title="Remove phase" tone="danger" onClick={() => onRemovePhase(pIdx)} disabled={phases.length === 1}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </IconButton>
+                  </div>
+
+                  <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[180px] sm:max-w-md">
                     <input
                       type="text"
                       value={p.title}
@@ -461,14 +471,6 @@ function DurationRoadmapEditor({
                       placeholder="Phase Title (e.g. Tamili Brahmi & Epigraphy)*"
                       className={inputClass(phaseTitleErr, 'w-full py-1 px-2.5 text-xs font-semibold')}
                     />
-                  </div>
-
-                  <div className="flex items-center shrink-0 ml-auto">
-                    <IconButton title="Move up" onClick={() => onMovePhase(pIdx, -1)} disabled={pIdx === 0}>↑</IconButton>
-                    <IconButton title="Move down" onClick={() => onMovePhase(pIdx, 1)} disabled={pIdx === phases.length - 1}>↓</IconButton>
-                    <IconButton title="Remove phase" tone="danger" onClick={() => onRemovePhase(pIdx)} disabled={phases.length === 1}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </IconButton>
                   </div>
                 </div>
 
@@ -629,8 +631,8 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
         return (
           <div key={i} className={`rounded-2xl border p-4 shadow-2xs ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
             {/* Row 1: Days, Fees & Action buttons with uniform top-aligned labels */}
-            <div className="flex flex-wrap items-end gap-3 sm:gap-4">
-              <div className="flex flex-col gap-1 w-24 shrink-0">
+            <div className="flex flex-wrap items-end gap-2.5 sm:gap-4">
+              <div className="flex flex-col gap-1 w-20 sm:w-24 shrink-0">
                 <label htmlFor={`dur-${i}-days`} className="text-xs font-semibold text-[#6B4030]">
                   Days <span className="text-red-600">*</span>
                 </label>
@@ -651,7 +653,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   className={inputClass(effectiveDaysError, 'w-full h-10 text-center tabular-nums font-semibold')}
                 />
               </div>
-              <div className="flex flex-col gap-1 w-32 shrink-0">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-32 min-w-[100px]">
                 <label htmlFor={`dur-${i}-fee`} className="text-xs font-semibold text-[#6B4030]">
                   Offer fee ₹ <span className="text-red-600">*</span>
                 </label>
@@ -671,7 +673,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   className={inputClass(effectiveFeeError, 'w-full h-10 tabular-nums font-semibold')}
                 />
               </div>
-              <div className="flex flex-col gap-1 w-36 shrink-0">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-36 min-w-[110px]">
                 <label htmlFor={`dur-${i}-reg`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
                   Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
                 </label>
@@ -691,7 +693,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   className={inputClass(effectiveRegError, 'w-full h-10 tabular-nums')}
                 />
               </div>
-              <div className="flex items-center gap-1 sm:ml-auto pb-0.5">
+              <div className="flex items-center gap-1 ml-auto sm:ml-auto pb-0.5">
                 <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
                 <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
                 <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
@@ -701,8 +703,8 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
             </div>
 
             {/* Row 2: Total seats, Booked, Seats left & Cohort Badges with matching top-aligned labels */}
-            <div className="mt-3 flex flex-wrap items-end gap-3 sm:gap-4 rounded-xl border border-[#6B4030]/12 bg-[#FAF7F0] p-3">
-              <div className="flex flex-col gap-1 w-24 shrink-0">
+            <div className="mt-3 flex flex-wrap items-end gap-2 sm:gap-4 rounded-xl border border-[#6B4030]/12 bg-[#FAF7F0] p-2.5 sm:p-3">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-24 min-w-[70px]">
                 <label htmlFor={`dur-${i}-seats`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
                   Total seats <span className="text-red-600">*</span>
                 </label>
@@ -723,7 +725,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   className={inputClass(effectiveSeatsError, 'w-full h-10 text-center tabular-nums font-semibold bg-white')}
                 />
               </div>
-              <div className="flex flex-col gap-1 w-20 shrink-0">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-[55px]">
                 <span className="text-xs font-semibold text-[#6B4030]">Booked</span>
                 <div
                   className="flex h-10 w-full items-center justify-center rounded-xl border border-[#6B4030]/20 bg-white px-2 text-sm font-bold tabular-nums text-[#4A2C20]"
@@ -732,7 +734,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   {optBooked}
                 </div>
               </div>
-              <div className="flex flex-col gap-1 w-20 shrink-0">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-[60px]">
                 <span className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">Seats left</span>
                 <div
                   className={`flex h-10 w-full items-center justify-center rounded-xl border px-2 text-sm font-bold tabular-nums ${
@@ -743,7 +745,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   {optLeft}
                 </div>
               </div>
-              <div className="ml-auto flex flex-wrap items-center gap-2 self-center pt-2 sm:pt-0 text-xs text-[#6B4030]">
+              <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap items-center gap-2 self-center pt-2 sm:pt-0 text-xs text-[#6B4030]">
                 {i === 0 && <span className="rounded bg-[#4A2C20] px-2.5 py-1 text-[11px] font-bold text-[#E5B869] tracking-wide">MAIN COHORT</span>}
                 {save > 0 && (
                   <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-300">

@@ -330,16 +330,16 @@ export function JourneyDetail({ course, preview = false }) {
       {/* Duration selector tabs when multiple durations exist */}
       {durationsList.length > 1 && (
         <div className="flex flex-wrap items-center gap-2.5 pt-4">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#B89555]">
+          <span className="w-full sm:w-auto text-xs font-semibold uppercase tracking-wider text-[#B89555]">
             Select Cohort Duration:
           </span>
-          <div className="inline-flex rounded-xl bg-[#FAF7F0] p-1 border border-[#6B4030]/15">
+          <div className="inline-flex max-w-full flex-wrap gap-1 rounded-xl bg-[#FAF7F0] p-1 border border-[#6B4030]/15">
             {durationsList.map((d, dIdx) => (
               <button
                 key={dIdx}
                 type="button"
                 onClick={() => setSelectedDurationIdx(dIdx)}
-                className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                className={`flex-shrink-0 sm:flex-shrink rounded-lg px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                   safeIdx === dIdx
                     ? 'bg-[#4A2C20] text-[#E5B869] shadow-sm'
                     : 'text-[#6B4030] hover:text-[#241A16]'
