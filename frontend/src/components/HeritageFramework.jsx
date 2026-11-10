@@ -157,15 +157,15 @@ export default function HeritageFramework() {
                     {/* Card Content Body - Medium Compact Proportions with Equal Height Slots */}
                     <div className="p-3.5 sm:p-4 flex flex-col justify-between flex-1 text-left min-w-0 gap-2.5 sm:gap-3">
                       {/* Description Slot - Unified Height */}
-                      <div className="h-[44px] sm:h-[48px] flex items-start overflow-hidden">
+                      <div className="h-[44px] sm:h-[48px] min-h-[44px] sm:min-h-[48px] max-h-[44px] sm:max-h-[48px] flex items-start overflow-hidden">
                         <p className="font-['DM_Sans'] text-[11.5px] sm:text-xs text-[#241A16]/85 leading-relaxed font-normal line-clamp-2 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
                           {pillar.description}
                         </p>
                       </div>
 
                       {/* Subject Curriculum Overview Inner Card - Unified Fixed Height Across All Cards */}
-                      <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 h-[64px] sm:h-[68px] shrink-0 flex flex-col justify-center min-w-0">
-                        <span className="text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-semibold text-[#6B4030] block shrink-0 leading-tight mb-0.5">
+                      <div className="p-2.5 rounded-xl bg-[#F7F2E8] border border-[#6B4030]/15 h-[76px] sm:h-[80px] min-h-[76px] sm:min-h-[80px] max-h-[76px] sm:max-h-[80px] shrink-0 flex flex-col justify-start overflow-hidden min-w-0">
+                        <span className="text-[10px] sm:text-[10.5px] font-['DM_Sans'] font-semibold text-[#6B4030] block shrink-0 leading-tight mb-1">
                           Modules &amp; Practicals:
                         </span>
                         <p className="text-[11px] sm:text-[11.5px] font-['DM_Sans'] text-[#241A16]/80 leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] min-w-0 max-w-full">
@@ -174,7 +174,7 @@ export default function HeritageFramework() {
                       </div>
 
                       {/* Tags Slot - Unified Fixed Height with Hidden Overflow */}
-                      <div className="h-[50px] sm:h-[54px] shrink-0 flex flex-wrap content-start items-center gap-1 sm:gap-1.5 pt-0.5 overflow-hidden">
+                      <div className="h-[50px] sm:h-[54px] min-h-[50px] sm:min-h-[54px] max-h-[50px] sm:max-h-[54px] shrink-0 flex flex-wrap content-start items-center gap-1 sm:gap-1.5 pt-0.5 overflow-hidden">
                         {Array.isArray(pillar.tags) &&
                           pillar.tags.map((tag, tagIdx) => (
                             <span
