@@ -428,7 +428,7 @@ function DurationRoadmapEditor({
                     />
                   </div>
 
-                  <div className="flex-1 min-w-[160px]">
+                  <div className="w-full sm:w-72 md:w-80">
                     <input
                       type="text"
                       value={p.title}
@@ -439,7 +439,7 @@ function DurationRoadmapEditor({
                     />
                   </div>
 
-                  <div className="flex items-center shrink-0">
+                  <div className="flex items-center shrink-0 ml-auto">
                     <IconButton title="Move up" onClick={() => onMovePhase(pIdx, -1)} disabled={pIdx === 0}>↑</IconButton>
                     <IconButton title="Move down" onClick={() => onMovePhase(pIdx, 1)} disabled={pIdx === phases.length - 1}>↓</IconButton>
                     <IconButton title="Remove phase" tone="danger" onClick={() => onRemovePhase(pIdx)} disabled={phases.length === 1}>
@@ -449,7 +449,7 @@ function DurationRoadmapEditor({
                 </div>
 
                 {/* Row 2: What is covered */}
-                <div>
+                <div className="max-w-2xl">
                   <input
                     type="text"
                     value={p.details}
@@ -461,7 +461,7 @@ function DurationRoadmapEditor({
                 </div>
 
                 {/* Row 3: You'll create + Materials in 2 tight columns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
                     type="text"
                     value={p.outcome}
@@ -525,7 +525,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
         </p>
       </div>
 
-      <div className="hidden grid-cols-[100px_1fr_1fr_88px] gap-3 px-3 text-xs font-semibold text-[#6B4030] md:grid">
+      <div className="hidden grid-cols-[90px_130px_130px_auto] gap-2.5 px-3 text-xs font-semibold text-[#6B4030] md:grid">
         <span>Days <span className="text-red-600">*</span></span>
         <span>Offer fee ₹ <span className="text-red-600">*</span></span>
         <span>Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span></span>
@@ -591,7 +591,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
 
         return (
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
-            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-[100px_1fr_1fr_88px] md:items-center">
+            <div className="grid grid-cols-2 gap-2 md:grid-cols-[90px_130px_130px_auto] md:items-center">
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">
                   Days <span className="text-red-600">*</span>
@@ -609,7 +609,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   }}
                   placeholder={type === 'workshop' ? '1–9' : '10+'}
                   aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
-                  className={inputClass(effectiveDaysError, 'tabular-nums font-semibold')}
+                  className={inputClass(effectiveDaysError, 'w-full md:w-20 tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -626,7 +626,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   }}
                   placeholder="5499"
                   aria-label={`Option ${i + 1} offer fee`}
-                  className={inputClass(effectiveFeeError, 'tabular-nums font-semibold')}
+                  className={inputClass(effectiveFeeError, 'w-full md:w-28 tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -643,10 +643,10 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   }}
                   placeholder="optional"
                   aria-label={`Option ${i + 1} regular fee`}
-                  className={inputClass(effectiveRegError, 'tabular-nums')}
+                  className={inputClass(effectiveRegError, 'w-full md:w-28 tabular-nums')}
                 />
               </label>
-              <div className="col-span-2 flex items-center justify-end md:col-span-1">
+              <div className="col-span-2 flex items-center justify-start gap-1">
                 <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
                 <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
                 <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
@@ -689,9 +689,21 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                 }}
                 onAddPhase={() => {
                   const curPhases = o.phases || [];
+                  let interval = 10;
+                  if (curPhases.length > 0) {
+                    const lastPhase = curPhases[curPhases.length - 1];
+                    const pStart = Number(lastPhase.start);
+                    const pEnd = Number(lastPhase.end);
+                    if (pStart && pEnd && pEnd >= pStart) {
+                      interval = pEnd - pStart + 1;
+                    }
+                  } else if (days && days > 0) {
+                    interval = Math.min(10, days);
+                  }
                   const lastEnd = curPhases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
                   const start = lastEnd ? lastEnd + 1 : 1;
-                  const end = days && days > start ? Math.min(start + 14, days) : days || (start + 9);
+                  const calculatedEnd = start + interval - 1;
+                  const end = days && days >= start ? Math.min(calculatedEnd, days) : calculatedEnd;
                   onChange(i, 'phases', [...curPhases, { start, end, title: '', details: '', outcome: '', materials: '' }]);
                 }}
                 onRemovePhase={(pIdx) => {
@@ -952,11 +964,22 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
   };
 
   /* ---- journey phase helpers ---- */
-  const lastEnd = state.phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
   const addPhase = () => {
-    if (!days) return;
-    const start = Math.min(lastEnd + 1, days);
-    const end = Math.min(start + 9, days);
+    let interval = 10;
+    if (state.phases.length > 0) {
+      const lastPhase = state.phases[state.phases.length - 1];
+      const pStart = Number(lastPhase.start);
+      const pEnd = Number(lastPhase.end);
+      if (pStart && pEnd && pEnd >= pStart) {
+        interval = pEnd - pStart + 1;
+      }
+    } else if (days && days > 0) {
+      interval = Math.min(10, days);
+    }
+    const curEnd = state.phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
+    const start = curEnd ? curEnd + 1 : 1;
+    const calculatedEnd = start + interval - 1;
+    const end = days && days >= start ? Math.min(calculatedEnd, days) : calculatedEnd;
     setState((s) => ({
       ...s,
       phases: [...s.phases, { start, end, title: '', details: '', outcome: '', materials: '' }],
