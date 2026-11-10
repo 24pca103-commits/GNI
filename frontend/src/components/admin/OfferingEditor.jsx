@@ -627,7 +627,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
         return (
           <div key={i} className={`rounded-xl border p-3.5 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
             {/* Row 1: Days, Offer fee, Regular fee & Reorder/Remove */}
-            <div className="flex flex-wrap items-end gap-3">
+            <div className="flex flex-wrap items-end gap-2.5">
               <label className="space-y-1">
                 <span className="text-xs font-semibold text-[#6B4030]">
                   Days <span className="text-red-600">*</span>
@@ -645,7 +645,13 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder={type === 'workshop' ? '1–9' : '10+'}
                   aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
-                  className={inputClass(effectiveDaysError, 'w-24 tabular-nums font-semibold')}
+                  style={{
+                    width: `${Math.max(String(o.days ?? '').length, 3) + 3}ch`,
+                    minWidth: '4.5rem',
+                    maxWidth: '7rem',
+                    fieldSizing: 'content',
+                  }}
+                  className={inputClass(effectiveDaysError, 'tabular-nums font-semibold text-center')}
                 />
               </label>
               <label className="space-y-1">
@@ -664,7 +670,13 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="5499"
                   aria-label={`Option ${i + 1} offer fee`}
-                  className={inputClass(effectiveFeeError, 'w-32 tabular-nums font-semibold')}
+                  style={{
+                    width: `${Math.max(String(o.fee ?? '').length, 4) + 3}ch`,
+                    minWidth: '5.5rem',
+                    maxWidth: '10rem',
+                    fieldSizing: 'content',
+                  }}
+                  className={inputClass(effectiveFeeError, 'tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1">
@@ -683,7 +695,13 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="optional"
                   aria-label={`Option ${i + 1} regular fee`}
-                  className={inputClass(effectiveRegError, 'w-32 tabular-nums')}
+                  style={{
+                    width: `${Math.max(String(o.original_price ?? '').length, 8) + 3}ch`,
+                    minWidth: '6.5rem',
+                    maxWidth: '10rem',
+                    fieldSizing: 'content',
+                  }}
+                  className={inputClass(effectiveRegError, 'tabular-nums')}
                 />
               </label>
               <div className="flex items-center gap-1 ml-auto self-end pb-0.5">
@@ -696,7 +714,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
             </div>
 
             {/* Row 2: Total seats, Booked, Seats left & Cohort Summary */}
-            <div className="mt-2.5 flex flex-wrap items-center gap-3 rounded-lg border border-[#6B4030]/10 bg-[#FAF7F0]/60 p-2.5">
+            <div className="mt-2.5 flex flex-wrap items-center gap-2.5 rounded-lg border border-[#6B4030]/10 bg-[#FAF7F0]/60 p-2">
               <label className="space-y-1">
                 <span className="text-xs font-semibold text-[#6B4030]">
                   Total seats <span className="text-red-600">*</span>
@@ -714,13 +732,19 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="35"
                   aria-label={`Option ${i + 1} total seats (1–${MAX_SEATS})`}
-                  className={inputClass(effectiveSeatsError, 'w-24 tabular-nums font-semibold bg-white')}
+                  style={{
+                    width: `${Math.max(String(o.seats_total ?? '').length, 2) + 3}ch`,
+                    minWidth: '4.5rem',
+                    maxWidth: '7rem',
+                    fieldSizing: 'content',
+                  }}
+                  className={inputClass(effectiveSeatsError, 'tabular-nums font-semibold bg-white text-center')}
                 />
               </label>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-[#6B4030]">Booked</span>
                 <div
-                  className="flex h-9 w-20 items-center justify-center rounded-xl border border-[#6B4030]/15 bg-white px-2 text-xs font-bold tabular-nums text-[#4A2C20]"
+                  className="flex h-9 min-w-[3rem] px-2.5 items-center justify-center rounded-xl border border-[#6B4030]/15 bg-white text-xs font-bold tabular-nums text-[#4A2C20]"
                   title="Enrolled & confirmed students"
                 >
                   {optBooked}
@@ -729,7 +753,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-[#6B4030]">Seats left</span>
                 <div
-                  className={`flex h-9 w-20 items-center justify-center rounded-xl border px-2 text-xs font-bold tabular-nums ${
+                  className={`flex h-9 min-w-[3rem] px-2.5 items-center justify-center rounded-xl border text-xs font-bold tabular-nums ${
                     optLeft > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-600'
                   }`}
                   title="Remaining seats for enrollment"
