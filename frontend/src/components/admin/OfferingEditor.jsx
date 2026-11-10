@@ -547,15 +547,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
         </p>
       </div>
 
-      <div className="hidden grid-cols-[78px_82px_60px_65px_105px_105px_auto] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
-        <span>Days <span className="text-red-600">*</span></span>
-        <span>Total seats <span className="text-red-600">*</span></span>
-        <span>Booked</span>
-        <span>Seats left</span>
-        <span>Offer fee ₹ <span className="text-red-600">*</span></span>
-        <span>Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span></span>
-        <span />
-      </div>
+
 
       {options.map((o, i) => {
         const days = Number(o.days);
@@ -633,10 +625,11 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
         const rowErrors = [effectiveDaysError, effectiveSeatsError, effectiveFeeError, effectiveRegError].filter(Boolean);
 
         return (
-          <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-[78px_82px_60px_65px_105px_105px_auto] md:items-center">
-              <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">
+          <div key={i} className={`rounded-xl border p-3.5 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
+            {/* Row 1: Days, Offer fee, Regular fee & Reorder/Remove */}
+            <div className="flex flex-wrap items-end gap-3">
+              <label className="space-y-1">
+                <span className="text-xs font-semibold text-[#6B4030]">
                   Days <span className="text-red-600">*</span>
                 </span>
                 <input
@@ -652,11 +645,60 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder={type === 'workshop' ? '1–9' : '10+'}
                   aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
-                  className={inputClass(effectiveDaysError, 'w-full md:w-20 tabular-nums font-semibold')}
+                  className={inputClass(effectiveDaysError, 'w-24 tabular-nums font-semibold')}
                 />
               </label>
-              <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">
+              <label className="space-y-1">
+                <span className="text-xs font-semibold text-[#6B4030]">
+                  Offer fee ₹ <span className="text-red-600">*</span>
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={o.fee ?? ''}
+                  onKeyDown={handleOnlyNumericKeyDown}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    onChange(i, 'fee', val);
+                  }}
+                  placeholder="5499"
+                  aria-label={`Option ${i + 1} offer fee`}
+                  className={inputClass(effectiveFeeError, 'w-32 tabular-nums font-semibold')}
+                />
+              </label>
+              <label className="space-y-1">
+                <span className="text-xs font-semibold text-[#6B4030]">
+                  Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={o.original_price ?? ''}
+                  onKeyDown={handleOnlyNumericKeyDown}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    onChange(i, 'original_price', val);
+                  }}
+                  placeholder="optional"
+                  aria-label={`Option ${i + 1} regular fee`}
+                  className={inputClass(effectiveRegError, 'w-32 tabular-nums')}
+                />
+              </label>
+              <div className="flex items-center gap-1 ml-auto self-end pb-0.5">
+                <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
+                <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
+                <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
+                  <Trash2 className="h-4 w-4" />
+                </IconButton>
+              </div>
+            </div>
+
+            {/* Row 2: Total seats, Booked, Seats left & Cohort Summary */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-3 rounded-lg border border-[#6B4030]/10 bg-[#FAF7F0]/60 p-2.5">
+              <label className="space-y-1">
+                <span className="text-xs font-semibold text-[#6B4030]">
                   Total seats <span className="text-red-600">*</span>
                 </span>
                 <input
@@ -672,22 +714,22 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="35"
                   aria-label={`Option ${i + 1} total seats (1–${MAX_SEATS})`}
-                  className={inputClass(effectiveSeatsError, 'w-full md:w-20 tabular-nums font-semibold')}
+                  className={inputClass(effectiveSeatsError, 'w-24 tabular-nums font-semibold bg-white')}
                 />
               </label>
-              <div className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Booked</span>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-[#6B4030]">Booked</span>
                 <div
-                  className="flex h-9 w-full md:w-15 items-center justify-center rounded-xl border border-[#6B4030]/15 bg-[#FAF7F0] px-1 text-xs font-bold tabular-nums text-[#4A2C20]"
+                  className="flex h-9 w-20 items-center justify-center rounded-xl border border-[#6B4030]/15 bg-white px-2 text-xs font-bold tabular-nums text-[#4A2C20]"
                   title="Enrolled & confirmed students"
                 >
                   {optBooked}
                 </div>
               </div>
-              <div className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Seats left</span>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-[#6B4030]">Seats left</span>
                 <div
-                  className={`flex h-9 w-full md:w-16 items-center justify-center rounded-xl border px-1 text-xs font-bold tabular-nums ${
+                  className={`flex h-9 w-20 items-center justify-center rounded-xl border px-2 text-xs font-bold tabular-nums ${
                     optLeft > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-600'
                   }`}
                   title="Remaining seats for enrollment"
@@ -695,58 +737,14 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   {optLeft}
                 </div>
               </div>
-              <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Offer fee ₹ <span className="text-red-600">*</span></span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={o.fee ?? ''}
-                  onKeyDown={handleOnlyNumericKeyDown}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    onChange(i, 'fee', val);
-                  }}
-                  placeholder="5499"
-                  aria-label={`Option ${i + 1} offer fee`}
-                  className={inputClass(effectiveFeeError, 'w-full md:w-26 tabular-nums font-semibold')}
-                />
-              </label>
-              <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Regular fee ₹</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={o.original_price ?? ''}
-                  onKeyDown={handleOnlyNumericKeyDown}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    onChange(i, 'original_price', val);
-                  }}
-                  placeholder="optional"
-                  aria-label={`Option ${i + 1} regular fee`}
-                  className={inputClass(effectiveRegError, 'w-full md:w-26 tabular-nums')}
-                />
-              </label>
-              <div className="col-span-2 flex items-center justify-start gap-1 sm:col-span-3 md:col-span-1">
-                <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
-                <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
-                <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
-                  <Trash2 className="h-4 w-4" />
-                </IconButton>
+              <div className="ml-auto flex flex-wrap items-center gap-2 self-end pb-1 text-xs text-[#6B4030]">
+                {i === 0 && <span className="rounded bg-[#4A2C20] px-2 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN COHORT</span>}
+                {save > 0 && (
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                    Save {save}% (Discount ₹{(regular - fee).toLocaleString('en-IN')})
+                  </span>
+                )}
               </div>
-            </div>
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[#6B4030]">
-              {i === 0 && <span className="rounded bg-[#4A2C20] px-1.5 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN</span>}
-              <span className="font-medium">{Number.isInteger(days) && days > 0 ? buildDuration(days, o.label || '') : 'Set the days'}</span>
-              <span className="font-medium text-[#6B4030]">· Total seats: <strong>{o.seats_total || 0}</strong> ({optBooked} booked, {optLeft} left)</span>
-              {fee > 0 && <span className="font-semibold text-[#241A16]">· ₹{fee.toLocaleString('en-IN')}</span>}
-              {save > 0 && (
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
-                  Save {save}% (Discount ₹{(regular - fee).toLocaleString('en-IN')})
-                </span>
-              )}
             </div>
             {rowErrors.length > 0 && (
               <div className="mt-2 space-y-1 border-t border-red-100 pt-1.5">
