@@ -143,6 +143,8 @@ function durationsFromCourse(course, kind) {
         fee: Number(o.fee) || '',
         original_price: Number(o.original_price) > Number(o.fee) ? Number(o.original_price) : '',
         seats_total: o.seats_total !== undefined && o.seats_total !== '' ? Number(o.seats_total) : defaultSeats,
+        booked_seats: Number(o.booked_seats) || 0,
+        seats_available: o.seats_available !== undefined ? Number(o.seats_available) : undefined,
         phases: dPhases,
       };
     });
@@ -615,7 +617,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
           liveSeatsError = 'Seats is required.';
         }
 
-        const optBooked = i === 0 ? Number(bookedSeats) || 0 : 0;
+        const optBooked = o.booked_seats !== undefined ? Number(o.booked_seats) : (i === 0 ? Number(bookedSeats) || 0 : 0);
         const optLeft = Math.max(0, (Number(o.seats_total) || 0) - optBooked);
 
         const effectiveDaysError = liveDaysError || cellErr(i, 'days');

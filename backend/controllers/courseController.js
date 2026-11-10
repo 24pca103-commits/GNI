@@ -67,29 +67,63 @@ function prepareDurations(body) {
 async function enrichCoursesWithSeatMetrics(pool, coursesList) {
   try {
     const [bookingRows] = await pool.query(
-      `SELECT LOWER(interested_skill) as skill, COUNT(*) as cnt 
+      `SELECT LOWER(interested_skill) as skill, LOWER(COALESCE(course_duration, '')) as duration, COUNT(*) as cnt 
        FROM \`registrations\` 
        WHERE ${SEAT_HOLDING_SQL}
-       GROUP BY LOWER(interested_skill)`
+       GROUP BY LOWER(interested_skill), LOWER(COALESCE(course_duration, ''))`
     );
-
-    const bookingMap = new Map();
-    (bookingRows || []).forEach((row) => {
-      bookingMap.set(String(row.skill || '').trim(), Number(row.cnt || 0));
-    });
 
     return coursesList.map((c) => {
       const titleLower = String(c.title || '').toLowerCase().trim();
-      let booked = 0;
+      const parsedDurations = parseDurations(c.durations, c);
 
-      for (const [skill, count] of bookingMap.entries()) {
-        if (skill.includes(titleLower) || titleLower.includes(skill)) {
-          booked += count;
-        }
+      // Calculate cohort-specific booked seats for each duration option
+      const enrichedDurations = parsedDurations.map((d, dIdx) => {
+        const dDays = Number(d.days);
+        let optBooked = 0;
+
+        (bookingRows || []).forEach((row) => {
+          const rowSkill = String(row.skill || '').trim();
+          const rowDur = String(row.duration || '').trim();
+          const skillMatch = rowSkill && (rowSkill.includes(titleLower) || titleLower.includes(rowSkill));
+          if (!skillMatch) return;
+
+          const matchNum = rowDur.match(/\d+/);
+          const rowDays = matchNum ? Number(matchNum[0]) : null;
+
+          if (rowDays !== null && rowDays === dDays) {
+            optBooked += Number(row.cnt || 0);
+          } else if (rowDays === null && dIdx === 0) {
+            optBooked += Number(row.cnt || 0);
+          }
+        });
+
+        const optTotal = Number(d.seats_total || c.seats_total || 50);
+        const optAvailable = Math.max(0, optTotal - optBooked);
+
+        return {
+          ...d,
+          booked_seats: optBooked,
+          seats_available: optAvailable,
+        };
+      });
+
+      // Total booked for the main duration (option 0)
+      let mainBooked = enrichedDurations[0]?.booked_seats !== undefined
+        ? enrichedDurations[0].booked_seats
+        : 0;
+
+      if (enrichedDurations.length === 0) {
+        (bookingRows || []).forEach((row) => {
+          const rowSkill = String(row.skill || '').trim();
+          if (rowSkill && (rowSkill.includes(titleLower) || titleLower.includes(rowSkill))) {
+            mainBooked += Number(row.cnt || 0);
+          }
+        });
       }
 
-      const total = Number(c.seats_total ?? 50);
-      const available = Math.max(0, total - booked);
+      const total = enrichedDurations[0]?.seats_total ? Number(enrichedDurations[0].seats_total) : Number(c.seats_total ?? 50);
+      const available = Math.max(0, total - mainBooked);
 
       let availabilityStatus = 'Available';
       if (available === 0) {
@@ -104,10 +138,10 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
         pillar_id: c.pillar_id !== null && c.pillar_id !== undefined ? (Number(c.pillar_id) === 0 ? 'all' : Number(c.pillar_id)) : null,
         pillar_title: c.pillar_title || '',
         details: parseDetails(c.details),
-        durations: parseDurations(c.durations, c),
+        durations: enrichedDurations,
         offering_type: offType,
         seats_total: total,
-        booked_seats: booked,
+        booked_seats: mainBooked,
         seats_available: available,
         availability_status: availabilityStatus,
       };

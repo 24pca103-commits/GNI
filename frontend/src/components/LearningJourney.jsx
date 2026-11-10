@@ -284,15 +284,20 @@ export function JourneyDetail({ course, preview = false }) {
 
   const totalDays = activeDays || (phases.length ? phases.reduce((sum, p) => sum + periodLength(p.period), 0) : null);
 
+  const activeBooked = Number(activeDuration?.booked_seats) || 0;
+  const activeTotal = Number(activeDuration?.seats_total) || Number(course.seats_total) || 50;
+  const activeAvail = activeDuration?.seats_available !== undefined
+    ? Number(activeDuration.seats_available)
+    : Math.max(0, activeTotal - activeBooked);
+
   const activeCourse = {
     ...course,
     duration: `${activeDays} Days`,
     discount_price: activeFee,
     original_price: activeOriginal,
-    ...(activeDuration?.seats_total ? {
-      seats_total: Number(activeDuration.seats_total),
-      seats_available: Math.max(0, Number(activeDuration.seats_total) - (Number(course.booked_seats) || 0)),
-    } : {}),
+    seats_total: activeTotal,
+    booked_seats: activeBooked,
+    seats_available: activeAvail,
   };
 
   return (
