@@ -27,7 +27,7 @@ export function escapeHtml(str) {
 
 const GNI_OFFICIAL_ADDRESS = 'No.156, 2nd floor, Uppara street, Raja street corner, Coimbatore 641001';
 const GNI_OFFICIAL_URL = 'https://globalnagasinstitute.com';
-const GNI_OFFICIAL_EMAIL = 'admissions@globalnagas.org';
+const GNI_OFFICIAL_EMAIL = process.env.SMTP_USER || process.env.ADMIN_EMAIL || 'info@globalnagasinstitute.com';
 
 /**
  * Base GNI Master Email Shell
@@ -161,8 +161,6 @@ export function renderGniEmailWrapper({
               </p>
               <p style="margin: 0; color: #8C6832;">
                 Official Portal: <a href="${GNI_OFFICIAL_URL}" target="_blank" style="color: #4A2C20; font-weight: 700; text-decoration: none;">${GNI_OFFICIAL_URL}</a>
-                &nbsp;|&nbsp;
-                Admissions: <a href="mailto:${GNI_OFFICIAL_EMAIL}" style="color: #4A2C20; font-weight: 700; text-decoration: none;">${GNI_OFFICIAL_EMAIL}</a>
               </p>
               <p style="margin: 10px 0 0; font-size: 10.5px; color: #7A6E65;">
                 &copy; ${new Date().getFullYear()} Global Nagas Institute. Preserving and revitalizing authentic ancestral arts.
@@ -319,7 +317,7 @@ Global Nagas Institute (GNI)
 
 Campus Address: ${GNI_OFFICIAL_ADDRESS}
 Official Portal: ${GNI_OFFICIAL_URL}
-Admissions Email: ${GNI_OFFICIAL_EMAIL}`;
+`;
 
   return {
     subject: 'Welcome to Global Nagas Institute (GNI) — Registration Confirmation',
@@ -760,7 +758,7 @@ export function generateApplicationStatusUpdateEmail(data, newStatus) {
     </div>
 
     <p style="font-size: 13px; line-height: 1.55; color: #6B4030; margin: 0 0 16px;">
-      If you have questions regarding your application or require assistance, please contact the admissions guild at <a href="mailto:${GNI_OFFICIAL_EMAIL}" style="color: #4A2C20; font-weight: 700;">${GNI_OFFICIAL_EMAIL}</a>.
+      If you have questions regarding your application or require assistance, please reply directly to this email or visit our official portal.
     </p>
 
     <div style="font-size: 14px; line-height: 1.5; color: #4A2C20; margin-top: 18px;">
@@ -792,7 +790,6 @@ ${newStatus}
 ${statusExplanation}
 
 Campus Address: ${GNI_OFFICIAL_ADDRESS}
-Admissions Email: ${GNI_OFFICIAL_EMAIL}
 Official Portal: ${GNI_OFFICIAL_URL}`;
 
   return {
@@ -867,7 +864,7 @@ export function generateCourseUpdateEmail(data, updateNotice) {
     </div>
 
     <p style="font-size: 13px; line-height: 1.55; color: #6B4030; margin: 0 0 16px;">
-      If you require assistance or scheduling accommodations, please reply to this email or reach us at <a href="mailto:${GNI_OFFICIAL_EMAIL}" style="color: #4A2C20; font-weight: 700;">${GNI_OFFICIAL_EMAIL}</a>.
+      If you require assistance or scheduling accommodations, please reply directly to this email or visit our official portal.
     </p>
 
     <div style="font-size: 14px; line-height: 1.5; color: #4A2C20; margin-top: 18px;">
@@ -901,7 +898,6 @@ ${updateNotice}
 Studio Location:
 ${GNI_OFFICIAL_ADDRESS}
 
-Admissions Email: ${GNI_OFFICIAL_EMAIL}
 Official Portal: ${GNI_OFFICIAL_URL}`;
 
   return {

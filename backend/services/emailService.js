@@ -65,7 +65,7 @@ function getTransporter() {
  * Formats sender address with institutional display name
  */
 function getFromAddress(displayName = 'Global Nagas Institute') {
-  const smtpUser = process.env.SMTP_USER || 'admissions@globalnagas.org';
+  const smtpUser = process.env.SMTP_USER || 'info@globalnagasinstitute.com';
   if (process.env.SMTP_FROM && process.env.SMTP_FROM.includes('<')) {
     return process.env.SMTP_FROM;
   }

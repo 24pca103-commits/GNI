@@ -138,7 +138,7 @@ export function getAdminEmails() {
 
   // 1. Explicit admin mail id specified for GNI administration
   emails.add('kan93095@gmail.com');
-  emails.add('admin@globalnagas.org');
+  emails.add('info@globalnagasinstitute.com');
   emails.add('24pca103@anjaconline.org');
 
   // 2. From environment variables
