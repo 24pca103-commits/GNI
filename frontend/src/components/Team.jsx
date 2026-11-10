@@ -16,7 +16,7 @@ export default function Team() {
     {
       name: 'Mr. Ramesh',
       designation: 'Director | Heritage Design & Creative Applications',
-      image: '',
+      image: '/artisan/team/ramesh.png',
       description:
         'Bridges traditional heritage motifs with contemporary bridal fashion, customized textiles, jewellery, and luxury interiors.',
       specialty: 'Heritage Design & Creative Applications',
@@ -24,7 +24,7 @@ export default function Team() {
     {
       name: 'Mr. Arun Raja Mohan',
       designation: 'Director | Epigraphy & Heritage Research',
-      image: '',
+      image: '/artisan/team/arun-raja.png',
       description:
         'Yaakkai Heritage Trust researcher with 8+ years of experience documenting Tamil inscriptions, Tamil-Brahmi (Tamili), and Vattezhuthu scripts.',
       specialty: 'Epigraphy & Heritage Research',
@@ -83,10 +83,19 @@ export default function Team() {
           {teamMembers.map((member, idx) => (
             <Reveal key={idx} direction="up" delay={idx * 100}>
               <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col group h-full">
-                {/* Empty Profile Placeholder Avatar */}
+                {/* Profile Photo / Avatar */}
                 <div className="relative pt-6 pb-3.5 px-4 bg-[#F7F2E8] border-b border-[#6B4030]/15 flex flex-col items-center justify-center text-center">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#4A2C20] border-2 border-[#B89555]/50 flex items-center justify-center shadow-md group-hover:scale-105 group-hover:border-[#B89555] transition-all duration-300">
-                    <Users className="w-7 h-7 sm:w-8 sm:h-8 text-[#B89555]" />
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#4A2C20] border-2 border-[#B89555]/50 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 group-hover:border-[#B89555] transition-all duration-300">
+                    {member.image ? (
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover object-top"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <Users className="w-8 h-8 sm:w-9 sm:h-9 text-[#B89555]" />
+                    )}
                   </div>
 
                   {/* Specialty Tag */}
