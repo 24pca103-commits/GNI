@@ -174,7 +174,6 @@ function validate(s, bookedSeats) {
       e[`durations.${i}.days`] = `Days must be between ${r.min} and ${r.max}.`;
     }
 
-    checkText(e, `durations.${i}.label`, o.label, LIMITS.durationLabel, 'Label', false);
     const offer = Number(o.fee);
     const regular = Number(o.original_price);
     if (!offer || offer <= 0) {
@@ -282,11 +281,10 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
         </p>
       </div>
 
-      <div className="hidden grid-cols-[88px_1fr_120px_120px_88px] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
+      <div className="hidden grid-cols-[100px_1fr_1fr_88px] gap-3 px-3 text-xs font-semibold text-[#6B4030] md:grid">
         <span>Days <span className="text-red-600">*</span></span>
-        <span>Label (optional)</span>
-        <span>Offer fee ₹</span>
-        <span>Regular fee ₹</span>
+        <span>Offer fee ₹ <span className="text-red-600">*</span></span>
+        <span>Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span></span>
         <span />
       </div>
 
@@ -345,11 +343,11 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
         const effectiveDaysError = liveDaysError || cellErr(i, 'days');
         const effectiveFeeError = liveFeeError || cellErr(i, 'fee');
         const effectiveRegError = liveRegError || cellErr(i, 'original_price');
-        const rowErrors = [effectiveDaysError, cellErr(i, 'label'), effectiveFeeError, effectiveRegError].filter(Boolean);
+        const rowErrors = [effectiveDaysError, effectiveFeeError, effectiveRegError].filter(Boolean);
 
         return (
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-[88px_1fr_120px_120px_88px] md:items-center">
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-[100px_1fr_1fr_88px] md:items-center">
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">
                   Days <span className="text-red-600">*</span>
@@ -371,19 +369,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Label (optional)</span>
-                <input
-                  type="text"
-                  value={o.label}
-                  maxLength={LIMITS.durationLabel.max}
-                  onChange={(e) => onChange(i, 'label', e.target.value)}
-                  placeholder="e.g. Intensive"
-                  aria-label={`Option ${i + 1} label`}
-                  className={inputClass(cellErr(i, 'label'))}
-                />
-              </label>
-              <label className="space-y-1 md:space-y-0">
-                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Offer fee ₹</span>
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Offer fee ₹ <span className="text-red-600">*</span></span>
                 <input
                   type="text"
                   inputMode="numeric"
