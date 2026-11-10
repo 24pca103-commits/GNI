@@ -4,6 +4,8 @@ import {
   Award,
   BookOpen,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Compass,
   Eye,
   EyeOff,
@@ -344,36 +346,41 @@ function DurationRoadmapEditor({
   onMovePhase,
   onSpreadDays,
 }) {
-  const [open, setOpen] = useState(true);
-  const lastEnd = phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
   const durErr = err(`durations.${durationIndex}.phases`);
+  const anyPhaseError = phases.some((_, pIdx) => {
+    const pKey = `durations.${durationIndex}.phases.${pIdx}`;
+    return err(`${pKey}.days`) || err(`${pKey}.title`) || err(`${pKey}.details`) || err(`${pKey}.outcome`) || err(`${pKey}.materials`);
+  });
+  const [open, setOpen] = useState(Boolean(durErr || anyPhaseError || durationIndex === 0));
+  const lastEnd = phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
 
   return (
     <div className="mt-2.5 border-t border-[#6B4030]/15 pt-2">
-      <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 bg-[#FAF7F0] px-2.5 py-1.5 rounded-lg border border-[#6B4030]/12">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FAF7F0] hover:bg-[#F3EBDD] px-3 py-2 rounded-xl border border-[#6B4030]/15 transition-colors">
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4A2C20] hover:text-[#B89555] cursor-pointer"
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#4A2C20] cursor-pointer"
         >
-          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold shrink-0">
             {phases.length}
           </span>
-          <span className="font-['Cormorant_Garamond'] text-sm font-bold text-[#241A16]">
-            Roadmap Phases ({days} Days Cohort)
+          <span className="font-['Cormorant_Garamond'] text-base font-bold text-[#241A16]">
+            Roadmap Phases ({days ? `${days} Days Cohort` : 'Set Days'})
           </span>
-          <span className="text-[10px] text-[#6B4030]/70 font-normal">
-            ({open ? '▲ Collapse' : '▼ Expand'})
+          <span className="inline-flex items-center gap-1 rounded-md bg-[#6B4030]/10 px-2 py-0.5 text-[11px] font-semibold text-[#4A2C20]">
+            {open ? 'Hide Phases' : 'Dropdown: View / Edit Phases'}
+            {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </span>
         </button>
 
-        <div className="flex items-center gap-2.5 text-xs">
+        <div className="flex items-center gap-2.5 text-xs ml-auto">
           <span className={`tabular-nums text-[11px] font-semibold ${lastEnd >= days && days > 0 ? 'text-emerald-700' : 'text-[#B89555]'}`}>
-            {Math.min(lastEnd, days)}/{days}d planned
+            {Math.min(lastEnd, days)}/{days || 0}d planned
             {days > 0 && lastEnd < days && ` (Missing ${days - lastEnd}d)`}
             {days > 0 && lastEnd >= days && ' ✓'}
           </span>
-          {phases.length > 1 && days > 0 && (
+          {open && phases.length > 1 && days > 0 && (
             <button
               type="button"
               onClick={onSpreadDays}
@@ -540,9 +547,11 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
         </p>
       </div>
 
-      <div className="hidden grid-cols-[80px_80px_120px_120px_auto] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
+      <div className="hidden grid-cols-[78px_82px_60px_65px_105px_105px_auto] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
         <span>Days <span className="text-red-600">*</span></span>
-        <span>Seats <span className="text-red-600">*</span></span>
+        <span>Total seats <span className="text-red-600">*</span></span>
+        <span>Booked</span>
+        <span>Seats left</span>
         <span>Offer fee ₹ <span className="text-red-600">*</span></span>
         <span>Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span></span>
         <span />
@@ -614,6 +623,9 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
           liveSeatsError = 'Seats is required.';
         }
 
+        const optBooked = i === 0 ? Number(bookedSeats) || 0 : 0;
+        const optLeft = Math.max(0, (Number(o.seats_total) || 0) - optBooked);
+
         const effectiveDaysError = liveDaysError || cellErr(i, 'days');
         const effectiveSeatsError = liveSeatsError || cellErr(i, 'seats_total');
         const effectiveFeeError = liveFeeError || cellErr(i, 'fee');
@@ -622,7 +634,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
 
         return (
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-[80px_80px_120px_120px_auto] md:items-center">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-[78px_82px_60px_65px_105px_105px_auto] md:items-center">
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">
                   Days <span className="text-red-600">*</span>
@@ -645,7 +657,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
               </label>
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">
-                  Seats <span className="text-red-600">*</span>
+                  Total seats <span className="text-red-600">*</span>
                 </span>
                 <input
                   type="text"
@@ -659,10 +671,30 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                     onChange(i, 'seats_total', val === '' ? '' : Number(val));
                   }}
                   placeholder="35"
-                  aria-label={`Option ${i + 1} seats (1–${MAX_SEATS})`}
+                  aria-label={`Option ${i + 1} total seats (1–${MAX_SEATS})`}
                   className={inputClass(effectiveSeatsError, 'w-full md:w-20 tabular-nums font-semibold')}
                 />
               </label>
+              <div className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Booked</span>
+                <div
+                  className="flex h-9 w-full md:w-15 items-center justify-center rounded-xl border border-[#6B4030]/15 bg-[#FAF7F0] px-1 text-xs font-bold tabular-nums text-[#4A2C20]"
+                  title="Enrolled & confirmed students"
+                >
+                  {optBooked}
+                </div>
+              </div>
+              <div className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">Seats left</span>
+                <div
+                  className={`flex h-9 w-full md:w-16 items-center justify-center rounded-xl border px-1 text-xs font-bold tabular-nums ${
+                    optLeft > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-600'
+                  }`}
+                  title="Remaining seats for enrollment"
+                >
+                  {optLeft}
+                </div>
+              </div>
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">Offer fee ₹ <span className="text-red-600">*</span></span>
                 <input
@@ -677,7 +709,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="5499"
                   aria-label={`Option ${i + 1} offer fee`}
-                  className={inputClass(effectiveFeeError, 'w-full md:w-28 tabular-nums font-semibold')}
+                  className={inputClass(effectiveFeeError, 'w-full md:w-26 tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -694,10 +726,10 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="optional"
                   aria-label={`Option ${i + 1} regular fee`}
-                  className={inputClass(effectiveRegError, 'w-full md:w-28 tabular-nums')}
+                  className={inputClass(effectiveRegError, 'w-full md:w-26 tabular-nums')}
                 />
               </label>
-              <div className="col-span-2 flex items-center justify-start gap-1 sm:col-span-4 md:col-span-1">
+              <div className="col-span-2 flex items-center justify-start gap-1 sm:col-span-3 md:col-span-1">
                 <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
                 <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
                 <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
@@ -708,7 +740,7 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[#6B4030]">
               {i === 0 && <span className="rounded bg-[#4A2C20] px-1.5 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN</span>}
               <span className="font-medium">{Number.isInteger(days) && days > 0 ? buildDuration(days, o.label || '') : 'Set the days'}</span>
-              {Number(o.seats_total) > 0 && <span className="font-medium text-[#6B4030]">· {o.seats_total} Seats</span>}
+              <span className="font-medium text-[#6B4030]">· Total seats: <strong>{o.seats_total || 0}</strong> ({optBooked} booked, {optLeft} left)</span>
               {fee > 0 && <span className="font-semibold text-[#241A16]">· ₹{fee.toLocaleString('en-IN')}</span>}
               {save > 0 && (
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
@@ -1363,29 +1395,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                   onMove={(i, dir) => moveItem('durations', i, dir)}
                 />
 
-                <div className="grid gap-3 sm:grid-cols-3 pt-1">
-                  <div className="rounded-xl border border-[#6B4030]/12 bg-white/70 p-3">
-                    <span className="block text-xs font-semibold text-[#6B4030]">Main Batch Seats</span>
-                    <div className="mt-1 text-lg font-bold tabular-nums text-[#241A16]">
-                      {Number(state.durations?.[0]?.seats_total || state.seats_total) || 0}
-                    </div>
-                    <p className="mt-0.5 text-[11px] text-[#6B4030]/70">Configured in Duration option 1 above.</p>
-                  </div>
-                  <div className="rounded-xl border border-[#6B4030]/12 bg-white/70 p-3">
-                    <span className="block text-xs font-semibold text-[#6B4030]">Booked</span>
-                    <div className="mt-1 text-lg font-bold tabular-nums text-[#4A2C20]">
-                      {bookedSeats}
-                    </div>
-                    <p className="mt-0.5 text-[11px] text-[#6B4030]/70">Approved & confirmed students.</p>
-                  </div>
-                  <div className="rounded-xl border border-[#6B4030]/12 bg-white/70 p-3">
-                    <span className="block text-xs font-semibold text-[#6B4030]">Seats Left</span>
-                    <div className="mt-1 text-lg font-bold tabular-nums text-emerald-700">
-                      {Math.max(0, (Number(state.durations?.[0]?.seats_total || state.seats_total) || 0) - bookedSeats)}
-                    </div>
-                    <p className="mt-0.5 text-[11px] text-[#6B4030]/70">Remaining capacity for enrollment.</p>
-                  </div>
-                </div>
+
               </Section>
 
               {/* 3. Image */}
