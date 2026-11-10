@@ -13,7 +13,7 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-5 py-5">
-        <img src="/artisan/logo.png" alt="" className="h-10 w-10 rounded-xl bg-[#F7F2E8] object-contain p-1" />
+        <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-10 w-auto object-contain shrink-0" />
         <div className="min-w-0">
           <p className="truncate font-['Cormorant_Garamond'] text-lg font-bold leading-tight text-white">Global Nagas Institute</p>
           <p className="text-xs text-[#E5B869]">Admin</p>
@@ -95,16 +95,16 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#6B4030]/15 bg-[#241A16] px-4 py-3 lg:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#6B4030]/15 bg-[#F7F2E8] px-4 py-2.5 lg:hidden shadow-2xs">
         <div className="flex items-center gap-2.5">
-          <img src="/artisan/logo.png" alt="" className="h-8 w-8 rounded-lg bg-[#F7F2E8] object-contain p-0.5" />
-          <span className="font-['Cormorant_Garamond'] text-lg font-bold text-white">GNI Admin</span>
+          <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-9 sm:h-10 w-auto object-contain shrink-0" />
+          <span className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold tracking-tight text-[#4A2C20] truncate">Global Nagas Institute</span>
         </div>
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
           aria-label="Open menu"
-          className="rounded-lg p-2 text-[#F7F2E8] hover:bg-white/10 cursor-pointer"
+          className="rounded-lg p-2 text-[#4A2C20] hover:bg-[#4A2C20]/10 cursor-pointer shrink-0"
         >
           <Menu className="h-5 w-5" />
         </button>
