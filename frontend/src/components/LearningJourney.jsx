@@ -289,6 +289,10 @@ export function JourneyDetail({ course, preview = false }) {
     duration: `${activeDays} Days`,
     discount_price: activeFee,
     original_price: activeOriginal,
+    ...(activeDuration?.seats_total ? {
+      seats_total: Number(activeDuration.seats_total),
+      seats_available: Math.max(0, Number(activeDuration.seats_total) - (Number(course.booked_seats) || 0)),
+    } : {}),
   };
 
   return (
@@ -336,7 +340,7 @@ export function JourneyDetail({ course, preview = false }) {
                     : 'text-[#6B4030] hover:text-[#241A16]'
                 }`}
               >
-                {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}
+                {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}{d.seats_total ? ` · ${d.seats_total} Seats` : ''}
               </button>
             ))}
           </div>
