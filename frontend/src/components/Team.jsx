@@ -84,8 +84,8 @@ export default function Team() {
             <Reveal key={idx} direction="up" delay={idx * 100}>
               <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#6B4030]/15 shadow-sm hover:shadow-xl hover:border-[#B89555]/50 transition-all duration-300 flex flex-col group h-full">
                 {/* Profile Photo / Avatar */}
-                <div className="relative pt-6 pb-3.5 px-4 bg-[#F7F2E8] border-b border-[#6B4030]/15 flex flex-col items-center justify-center text-center">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#4A2C20] border-2 border-[#B89555]/50 overflow-hidden flex items-center justify-center shadow-md group-hover:scale-105 group-hover:border-[#B89555] transition-all duration-300">
+                <div className="relative pt-8 pb-5 px-4 bg-[#F7F2E8] border-b border-[#6B4030]/15 flex flex-col items-center justify-center text-center">
+                  <div className="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full bg-[#4A2C20] border-[3px] border-[#B89555]/80 ring-4 ring-[#B89555]/20 overflow-hidden flex items-center justify-center shadow-xl group-hover:scale-105 group-hover:border-[#B89555] transition-all duration-300">
                     {member.image ? (
                       <img
                         src={member.image}
@@ -94,13 +94,13 @@ export default function Team() {
                         loading="lazy"
                       />
                     ) : (
-                      <Users className="w-8 h-8 sm:w-9 sm:h-9 text-[#B89555]" />
+                      <Users className="w-12 h-12 sm:w-14 sm:h-14 text-[#B89555]" />
                     )}
                   </div>
 
                   {/* Specialty Tag */}
-                  <div className="mt-2.5">
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-['DM_Sans'] font-semibold bg-[#4A2C20] text-[#B89555] border border-[#B89555]/30 shadow-xs">
+                  <div className="mt-3.5">
+                    <span className="inline-block px-3.5 py-1 rounded-full text-[11px] sm:text-xs font-['DM_Sans'] font-semibold bg-[#4A2C20] text-[#B89555] border border-[#B89555]/30 shadow-xs">
                       {member.specialty}
                     </span>
                   </div>
