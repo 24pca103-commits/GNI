@@ -179,8 +179,13 @@ function validate(s, bookedSeats) {
     const regular = Number(o.original_price);
     if (!offer || offer <= 0) e[`durations.${i}.fee`] = 'Enter the fee students pay.';
     else if (offer > MAX_PRICE) e[`durations.${i}.fee`] = `Max ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
-    if (o.original_price !== '' && (regular < offer || regular > MAX_PRICE))
-      e[`durations.${i}.original_price`] = 'Must be equal to or above the offer fee.';
+    if (o.original_price !== '') {
+      if (regular < offer) {
+        e[`durations.${i}.original_price`] = 'Must be equal to or above the offer fee.';
+      } else if (regular > MAX_PRICE) {
+        e[`durations.${i}.original_price`] = `Max ₹${MAX_PRICE.toLocaleString('en-IN')}.`;
+      }
+    }
     const key = Number.isInteger(d) ? buildDuration(d, o.label || '').toLowerCase() : '';
     if (key && seen.has(key)) e[`durations.${i}.days`] = 'This duration is already listed.';
     if (key) seen.add(key);

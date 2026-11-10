@@ -24,7 +24,7 @@ export const LIMITS = {
 
 export const MAX_MODULES = 12;
 export const MAX_PHASES = 10;
-export const MAX_PRICE = 500000;
+export const MAX_PRICE = 2000000;
 export const MAX_SEATS = 500;
 
 export const DAY_RANGE = {
