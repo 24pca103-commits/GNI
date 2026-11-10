@@ -108,13 +108,14 @@ function phasesFromRaw(rawPhases) {
   });
 }
 
-const blankOption = (days = '', kind = 'journey') => {
+const blankOption = (days = '', kind = 'journey', defaultSeats = 35) => {
   const d = Number(days);
   return {
     days,
     label: '',
     fee: '',
     original_price: '',
+    seats_total: defaultSeats || 35,
     phases: kind === 'journey' && d >= 10 ? [{ start: 1, end: d, title: '', details: '', outcome: '', materials: '' }] : [],
   };
 };
@@ -122,6 +123,7 @@ const blankOption = (days = '', kind = 'journey') => {
 /** Duration options from the API, or built from an older offering's single duration and prices. */
 function durationsFromCourse(course, kind) {
   const globalPhases = course && kind === 'journey' ? phasesFromCourse(course, getDayCount(course.duration)) : [];
+  const defaultSeats = course ? Number(course.seats_total) || 50 : 35;
   if (Array.isArray(course?.durations) && course.durations.length) {
     return course.durations.map((o, idx) => {
       const dDays = Number(o.days) || '';
@@ -138,11 +140,12 @@ function durationsFromCourse(course, kind) {
         label: o.label || '',
         fee: Number(o.fee) || '',
         original_price: Number(o.original_price) > Number(o.fee) ? Number(o.original_price) : '',
+        seats_total: o.seats_total !== undefined && o.seats_total !== '' ? Number(o.seats_total) : defaultSeats,
         phases: dPhases,
       };
     });
   }
-  if (!course) return [blankOption(kind === 'workshop' ? 1 : 30, kind)];
+  if (!course) return [blankOption(kind === 'workshop' ? 1 : 30, kind, defaultSeats)];
   const { days, label } = splitDuration(course.duration);
   const fee = Number(course.discount_price) || '';
   const regular = Number(course.original_price);
@@ -151,6 +154,7 @@ function durationsFromCourse(course, kind) {
     label,
     fee,
     original_price: regular > fee ? regular : '',
+    seats_total: defaultSeats,
     phases: globalPhases.length ? globalPhases : (kind === 'journey' && days ? [{ start: 1, end: days, title: '', details: '', outcome: '', materials: '' }] : []),
   }];
 }
@@ -159,15 +163,17 @@ function initialState(course, type) {
   const kind = course ? getOfferingKind(course) : type;
   const details = parseDetails(course?.details);
   const modules = course && kind === 'workshop' ? parseWorkshopModules(course.highlights) : [];
+  const durs = durationsFromCourse(course, kind);
+  const initSeats = course ? (Number(course.seats_total) || durs[0]?.seats_total || '') : (durs[0]?.seats_total || 35);
   return {
     type: kind,
     title: course?.title || '',
     badge: course?.badge || '',
     pillar_id: course?.pillar_id !== undefined && course?.pillar_id !== null ? String(Number(course.pillar_id) === 0 ? 'all' : course.pillar_id) : '',
     description: course?.description || '',
-    durations: durationsFromCourse(course, kind),
+    durations: durs,
     mode: course?.mode || '',
-    seats_total: course ? Number(course.seats_total) || '' : '',
+    seats_total: initSeats,
     image_url: course?.image_url || '',
     is_active: course ? (Number(course.is_active) ? 1 : 0) : 1,
     modules: modules.length ? modules : [{ day: '', title: '', desc: '' }],
@@ -240,9 +246,18 @@ function validate(s, bookedSeats) {
     if (key) seen.add(key);
   });
 
-  const seats = Number(s.seats_total);
-  if (!Number.isInteger(seats) || seats < 1 || seats > MAX_SEATS) e.seats_total = `Enter total seats between 1 and ${MAX_SEATS}.`;
-  else if (seats < bookedSeats) e.seats_total = `Cannot be lower than the ${bookedSeats} seats already booked.`;
+  s.durations.forEach((o, i) => {
+    const optSeats = Number(o.seats_total);
+    if (!Number.isInteger(optSeats) || optSeats < 1 || optSeats > MAX_SEATS) {
+      e[`durations.${i}.seats_total`] = `Seats must be between 1 and ${MAX_SEATS}.`;
+    } else if (i === 0 && optSeats < bookedSeats) {
+      e[`durations.${i}.seats_total`] = `Cannot be lower than ${bookedSeats} booked seats.`;
+    }
+  });
+
+  const mainSeats = Number(s.durations?.[0]?.seats_total || s.seats_total);
+  if (!Number.isInteger(mainSeats) || mainSeats < 1 || mainSeats > MAX_SEATS) e.seats_total = `Enter total seats between 1 and ${MAX_SEATS}.`;
+  else if (mainSeats < bookedSeats) e.seats_total = `Cannot be lower than the ${bookedSeats} seats already booked.`;
 
   if (s.type === 'workshop') {
     const filled = s.modules.filter((m) => len(m.title) || len(m.desc) || len(m.day));
@@ -509,7 +524,7 @@ function DurationRoadmapEditor({
  * Duration options table: each row is a duration students can pick on the Register page,
  * with its own fee. Row 1 is the main option (sets the type and the price on the website).
  */
-function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove }) {
+function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd, onRemove, onMove }) {
   const range = DAY_RANGE[type];
   const cellErr = (i, key) => err(`durations.${i}.${key}`);
   return (
@@ -525,8 +540,9 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
         </p>
       </div>
 
-      <div className="hidden grid-cols-[90px_130px_130px_auto] gap-2.5 px-3 text-xs font-semibold text-[#6B4030] md:grid">
+      <div className="hidden grid-cols-[80px_80px_120px_120px_auto] gap-2 px-3 text-xs font-semibold text-[#6B4030] md:grid">
         <span>Days <span className="text-red-600">*</span></span>
+        <span>Seats <span className="text-red-600">*</span></span>
         <span>Offer fee ₹ <span className="text-red-600">*</span></span>
         <span>Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span></span>
         <span />
@@ -584,14 +600,29 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
           }
         }
 
+        // Immediate live error validation for seats
+        const rawSeatsStr = String(o.seats_total ?? '').trim();
+        let liveSeatsError = '';
+        if (rawSeatsStr !== '') {
+          const st = Number(rawSeatsStr);
+          if (st < 1 || st > MAX_SEATS) {
+            liveSeatsError = `Seats must be between 1 and ${MAX_SEATS}.`;
+          } else if (i === 0 && st < bookedSeats) {
+            liveSeatsError = `Cannot be lower than ${bookedSeats} booked seats.`;
+          }
+        } else {
+          liveSeatsError = 'Seats is required.';
+        }
+
         const effectiveDaysError = liveDaysError || cellErr(i, 'days');
+        const effectiveSeatsError = liveSeatsError || cellErr(i, 'seats_total');
         const effectiveFeeError = liveFeeError || cellErr(i, 'fee');
         const effectiveRegError = liveRegError || cellErr(i, 'original_price');
-        const rowErrors = [effectiveDaysError, effectiveFeeError, effectiveRegError].filter(Boolean);
+        const rowErrors = [effectiveDaysError, effectiveSeatsError, effectiveFeeError, effectiveRegError].filter(Boolean);
 
         return (
           <div key={i} className={`rounded-xl border p-3 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-[90px_130px_130px_auto] md:items-center">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-[80px_80px_120px_120px_auto] md:items-center">
               <label className="space-y-1 md:space-y-0">
                 <span className="text-xs font-medium text-[#6B4030] md:sr-only">
                   Days <span className="text-red-600">*</span>
@@ -610,6 +641,26 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   placeholder={type === 'workshop' ? '1–9' : '10+'}
                   aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
                   className={inputClass(effectiveDaysError, 'w-full md:w-20 tabular-nums font-semibold')}
+                />
+              </label>
+              <label className="space-y-1 md:space-y-0">
+                <span className="text-xs font-medium text-[#6B4030] md:sr-only">
+                  Seats <span className="text-red-600">*</span>
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  required
+                  value={o.seats_total ?? ''}
+                  onKeyDown={handleOnlyNumericKeyDown}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    onChange(i, 'seats_total', val === '' ? '' : Number(val));
+                  }}
+                  placeholder="35"
+                  aria-label={`Option ${i + 1} seats (1–${MAX_SEATS})`}
+                  className={inputClass(effectiveSeatsError, 'w-full md:w-20 tabular-nums font-semibold')}
                 />
               </label>
               <label className="space-y-1 md:space-y-0">
@@ -646,7 +697,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
                   className={inputClass(effectiveRegError, 'w-full md:w-28 tabular-nums')}
                 />
               </label>
-              <div className="col-span-2 flex items-center justify-start gap-1">
+              <div className="col-span-2 flex items-center justify-start gap-1 sm:col-span-4 md:col-span-1">
                 <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
                 <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
                 <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
@@ -657,6 +708,7 @@ function DurationOptions({ options, type, err, onChange, onAdd, onRemove, onMove
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[#6B4030]">
               {i === 0 && <span className="rounded bg-[#4A2C20] px-1.5 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN</span>}
               <span className="font-medium">{Number.isInteger(days) && days > 0 ? buildDuration(days, o.label || '') : 'Set the days'}</span>
+              {Number(o.seats_total) > 0 && <span className="font-medium text-[#6B4030]">· {o.seats_total} Seats</span>}
               {fee > 0 && <span className="font-semibold text-[#241A16]">· ₹{fee.toLocaleString('en-IN')}</span>}
               {save > 0 && (
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
@@ -839,6 +891,7 @@ function buildPayload(state, pillars, bookedSeats) {
       label: String(o.label || '').trim(),
       fee: Number(o.fee),
       original_price: Number(o.original_price) || Number(o.fee),
+      seats_total: Number(o.seats_total) || 50,
       phases: (o.phases || []).filter((p) => len(p.title)).map((p) => ({
         period: dayLabel(Number(p.start), Number(p.end)),
         title: p.title.trim(),
@@ -1297,43 +1350,40 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                 <DurationOptions
                   options={state.durations}
                   type={state.type}
+                  bookedSeats={bookedSeats}
                   err={err}
-                  onChange={(i, key, value) => setItem('durations', i, key, value)}
-                  onAdd={() => set('durations', [...state.durations, blankOption('', state.type)])}
+                  onChange={(i, key, value) => {
+                    setItem('durations', i, key, value);
+                    if (i === 0 && key === 'seats_total') {
+                      set('seats_total', value);
+                    }
+                  }}
+                  onAdd={() => set('durations', [...state.durations, blankOption('', state.type, 35)])}
                   onRemove={(i) => removeItem('durations', i)}
                   onMove={(i, dir) => moveItem('durations', i, dir)}
                 />
 
-                <div className="grid gap-5 sm:grid-cols-3">
-                  <Field label="Total seats" required htmlFor="oe-seats" error={err('seats_total')} hint={`1–${MAX_SEATS} per batch.`}>
-                    <input
-                      id="oe-seats"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={state.seats_total ?? ''}
-                      onKeyDown={handleOnlyNumericKeyDown}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        set('seats_total', val);
-                      }}
-                      placeholder="35"
-                      className={inputClass(err('seats_total'), 'tabular-nums')}
-                    />
-                  </Field>
-                  <div className="space-y-1.5">
-                    <span className="text-[13px] font-semibold text-[#241A16]">Booked</span>
-                    <div className="rounded-xl border border-[#6B4030]/10 bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-semibold tabular-nums text-[#4A2C20]">
+                <div className="grid gap-3 sm:grid-cols-3 pt-1">
+                  <div className="rounded-xl border border-[#6B4030]/12 bg-white/70 p-3">
+                    <span className="block text-xs font-semibold text-[#6B4030]">Main Batch Seats</span>
+                    <div className="mt-1 text-lg font-bold tabular-nums text-[#241A16]">
+                      {Number(state.durations?.[0]?.seats_total || state.seats_total) || 0}
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-[#6B4030]/70">Configured in Duration option 1 above.</p>
+                  </div>
+                  <div className="rounded-xl border border-[#6B4030]/12 bg-white/70 p-3">
+                    <span className="block text-xs font-semibold text-[#6B4030]">Booked</span>
+                    <div className="mt-1 text-lg font-bold tabular-nums text-[#4A2C20]">
                       {bookedSeats}
                     </div>
-                    <p className="text-xs text-[#6B4030]/80">Approved, confirmed and completed students.</p>
+                    <p className="mt-0.5 text-[11px] text-[#6B4030]/70">Approved & confirmed students.</p>
                   </div>
-                  <div className="space-y-1.5">
-                    <span className="text-[13px] font-semibold text-[#241A16]">Seats left</span>
-                    <div className="rounded-xl border border-[#6B4030]/10 bg-[#FAF7F0] px-3.5 py-2.5 text-sm font-semibold tabular-nums text-[#4A2C20]">
-                      {Math.max(0, seatsTotal - bookedSeats)}
+                  <div className="rounded-xl border border-[#6B4030]/12 bg-white/70 p-3">
+                    <span className="block text-xs font-semibold text-[#6B4030]">Seats Left</span>
+                    <div className="mt-1 text-lg font-bold tabular-nums text-emerald-700">
+                      {Math.max(0, (Number(state.durations?.[0]?.seats_total || state.seats_total) || 0) - bookedSeats)}
                     </div>
-                    <p className="text-xs text-[#6B4030]/80">Total − booked.</p>
+                    <p className="mt-0.5 text-[11px] text-[#6B4030]/70">Remaining capacity for enrollment.</p>
                   </div>
                 </div>
               </Section>

@@ -50,11 +50,13 @@ export function parseDurations(raw, course = {}) {
     .map((o) => {
       const fee = toInt(o.fee);
       const original = toInt(o.original_price ?? o.originalPrice);
+      const seats = toInt(o.seats_total ?? o.seats);
       return {
         days: toInt(o.days),
         label: String(o.label || '').trim().slice(0, L.labelMax),
         fee,
         original_price: Number.isFinite(original) && original > fee ? original : fee,
+        ...(Number.isFinite(seats) && seats > 0 ? { seats_total: Math.min(seats, 500) } : {}),
         ...(Array.isArray(o.phases) ? { phases: o.phases } : {}),
       };
     })
@@ -107,7 +109,20 @@ export function validateDurations(raw, type) {
     const key = durationText({ days, label }).toLowerCase();
     if (seen.has(key)) return { error: `Duration option ${n} repeats "${durationText({ days, label })}".` };
     seen.add(key);
-    options.push({ days, label, fee, original_price: original, ...(Array.isArray(o.phases) ? { phases: o.phases } : {}) });
+    const seats = o.seats_total !== undefined && o.seats_total !== '' && o.seats_total !== null
+      ? toInt(o.seats_total)
+      : (o.seats !== undefined && o.seats !== '' && o.seats !== null ? toInt(o.seats) : null);
+    if (seats !== null && (!Number.isFinite(seats) || seats < 1 || seats > 500)) {
+      return { error: `Duration option ${n}: seats must be between 1 and 500.` };
+    }
+    options.push({
+      days,
+      label,
+      fee,
+      original_price: original,
+      ...(seats !== null ? { seats_total: seats } : {}),
+      ...(Array.isArray(o.phases) ? { phases: o.phases } : {}),
+    });
   }
 
   const main = options[0].days;
@@ -126,6 +141,7 @@ export function mainOptionColumns(options) {
     discount_price: main.fee,
     original_price: main.original_price,
     discount_percent: discountPercent,
+    ...(main.seats_total ? { seats_total: main.seats_total } : {}),
   };
 }
 
