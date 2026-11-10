@@ -87,18 +87,48 @@ export function isJourneyOffering(item) {
 }
 
 /**
+ * Detects if a course offering is common / merged across all heritage pillars.
+ */
+export function isCommonPillarOffering(course, activeCourses = []) {
+  if (!course) return false;
+  const directId = course.pillarId !== undefined && course.pillarId !== null ? course.pillarId : course.pillar_id;
+  if (directId === 'all' || directId === 0 || directId === '0') return true;
+
+  const directTitle = String(course.pillar_title || course.pillarTitle || '').trim().toLowerCase();
+  if (directTitle.includes('all heritage') || directTitle.includes('all pillars') || directTitle.includes('common')) return true;
+
+  const cTitle = String(course.courseName || course.title || '').trim().toLowerCase();
+  const seat = (activeCourses || []).find((ac) => {
+    if (!ac) return false;
+    const acTitle = String(ac.title || ac.courseName || '').trim().toLowerCase();
+    return acTitle === cTitle || acTitle.includes(cTitle) || cTitle.includes(acTitle);
+  });
+  if (seat) {
+    if (seat.pillar_id === 'all' || seat.pillar_id === 0 || seat.pillar_id === '0') return true;
+    const seatPTitle = String(seat.pillar_title || '').trim().toLowerCase();
+    if (seatPTitle.includes('all heritage') || seatPTitle.includes('all pillars') || seatPTitle.includes('common')) return true;
+  }
+  return false;
+}
+
+/**
  * Resolves the Heritage Skill Pillar ID (1, 2, 3, or 4) for any course or offering.
  * Uses explicit metadata, active course mappings, pillar titles, and Shastric keyword inference.
  */
 export function resolveCoursePillarId(course, activeCourses = [], allPillars = DEFAULT_PILLARS) {
-  if (!course) return 1;
+  if (!course) return 'all';
+
+  // 0. Explicit 'all' / 0 check: if course merges across all pillars, return 'all'
+  if (isCommonPillarOffering(course, activeCourses)) {
+    return 'all';
+  }
 
   // 1. Direct pillarId or pillar_id property if matched to an actual pillar
   const directId = course.pillarId !== undefined && course.pillarId !== null
     ? course.pillarId
     : course.pillar_id;
 
-  if (directId && directId !== 'all') {
+  if (directId && directId !== 'all' && directId !== 0 && directId !== '0') {
     const matched = (allPillars || []).find(
       (p) => String(p.id) === String(directId) || String(p.number) === String(directId)
     );
@@ -468,11 +498,14 @@ export default function Register() {
   // Dynamic filtered courses based on selected Pillar and Program Category
   const filteredCourses = useMemo(() => {
     return coursesCatalog.filter((c) => {
-      // 1. Strict Pillar filter: only courses belonging to the selected pillar
+      // 1. Strict Pillar filter: only courses belonging to the selected pillar OR common to all pillars
       if (selectedPillarId !== 'all') {
-        const cPillarId = resolveCoursePillarId(c, activeCoursesWithSeats, allPillars);
-        if (String(cPillarId) !== String(selectedPillarId)) {
-          return false;
+        const isCommon = isCommonPillarOffering(c, activeCoursesWithSeats);
+        if (!isCommon) {
+          const cPillarId = resolveCoursePillarId(c, activeCoursesWithSeats, allPillars);
+          if (cPillarId !== 'all' && String(cPillarId) !== String(selectedPillarId)) {
+            return false;
+          }
         }
       }
       // 2. Category filter
@@ -560,8 +593,10 @@ export default function Register() {
     // Compute the courses that belong to the newly selected pillar
     const matchingCourses = coursesCatalog.filter((c) => {
       if (newPillarId === 'all') return true;
+      const isCommon = isCommonPillarOffering(c, activeCoursesWithSeats);
+      if (isCommon) return true;
       const pId = resolveCoursePillarId(c, activeCoursesWithSeats, allPillars);
-      return String(pId) === String(newPillarId);
+      return pId === 'all' || String(pId) === String(newPillarId);
     });
 
     // Check if the current course belongs to the new pillar

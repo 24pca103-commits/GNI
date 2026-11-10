@@ -26,8 +26,8 @@ const BASE_COURSES = [
     seats_total: 50,
     seats_available: 28,
     is_active: 1,
-    pillar_id: 4,
-    pillar_title: 'Heritage Applications & Interior Crafts',
+    pillar_id: 0,
+    pillar_title: 'All Heritage Pillars',
   },
   {
     id: 102,
@@ -70,8 +70,8 @@ const BASE_COURSES = [
     seats_total: 50,
     seats_available: 15,
     is_active: 1,
-    pillar_id: 1,
-    pillar_title: 'Painting & Natural Mineral Pigments',
+    pillar_id: 0,
+    pillar_title: 'All Heritage Pillars',
   },
   {
     id: 202,

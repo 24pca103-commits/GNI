@@ -12,8 +12,8 @@ export const GNI_COURSE_PRICING = [
   {
     id: 'ancient-tamil-art-heritage-workshop',
     courseName: 'Ancient Tamil Art & Heritage Experience Workshop',
-    pillarId: 4,
-    pillarTitle: 'Heritage Applications & Interior Crafts',
+    pillarId: 0,
+    pillarTitle: 'All Heritage Pillars',
     category: 'Workshop',
     description: 'A hands-on introduction to Tamil heritage, art, architectural woodwork, terracotta, and ancestral craftsmanship.',
     takeHome: 'Handmade terracotta craft artifact & authenticated GNI experience souvenir',
@@ -66,8 +66,8 @@ export const GNI_COURSE_PRICING = [
   {
     id: '60-day-heritage-creator-journey',
     courseName: '60-Day Heritage Creator Journey',
-    pillarId: 1,
-    pillarTitle: 'Painting & Natural Mineral Pigments',
+    pillarId: 0,
+    pillarTitle: 'All Heritage Pillars',
     category: 'Learning Journey',
     description: 'Comprehensive 6-tier curriculum covering traditional Dravidian arts, epigraphy, and Nakshi metal crafts.',
     takeHome: 'Full 6-phase master portfolio, engraved bronze inscription plate & guild tools kit',
