@@ -11,16 +11,18 @@ const NAV = [
 
 function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync, onLogout }) {
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-5 py-5">
+    <div className="flex h-full flex-col bg-white">
+      {/* Brand Header */}
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-[#6B4030]/10">
         <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-10 w-auto object-contain shrink-0" />
         <div className="min-w-0">
-          <p className="truncate font-['Cormorant_Garamond'] text-lg font-bold leading-tight text-white">Global Nagas Institute</p>
-          <p className="text-xs text-[#E5B869]">Admin</p>
+          <p className="truncate font-['Cormorant_Garamond'] text-lg font-bold leading-tight text-[#241A16]">Global Nagas Institute</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#B89555]">Admin</p>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-2" aria-label="Admin sections">
+      {/* Nav List */}
+      <nav className="flex-1 space-y-1.5 px-3 py-3" aria-label="Admin sections">
         {NAV.map((item) => {
           const isActive = active === item.id;
           const badge = badges[item.id];
@@ -30,17 +32,23 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
               type="button"
               onClick={() => onNavigate(item.id)}
               aria-current={isActive ? 'page' : undefined}
-              className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors cursor-pointer ${
-                isActive ? 'bg-white/12 text-white' : 'text-[#F7F2E8]/70 hover:bg-white/6 hover:text-white'
+              className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? 'bg-[#4A2C20] text-[#F7F2E8] shadow-sm'
+                  : 'text-[#6B4030] hover:bg-[#4A2C20]/8 hover:text-[#241A16]'
               }`}
             >
-              <item.icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#E5B869]' : ''}`} />
+              <item.icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#E5B869]' : 'text-[#6B4030]'}`} />
               <span className="flex-1">{item.label}</span>
               {badge?.count > 0 && (
                 <span
                   title={badge.title}
-                  className={`min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums ${
-                    badge.alert ? 'bg-[#B89555] text-[#241A16]' : 'bg-white/10 text-[#F7F2E8]/80'
+                  className={`min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs font-bold tabular-nums ${
+                    isActive
+                      ? 'bg-[#E5B869] text-[#241A16]'
+                      : badge.alert
+                      ? 'bg-[#B89555] text-white'
+                      : 'bg-[#6B4030]/12 text-[#4A2C20]'
                   }`}
                 >
                   {badge.count}
@@ -51,21 +59,22 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
         })}
       </nav>
 
-      <div className="space-y-1 border-t border-white/10 px-3 py-3">
+      {/* Bottom Footer Actions */}
+      <div className="space-y-1 border-t border-[#6B4030]/10 px-3 py-3 bg-[#FAF7F0]/50">
         <button
           type="button"
           onClick={onSync}
           disabled={syncing}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-[#F7F2E8]/70 hover:bg-white/6 hover:text-white cursor-pointer disabled:opacity-60"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-medium text-[#6B4030] hover:bg-[#4A2C20]/8 hover:text-[#241A16] cursor-pointer disabled:opacity-60 transition-colors"
         >
-          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin text-[#B89555]' : ''}`} />
           <span className="flex-1">{syncing ? 'Syncing…' : 'Sync now'}</span>
-          <span className="text-xs text-[#F7F2E8]/45">{lastSync}</span>
+          <span className="text-xs text-[#6B4030]/60">{lastSync}</span>
         </button>
         <Link
           to="/"
           target="_blank"
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#F7F2E8]/70 hover:bg-white/6 hover:text-white"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-[#6B4030] hover:bg-[#4A2C20]/8 hover:text-[#241A16] transition-colors"
         >
           <ExternalLink className="h-4 w-4" />
           View website
@@ -73,7 +82,7 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
         <button
           type="button"
           onClick={onLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-[#F7F2E8]/70 hover:bg-red-500/15 hover:text-red-200 cursor-pointer"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-medium text-[#6B4030] hover:bg-red-50 hover:text-red-700 cursor-pointer transition-colors"
         >
           <LogOut className="h-4 w-4" />
           Sign out
@@ -90,7 +99,7 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
   return (
     <div className="min-h-screen bg-[#F7F2E8] font-['DM_Sans'] text-[#241A16]">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 bg-[#241A16] lg:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-[#6B4030]/15 bg-white lg:block shadow-2xs">
         <SidebarContent {...shared} onNavigate={onNavigate} />
       </aside>
 
@@ -112,13 +121,13 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
-          <aside className="relative h-full w-72 max-w-[85vw] bg-[#241A16]">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-2xs" onClick={() => setMobileOpen(false)} />
+          <aside className="relative h-full w-72 max-w-[85vw] border-r border-[#6B4030]/15 bg-white shadow-xl">
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
               aria-label="Close menu"
-              className="absolute right-3 top-5 rounded-lg p-1.5 text-[#F7F2E8]/70 hover:bg-white/10 cursor-pointer"
+              className="absolute right-3 top-5 rounded-lg p-1.5 text-[#6B4030] hover:bg-[#4A2C20]/10 cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
