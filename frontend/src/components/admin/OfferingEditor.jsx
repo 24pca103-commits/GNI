@@ -450,14 +450,14 @@ function DurationRoadmapEditor({
                     />
                   </div>
 
-                  <div className="w-full sm:w-72 md:w-80">
+                  <div className="flex-1 min-w-[180px] max-w-md">
                     <input
                       type="text"
                       value={p.title}
                       maxLength={LIMITS.phaseTitle.max}
                       onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
                       placeholder="Phase Title (e.g. Tamili Brahmi & Epigraphy)*"
-                      className={inputClass(phaseTitleErr, 'w-full py-0.5 px-2 text-xs font-semibold')}
+                      className={inputClass(phaseTitleErr, 'w-full py-1 px-2.5 text-xs font-semibold')}
                     />
                   </div>
 
@@ -625,14 +625,15 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
         const rowErrors = [effectiveDaysError, effectiveSeatsError, effectiveFeeError, effectiveRegError].filter(Boolean);
 
         return (
-          <div key={i} className={`rounded-xl border p-3.5 ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
-            {/* Row 1: Days, Offer fee, Regular fee & Reorder/Remove */}
-            <div className="flex flex-wrap items-end gap-2.5">
-              <label className="space-y-1">
-                <span className="text-xs font-semibold text-[#6B4030]">
+          <div key={i} className={`rounded-2xl border p-4 shadow-2xs ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
+            {/* Row 1: Days, Fees & Action buttons with uniform top-aligned labels */}
+            <div className="flex flex-wrap items-end gap-3 sm:gap-4">
+              <div className="flex flex-col gap-1 w-24 shrink-0">
+                <label htmlFor={`dur-${i}-days`} className="text-xs font-semibold text-[#6B4030]">
                   Days <span className="text-red-600">*</span>
-                </span>
+                </label>
                 <input
+                  id={`dur-${i}-days`}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -645,20 +646,15 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder={type === 'workshop' ? '1–9' : '10+'}
                   aria-label={`Option ${i + 1} days (Required: ${type === 'workshop' ? '1–9 days' : '10+ days'})`}
-                  style={{
-                    width: `${Math.max(String(o.days ?? '').length, 3) + 3}ch`,
-                    minWidth: '4.5rem',
-                    maxWidth: '7rem',
-                    fieldSizing: 'content',
-                  }}
-                  className={inputClass(effectiveDaysError, 'tabular-nums font-semibold text-center')}
+                  className={inputClass(effectiveDaysError, 'w-full h-10 text-center tabular-nums font-semibold')}
                 />
-              </label>
-              <label className="space-y-1">
-                <span className="text-xs font-semibold text-[#6B4030]">
+              </div>
+              <div className="flex flex-col gap-1 w-32 shrink-0">
+                <label htmlFor={`dur-${i}-fee`} className="text-xs font-semibold text-[#6B4030]">
                   Offer fee ₹ <span className="text-red-600">*</span>
-                </span>
+                </label>
                 <input
+                  id={`dur-${i}-fee`}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -670,20 +666,15 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="5499"
                   aria-label={`Option ${i + 1} offer fee`}
-                  style={{
-                    width: `${Math.max(String(o.fee ?? '').length, 4) + 3}ch`,
-                    minWidth: '5.5rem',
-                    maxWidth: '10rem',
-                    fieldSizing: 'content',
-                  }}
-                  className={inputClass(effectiveFeeError, 'tabular-nums font-semibold')}
+                  className={inputClass(effectiveFeeError, 'w-full h-10 tabular-nums font-semibold')}
                 />
-              </label>
-              <label className="space-y-1">
-                <span className="text-xs font-semibold text-[#6B4030]">
+              </div>
+              <div className="flex flex-col gap-1 w-36 shrink-0">
+                <label htmlFor={`dur-${i}-reg`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
                   Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
-                </span>
+                </label>
                 <input
+                  id={`dur-${i}-reg`}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -695,16 +686,10 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="optional"
                   aria-label={`Option ${i + 1} regular fee`}
-                  style={{
-                    width: `${Math.max(String(o.original_price ?? '').length, 8) + 3}ch`,
-                    minWidth: '6.5rem',
-                    maxWidth: '10rem',
-                    fieldSizing: 'content',
-                  }}
-                  className={inputClass(effectiveRegError, 'tabular-nums')}
+                  className={inputClass(effectiveRegError, 'w-full h-10 tabular-nums')}
                 />
-              </label>
-              <div className="flex items-center gap-1 ml-auto self-end pb-0.5">
+              </div>
+              <div className="flex items-center gap-1 sm:ml-auto pb-0.5">
                 <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
                 <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
                 <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
@@ -713,13 +698,14 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
               </div>
             </div>
 
-            {/* Row 2: Total seats, Booked, Seats left & Cohort Summary */}
-            <div className="mt-2.5 flex flex-wrap items-center gap-2.5 rounded-lg border border-[#6B4030]/10 bg-[#FAF7F0]/60 p-2">
-              <label className="space-y-1">
-                <span className="text-xs font-semibold text-[#6B4030]">
+            {/* Row 2: Total seats, Booked, Seats left & Cohort Badges with matching top-aligned labels */}
+            <div className="mt-3 flex flex-wrap items-end gap-3 sm:gap-4 rounded-xl border border-[#6B4030]/12 bg-[#FAF7F0] p-3">
+              <div className="flex flex-col gap-1 w-24 shrink-0">
+                <label htmlFor={`dur-${i}-seats`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
                   Total seats <span className="text-red-600">*</span>
-                </span>
+                </label>
                 <input
+                  id={`dur-${i}-seats`}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -732,39 +718,33 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                   }}
                   placeholder="35"
                   aria-label={`Option ${i + 1} total seats (1–${MAX_SEATS})`}
-                  style={{
-                    width: `${Math.max(String(o.seats_total ?? '').length, 2) + 3}ch`,
-                    minWidth: '4.5rem',
-                    maxWidth: '7rem',
-                    fieldSizing: 'content',
-                  }}
-                  className={inputClass(effectiveSeatsError, 'tabular-nums font-semibold bg-white text-center')}
+                  className={inputClass(effectiveSeatsError, 'w-full h-10 text-center tabular-nums font-semibold bg-white')}
                 />
-              </label>
-              <div className="space-y-1">
+              </div>
+              <div className="flex flex-col gap-1 w-20 shrink-0">
                 <span className="text-xs font-semibold text-[#6B4030]">Booked</span>
                 <div
-                  className="flex h-9 min-w-[3rem] px-2.5 items-center justify-center rounded-xl border border-[#6B4030]/15 bg-white text-xs font-bold tabular-nums text-[#4A2C20]"
+                  className="flex h-10 w-full items-center justify-center rounded-xl border border-[#6B4030]/20 bg-white px-2 text-sm font-bold tabular-nums text-[#4A2C20]"
                   title="Enrolled & confirmed students"
                 >
                   {optBooked}
                 </div>
               </div>
-              <div className="space-y-1">
-                <span className="text-xs font-semibold text-[#6B4030]">Seats left</span>
+              <div className="flex flex-col gap-1 w-20 shrink-0">
+                <span className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">Seats left</span>
                 <div
-                  className={`flex h-9 min-w-[3rem] px-2.5 items-center justify-center rounded-xl border text-xs font-bold tabular-nums ${
-                    optLeft > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-red-200 bg-red-50 text-red-600'
+                  className={`flex h-10 w-full items-center justify-center rounded-xl border px-2 text-sm font-bold tabular-nums ${
+                    optLeft > 0 ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-red-300 bg-red-50 text-red-600'
                   }`}
                   title="Remaining seats for enrollment"
                 >
                   {optLeft}
                 </div>
               </div>
-              <div className="ml-auto flex flex-wrap items-center gap-2 self-end pb-1 text-xs text-[#6B4030]">
-                {i === 0 && <span className="rounded bg-[#4A2C20] px-2 py-0.5 text-[10px] font-semibold text-[#E5B869]">MAIN COHORT</span>}
+              <div className="ml-auto flex flex-wrap items-center gap-2 self-center pt-2 sm:pt-0 text-xs text-[#6B4030]">
+                {i === 0 && <span className="rounded bg-[#4A2C20] px-2.5 py-1 text-[11px] font-bold text-[#E5B869] tracking-wide">MAIN COHORT</span>}
                 {save > 0 && (
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-300">
                     Save {save}% (Discount ₹{(regular - fee).toLocaleString('en-IN')})
                   </span>
                 )}
