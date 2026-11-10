@@ -104,22 +104,15 @@ export function renderGniEmailWrapper({
           <!-- Institutional Header (Deep Brown #4A2C20 + Gold #B89555) -->
           <tr>
             <td class="gni-header-box" style="background-color: #4A2C20; border-bottom: 3px solid #B89555; padding: 28px 24px; text-align: center; color: #FFFFFF;">
-              ${
-                hasLogo
-                  ? `<!-- Text monogram in the institute colours (no image, so nothing is attached) -->
-                    <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 14px;">
-                      <tr>
-                        <td align="center" valign="middle">
-                          <div style="width: 54px; height: 54px; border: 2px solid #B89555; border-radius: 50%; font-family: Georgia, 'Times New Roman', serif; font-size: 18px; font-weight: 700; color: #E5B869; letter-spacing: 1.5px; line-height: 54px; text-align: center;">GNI</div>
-                        </td>
-                      </tr>
-                    </table>`
-                  : ''
-              }
-              <h1 class="gni-header-title" style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 21px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.8px; line-height: 1.3;">
-                ${escapeHtml(headerTitle)}
+              <h1 class="gni-header-title" style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 23px; font-weight: 700; color: #FFFFFF; letter-spacing: 2px; line-height: 1.3; text-transform: uppercase;">
+                ${escapeHtml(headerTitle || 'GLOBAL NAGAS INSTITUTE')}
               </h1>
-              <p style="margin: 5px 0 0; font-size: 11.5px; color: #E5B869; letter-spacing: 1.5px; font-weight: 600;">
+              <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 9px auto;">
+                <tr>
+                  <td style="width: 48px; height: 2px; background-color: #B89555; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                </tr>
+              </table>
+              <p style="margin: 0; font-size: 11.5px; color: #E5B869; letter-spacing: 1.5px; font-weight: 600;">
                 ${escapeHtml(String(headerSubtitle || '').toUpperCase())}
               </p>
               ${
