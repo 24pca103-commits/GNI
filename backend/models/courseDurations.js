@@ -54,6 +54,8 @@ export function parseDurations(raw, course = {}) {
       return {
         days: toInt(o.days),
         label: String(o.label || '').trim().slice(0, L.labelMax),
+        ...(o.title ? { title: String(o.title).trim() } : {}),
+        ...(o.description ? { description: String(o.description).trim() } : {}),
         fee,
         original_price: Number.isFinite(original) && original > fee ? original : fee,
         ...(Number.isFinite(seats) && seats > 0 ? { seats_total: Math.min(seats, 500) } : {}),
@@ -115,9 +117,14 @@ export function validateDurations(raw, type) {
     if (seats !== null && (!Number.isFinite(seats) || seats < 1 || seats > 500)) {
       return { error: `Duration option ${n}: seats must be between 1 and 500.` };
     }
+    const optTitle = String(o.title || '').trim().slice(0, 150);
+    const optDesc = String(o.description || '').trim().slice(0, 500);
+
     options.push({
       days,
       label,
+      ...(optTitle ? { title: optTitle } : {}),
+      ...(optDesc ? { description: optDesc } : {}),
       fee,
       original_price: original,
       ...(seats !== null ? { seats_total: seats } : {}),

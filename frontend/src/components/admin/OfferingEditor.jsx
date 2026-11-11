@@ -115,6 +115,8 @@ const blankOption = (days = '', kind = 'journey', defaultSeats = 35) => {
   return {
     days,
     label: '',
+    title: '',
+    description: '',
     fee: '',
     original_price: '',
     seats_total: defaultSeats || 35,
@@ -140,6 +142,8 @@ function durationsFromCourse(course, kind) {
       return {
         days: dDays,
         label: o.label || '',
+        title: o.title || '',
+        description: o.description || '',
         fee: Number(o.fee) || '',
         original_price: Number(o.original_price) > Number(o.fee) ? Number(o.original_price) : '',
         seats_total: o.seats_total !== undefined && o.seats_total !== '' ? Number(o.seats_total) : defaultSeats,
@@ -535,7 +539,7 @@ function DurationRoadmapEditor({
  * Duration options table: each row is a duration students can pick on the Register page,
  * with its own fee. Row 1 is the main option (sets the type and the price on the website).
  */
-function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd, onRemove, onMove }) {
+function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainDesc = '', err, onChange, onAdd, onRemove, onMove }) {
   const range = DAY_RANGE[type];
   const cellErr = (i, key) => err(`durations.${i}.${key}`);
   return (
@@ -754,6 +758,51 @@ function DurationOptions({ options, type, bookedSeats = 0, err, onChange, onAdd,
                 )}
               </div>
             </div>
+
+            {/* Row 3: Cohort Heading & Content (Description) for this specific duration */}
+            <div className="mt-3 space-y-2.5 rounded-xl border border-[#6B4030]/12 bg-[#FAF7F0] p-3">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <label htmlFor={`dur-${i}-title`} className="text-xs font-semibold text-[#6B4030]">
+                    Cohort Heading / Title <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
+                  </label>
+                  <span className="text-[10px] text-[#6B4030]/70 truncate max-w-xs">
+                    {i === 0 ? 'Defaults to main title above' : (mainTitle ? `Defaults to: ${mainTitle.replace(/\b\d+\s*[- ]?Day\b/i, `${o.days || 30}-Day`)}` : 'Defaults to main title')}
+                  </span>
+                </div>
+                <input
+                  id={`dur-${i}-title`}
+                  type="text"
+                  value={o.title ?? ''}
+                  maxLength={LIMITS.title.max}
+                  onChange={(e) => onChange(i, 'title', e.target.value)}
+                  placeholder={i === 0 ? (mainTitle || 'Main title shown on website') : `e.g. ${o.days ? `${o.days}-Day ` : ''}Classical Iconography & Sculptural Immersion`}
+                  aria-label={`Option ${i + 1} custom heading`}
+                  className={inputClass(false, 'w-full h-9 text-xs font-semibold bg-white')}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <label htmlFor={`dur-${i}-desc`} className="text-xs font-semibold text-[#6B4030]">
+                    Cohort Content / Overview Description <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
+                  </label>
+                  <span className="text-[10px] text-[#6B4030]/70">
+                    Defaults to main description
+                  </span>
+                </div>
+                <textarea
+                  id={`dur-${i}-desc`}
+                  rows={2}
+                  value={o.description ?? ''}
+                  maxLength={LIMITS.description.max}
+                  onChange={(e) => onChange(i, 'description', e.target.value)}
+                  placeholder={i === 0 ? (mainDesc || 'Main description shown on website') : `e.g. A focused ${o.days ? `${o.days}-day ` : ''}hands-on studio immersion mastering temple iconography and relief carving.`}
+                  aria-label={`Option ${i + 1} custom description`}
+                  className={inputClass(false, 'w-full text-xs bg-white leading-relaxed resize-none')}
+                />
+              </div>
+            </div>
             {rowErrors.length > 0 && (
               <div className="mt-2 space-y-1 border-t border-red-100 pt-1.5">
                 {rowErrors.map((errText, errIdx) => (
@@ -927,6 +976,8 @@ function buildPayload(state, pillars, bookedSeats) {
     durations: state.durations.map((o) => ({
       days: Number(o.days),
       label: String(o.label || '').trim(),
+      title: String(o.title || '').trim(),
+      description: String(o.description || '').trim(),
       fee: Number(o.fee),
       original_price: Number(o.original_price) || Number(o.fee),
       seats_total: Number(o.seats_total) || 50,
@@ -1389,6 +1440,8 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
                   options={state.durations}
                   type={state.type}
                   bookedSeats={bookedSeats}
+                  mainTitle={state.title}
+                  mainDesc={state.description}
                   err={err}
                   onChange={(i, key, value) => {
                     setItem('durations', i, key, value);

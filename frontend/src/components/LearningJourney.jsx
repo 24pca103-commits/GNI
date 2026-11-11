@@ -290,8 +290,21 @@ export function JourneyDetail({ course, preview = false }) {
     ? Number(activeDuration.seats_available)
     : Math.max(0, activeTotal - activeBooked);
 
+  // Dynamic Title & Description for the active cohort
+  const customTitle = activeDuration?.title?.trim();
+  const activeTitle = customTitle
+    ? customTitle
+    : (activeDays && course.title
+        ? course.title.replace(/\b\d+\s*[- ]?Day\b/i, `${activeDays}-Day`)
+        : course.title);
+
+  const customDesc = activeDuration?.description?.trim();
+  const activeDescription = customDesc || course.description;
+
   const activeCourse = {
     ...course,
+    title: activeTitle,
+    description: activeDescription,
     duration: `${activeDays} Days`,
     discount_price: activeFee,
     original_price: activeOriginal,
@@ -302,6 +315,31 @@ export function JourneyDetail({ course, preview = false }) {
 
   return (
     <>
+      {/* Duration selector tabs when multiple durations exist */}
+      {durationsList.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2.5 pt-4">
+          <span className="w-full sm:w-auto text-xs font-semibold uppercase tracking-wider text-[#B89555]">
+            Select Cohort Duration:
+          </span>
+          <div className="inline-flex max-w-full flex-wrap gap-1 rounded-xl bg-[#FAF7F0] p-1 border border-[#6B4030]/15">
+            {durationsList.map((d, dIdx) => (
+              <button
+                key={dIdx}
+                type="button"
+                onClick={() => setSelectedDurationIdx(dIdx)}
+                className={`flex-shrink-0 sm:flex-shrink rounded-lg px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                  safeIdx === dIdx
+                    ? 'bg-[#4A2C20] text-[#E5B869] shadow-sm'
+                    : 'text-[#6B4030] hover:text-[#241A16]'
+                }`}
+              >
+                {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}{d.seats_total ? ` · ${d.seats_total} Seats` : ''}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Row 1: overview beside booking, equal height */}
       <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         <div className="lg:col-span-8">
@@ -327,30 +365,7 @@ export function JourneyDetail({ course, preview = false }) {
         </div>
       </div>
 
-      {/* Duration selector tabs when multiple durations exist */}
-      {durationsList.length > 1 && (
-        <div className="flex flex-wrap items-center gap-2.5 pt-4">
-          <span className="w-full sm:w-auto text-xs font-semibold uppercase tracking-wider text-[#B89555]">
-            Select Cohort Duration:
-          </span>
-          <div className="inline-flex max-w-full flex-wrap gap-1 rounded-xl bg-[#FAF7F0] p-1 border border-[#6B4030]/15">
-            {durationsList.map((d, dIdx) => (
-              <button
-                key={dIdx}
-                type="button"
-                onClick={() => setSelectedDurationIdx(dIdx)}
-                className={`flex-shrink-0 sm:flex-shrink rounded-lg px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                  safeIdx === dIdx
-                    ? 'bg-[#4A2C20] text-[#E5B869] shadow-sm'
-                    : 'text-[#6B4030] hover:text-[#241A16]'
-                }`}
-              >
-                {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}{d.seats_total ? ` · ${d.seats_total} Seats` : ''}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      
 
       {/* Row 2: full-width roadmap */}
       {phases.length > 0 && <Roadmap key={`${course.id}-${activeDays}`} phases={phases} totalDays={totalDays} />}
