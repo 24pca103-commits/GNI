@@ -376,7 +376,7 @@ export default function StudioFacilities() {
               onClick={handlePrev}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute left-0 sm:-left-3 top-[46px] sm:top-[54px] -translate-y-1/2 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              className="absolute left-0 sm:-left-3 top-[32px] sm:top-[42px] -translate-y-1/2 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
               aria-label="Previous facility"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -420,7 +420,7 @@ export default function StudioFacilities() {
                     </div>
 
                     {/* Full Facility Name Below Icon - Optimized for Mobile & Desktop */}
-                    <div className="h-[34px] sm:h-[38px] flex items-center justify-center text-center mt-1.5 sm:mt-2 px-1 w-full">
+                    <div className="min-h-[36px] sm:min-h-[40px] flex items-center justify-center text-center mt-2.5 sm:mt-3 px-1.5 w-full">
                       <span
                         className={`text-[10.5px] sm:text-xs font-['DM_Sans'] text-center leading-tight transition-colors break-words ${
                           isSelected ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
@@ -431,7 +431,7 @@ export default function StudioFacilities() {
                     </div>
 
                     {/* Active Dot/Bar */}
-                    <div className="h-2 flex items-center justify-center mt-0.5">
+                    <div className="h-2 flex items-center justify-center mt-1 mb-0.5">
                       {isSelected ? (
                         <span className="w-5 h-1 sm:w-6 sm:h-1 rounded-full bg-[#B89555] transition-all" />
                       ) : (
@@ -449,7 +449,7 @@ export default function StudioFacilities() {
               onClick={handleNext}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="absolute right-0 sm:-right-3 top-[46px] sm:top-[54px] -translate-y-1/2 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
+              className="absolute right-0 sm:-right-3 top-[32px] sm:top-[42px] -translate-y-1/2 z-30 pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/95 hover:bg-[#4A2C20] border border-[#6B4030]/25 text-[#6B4030] hover:text-[#B89555] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-110 focus:outline-hidden cursor-pointer shrink-0"
               aria-label="Next facility"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />

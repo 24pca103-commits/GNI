@@ -26,7 +26,7 @@ export default function Footer() {
 
   return (
     // Right padding keeps footer text clear of the floating contact buttons, which appear here
-    <footer className="bg-[#F7F2E8] text-[#241A16] border-t border-[#6B4030]/20 py-6 sm:py-8 pb-20 sm:pb-8 pr-14 sm:pr-16 2xl:pr-0">
+    <footer className="bg-[#F7F2E8] text-[#241A16] border-t border-[#6B4030]/20 py-6 sm:py-8 pb-24 sm:pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8 pb-5 sm:pb-6 border-b border-[#6B4030]/15 items-start">
           {/* Brand Info (5 cols) */}
@@ -107,14 +107,16 @@ export default function Footer() {
         </div>
 
         {/* Bottom Copyright */}
-        <div className="pt-4 sm:pt-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-['DM_Sans'] text-[#6B4030]">
-          <p>© <span className="font-number font-normal">2026</span> Global Nagas Institute. All Rights Reserved.</p>
-          <div className="flex items-center gap-3 text-[11px] sm:text-xs">
+        <div className="pt-4 sm:pt-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2.5 text-xs font-['DM_Sans'] text-[#6B4030] text-center sm:text-left">
+          <p className="leading-relaxed">
+            © <span className="font-number font-normal">2026</span> Global Nagas Institute. All Rights Reserved.
+          </p>
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-3 gap-y-1 text-[11px] sm:text-xs leading-relaxed">
             <span>Designed with ancient Tamil cultural reverence.</span>
-            <span className="text-[#6B4030]/30">•</span>
+            <span className="text-[#6B4030]/40 hidden xs:inline">•</span>
             <Link
               to="/admin"
-              className="text-[#6B4030]/70 hover:text-[#B89555] font-semibold transition-colors inline-flex items-center gap-1"
+              className="text-[#6B4030]/80 hover:text-[#B89555] font-semibold transition-colors inline-flex items-center gap-1"
             >
               Faculty Portal
             </Link>

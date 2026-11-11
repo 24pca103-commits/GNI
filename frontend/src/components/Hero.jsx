@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   BookOpen,
-  ChevronLeft,
-  ChevronRight,
   Quote,
   Sparkles,
 } from 'lucide-react';
@@ -233,23 +231,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Manual Sliding Left / Right Arrow Buttons */}
-      <button
-        type="button"
-        onClick={prevSlide}
-        aria-label="Previous slide"
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#241A16]/75 hover:bg-[#4A2C20] border border-[#B89555]/40 text-[#E5B869] flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
-      >
-        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-      </button>
-      <button
-        type="button"
-        onClick={nextSlide}
-        aria-label="Next slide"
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#241A16]/75 hover:bg-[#4A2C20] border border-[#B89555]/40 text-[#E5B869] flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
-      >
-        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-      </button>
+      
 
       {/* Banner Bottom Center Alignment for Indicator Dots */}
       <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5">

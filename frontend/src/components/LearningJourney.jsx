@@ -84,7 +84,7 @@ function PhaseDetail({ phase, index, className = '' }) {
  */
 function Roadmap({ phases, totalDays }) {
   const [active, setActive] = useState(0);
-  const safeActive = active < phases.length ? active : 0;
+  const safeActive = active !== null && active < phases.length ? active : 0;
   const listRef = useRef(null);
   const [scrollHint, setScrollHint] = useState({ top: false, bottom: false });
 
@@ -112,7 +112,7 @@ function Roadmap({ phases, totalDays }) {
   }, [updateHint]);
 
   const select = (i) => {
-    setActive(i);
+    setActive((prev) => (prev === i ? null : i));
     // Keep the chosen phase visible inside the list (scrolls the list only, never the page)
     const el = listRef.current;
     const item = el?.children[i];
@@ -165,7 +165,7 @@ function Roadmap({ phases, totalDays }) {
             className="space-y-2 lg:absolute lg:inset-0 lg:overflow-y-auto lg:pr-2 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent]"
           >
             {phases.map((p, i) => {
-              const isActive = i === safeActive;
+              const isActive = active === i;
               return (
                 <li key={i}>
                   <button

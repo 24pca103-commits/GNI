@@ -136,11 +136,11 @@ export function OverviewCard({ course, facts, fallbackImage }) {
             {course.pillar_title}
           </p>
         )}
-        <h3 className="mt-2 font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-[#241A16] leading-tight">
+        <h3 className="mt-2 font-['Cormorant_Garamond'] text-2xl xs:text-[28px] sm:text-4xl font-bold text-[#241A16] leading-tight text-balance">
           {course.title}
         </h3>
         {course.description && (
-          <p className="mt-3 font-['DM_Sans'] text-[15px] text-[#6B4030] leading-relaxed">{course.description}</p>
+          <p className="mt-2.5 sm:mt-3 font-['DM_Sans'] text-sm sm:text-[15px] text-[#6B4030] leading-relaxed">{course.description}</p>
         )}
         <FactRow facts={facts} />
       </div>
