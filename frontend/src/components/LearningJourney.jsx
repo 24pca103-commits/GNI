@@ -84,10 +84,44 @@ function PhaseDetail({ phase, index, className = '' }) {
  */
 function Roadmap({ phases, totalDays }) {
   const [active, setActive] = useState(0);
-  const safeActive = active !== null && active < phases.length ? active : 0;
+  const safeActive = active < phases.length ? active : 0;
+  const listRef = useRef(null);
+  const [scrollHint, setScrollHint] = useState({ top: false, bottom: false });
+
+  const updateHint = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const scrollable = el.scrollHeight > el.clientHeight + 2;
+    setScrollHint({
+      top: scrollable && el.scrollTop > 4,
+      bottom: scrollable && el.scrollTop + el.clientHeight < el.scrollHeight - 4,
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return undefined;
+    updateHint();
+    el.addEventListener('scroll', updateHint, { passive: true });
+    const ro = new ResizeObserver(updateHint);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener('scroll', updateHint);
+      ro.disconnect();
+    };
+  }, [updateHint]);
 
   const select = (i) => {
-    setActive((prev) => (prev === i ? null : i));
+    setActive(i);
+    // Keep the chosen phase visible inside the list (scrolls the list only, never the page)
+    const el = listRef.current;
+    const item = el?.children[i];
+    if (el && item && el.scrollHeight > el.clientHeight) {
+      const top = item.offsetTop;
+      if (top < el.scrollTop || top + item.offsetHeight > el.scrollTop + el.clientHeight) {
+        el.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' });
+      }
+    }
   };
 
   return (
@@ -123,19 +157,22 @@ function Roadmap({ phases, totalDays }) {
         </div>
       )}
 
-      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 items-start">
-        {/* Phase list: naturally displays all phases evenly without scroll clipping */}
-        <div className="lg:col-span-5 w-full">
-          <ol className="space-y-2.5 w-full">
+      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 lg:items-stretch">
+        {/* Phase list: fills its column absolutely on lg, so the detail panel decides the row height */}
+        <div className="relative lg:col-span-5">
+          <ol
+            ref={listRef}
+            className="space-y-2 lg:absolute lg:inset-0 lg:overflow-y-auto lg:pr-2 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent]"
+          >
             {phases.map((p, i) => {
-              const isActive = active === i;
+              const isActive = i === safeActive;
               return (
                 <li key={i}>
                   <button
                     type="button"
                     onClick={() => select(i)}
                     aria-expanded={isActive}
-                    className={`w-full flex items-center gap-3 p-3 sm:p-3.5 rounded-xl border text-left transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
                       isActive
                         ? 'bg-[#4A2C20] border-[#4A2C20] text-white'
                         : 'bg-white border-[#6B4030]/10 hover:border-[#B89555]/50 hover:bg-[#FAF7F0]'
@@ -176,7 +213,7 @@ function Roadmap({ phases, totalDays }) {
             key={safeActive}
             phase={phases[safeActive]}
             index={safeActive}
-            className="gni-fade-up w-full min-h-[300px]"
+            className="gni-fade-up w-full"
           />
         </div>
       </div>
