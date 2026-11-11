@@ -571,7 +571,7 @@ export default function Admin() {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
-                  placeholder="kan93095@gmail.com"
+                  placeholder="example@gmail.com"
                 />
               </div>
 
@@ -708,7 +708,7 @@ export default function Admin() {
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
-                  placeholder="kan93095@gmail.com"
+                  placeholder="kan93.com"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
                 />
                 <span className="text-[10.5px] text-[#6B4030]/80 block">
