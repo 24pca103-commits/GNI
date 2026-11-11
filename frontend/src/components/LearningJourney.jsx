@@ -360,6 +360,7 @@ export function JourneyDetail({ course, preview = false }) {
             inclusions={details.inclusions}
             ctaLabel="Apply for this journey"
             preview={preview}
+            onSelectDuration={setSelectedDurationIdx}
             className="h-full"
           />
         </div>

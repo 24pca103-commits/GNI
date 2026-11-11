@@ -224,6 +224,7 @@ export function getDurationOptions(course) {
       const days = Number(o.days);
       const label = String(o.label || '').trim();
       return {
+        days,
         text: `${days} ${days === 1 ? 'Day' : 'Days'}${label ? ` ${label}` : ''}`,
         fee: Number(o.fee),
         original_price: Number(o.original_price) || Number(o.fee),

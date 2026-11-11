@@ -739,17 +739,9 @@ export default function Register() {
         }
         break;
 
-      case 'phone': {
-        const cleanPhone = (value || '').replace(/\D/g, '');
-        if (!cleanPhone) {
-          error = 'Phone / WhatsApp number is required';
-        } else if (cleanPhone.length !== country.digits) {
-          error = `Enter exactly ${country.digits} digits for ${country.name} (${cleanPhone.length}/${country.digits} entered)`;
-        } else if (phoneActiveError) {
-          error = phoneActiveError;
-        }
+      case 'phone':
+        // No validation on phone number
         break;
-      }
 
       case 'city':
         if (selectedCity === 'Other' && (!customCity || customCity.trim().length < 2)) {
@@ -873,7 +865,7 @@ export default function Register() {
   const isFormValid = useMemo(() => {
     const hasName = formData.fullName.trim().length >= 2;
     const hasEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim());
-    const hasPhone = (formData.phone || '').replace(/\D/g, '').length === currentCountry.digits;
+    const hasPhone = Boolean((formData.phone || '').trim());
     const effectiveCity = selectedCity === 'Other' ? customCity.trim() : selectedCity;
     const hasLocation = Boolean(selectedState) && Boolean(effectiveCity) && (selectedCity !== 'Other' || effectiveCity.length >= 2);
     const hasProfession = formData.profession.trim().length >= 2;
@@ -904,8 +896,7 @@ export default function Register() {
     if (name === 'fullName' || name === 'profession') {
       value = value.replace(/[0-9]/g, '');
     } else if (name === 'phone') {
-      const digitsOnly = value.replace(/\D/g, '');
-      value = digitsOnly.slice(0, currentCountry.digits);
+      value = value.replace(/[^\d+\s-]/g, '');
       if (phoneActiveError) setPhoneActiveError('');
       if (phoneEligibleMsg) setPhoneEligibleMsg('');
     } else if (name === 'email') {
@@ -1059,8 +1050,6 @@ export default function Register() {
     setErrors((prev) => ({ ...prev, [name]: error }));
     if (name === 'email') {
       verifyEmail(value);
-    } else if (name === 'phone') {
-      verifyPhone(value);
     }
   };
 
@@ -1082,13 +1071,7 @@ export default function Register() {
       return;
     }
 
-    if (phoneActiveError) {
-      setFirstErrorField('phone');
-      setErrors((prev) => ({ ...prev, phone: phoneActiveError }));
-      setErrorMessage(phoneActiveError);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
+    // Phone validation bypassed
 
     if (!validateForm()) {
       setErrorMessage('Please complete all required fields correctly before proceeding.');
@@ -1578,29 +1561,10 @@ export default function Register() {
                     <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
                       Mobile / WhatsApp Number <span className="text-red-600">*</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      {phoneChecking && (
-                        <span className="text-[10.5px] text-[#B89555] font-['DM_Sans'] flex items-center gap-1">
-                          <Loader2 className="w-3 h-3 animate-spin text-[#B89555]" />
-                          <span>Checking phone status...</span>
-                        </span>
-                      )}
-                      <span className="text-[11px] font-['DM_Sans'] text-[#6B4030]">
-                        {formData.phone.length}/{currentCountry.digits} digits
-                      </span>
-                    </div>
                   </div>
 
                   <div
-                    className={`flex items-stretch rounded-xl border transition-colors bg-white focus-within:border-[#B89555] relative ${
-                      (firstErrorField === 'phone' || errors.phone)
-                        ? 'border-red-500 bg-red-50/10 focus-within:border-red-600'
-                        : phoneEligibleMsg
-                        ? 'border-emerald-500 bg-emerald-50/15'
-                        : touched.phone && !errors.phone && formData.phone.length === currentCountry.digits
-                        ? 'border-emerald-500/60'
-                        : 'border-[#6B4030]/20'
-                    }`}
+                    className="flex items-stretch rounded-xl border border-[#6B4030]/20 transition-colors bg-white focus-within:border-[#B89555] relative"
                   >
                     {/* Clean Country Selector (Clean Dial Code & Country Name - NO flag letter / NO pre-font) */}
                     <div className="relative border-r border-[#6B4030]/20 shrink-0 flex items-center bg-[#FAF7F0] rounded-l-xl w-[82px] sm:w-[90px]">
@@ -1627,37 +1591,12 @@ export default function Register() {
                       onChange={handleChange}
                       onKeyDown={handleNumberOnlyKeyDown}
                       onBlur={handleBlur}
-                      placeholder={`${currentCountry.digits}-digit number`}
-                      maxLength={currentCountry.digits}
-                      className="flex-1 w-full pl-3.5 pr-9 py-2.5 bg-transparent text-sm font-['DM_Sans'] text-[#241A16] font-medium placeholder-[#6B4030]/40 focus:outline-hidden"
+                      placeholder="Enter your phone / WhatsApp number"
+                      className="flex-1 w-full pl-3.5 pr-4 py-2.5 bg-transparent text-sm font-['DM_Sans'] text-[#241A16] font-medium placeholder-[#6B4030]/40 focus:outline-hidden"
                     />
-
-                    {phoneChecking ? (
-                      <div className="absolute right-3 top-3 text-[#B89555]">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      </div>
-                    ) : (firstErrorField === 'phone' || errors.phone) ? (
-                      <div className="absolute right-3 top-3 text-red-500">
-                        <AlertCircle className="w-4 h-4" />
-                      </div>
-                    ) : phoneEligibleMsg ? (
-                      <div className="absolute right-3 top-3 text-emerald-600">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                    ) : null}
                   </div>
 
-                  {(firstErrorField === 'phone' || errors.phone) && errors.phone ? (
-                    <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-start gap-1 pt-0.5 leading-snug">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-600" />
-                      <span>{errors.phone}</span>
-                    </p>
-                  ) : phoneEligibleMsg ? (
-                    <p className="text-[11px] font-['DM_Sans'] text-emerald-700 flex items-center gap-1 pt-0.5 font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
-                      <span>{phoneEligibleMsg}</span>
-                    </p>
-                  ) : null}
+                  
                 </div>
               </div>
 

@@ -56,8 +56,6 @@ export default function Register({ onRegistrationSuccess }) {
     const cleanPhone = formData.mobileNumber.replace(/[\s-]/g, '');
     if (!formData.mobileNumber.trim()) {
       errs.mobileNumber = 'Mobile number is required';
-    } else if (!phoneRegex.test(cleanPhone)) {
-      errs.mobileNumber = 'Enter a valid phone number (7-15 digits, e.g. +91 9876543210)';
     }
 
     if (!formData.password) {

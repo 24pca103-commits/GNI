@@ -220,7 +220,7 @@ function SeatMeter({ seats }) {
 }
 
 /** `preview` renders the button without a link (used by the admin editor preview). */
-export function BookingCard({ course, inclusions, ctaLabel, className = '', preview = false }) {
+export function BookingCard({ course, inclusions, ctaLabel, onSelectDuration, className = '', preview = false }) {
   const { price, original, savePercent } = getPricing(course);
   const seats = getSeats(course);
   const durationOptions = getDurationOptions(course);
@@ -255,16 +255,45 @@ export function BookingCard({ course, inclusions, ctaLabel, className = '', prev
 
         <ul className="mt-6 space-y-2 font-['DM_Sans'] text-[13px] text-[#F7F2E8]/80 border-t border-white/10 pt-5">
           {durationOptions.length > 1 ? (
-            <li className="flex items-start gap-2.5">
-              <Clock className="w-3.5 h-3.5 mt-1 text-[#B89555] shrink-0" />
-              <ul className="min-w-0 flex-1 space-y-1">
-                {durationOptions.map((o) => (
-                  <li key={o.text} className="flex items-baseline justify-between gap-3">
-                    <span className="min-w-0">{o.text}</span>
-                    <span className="font-semibold text-white tabular-nums whitespace-nowrap">{formatINR(o.fee)}</span>
-                  </li>
-                ))}
-              </ul>
+            <li className="space-y-1.5">
+              {durationOptions.map((o, idx) => {
+                const courseDays = String(course.duration || '').match(/\d+/)?.[0];
+                const optDays = String(o.days || o.text || '').match(/\d+/)?.[0];
+                const isActive = (courseDays && optDays && courseDays === optDays) ||
+                  (course.duration && o.text && (
+                    course.duration.toLowerCase().includes(o.text.toLowerCase()) ||
+                    o.text.toLowerCase().includes(course.duration.toLowerCase())
+                  ));
+
+                return (
+                  <div
+                    key={o.text || idx}
+                    onClick={() => onSelectDuration && onSelectDuration(idx)}
+                    className={`flex items-center justify-between gap-3 py-1 px-2 -mx-2 rounded-xl transition-all ${
+                      onSelectDuration ? 'cursor-pointer hover:bg-white/5' : ''
+                    } ${isActive ? 'bg-white/10 text-white font-semibold' : 'text-[#F7F2E8]/60'}`}
+                  >
+                    <span className="inline-flex items-center gap-2 min-w-0">
+                      {isActive ? (
+                        <Clock className="w-3.5 h-3.5 text-[#E5B869] shrink-0" />
+                      ) : (
+                        <span className="w-3.5 h-3.5 flex items-center justify-center shrink-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F7F2E8]/25" />
+                        </span>
+                      )}
+                      <span className="truncate">{o.text}</span>
+                      {isActive && (
+                        <span className="text-[10px] font-bold text-[#241A16] bg-[#E5B869] px-1.5 py-0.5 rounded leading-none shrink-0">
+                          Selected
+                        </span>
+                      )}
+                    </span>
+                    <span className={`tabular-nums whitespace-nowrap text-sm ${isActive ? 'text-[#E5B869] font-bold' : 'text-[#F7F2E8]/70'}`}>
+                      {formatINR(o.fee)}
+                    </span>
+                  </div>
+                );
+              })}
             </li>
           ) : (
             course.duration && (
