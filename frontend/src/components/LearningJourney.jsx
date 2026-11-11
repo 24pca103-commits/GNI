@@ -84,7 +84,7 @@ function PhaseDetail({ phase, index, className = '' }) {
  */
 function Roadmap({ phases, totalDays }) {
   const [active, setActive] = useState(0);
-  const [mobileOpen, setMobileOpen] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(null);
   const safeActive = active < phases.length ? active : 0;
   const listRef = useRef(null);
   const [scrollHint, setScrollHint] = useState({ top: false, bottom: false });
@@ -159,13 +159,21 @@ function Roadmap({ phases, totalDays }) {
         </div>
       )}
 
-      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 lg:items-stretch">
-        {/* Phase list: fills its column absolutely on lg, so the detail panel decides the row height */}
-        <div className="relative lg:col-span-5">
-          <ol
-            ref={listRef}
-            className="space-y-2 lg:absolute lg:inset-0 lg:overflow-y-auto lg:pr-2 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent]"
-          >
+      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 items-start">
+        {/* Phase list: displays maximum 4 cards in view, remaining cards scroll inside vertical scroller */}
+        <div className="lg:col-span-5 w-full">
+          <div className="relative">
+            {phases.length > 4 && scrollHint.top && (
+              <div className="pointer-events-none absolute top-0 left-0 right-2 h-4 bg-gradient-to-b from-white to-transparent z-10 transition-opacity duration-200" />
+            )}
+            <ol
+              ref={listRef}
+              className={`space-y-2 overflow-y-auto pr-1.5 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-[#6B4030]/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#D9C9A6] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#B89555] ${
+                mobileOpen !== null
+                  ? 'max-h-[520px] lg:max-h-[285px]'
+                  : 'max-h-[285px]'
+              }`}
+            >
             {phases.map((p, i) => {
               const isDesktopActive = i === safeActive;
               const isMobileActive = mobileOpen === i;
@@ -242,6 +250,16 @@ function Roadmap({ phases, totalDays }) {
               );
             })}
           </ol>
+            {phases.length > 4 && scrollHint.bottom && (
+              <div className="pointer-events-none absolute bottom-0 left-0 right-2 h-5 bg-gradient-to-t from-white to-transparent z-10 transition-opacity duration-200" />
+            )}
+          </div>
+          {phases.length > 4 && (
+            <div className="mt-2 flex items-center justify-between text-[11px] font-['DM_Sans'] text-[#6B4030]/70 px-1">
+              <span>Scroll down for more phases</span>
+              <span className="font-semibold text-[#B89555]">4 of {phases.length} shown</span>
+            </div>
+          )}
         </div>
 
         <div className="hidden lg:block lg:col-span-7">
