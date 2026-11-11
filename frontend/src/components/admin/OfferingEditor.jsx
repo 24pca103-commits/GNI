@@ -697,7 +697,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                   className={inputClass(effectiveRegError, 'w-full h-10 tabular-nums')}
                 />
               </div>
-              <div className="flex items-center gap-1 ml-auto sm:ml-auto pb-0.5">
+              <div className="flex items-center gap-1 w-full sm:w-auto justify-end sm:ml-auto pt-1 sm:pt-0">
                 <IconButton title="Move up" onClick={() => onMove(i, -1)} disabled={i === 0}>↑</IconButton>
                 <IconButton title="Move down" onClick={() => onMove(i, 1)} disabled={i === options.length - 1}>↓</IconButton>
                 <IconButton title="Remove option" tone="danger" onClick={() => onRemove(i)} disabled={options.length === 1}>
@@ -1259,6 +1259,22 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
           </div>
         </header>
 
+        {/* Mobile horizontal section nav */}
+        <nav className="flex md:hidden overflow-x-auto no-scrollbar border-b border-[#6B4030]/10 bg-white/95 px-3 py-2 gap-1.5 shrink-0" aria-label="Editor sections mobile">
+          {nav.map((n, i) => (
+            <button
+              key={n.id}
+              type="button"
+              onClick={() => scrollTo(n.id)}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold bg-[#FAF7F0] text-[#4A2C20] border border-[#6B4030]/15 hover:bg-[#4A2C20] hover:text-white transition-colors cursor-pointer"
+            >
+              <span className="text-[#B89555] font-bold">{i + 1}</span>
+              <span>{n.label}</span>
+              {sectionHasError(n.id) && <span className="h-1.5 w-1.5 rounded-full bg-red-500" />}
+            </button>
+          ))}
+        </nav>
+
         <div className="flex min-h-0 flex-1">
           {/* Section nav */}
           <nav className="hidden w-52 shrink-0 flex-col gap-1 border-r border-[#6B4030]/10 bg-white/60 p-4 md:flex" aria-label="Editor sections">
@@ -1295,7 +1311,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
               >
                 <div>
                   <span className="text-[13px] font-semibold text-[#241A16]">Type *</span>
-                  <div className="mt-1.5 grid grid-cols-2 gap-2">
+                  <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {[
                       { id: 'workshop', icon: Hammer, label: 'Workshop', sub: '1–9 days, hands-on' },
                       { id: 'journey', icon: Compass, label: 'Learning Journey', sub: '10+ days, phased roadmap' },
