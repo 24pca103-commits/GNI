@@ -84,6 +84,7 @@ function PhaseDetail({ phase, index, className = '' }) {
  */
 function Roadmap({ phases, totalDays }) {
   const [active, setActive] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(0);
   const safeActive = active < phases.length ? active : 0;
   const listRef = useRef(null);
   const [scrollHint, setScrollHint] = useState({ top: false, bottom: false });
@@ -113,7 +114,9 @@ function Roadmap({ phases, totalDays }) {
 
   const select = (i) => {
     setActive(i);
-    // Keep the chosen phase visible inside the list (scrolls the list only, never the page)
+    // Mobile accordion toggle: click open, click again to close/collapse
+    setMobileOpen((prev) => (prev === i ? null : i));
+    // Keep the chosen phase visible inside the list on desktop (scrolls the list only, never the page)
     const el = listRef.current;
     const item = el?.children[i];
     if (el && item && el.scrollHeight > el.clientHeight) {
@@ -164,43 +167,77 @@ function Roadmap({ phases, totalDays }) {
             className="space-y-2 lg:absolute lg:inset-0 lg:overflow-y-auto lg:pr-2 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent]"
           >
             {phases.map((p, i) => {
-              const isActive = i === safeActive;
+              const isDesktopActive = i === safeActive;
+              const isMobileActive = mobileOpen === i;
               return (
                 <li key={i}>
                   <button
                     type="button"
                     onClick={() => select(i)}
-                    aria-expanded={isActive}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
-                      isActive
-                        ? 'bg-[#4A2C20] border-[#4A2C20] text-white'
+                    aria-expanded={isMobileActive}
+                    className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl border text-left transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B89555] ${
+                      isMobileActive
+                        ? 'bg-[#4A2C20] border-[#4A2C20] text-white lg:bg-white lg:border-[#6B4030]/10 lg:text-[#241A16]'
                         : 'bg-white border-[#6B4030]/10 hover:border-[#B89555]/50 hover:bg-[#FAF7F0]'
+                    } ${
+                      isDesktopActive
+                        ? 'lg:bg-[#4A2C20]! lg:border-[#4A2C20]! lg:text-white!'
+                        : 'lg:bg-white lg:border-[#6B4030]/10 lg:text-[#241A16]'
                     }`}
                   >
-                    <span
-                      className={`w-8 h-8 rounded-full font-['DM_Sans'] text-xs font-bold flex items-center justify-center shrink-0 ${
-                        isActive ? 'bg-[#B89555] text-[#241A16]' : 'bg-[#FAF7F0] border border-[#B89555]/40 text-[#4A2C20]'
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                    <span className="min-w-0">
-                      {p.period && (
-                        <span
-                          className={`block font-['DM_Sans'] text-[11px] font-medium ${isActive ? 'text-[#E5B869]' : 'text-[#6B4030]/80'}`}
-                        >
-                          {p.period}
-                        </span>
-                      )}
+                    <div className="flex items-center gap-3 min-w-0">
                       <span
-                        className={`block font-['DM_Sans'] text-sm font-semibold leading-snug ${isActive ? 'text-white' : 'text-[#241A16]'}`}
+                        className={`w-8 h-8 rounded-full font-['DM_Sans'] text-xs font-bold flex items-center justify-center shrink-0 ${
+                          isMobileActive
+                            ? 'bg-[#B89555] text-[#241A16] lg:bg-[#FAF7F0] lg:text-[#4A2C20]'
+                            : 'bg-[#FAF7F0] border border-[#B89555]/40 text-[#4A2C20]'
+                        } ${
+                          isDesktopActive
+                            ? 'lg:bg-[#B89555]! lg:text-[#241A16]!'
+                            : ''
+                        }`}
                       >
-                        {p.title}
+                        {i + 1}
                       </span>
-                    </span>
+                      <span className="min-w-0">
+                        {p.period && (
+                          <span
+                            className={`block font-['DM_Sans'] text-[11px] font-medium ${
+                              isMobileActive
+                                ? 'text-[#E5B869] lg:text-[#6B4030]/80'
+                                : 'text-[#6B4030]/80'
+                            } ${
+                              isDesktopActive ? 'lg:text-[#E5B869]!' : ''
+                            }`}
+                          >
+                            {p.period}
+                          </span>
+                        )}
+                        <span
+                          className={`block font-['DM_Sans'] text-sm font-semibold leading-snug ${
+                            isMobileActive
+                              ? 'text-white lg:text-[#241A16]'
+                              : 'text-[#241A16]'
+                          } ${
+                            isDesktopActive ? 'lg:text-white!' : ''
+                          }`}
+                        >
+                          {p.title}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Mobile toggle chevron: rotates when open */}
+                    <ChevronDown
+                      className={`h-4 w-4 shrink-0 transition-transform duration-200 lg:hidden ${
+                        isMobileActive ? 'rotate-180 text-[#E5B869]' : 'text-[#6B4030]/60'
+                      }`}
+                    />
                   </button>
-                  {/* On small screens the detail opens directly under the selected phase */}
-                  {isActive && <PhaseDetail phase={p} index={i} className="gni-fade-up mt-2 lg:hidden" />}
+                  {/* On small screens the detail opens directly under the selected phase and collapses when clicked again */}
+                  {isMobileActive && (
+                    <PhaseDetail phase={p} index={i} className="gni-fade-up mt-2 lg:hidden" />
+                  )}
                 </li>
               );
             })}
