@@ -94,7 +94,7 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
         <StatCard icon={Layers} label="Total offerings" value={rows.length} hint={`${counts.workshop} workshops · ${counts.journey} journeys`} />
         <StatCard icon={Eye} tone="green" label="Live on website" value={liveCount} hint={`${counts.hidden} hidden`} />
         <StatCard icon={BookOpen} tone={fullCount ? 'red' : 'neutral'} label="Fully booked" value={fullCount} hint="No seats left" />
@@ -239,7 +239,7 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
                         <span className="font-semibold tabular-nums">{formatINR(offer)}</span>
                         {regular > offer && <span className="ml-2 text-xs text-[#6B4030]/60 line-through">{formatINR(regular)}</span>}
                       </span>
-                      <div className="w-40">
+                      <div className="w-full xs:w-40 max-w-[200px]">
                         <SeatsBar total={Number(course.seats_total) || 0} booked={Number(course.booked_seats) || 0} />
                       </div>
                     </div>
@@ -249,7 +249,7 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
                         <span className={`text-xs font-medium ${live ? 'text-emerald-700' : 'text-[#6B4030]/70'}`}>{live ? 'Live' : 'Hidden'}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Button icon={Pencil} onClick={() => onEdit(course)} className="py-1.5">
+                        <Button icon={Pencil} onClick={() => onEdit(course)} className="py-1 px-2.5 sm:px-3 text-xs sm:text-sm">
                           Edit
                         </Button>
                         <IconAction icon={Trash2} label="Delete offering" tone="danger" onClick={() => onDelete(course.id, course.title)} />

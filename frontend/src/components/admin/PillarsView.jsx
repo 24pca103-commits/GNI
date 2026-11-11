@@ -296,13 +296,14 @@ export default function PillarsView({ pillars, courses, loading, onChanged, onDe
               const count = offeringsIn(p);
               const busy = busyId === p.id;
               return (
-                <li key={p.id} className={`flex flex-col gap-3 p-4 sm:flex-row sm:items-center ${live ? '' : 'opacity-70'}`}>
+                <li key={p.id} className={`flex flex-col gap-3 p-3.5 sm:p-4 sm:flex-row sm:items-center ${live ? '' : 'opacity-70'}`}>
+
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     <div className="flex flex-col">
                       <IconAction icon={ArrowUp} label="Move up" onClick={() => move(i, -1)} disabled={i === 0 || busy} />
                       <IconAction icon={ArrowDown} label="Move down" onClick={() => move(i, 1)} disabled={i === ordered.length - 1 || busy} />
                     </div>
-                    <img src={p.image || '/artisan/pillar-painting.jpg'} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />
+                    <img src={p.image || '/artisan/pillar-painting.jpg'} alt="" className="h-12 w-16 sm:h-14 sm:w-20 shrink-0 rounded-lg object-cover" />
                     <div className="min-w-0">
                       <p className="text-xs font-semibold uppercase tracking-wide text-[#B89555]">
                         {i + 1}. {p.category}
@@ -322,7 +323,7 @@ export default function PillarsView({ pillars, courses, loading, onChanged, onDe
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between gap-3 sm:justify-end">
+                  <div className="flex flex-wrap items-center justify-between gap-2 sm:justify-end">
                     <div className="flex items-center gap-2">
                       <Switch
                         checked={live}
@@ -332,7 +333,7 @@ export default function PillarsView({ pillars, courses, loading, onChanged, onDe
                       <span className={`w-12 text-xs font-medium ${live ? 'text-emerald-700' : 'text-[#6B4030]/70'}`}>{live ? 'Live' : 'Hidden'}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button icon={Pencil} onClick={() => setEditing(p)} className="py-1.5">
+                      <Button icon={Pencil} onClick={() => setEditing(p)} className="py-1 px-2.5 sm:px-3 text-xs sm:text-sm">
                         Edit
                       </Button>
                       <IconAction icon={Trash2} label="Delete pillar" tone="danger" onClick={() => onDelete(p, count)} disabled={busy} />

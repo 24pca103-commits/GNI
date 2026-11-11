@@ -97,17 +97,22 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
   const shared = { active, badges, onSync, syncing, lastSync, onLogout };
 
   return (
-    <div className="min-h-screen bg-[#F7F2E8] font-['DM_Sans'] text-[#241A16]">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-[#F7F2E8] font-['DM_Sans'] text-[#241A16]">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-[#6B4030]/15 bg-white lg:block shadow-2xs">
         <SidebarContent {...shared} onNavigate={onNavigate} />
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#6B4030]/15 bg-[#F7F2E8] px-4 py-2.5 lg:hidden shadow-2xs">
-        <div className="flex items-center gap-2.5">
-          <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-9 sm:h-10 w-auto object-contain shrink-0" />
-          <span className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold tracking-tight text-[#4A2C20] truncate">Global Nagas Institute</span>
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#6B4030]/15 bg-[#F7F2E8]/95 backdrop-blur-md px-3 sm:px-4 py-2.5 lg:hidden shadow-xs w-full max-w-full">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-2">
+          <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-8 sm:h-9 w-auto object-contain shrink-0" />
+          <span className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold tracking-tight text-[#4A2C20] truncate">
+            Global Nagas Institute
+          </span>
+          <span className="hidden sm:inline-block rounded-md bg-[#4A2C20]/8 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#B89555] shrink-0">
+            Admin
+          </span>
         </div>
         <button
           type="button"
@@ -142,8 +147,8 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
         </div>
       )}
 
-      <main className="lg:pl-64">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">{children}</div>
+      <main className="w-full max-w-full min-w-0 lg:pl-64">
+        <div className="mx-auto max-w-6xl px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-10 min-w-0">{children}</div>
       </main>
     </div>
   );

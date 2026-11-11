@@ -70,7 +70,7 @@ Status: ${statusLabel(current)} → ${statusLabel(target)}.${seatNote} The stude
       onChange={handleChange}
       onClick={(e) => e.stopPropagation()}
       aria-label={`Application status: ${statusLabel(current)}. Choose the next step.`}
-      className={`rounded-lg border py-1.5 pl-2.5 pr-7 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#B89555]/30 cursor-pointer ${style}`}
+      className={`rounded-lg border py-1.5 pl-2 sm:pl-2.5 pr-6 sm:pr-7 text-[11px] sm:text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#B89555]/30 cursor-pointer max-w-full ${style}`}
     >
       <option value="" disabled>
         {statusLabel(current)}

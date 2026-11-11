@@ -75,14 +75,14 @@ export default function FeedbackView({ feedbacks, loading, busyId, onRefresh, on
             const badge = STATUS_BADGE[status];
             const busy = busyId === fb.id;
             return (
-              <article key={fb.id} className="flex flex-col rounded-2xl border border-[#6B4030]/12 bg-white p-5">
-                <header className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#4A2C20] font-bold text-[#E5B869]">
+              <article key={fb.id} className="flex flex-col rounded-2xl border border-[#6B4030]/12 bg-white p-4 sm:p-5 shadow-xs w-full max-w-full min-w-0">
+                <header className="flex items-start justify-between gap-2.5 sm:gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
+                    <span className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-[#4A2C20] text-xs sm:text-sm font-bold text-[#E5B869]">
                       {(fb.name || 'G').trim().charAt(0).toUpperCase()}
                     </span>
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#241A16]">{fb.name || 'Anonymous'}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-sm sm:text-base text-[#241A16]">{fb.name || 'Anonymous'}</p>
                       <p className="truncate text-xs text-[#6B4030]">{[fb.role, fb.batch, fb.location].filter(Boolean).join(' · ') || 'Student'}</p>
                     </div>
                   </div>
@@ -91,22 +91,22 @@ export default function FeedbackView({ feedbacks, loading, busyId, onRefresh, on
                   </Badge>
                 </header>
 
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-3 sm:mt-4 flex items-center justify-between">
                   <Stars rating={fb.rating || 5} />
-                  <span className="text-xs text-[#6B4030]/80">{formatDate(fb.created_at)}</span>
+                  <span className="text-[11px] sm:text-xs text-[#6B4030]/80">{formatDate(fb.created_at)}</span>
                 </div>
 
-                <p className="mt-3 flex-1 whitespace-pre-line text-sm [overflow-wrap:anywhere] leading-relaxed text-[#241A16]">{fb.review}</p>
+                <p className="mt-2.5 sm:mt-3 flex-1 whitespace-pre-line text-xs sm:text-sm [overflow-wrap:anywhere] leading-relaxed text-[#241A16]">{fb.review}</p>
 
-                <footer className="mt-4 flex items-center justify-between gap-2 border-t border-[#6B4030]/8 pt-4">
-                  <div className="flex flex-wrap items-center gap-2">
+                <footer className="mt-3.5 sm:mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[#6B4030]/8 pt-3.5 sm:pt-4">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     {status !== 'approved' && (
-                      <Button variant="success" icon={ThumbsUp} onClick={() => onApprove(fb.id)} disabled={busy} className="py-1.5">
+                      <Button variant="success" icon={ThumbsUp} onClick={() => onApprove(fb.id)} disabled={busy} className="py-1 px-2.5 sm:px-3 text-xs sm:text-sm">
                         Approve & publish
                       </Button>
                     )}
                     {status !== 'rejected' && (
-                      <Button icon={ThumbsDown} onClick={() => onReject(fb.id)} disabled={busy} className="py-1.5">
+                      <Button icon={ThumbsDown} onClick={() => onReject(fb.id)} disabled={busy} className="py-1 px-2.5 sm:px-3 text-xs sm:text-sm">
                         {status === 'approved' ? 'Unpublish' : 'Reject'}
                       </Button>
                     )}
