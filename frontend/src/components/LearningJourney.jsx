@@ -141,8 +141,7 @@ function Roadmap({ phases, totalDays }) {
                 type="button"
                 onClick={() => select(i)}
                 aria-label={`Show phase ${i + 1}: ${p.title}`}
-                style={{ flex: `${periodLength(p.period)} 1 0%` }}
-                className={`h-full rounded-full transition-colors cursor-pointer ${
+                className={`flex-1 h-full rounded-full transition-colors cursor-pointer ${
                   i <= safeActive ? 'bg-[#B89555]' : 'bg-[#E8DEC8] hover:bg-[#D9C9A6]'
                 }`}
               />
