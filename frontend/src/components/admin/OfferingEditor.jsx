@@ -360,6 +360,12 @@ function DurationRoadmapEditor({
   const [open, setOpen] = useState(Boolean(durErr || anyPhaseError || durationIndex === 0));
   const lastEnd = phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
 
+  // Dedicated compact numeric input styling (prevents w-full from stretching day inputs on mobile)
+  const dayInputStyle = (isErr) =>
+    `w-12 sm:w-14 h-8 text-center rounded-lg border bg-white px-1 py-0.5 text-xs font-bold tabular-nums text-[#241A16] transition-colors focus:outline-none focus:ring-1 focus:ring-[#B89555] cursor-text select-text ${
+      isErr ? 'border-red-500 bg-red-50 focus:border-red-600' : 'border-[#6B4030]/25 focus:border-[#B89555]'
+    }`;
+
   return (
     <div className="mt-2.5 border-t border-[#6B4030]/15 pt-2">
       <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FAF7F0] hover:bg-[#F3EBDD] px-3 py-2 rounded-xl border border-[#6B4030]/15 transition-colors">
@@ -415,18 +421,18 @@ function DurationRoadmapEditor({
             const anyPhaseErr = phaseDaysErr || phaseTitleErr || phaseDetailsErr || err(`${pKey}.outcome`) || err(`${pKey}.materials`);
 
             return (
-              <div key={pIdx} className="space-y-1.5 rounded-lg border border-[#6B4030]/15 bg-white p-2.5 shadow-2xs">
-                {/* Row 1: Phase Number + From Day + To Day + Phase Title + Actions */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#241A16] shrink-0">
+              <div key={pIdx} className="space-y-2 rounded-xl border border-[#6B4030]/15 bg-white p-3 shadow-2xs">
+                {/* Row 1: Phase Number + From Day + To Day (Left) & Actions (Right) */}
+                <div className="flex items-center justify-between gap-2 border-b border-[#6B4030]/10 pb-2">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#241A16] shrink-0">
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold">
                         {pIdx + 1}
                       </span>
-                      <span className="hidden sm:inline">Phase {pIdx + 1}:</span>
+                      <span className="text-xs font-bold text-[#4A2C20]">Phase {pIdx + 1}:</span>
                     </span>
 
-                    <div className="flex items-center gap-1 text-xs shrink-0">
+                    <div className="flex items-center gap-1.5 text-xs shrink-0">
                       <span className="text-[11px] text-[#6B4030] font-medium">Day</span>
                       <input
                         type="text"
@@ -439,7 +445,7 @@ function DurationRoadmapEditor({
                           const val = e.target.value.replace(/\D/g, '');
                           onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
                         }}
-                        className={inputClass(phaseDaysErr, 'w-10 sm:w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
+                        className={dayInputStyle(Boolean(phaseDaysErr))}
                       />
                       <span className="text-[11px] text-[#6B4030]">to</span>
                       <input
@@ -453,52 +459,53 @@ function DurationRoadmapEditor({
                           const val = e.target.value.replace(/\D/g, '');
                           onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
                         }}
-                        className={inputClass(phaseDaysErr, 'w-10 sm:w-11 text-center py-0.5 px-1 text-xs font-semibold tabular-nums')}
+                        className={dayInputStyle(Boolean(phaseDaysErr))}
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center shrink-0 ml-auto sm:order-last">
+                  <div className="flex items-center gap-1 shrink-0">
                     <IconButton title="Move up" onClick={() => onMovePhase(pIdx, -1)} disabled={pIdx === 0}>↑</IconButton>
                     <IconButton title="Move down" onClick={() => onMovePhase(pIdx, 1)} disabled={pIdx === phases.length - 1}>↓</IconButton>
                     <IconButton title="Remove phase" tone="danger" onClick={() => onRemovePhase(pIdx)} disabled={phases.length === 1}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </IconButton>
                   </div>
-
-                  <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[180px] sm:max-w-md">
-                    <input
-                      type="text"
-                      value={p.title}
-                      maxLength={LIMITS.phaseTitle.max}
-                      onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
-                      placeholder="Phase Title (e.g. Tamili Brahmi & Epigraphy)*"
-                      className={inputClass(phaseTitleErr, 'w-full py-1 px-2.5 text-xs font-semibold')}
-                    />
-                  </div>
                 </div>
 
-                {/* Row 2: What is covered */}
-                <div className="max-w-2xl">
+                {/* Row 2: Phase Title */}
+                <div>
+                  <input
+                    type="text"
+                    value={p.title}
+                    maxLength={LIMITS.phaseTitle.max}
+                    onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
+                    placeholder="Phase Title (e.g. Tamili Brahmi & Epigraphy)*"
+                    className={inputClass(phaseTitleErr, 'w-full py-1.5 px-3 text-xs font-semibold')}
+                  />
+                </div>
+
+                {/* Row 3: What is covered */}
+                <div>
                   <input
                     type="text"
                     value={p.details}
                     maxLength={LIMITS.phaseDetails.max}
                     onChange={(e) => onChangePhase(pIdx, 'details', e.target.value)}
                     placeholder="What is covered (e.g. Decipher Tamil Brahmi scripts, study charters & practise rock scribing)*"
-                    className={inputClass(phaseDetailsErr, 'w-full py-0.5 px-2 text-xs leading-normal')}
+                    className={inputClass(phaseDetailsErr, 'w-full py-1.5 px-3 text-xs leading-normal')}
                   />
                 </div>
 
-                {/* Row 3: You'll create + Materials in 2 tight columns */}
-                <div className="max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* Row 4: You'll create + Materials in 2 responsive columns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
                     type="text"
                     value={p.outcome}
                     maxLength={LIMITS.phaseOutcome.max}
                     onChange={(e) => onChangePhase(pIdx, 'outcome', e.target.value)}
                     placeholder="You'll create: e.g. Hand-scribed copper tablet (optional)"
-                    className={inputClass(err(`${pKey}.outcome`), 'w-full py-0.5 px-2 text-xs')}
+                    className={inputClass(err(`${pKey}.outcome`), 'w-full py-1.5 px-3 text-xs')}
                   />
                   <input
                     type="text"
@@ -506,19 +513,18 @@ function DurationRoadmapEditor({
                     maxLength={LIMITS.phaseMaterials.max}
                     onChange={(e) => onChangePhase(pIdx, 'materials', e.target.value)}
                     placeholder="Materials: e.g. Copper sheets, Stylus (optional)"
-                    className={inputClass(err(`${pKey}.materials`), 'w-full py-0.5 px-2 text-xs')}
+                    className={inputClass(err(`${pKey}.materials`), 'w-full py-1.5 px-3 text-xs')}
                   />
                 </div>
 
-                {/* Row 4: Error notification if any */}
+                {/* Row 5: Error notification if any */}
                 {anyPhaseErr && (
                   <p className="text-[11px] font-medium text-red-600 flex items-center gap-1 pt-0.5">
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{anyPhaseErr}</span>
                   </p>
                 )}
-              </div>
-            );
+              </div>            );
           })}
 
           <AddButton
@@ -1299,7 +1305,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
           </nav>
 
           {/* Form */}
-          <div className="min-w-0 flex-1 overflow-y-auto">
+          <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
             <div className="space-y-5 p-4 sm:p-6 lg:p-8">
               {/* 1. Basics */}
               <Section

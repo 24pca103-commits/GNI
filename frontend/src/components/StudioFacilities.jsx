@@ -126,20 +126,52 @@ export default function StudioFacilities() {
   // Tripled list for infinite looping without jump
   const displayList = [...facilities, ...facilities, ...facilities];
 
-  // Dynamically detect which EXACT icon is in the CENTER of the carousel track
-  const updateCenterItem = () => {
+  // Scroll smoothly to center a facility item by index
+  const scrollToIndex = (idx, behavior = 'smooth') => {
     const el = scrollRef.current;
     if (!el) return;
+    const items = el.children;
+    if (!items || !items[idx]) return;
 
-    // Seamless infinite looping wrap
-    const oneThird = el.scrollWidth / 3;
-    if (oneThird > 0) {
-      if (el.scrollLeft >= oneThird * 2) {
-        el.scrollLeft -= oneThird;
-      } else if (el.scrollLeft <= 2) {
-        el.scrollLeft += oneThird;
-      }
+    isAnimatingRef.current = true;
+    const target = items[idx];
+    const targetScroll = target.offsetLeft + target.offsetWidth / 2 - el.clientWidth / 2;
+    el.scrollTo({ left: targetScroll, behavior });
+
+    setActiveCenterIndex(idx);
+    const facId = displayList[idx]?.id;
+    if (facId !== undefined) {
+      setActiveIndex(facId);
     }
+
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+      const elNow = scrollRef.current;
+      if (!elNow) return;
+      // Wrap seamlessly around middle set
+      if (idx >= facilities.length * 2) {
+        const resetIdx = idx - facilities.length;
+        const resetTarget = items[resetIdx];
+        if (resetTarget) {
+          elNow.scrollLeft = resetTarget.offsetLeft + resetTarget.offsetWidth / 2 - elNow.clientWidth / 2;
+          setActiveCenterIndex(resetIdx);
+        }
+      } else if (idx < facilities.length) {
+        const resetIdx = idx + facilities.length;
+        const resetTarget = items[resetIdx];
+        if (resetTarget) {
+          elNow.scrollLeft = resetTarget.offsetLeft + resetTarget.offsetWidth / 2 - elNow.clientWidth / 2;
+          setActiveCenterIndex(resetIdx);
+        }
+      }
+    }, 450);
+  };
+
+  // Dynamically detect which EXACT icon is in the CENTER of the carousel track during manual swipe/drag
+  const updateCenterItem = () => {
+    if (isAnimatingRef.current) return;
+    const el = scrollRef.current;
+    if (!el) return;
 
     const containerCenter = el.scrollLeft + el.clientWidth / 2;
     const items = el.children;
@@ -171,14 +203,13 @@ export default function StudioFacilities() {
 
   // Center initial middle item on mount
   useEffect(() => {
-    const el = scrollRef.current;
-    if (el) {
-      const oneThird = el.scrollWidth / 3;
-      if (oneThird > 0) {
-        el.scrollLeft = oneThird;
-      }
-      setTimeout(updateCenterItem, 50);
-    }
+    const midIdx = facilities.length; // index 6
+    setActiveCenterIndex(midIdx);
+    setActiveIndex(0);
+    const timer = setTimeout(() => {
+      scrollToIndex(midIdx, 'auto');
+    }, 60);
+    return () => clearTimeout(timer);
   }, []);
 
   // Smooth periodic auto-scroll across both desktop and mobile
@@ -191,20 +222,16 @@ export default function StudioFacilities() {
         isAnimatingRef.current;
 
       if (!isPaused && scrollRef.current) {
-        const el = scrollRef.current;
-        isAnimatingRef.current = true;
-        const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-        const step = isMobile ? el.clientWidth : 154;
-        el.scrollBy({ left: step, behavior: 'smooth' });
-        setTimeout(() => {
-          isAnimatingRef.current = false;
-          updateCenterItem();
-        }, 550);
+        setActiveCenterIndex((prev) => {
+          const next = (prev + 1) % displayList.length;
+          scrollToIndex(next, 'smooth');
+          return next;
+        });
       }
-    }, 4000);
+    }, 3600);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [displayList.length]);
 
   // Global Mouse Move and Up Handlers for smooth manual dragging across entire viewport
   useEffect(() => {
@@ -265,6 +292,10 @@ export default function StudioFacilities() {
   };
 
   const handleMouseEnter = () => {
+    // On touch devices, synthetic mouseenter shouldn't pause auto-scroll
+    if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(hover: hover)').matches) {
+      return;
+    }
     isHoveredRef.current = true;
   };
 
@@ -272,9 +303,10 @@ export default function StudioFacilities() {
     isHoveredRef.current = false;
   };
 
-  // Touch Handlers for Smooth Mobile Dragging
+  // Touch Handlers for Smooth Mobile Dragging & Auto-scroll resume
   const handleTouchStart = (e) => {
     isTouchingRef.current = true;
+    isHoveredRef.current = false;
     hasDraggedRef.current = false;
     if (e.touches && e.touches[0] && scrollRef.current) {
       touchStartXRef.current = e.touches[0].pageX;
@@ -306,63 +338,33 @@ export default function StudioFacilities() {
 
   const handleTouchEnd = () => {
     isTouchingRef.current = false;
+    isHoveredRef.current = false;
     setTimeout(() => {
       hasDraggedRef.current = false;
-    }, 50);
+      updateCenterItem();
+    }, 80);
   };
 
   // Direct Click Handler - Centers the clicked icon smoothly if not dragging
   const handleItemClick = (e, trackIdx, facId) => {
     if (hasDraggedRef.current) return;
-    setActiveCenterIndex(trackIdx);
-    setActiveIndex(facId);
-    const btn = e.currentTarget;
-    const el = scrollRef.current;
-    if (btn && el) {
-      isAnimatingRef.current = true;
-      const targetScroll = btn.offsetLeft + btn.offsetWidth / 2 - el.clientWidth / 2;
-      el.scrollTo({ left: targetScroll, behavior: 'smooth' });
-      setTimeout(() => {
-        isAnimatingRef.current = false;
-      }, 500);
-    }
+    scrollToIndex(trackIdx, 'smooth');
   };
 
-  // Slider Button Handlers (Prev / Next) with Smooth Step & Auto-Wrap
+  // Slider Button Handlers (Prev / Next) with Smooth Index Centering
   const handlePrev = (e) => {
     e?.preventDefault();
     e?.stopPropagation();
-    const el = scrollRef.current;
-    if (!el) return;
-    isAnimatingRef.current = true;
-    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? el.clientWidth : 160;
-    el.scrollBy({ left: -step, behavior: 'smooth' });
-    setTimeout(() => {
-      isAnimatingRef.current = false;
-      const oneThird = el.scrollWidth / 3;
-      if (el.scrollLeft <= 0) {
-        el.scrollLeft += oneThird;
-      }
-    }, 500);
+    const prev = (activeCenterIndex - 1 + displayList.length) % displayList.length;
+    scrollToIndex(prev, 'smooth');
   };
 
   const handleNext = (e) => {
     e?.preventDefault();
     e?.stopPropagation();
-    const el = scrollRef.current;
-    if (!el) return;
-    isAnimatingRef.current = true;
-    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? el.clientWidth : 160;
-    el.scrollBy({ left: step, behavior: 'smooth' });
-    setTimeout(() => {
-      isAnimatingRef.current = false;
-      const oneThird = el.scrollWidth / 3;
-      if (el.scrollLeft >= oneThird * 2) {
-        el.scrollLeft -= oneThird;
-      }
-    }, 500);
+    const next = (activeCenterIndex + 1) % displayList.length;
+    scrollToIndex(next, 'smooth');
   };
-
   const current = facilities[activeIndex] || facilities[0];
   const CurrentIcon = current ? current.icon : facilities[0].icon;
 
@@ -417,7 +419,7 @@ export default function StudioFacilities() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-start sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-10 sm:px-12 select-none w-full snap-x snap-mandatory scroll-smooth"
+              className="flex items-start sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-10 sm:px-12 select-none w-full snap-x snap-mandatory"
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
