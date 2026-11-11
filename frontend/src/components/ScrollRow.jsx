@@ -79,16 +79,14 @@ export default function ScrollRow({ children, activeIndex, label, role, dots = f
       <div className="relative">
         {state.left && (
           <>
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-10 sm:w-16 bg-gradient-to-r from-[var(--row-bg,#F7F2E8)] to-transparent" />
-            <button type="button" aria-label="Scroll left" onClick={() => scrollBy(-1)} className={`${arrow} -left-3`}>
+                        <button type="button" aria-label="Scroll left" onClick={() => scrollBy(-1)} className={`${arrow} -left-3`}>
               <ChevronLeft className="w-5 h-5" />
             </button>
           </>
         )}
         {state.right && (
           <>
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-10 sm:w-16 bg-gradient-to-l from-[var(--row-bg,#F7F2E8)] to-transparent" />
-            <button type="button" aria-label="Scroll right" onClick={() => scrollBy(1)} className={`${arrow} -right-3`}>
+                        <button type="button" aria-label="Scroll right" onClick={() => scrollBy(1)} className={`${arrow} -right-3`}>
               <ChevronRight className="w-5 h-5" />
             </button>
           </>

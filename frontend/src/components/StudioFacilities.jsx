@@ -314,7 +314,8 @@ export default function StudioFacilities() {
     const el = scrollRef.current;
     if (!el) return;
     isAnimatingRef.current = true;
-    el.scrollBy({ left: -160, behavior: 'smooth' });
+    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? 212 : 160;
+    el.scrollBy({ left: -step, behavior: 'smooth' });
     setTimeout(() => {
       isAnimatingRef.current = false;
       const oneThird = el.scrollWidth / 3;
@@ -330,7 +331,8 @@ export default function StudioFacilities() {
     const el = scrollRef.current;
     if (!el) return;
     isAnimatingRef.current = true;
-    el.scrollBy({ left: 160, behavior: 'smooth' });
+    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? 212 : 160;
+    el.scrollBy({ left: step, behavior: 'smooth' });
     setTimeout(() => {
       isAnimatingRef.current = false;
       const oneThird = el.scrollWidth / 3;
@@ -381,9 +383,7 @@ export default function StudioFacilities() {
             </button>
 
             {/* Soft fade masks on left and right edges */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-r from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-l from-[#F7F2E8] via-[#F7F2E8]/80 to-transparent z-10" />
-
+                        
             {/* Scrollable Icon Container */}
             <div
               ref={scrollRef}
@@ -395,7 +395,7 @@ export default function StudioFacilities() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-start gap-3 sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-8 sm:px-12 select-none w-full"
+              className="flex items-start gap-3 sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-[calc(50%-100px)] sm:px-12 select-none w-full snap-x snap-mandatory scroll-smooth"
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
@@ -406,7 +406,7 @@ export default function StudioFacilities() {
                     key={`${fac.id}-${idx}`}
                     data-facility-id={fac.id}
                     onClick={(e) => handleItemClick(e, idx, fac.id)}
-                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[110px] min-w-[110px] sm:w-[130px] sm:min-w-[130px] py-1"
+                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[200px] min-w-[200px] sm:w-[130px] sm:min-w-[130px] snap-center py-1"
                   >
                     {/* Round Shape Icon Container */}
                     <div

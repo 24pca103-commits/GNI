@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   BookOpen,
+  ChevronLeft,
+  ChevronRight,
   Quote,
   Sparkles,
 } from 'lucide-react';
@@ -81,12 +83,38 @@ export default function Hero() {
     e.preventDefault();
   };
 
+    const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 45;
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance) {
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      prevSlide();
+    }
+  };
+
   const current = slides[currentSlide];
 
   return (
     <section
       id="home"
-      className="relative pt-28 pb-8 sm:pt-32 sm:pb-12 md:pt-36 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8]"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative pt-24 pb-8 sm:pt-32 sm:pb-12 md:pt-36 md:pb-14 overflow-hidden bg-[#241A16] text-[#F7F2E8] select-none"
     >
       {/* Background Auto-Sliding Carousel with Solid Color Overlay (No Gradients) */}
       <div className="absolute inset-0 z-0">
@@ -113,85 +141,115 @@ export default function Hero() {
         })}
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content Area - CSS Grid stacking ensures ALL slides share the exact same height! */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-10 lg:px-12">
-        <div className="max-w-3xl space-y-2.5 sm:space-y-5 text-left mx-0">
-          {/* Tag Badge in Sentence Case */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#4A2C20] border border-[#B89555]/50 text-[#E5B869] text-[11px] sm:text-xs font-['DM_Sans'] font-medium self-start shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#E5B869] animate-pulse" />
-            <span>{current.tag}</span>
-          </div>
+        <div className="max-w-3xl grid grid-cols-1 grid-rows-1 text-left mx-0">
+          {slides.map((slide, idx) => {
+            const isActive = idx === currentSlide;
+            return (
+              <div
+                key={slide.id}
+                className={`col-start-1 row-start-1 space-y-2.5 sm:space-y-5 transition-opacity duration-700 ease-in-out ${
+                  isActive ? 'opacity-100 pointer-events-auto z-10' : 'opacity-0 pointer-events-none z-0'
+                }`}
+              >
+                {/* Tag Badge in Sentence Case */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-[#4A2C20] border border-[#B89555]/50 text-[#E5B869] text-[11px] sm:text-xs font-['DM_Sans'] font-medium self-start shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E5B869] animate-pulse" />
+                  <span>{slide.tag}</span>
+                </div>
 
-          {/* Heading in Cormorant Garamond - Sentence Case with high contrast */}
-          <h1 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-white tracking-tight leading-[1.2] pb-1 text-left drop-shadow-md">
-            <span className="block sm:inline">{current.headingMain}</span>{' '}
-            <span className="text-[#E5B869] italic block sm:inline">
-              {current.headingAccent}
-            </span>
-          </h1>
+                {/* Heading in Cormorant Garamond - Sentence Case with high contrast */}
+                <h1 className="font-['Cormorant_Garamond'] text-xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-white tracking-tight leading-[1.2] pb-1 text-left drop-shadow-md">
+                  <span className="block sm:inline">{slide.headingMain}</span>{' '}
+                  <span className="text-[#E5B869] italic block sm:inline">
+                    {slide.headingAccent}
+                  </span>
+                </h1>
 
-          {/* Subtitle in DM Sans - Sentence Case */}
-          <p className="font-['Cormorant_Garamond'] text-sm sm:text-2xl text-white font-medium text-left leading-snug drop-shadow-sm">
-            {current.subtitle}
-          </p>
-
-          {/* Description in DM Sans - Sentence Case */}
-          <p className="font-['DM_Sans'] text-[11.5px] sm:text-[14.5px] text-[#F7F2E8] max-w-2xl leading-relaxed font-normal text-left drop-shadow-xs">
-            {current.desc}
-          </p>
-
-          {/* Heritage Quote Card (Solid flat background, NO gradients) */}
-          <div className="bg-[#241A16]/95 border border-[#B89555]/40 p-3.5 sm:p-4 rounded-xl max-w-2xl text-left shadow-md">
-            <div className="flex items-start gap-2.5 sm:gap-3">
-              <Quote className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#E5B869] shrink-0 mt-0.5" />
-              <div className="space-y-0.5 sm:space-y-1 text-left">
-                <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-base text-white leading-relaxed font-normal text-left">
-                  "{current.quote}"
+                {/* Subtitle in DM Sans - Sentence Case */}
+                <p className="font-['Cormorant_Garamond'] text-sm sm:text-2xl text-white font-medium text-left leading-snug drop-shadow-sm">
+                  {slide.subtitle}
                 </p>
-                <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#E5B869] font-semibold text-left">
-                  — {current.author}
+
+                {/* Description in DM Sans - Sentence Case */}
+                <p className="font-['DM_Sans'] text-[11.5px] sm:text-[14.5px] text-[#F7F2E8] max-w-2xl leading-relaxed font-normal text-left drop-shadow-xs">
+                  {slide.desc}
                 </p>
+
+                {/* Heritage Quote Card (Solid flat background, NO gradients) */}
+                <div className="bg-[#241A16]/95 border border-[#B89555]/40 p-3.5 sm:p-4 rounded-xl max-w-2xl text-left shadow-md">
+                  <div className="flex items-start gap-2.5 sm:gap-3">
+                    <Quote className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#E5B869] shrink-0 mt-0.5" />
+                    <div className="space-y-0.5 sm:space-y-1 text-left">
+                      <p className="font-['Cormorant_Garamond'] italic text-xs sm:text-base text-white leading-relaxed font-normal text-left">
+                        "{slide.quote}"
+                      </p>
+                      <p className="font-['DM_Sans'] text-[10px] sm:text-xs text-[#E5B869] font-semibold text-left">
+                        — {slide.author}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons in Sentence Case - Adopt text size on mobile & desktop */}
+                <div className="pt-1 sm:pt-2 flex flex-row flex-wrap items-center gap-2.5 sm:gap-3.5 justify-start">
+                  <Link
+                    to="/register"
+                    className="w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors border border-[#B89555] shadow-md shrink-0"
+                  >
+                    <span>{slide.primaryBtn}</span>
+                    <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#241A16]" />
+                  </Link>
+
+                  <div
+                    className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] border border-[#B89555]/40 shadow-sm shrink-0 cursor-default select-none"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E5B869]" />
+                    <span>{slide.secondaryBtn}</span>
+                  </div>
+                </div>
+
+                {/* Core Highlights Placed Directly Below Register Button - Strictly Single Line on Mobile */}
+                <div className="pt-1.5 sm:pt-3 flex flex-nowrap items-center justify-start gap-2 sm:gap-6 text-[10px] sm:text-sm font-['DM_Sans'] text-white/95 w-full sm:w-auto">
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <span className="font-number text-xs sm:text-lg font-bold text-[#E5B869]">4</span>
+                    <span className="whitespace-nowrap">Heritage Pillars</span>
+                  </div>
+                  <div className="h-2.5 sm:h-3 w-px bg-white/30 shrink-0" />
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <span className="font-number text-xs sm:text-lg font-bold text-[#E5B869]">60</span>
+                    <span className="whitespace-nowrap">Days <span className="hidden sm:inline">Creator </span>Journey</span>
+                  </div>
+                  <div className="h-2.5 sm:h-3 w-px bg-white/30 shrink-0" />
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#E5B869] shrink-0" />
+                    <span className="whitespace-nowrap">Hands-on Experience</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          {/* Action Buttons in Sentence Case - Adopt text size on mobile & desktop */}
-          <div className="pt-1 sm:pt-2 flex flex-row flex-wrap items-center gap-2.5 sm:gap-3.5 justify-start">
-            <Link
-              to="/register"
-              className="w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c7a462] transition-colors border border-[#B89555] shadow-md shrink-0"
-            >
-              <span>{current.primaryBtn}</span>
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#241A16]" />
-            </Link>
-
-            <div
-              className="w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-lg font-['DM_Sans'] text-xs sm:text-sm font-medium text-[#F7F2E8] bg-[#4A2C20] border border-[#B89555]/40 shadow-sm shrink-0 cursor-default select-none"
-            >
-              <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E5B869]" />
-              <span>{current.secondaryBtn}</span>
-            </div>
-          </div>
-
-          {/* Core Highlights Placed Directly Below Register Button - Strictly Single Line on Mobile */}
-          <div className="pt-1.5 sm:pt-3 flex flex-nowrap items-center justify-start gap-2 sm:gap-6 text-[10px] sm:text-sm font-['DM_Sans'] text-white/95 w-full sm:w-auto">
-            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <span className="font-number text-xs sm:text-lg font-bold text-[#E5B869]">4</span>
-              <span className="whitespace-nowrap">Heritage Pillars</span>
-            </div>
-            <div className="h-2.5 sm:h-3 w-px bg-white/30 shrink-0" />
-            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <span className="font-number text-xs sm:text-lg font-bold text-[#E5B869]">60</span>
-              <span className="whitespace-nowrap">Days <span className="hidden sm:inline">Creator </span>Journey</span>
-            </div>
-            <div className="h-2.5 sm:h-3 w-px bg-white/30 shrink-0" />
-            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#E5B869] shrink-0" />
-              <span className="whitespace-nowrap">Hands-on Experience</span>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
+
+      {/* Manual Sliding Left / Right Arrow Buttons */}
+      <button
+        type="button"
+        onClick={prevSlide}
+        aria-label="Previous slide"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#241A16]/75 hover:bg-[#4A2C20] border border-[#B89555]/40 text-[#E5B869] flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+      >
+        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
+      <button
+        type="button"
+        onClick={nextSlide}
+        aria-label="Next slide"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#241A16]/75 hover:bg-[#4A2C20] border border-[#B89555]/40 text-[#E5B869] flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+      >
+        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
 
       {/* Banner Bottom Center Alignment for Indicator Dots */}
       <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 sm:gap-2.5">

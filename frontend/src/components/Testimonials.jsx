@@ -303,9 +303,7 @@ export default function Testimonials() {
         <Reveal direction="up" delay={150}>
           <div className="relative py-2">
             {/* Desktop-only Soft Fade Gradient Masks (hidden on mobile to prevent clipping/cutting off cards) */}
-            <div className="hidden sm:block pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
-            <div className="hidden sm:block pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
-
+                        
             {/* Scroll Container with combined auto-scroll and manual swipe/drag */}
             <div
               ref={scrollRef}

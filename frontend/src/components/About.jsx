@@ -123,10 +123,10 @@ export default function About() {
                 </div>
                 <div className="pl-2.5 sm:pl-3.5 min-w-0">
                   <p className="font-['Cormorant_Garamond'] text-sm sm:text-xl font-bold text-[#B89555] leading-tight">
-                    1:3 Ratio
+                    25% : 75%
                   </p>
                   <p className="font-['DM_Sans'] text-[10px] sm:text-[11px] text-[#F7F2E8]/85 mt-0.5 leading-snug">
-                    25% Theory : 75% Studio
+                    Theory : Studio
                   </p>
                 </div>
               </div>

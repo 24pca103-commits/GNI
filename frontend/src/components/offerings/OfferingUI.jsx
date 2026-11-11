@@ -130,7 +130,7 @@ export function OverviewCard({ course, facts, fallbackImage }) {
           </span>
         )}
       </div>
-      <div className="sm:col-span-3 p-6 sm:p-8 flex flex-col justify-center">
+      <div className="sm:col-span-3 p-5 sm:p-8 flex flex-col justify-center w-full">
         {course.pillar_title && (
           <p className="font-['DM_Sans'] text-xs font-semibold uppercase tracking-[0.14em] text-[#B89555]">
             {course.pillar_title}
@@ -152,14 +152,14 @@ export function FactRow({ facts }) {
   const visible = facts.filter((f) => f.label);
   if (visible.length === 0) return null;
   return (
-    <ul className="mt-6 flex flex-wrap gap-2">
+    <ul className="mt-5 sm:mt-6 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full">
       {visible.map(({ icon: Icon, label }) => (
         <li
           key={label}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF7F0] border border-[#6B4030]/10 font-['DM_Sans'] text-[13px] text-[#4A2C20]"
+          className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#FAF7F0] border border-[#6B4030]/10 font-['DM_Sans'] text-xs sm:text-[13px] text-[#4A2C20] text-center sm:text-left"
         >
-          <Icon className="w-3.5 h-3.5 text-[#B89555]" />
-          {label}
+          <Icon className="w-3.5 h-3.5 text-[#B89555] shrink-0" />
+          <span className="truncate">{label}</span>
         </li>
       ))}
     </ul>

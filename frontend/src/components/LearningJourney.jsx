@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BookOpen, Clock, GraduationCap, Hand, MapPin, Sparkles } from 'lucide-react';
+import { BookOpen, Clock, ChevronDown, GraduationCap, Hand, MapPin, Sparkles } from 'lucide-react';
 import Reveal from './Reveal';
 import useOfferings from '../hooks/useOfferings';
 import {
@@ -206,13 +206,6 @@ function Roadmap({ phases, totalDays }) {
               );
             })}
           </ol>
-          {/* Fades hint that more phases are available by scrolling (lg only) */}
-          {scrollHint.top && (
-            <div className="pointer-events-none absolute inset-x-0 top-0 hidden h-8 bg-gradient-to-b from-white to-transparent lg:block" />
-          )}
-          {scrollHint.bottom && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-10 bg-gradient-to-t from-white to-transparent lg:block" />
-          )}
         </div>
 
         <div className="hidden lg:block lg:col-span-7">
@@ -315,27 +308,27 @@ export function JourneyDetail({ course, preview = false }) {
 
   return (
     <>
-      {/* Duration selector tabs when multiple durations exist */}
+      {/* Duration selector listbox when multiple durations exist */}
       {durationsList.length > 1 && (
-        <div className="flex flex-wrap items-center gap-2.5 pt-4">
-          <span className="w-full sm:w-auto text-xs font-semibold uppercase tracking-wider text-[#B89555]">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3.5 pb-2">
+          <label htmlFor="cohort-duration-listbox" className="text-xs font-bold uppercase tracking-wider text-[#B89555] shrink-0">
             Select Cohort Duration:
-          </span>
-          <div className="inline-flex max-w-full flex-wrap gap-1 rounded-xl bg-[#FAF7F0] p-1 border border-[#6B4030]/15">
-            {durationsList.map((d, dIdx) => (
-              <button
-                key={dIdx}
-                type="button"
-                onClick={() => setSelectedDurationIdx(dIdx)}
-                className={`flex-shrink-0 sm:flex-shrink rounded-lg px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                  safeIdx === dIdx
-                    ? 'bg-[#4A2C20] text-[#E5B869] shadow-sm'
-                    : 'text-[#6B4030] hover:text-[#241A16]'
-                }`}
-              >
-                {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}{d.seats_total ? ` · ${d.seats_total} Seats` : ''}
-              </button>
-            ))}
+          </label>
+          <div className="relative inline-block w-full sm:w-auto min-w-[280px] max-w-md">
+            <select
+              id="cohort-duration-listbox"
+              value={safeIdx}
+              onChange={(e) => setSelectedDurationIdx(Number(e.target.value))}
+              aria-label="Select cohort duration"
+              className="w-full appearance-none rounded-xl bg-white border border-[#6B4030]/25 pl-4 pr-10 py-2.5 text-xs sm:text-sm font-bold text-[#241A16] shadow-2xs hover:border-[#B89555] focus:outline-none focus:ring-2 focus:ring-[#B89555]/30 cursor-pointer transition-colors"
+            >
+              {durationsList.map((d, dIdx) => (
+                <option key={dIdx} value={dIdx} className="bg-white text-[#241A16] py-1">
+                  {d.days} Days Cohort · ₹{Number(d.fee).toLocaleString('en-IN')}{d.seats_total ? ` · ${d.seats_total} Seats` : ''}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#B89555]" />
           </div>
         </div>
       )}
