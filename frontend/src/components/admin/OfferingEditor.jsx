@@ -360,33 +360,36 @@ function DurationRoadmapEditor({
   const [open, setOpen] = useState(Boolean(durErr || anyPhaseError || durationIndex === 0));
   const lastEnd = phases.reduce((m, p) => Math.max(m, Number(p.end) || 0), 0);
 
-  // Dedicated compact numeric input styling (prevents w-full from stretching day inputs on mobile)
+  // Dedicated compact numeric input styling (strict max width and tabular nums)
   const dayInputStyle = (isErr) =>
-    `w-12 sm:w-14 h-8 text-center rounded-lg border bg-white px-1 py-0.5 text-xs font-bold tabular-nums text-[#241A16] transition-colors focus:outline-none focus:ring-1 focus:ring-[#B89555] cursor-text select-text ${
+    `w-12 max-w-[48px] shrink-0 h-8 text-center rounded-lg border bg-white px-1 py-0.5 text-xs font-bold tabular-nums text-[#241A16] transition-colors focus:outline-none focus:ring-1 focus:ring-[#B89555] cursor-text select-text ${
       isErr ? 'border-red-500 bg-red-50 focus:border-red-600' : 'border-[#6B4030]/25 focus:border-[#B89555]'
     }`;
 
   return (
     <div className="mt-2.5 border-t border-[#6B4030]/15 pt-2">
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#FAF7F0] hover:bg-[#F3EBDD] px-3 py-2 rounded-xl border border-[#6B4030]/15 transition-colors">
+      {/* Header bar: fully responsive stacked or side-by-side */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-[#FAF7F0] px-3 py-2.5 rounded-xl border border-[#6B4030]/15">
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex flex-wrap items-center gap-2 text-xs font-bold text-[#4A2C20] cursor-pointer"
+          className="flex items-center justify-between sm:justify-start gap-2 text-xs font-bold text-[#4A2C20] cursor-pointer w-full sm:w-auto"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold shrink-0">
-            {phases.length}
-          </span>
-          <span className="font-['Cormorant_Garamond'] text-base font-bold text-[#241A16]">
-            Roadmap Phases ({days ? `${days} Days Cohort` : 'Set Days'})
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-md bg-[#6B4030]/10 px-2 py-0.5 text-[11px] font-semibold text-[#4A2C20]">
-            {open ? 'Hide Phases' : <><span className="hidden sm:inline">Dropdown: </span>View / Edit Phases</>}
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-bold shrink-0">
+              {phases.length}
+            </span>
+            <span className="font-['Cormorant_Garamond'] text-base font-bold text-[#241A16] truncate">
+              Roadmap Phases ({days ? `${days}d Cohort` : 'Set Days'})
+            </span>
+          </div>
+          <span className="inline-flex items-center gap-1 rounded-md bg-[#6B4030]/10 px-2 py-0.5 text-[11px] font-semibold text-[#4A2C20] shrink-0">
+            {open ? 'Hide' : 'View'}
             {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </span>
         </button>
 
-        <div className="flex items-center gap-2.5 text-xs ml-auto">
+        <div className="flex items-center justify-between sm:justify-end gap-2 text-xs pt-1 sm:pt-0 border-t sm:border-t-0 border-[#6B4030]/10">
           <span className={`tabular-nums text-[11px] font-semibold ${lastEnd >= days && days > 0 ? 'text-emerald-700' : 'text-[#B89555]'}`}>
             {Math.min(lastEnd, days)}/{days || 0}d planned
             {days > 0 && lastEnd < days && ` (Missing ${days - lastEnd}d)`}
@@ -396,7 +399,7 @@ function DurationRoadmapEditor({
             <button
               type="button"
               onClick={onSpreadDays}
-              className="text-[11px] font-semibold text-[#4A2C20] underline decoration-[#B89555] underline-offset-2 hover:text-[#B89555] cursor-pointer"
+              className="text-[11px] font-semibold text-[#4A2C20] underline decoration-[#B89555] underline-offset-2 hover:text-[#B89555] cursor-pointer shrink-0"
             >
               Split evenly
             </button>
@@ -405,63 +408,33 @@ function DurationRoadmapEditor({
       </div>
 
       {durErr && (
-        <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 flex items-center gap-1.5">
+        <div className="mb-2 mt-2 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 flex items-center gap-1.5">
           <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-600" />
           <span>{durErr}</span>
         </div>
       )}
 
       {open && (
-        <div className="space-y-2">
+        <div className="mt-2 space-y-2.5">
           {phases.map((p, pIdx) => {
             const pKey = `durations.${durationIndex}.phases.${pIdx}`;
             const phaseDaysErr = err(`${pKey}.days`);
             const phaseTitleErr = err(`${pKey}.title`);
             const phaseDetailsErr = err(`${pKey}.details`);
             const anyPhaseErr = phaseDaysErr || phaseTitleErr || phaseDetailsErr || err(`${pKey}.outcome`) || err(`${pKey}.materials`);
+            const phaseSpan = (Number(p.end) && Number(p.start) && Number(p.end) >= Number(p.start))
+              ? Number(p.end) - Number(p.start) + 1
+              : 0;
 
             return (
-              <div key={pIdx} className="space-y-2 rounded-xl border border-[#6B4030]/15 bg-white p-3 shadow-2xs">
-                {/* Row 1: Phase Number + From Day + To Day (Left) & Actions (Right) */}
-                <div className="flex items-center justify-between gap-2 border-b border-[#6B4030]/10 pb-2">
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#241A16] shrink-0">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold">
-                        {pIdx + 1}
-                      </span>
-                      <span className="text-xs font-bold text-[#4A2C20]">Phase {pIdx + 1}:</span>
+              <div key={pIdx} className="space-y-2 rounded-xl border border-[#6B4030]/15 bg-white p-2.5 sm:p-3 shadow-2xs">
+                {/* Row 1: Phase Number (Left) & Actions (Right) */}
+                <div className="flex items-center justify-between gap-2 border-b border-[#6B4030]/10 pb-1.5">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#4A2C20] text-[10px] text-[#E5B869] font-semibold shrink-0">
+                      {pIdx + 1}
                     </span>
-
-                    <div className="flex items-center gap-1.5 text-xs shrink-0">
-                      <span className="text-[11px] text-[#6B4030] font-medium">Day</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={p.start ?? ''}
-                        placeholder="1"
-                        onKeyDown={handleOnlyNumericKeyDown}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
-                        }}
-                        className={dayInputStyle(Boolean(phaseDaysErr))}
-                      />
-                      <span className="text-[11px] text-[#6B4030]">to</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={p.end ?? ''}
-                        placeholder="15"
-                        onKeyDown={handleOnlyNumericKeyDown}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
-                        }}
-                        className={dayInputStyle(Boolean(phaseDaysErr))}
-                      />
-                    </div>
+                    <span className="text-xs font-bold text-[#4A2C20] truncate">Phase {pIdx + 1}</span>
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
@@ -473,7 +446,42 @@ function DurationRoadmapEditor({
                   </div>
                 </div>
 
-                {/* Row 2: Phase Title */}
+                {/* Row 2: Dedicated Day Range Inputs (Always fits within any mobile screen) */}
+                <div className="flex items-center gap-1.5 text-xs">
+                  <span className="text-[11px] font-semibold text-[#6B4030] shrink-0">Days:</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={p.start ?? ''}
+                    placeholder="1"
+                    onKeyDown={handleOnlyNumericKeyDown}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      onChangePhase(pIdx, 'start', val === '' ? '' : Number(val));
+                    }}
+                    className={dayInputStyle(Boolean(phaseDaysErr))}
+                  />
+                  <span className="text-[11px] text-[#6B4030] shrink-0">to</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={p.end ?? ''}
+                    placeholder="15"
+                    onKeyDown={handleOnlyNumericKeyDown}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      onChangePhase(pIdx, 'end', val === '' ? '' : Number(val));
+                    }}
+                    className={dayInputStyle(Boolean(phaseDaysErr))}
+                  />
+                  <span className="text-[11px] text-[#6B4030]/80 font-medium shrink-0 ml-1">
+                    ({phaseSpan}d)
+                  </span>
+                </div>
+
+                {/* Row 3: Phase Title */}
                 <div>
                   <input
                     type="text"
@@ -481,11 +489,11 @@ function DurationRoadmapEditor({
                     maxLength={LIMITS.phaseTitle.max}
                     onChange={(e) => onChangePhase(pIdx, 'title', e.target.value)}
                     placeholder="Phase Title (e.g. Tamili Brahmi & Epigraphy)*"
-                    className={inputClass(phaseTitleErr, 'w-full py-1.5 px-3 text-xs font-semibold')}
+                    className={inputClass(phaseTitleErr, 'w-full py-1.5 px-2.5 text-xs font-semibold')}
                   />
                 </div>
 
-                {/* Row 3: What is covered */}
+                {/* Row 4: What is covered */}
                 <div>
                   <input
                     type="text"
@@ -493,11 +501,11 @@ function DurationRoadmapEditor({
                     maxLength={LIMITS.phaseDetails.max}
                     onChange={(e) => onChangePhase(pIdx, 'details', e.target.value)}
                     placeholder="What is covered (e.g. Decipher Tamil Brahmi scripts, study charters & practise rock scribing)*"
-                    className={inputClass(phaseDetailsErr, 'w-full py-1.5 px-3 text-xs leading-normal')}
+                    className={inputClass(phaseDetailsErr, 'w-full py-1.5 px-2.5 text-xs leading-normal')}
                   />
                 </div>
 
-                {/* Row 4: You'll create + Materials in 2 responsive columns */}
+                {/* Row 5: You'll create + Materials in 2 responsive columns */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
                     type="text"
@@ -505,7 +513,7 @@ function DurationRoadmapEditor({
                     maxLength={LIMITS.phaseOutcome.max}
                     onChange={(e) => onChangePhase(pIdx, 'outcome', e.target.value)}
                     placeholder="You'll create: e.g. Hand-scribed copper tablet (optional)"
-                    className={inputClass(err(`${pKey}.outcome`), 'w-full py-1.5 px-3 text-xs')}
+                    className={inputClass(err(`${pKey}.outcome`), 'w-full py-1.5 px-2.5 text-xs')}
                   />
                   <input
                     type="text"
@@ -513,18 +521,19 @@ function DurationRoadmapEditor({
                     maxLength={LIMITS.phaseMaterials.max}
                     onChange={(e) => onChangePhase(pIdx, 'materials', e.target.value)}
                     placeholder="Materials: e.g. Copper sheets, Stylus (optional)"
-                    className={inputClass(err(`${pKey}.materials`), 'w-full py-1.5 px-3 text-xs')}
+                    className={inputClass(err(`${pKey}.materials`), 'w-full py-1.5 px-2.5 text-xs')}
                   />
                 </div>
 
-                {/* Row 5: Error notification if any */}
+                {/* Row 6: Error notification if any */}
                 {anyPhaseErr && (
                   <p className="text-[11px] font-medium text-red-600 flex items-center gap-1 pt-0.5">
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{anyPhaseErr}</span>
                   </p>
                 )}
-              </div>            );
+              </div>
+            );
           })}
 
           <AddButton
@@ -639,10 +648,10 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
         const rowErrors = [effectiveDaysError, effectiveSeatsError, effectiveFeeError, effectiveRegError].filter(Boolean);
 
         return (
-          <div key={i} className={`rounded-2xl border p-4 shadow-2xs ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
+          <div key={i} className={`rounded-2xl border p-2.5 sm:p-4 shadow-2xs ${i === 0 ? 'border-[#B89555]/60 bg-[#FCFAF6]' : 'border-[#6B4030]/12 bg-white'}`}>
             {/* Row 1: Days, Fees & Action buttons with uniform top-aligned labels */}
-            <div className="flex flex-wrap items-end gap-2.5 sm:gap-4">
-              <div className="flex flex-col gap-1 w-20 sm:w-24 shrink-0">
+            <div className="flex flex-wrap items-end gap-2 sm:gap-4">
+              <div className="flex flex-col gap-1 w-16 sm:w-24 shrink-0">
                 <label htmlFor={`dur-${i}-days`} className="text-xs font-semibold text-[#6B4030]">
                   Days <span className="text-red-600">*</span>
                 </label>
@@ -663,7 +672,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                   className={inputClass(effectiveDaysError, 'w-full h-10 text-center tabular-nums font-semibold')}
                 />
               </div>
-              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-32 min-w-[100px]">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-32 min-w-[85px]">
                 <label htmlFor={`dur-${i}-fee`} className="text-xs font-semibold text-[#6B4030]">
                   Offer fee ₹ <span className="text-red-600">*</span>
                 </label>
@@ -683,7 +692,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                   className={inputClass(effectiveFeeError, 'w-full h-10 tabular-nums font-semibold')}
                 />
               </div>
-              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-36 min-w-[110px]">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-36 min-w-[85px]">
                 <label htmlFor={`dur-${i}-reg`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
                   Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
                 </label>
@@ -714,7 +723,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
 
             {/* Row 2: Total seats, Booked, Seats left & Cohort Badges with matching top-aligned labels */}
             <div className="mt-3 flex flex-wrap items-end gap-2 sm:gap-4 rounded-xl border border-[#6B4030]/12 bg-[#FAF7F0] p-2.5 sm:p-3">
-              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-24 min-w-[70px]">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-24 min-w-0">
                 <label htmlFor={`dur-${i}-seats`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
                   Total seats <span className="text-red-600">*</span>
                 </label>
@@ -735,7 +744,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                   className={inputClass(effectiveSeatsError, 'w-full h-10 text-center tabular-nums font-semibold bg-white')}
                 />
               </div>
-              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-[55px]">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-0">
                 <span className="text-xs font-semibold text-[#6B4030]">Booked</span>
                 <div
                   className="flex h-10 w-full items-center justify-center rounded-xl border border-[#6B4030]/20 bg-white px-2 text-sm font-bold tabular-nums text-[#4A2C20]"
@@ -744,7 +753,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                   {optBooked}
                 </div>
               </div>
-              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-[60px]">
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-0">
                 <span className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">Seats left</span>
                 <div
                   className={`flex h-10 w-full items-center justify-center rounded-xl border px-2 text-sm font-bold tabular-nums ${
@@ -1306,7 +1315,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
 
           {/* Form */}
           <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="space-y-5 p-4 sm:p-6 lg:p-8">
+            <div className="space-y-4 p-2.5 sm:space-y-5 sm:p-6 lg:p-8 max-w-full">
               {/* 1. Basics */}
               <Section
                 id="basics"

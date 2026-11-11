@@ -50,7 +50,7 @@ export function Field({ label, required, optional, hint, value, limit, error, ch
 export function Section({ id, number, icon: Icon, title, description, children }) {
   return (
     <section id={`oe-section-${id}`} className="scroll-mt-4 rounded-2xl border border-[#6B4030]/12 bg-white">
-      <header className="flex items-start gap-3 border-b border-[#6B4030]/10 px-5 py-4 sm:px-6">
+      <header className="flex items-start gap-3 border-b border-[#6B4030]/10 px-3.5 py-3 sm:px-6 sm:py-4">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#4A2C20] text-[#E5B869]">
           <Icon className="h-4 w-4" />
         </span>
@@ -62,7 +62,7 @@ export function Section({ id, number, icon: Icon, title, description, children }
           <p className="mt-0.5 text-xs leading-relaxed text-[#6B4030]">{description}</p>
         </div>
       </header>
-      <div className="space-y-5 px-5 py-5 sm:px-6">{children}</div>
+      <div className="space-y-4 px-3 py-3.5 sm:space-y-5 sm:px-6 sm:py-5">{children}</div>
     </section>
   );
 }
