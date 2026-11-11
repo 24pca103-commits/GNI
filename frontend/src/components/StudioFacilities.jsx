@@ -126,65 +126,84 @@ export default function StudioFacilities() {
   // Tripled list for infinite looping without jump
   const displayList = [...facilities, ...facilities, ...facilities];
 
-  // Continuous smooth auto-scroll loop with center-icon active detection
-  useEffect(() => {
-    let animId;
-    const speed = 0.5; // gentle smooth auto-scroll speed
+  // Dynamically detect which EXACT icon is in the CENTER of the carousel track
+  const updateCenterItem = () => {
+    const el = scrollRef.current;
+    if (!el) return;
 
-    const step = () => {
-      const el = scrollRef.current;
-      if (el) {
-        const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-        const isPaused =
-          isMobile ||
-          isHoveredRef.current ||
-          isDraggingRef.current ||
-          isTouchingRef.current ||
-          isAnimatingRef.current;
+    // Seamless infinite looping wrap
+    const oneThird = el.scrollWidth / 3;
+    if (oneThird > 0) {
+      if (el.scrollLeft >= oneThird * 2) {
+        el.scrollLeft -= oneThird;
+      } else if (el.scrollLeft <= 2) {
+        el.scrollLeft += oneThird;
+      }
+    }
 
-        if (!isPaused) {
-          el.scrollLeft += speed;
-          const oneThird = el.scrollWidth / 3;
-          if (el.scrollLeft >= oneThird * 2) {
-            el.scrollLeft -= oneThird;
-          } else if (el.scrollLeft <= 0) {
-            el.scrollLeft += oneThird;
-          }
-        }
+    const containerCenter = el.scrollLeft + el.clientWidth / 2;
+    const items = el.children;
+    let closestIdx = -1;
+    let closestFacId = null;
+    let minDiff = Infinity;
 
-        // Dynamically detect which EXACT icon is in the CENTER of the carousel track
-        const containerCenter = el.scrollLeft + el.clientWidth / 2;
-        const items = el.children;
-        let closestIdx = -1;
-        let closestFacId = null;
-        let minDiff = Infinity;
-
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-          const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-          const diff = Math.abs(containerCenter - itemCenter);
-          if (diff < minDiff) {
-            minDiff = diff;
-            closestIdx = i;
-            const facAttr = item.getAttribute('data-facility-id');
-            if (facAttr !== null) {
-              closestFacId = parseInt(facAttr, 10);
-            }
-          }
-        }
-
-        if (closestIdx !== -1) {
-          setActiveCenterIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
-        }
-        if (closestFacId !== null) {
-          setActiveIndex((prev) => (prev !== closestFacId ? closestFacId : prev));
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+      const diff = Math.abs(containerCenter - itemCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = i;
+        const facAttr = item.getAttribute('data-facility-id');
+        if (facAttr !== null) {
+          closestFacId = parseInt(facAttr, 10);
         }
       }
-      animId = requestAnimationFrame(step);
-    };
+    }
 
-    animId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animId);
+    if (closestIdx !== -1) {
+      setActiveCenterIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
+    }
+    if (closestFacId !== null) {
+      setActiveIndex((prev) => (prev !== closestFacId ? closestFacId : prev));
+    }
+  };
+
+  // Center initial middle item on mount
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) {
+      const oneThird = el.scrollWidth / 3;
+      if (oneThird > 0) {
+        el.scrollLeft = oneThird;
+      }
+      setTimeout(updateCenterItem, 50);
+    }
+  }, []);
+
+  // Smooth periodic auto-scroll across both desktop and mobile
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const isPaused =
+        isHoveredRef.current ||
+        isDraggingRef.current ||
+        isTouchingRef.current ||
+        isAnimatingRef.current;
+
+      if (!isPaused && scrollRef.current) {
+        const el = scrollRef.current;
+        isAnimatingRef.current = true;
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+        const step = isMobile ? el.clientWidth : 154;
+        el.scrollBy({ left: step, behavior: 'smooth' });
+        setTimeout(() => {
+          isAnimatingRef.current = false;
+          updateCenterItem();
+        }, 550);
+      }
+    }, 4000);
+
+    return () => clearInterval(timer);
   }, []);
 
   // Global Mouse Move and Up Handlers for smooth manual dragging across entire viewport
@@ -389,6 +408,7 @@ export default function StudioFacilities() {
             {/* Scrollable Icon Container */}
             <div
               ref={scrollRef}
+              onScroll={updateCenterItem}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseDown={handleMouseDown}
