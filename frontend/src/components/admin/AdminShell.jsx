@@ -97,7 +97,7 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
   const shared = { active, badges, onSync, syncing, lastSync, onLogout };
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-[#F7F2E8] font-['DM_Sans'] text-[#241A16]">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F7F2E8] font-['DM_Sans'] text-[#241A16]">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-[#6B4030]/15 bg-white lg:block shadow-2xs">
         <SidebarContent {...shared} onNavigate={onNavigate} />
@@ -148,7 +148,7 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
       )}
 
       <main className="w-full max-w-full min-w-0 lg:pl-64">
-        <div className="mx-auto max-w-6xl px-3.5 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-10 min-w-0">{children}</div>
+        <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-10 min-w-0">{children}</div>
       </main>
     </div>
   );

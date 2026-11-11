@@ -87,7 +87,7 @@ Status: ${statusLabel(current)} → ${statusLabel(target)}.${seatNote} The stude
 function DetailRow({ label, children }) {
   if (children === undefined || children === null || children === '') return null;
   return (
-    <div className="grid grid-cols-[130px_1fr] gap-3 py-2.5 text-sm">
+    <div className="grid grid-cols-[105px_1fr] sm:grid-cols-[130px_1fr] gap-2 sm:gap-3 py-2 sm:py-2.5 text-xs sm:text-sm">
       <dt className="text-[#6B4030]">{label}</dt>
       <dd className="min-w-0 font-medium text-[#241A16] [overflow-wrap:anywhere]">{children}</dd>
     </div>

@@ -66,7 +66,7 @@ export function StatCard({ label, value, hint, icon: Icon, tone = 'neutral', onC
     <Tag
       type={onClick ? 'button' : undefined}
       onClick={onClick}
-      className={`flex items-center gap-2.5 sm:gap-3.5 rounded-2xl border bg-white p-3 sm:p-4 text-left transition-colors min-w-0 w-full ${
+      className={`flex items-center gap-2 sm:gap-3.5 rounded-2xl border bg-white p-2.5 sm:p-4 text-left transition-colors min-w-0 w-full ${
         onClick ? 'cursor-pointer hover:border-[#B89555]/60' : ''
       } ${active ? 'border-[#4A2C20] ring-2 ring-[#B89555]/30' : 'border-[#6B4030]/12'}`}
     >
@@ -77,7 +77,7 @@ export function StatCard({ label, value, hint, icon: Icon, tone = 'neutral', onC
       )}
       <span className="min-w-0 flex-1">
         <span className="block text-[11px] sm:text-xs font-medium text-[#6B4030] truncate">{label}</span>
-        <span className="block text-xl sm:text-2xl font-bold tabular-nums leading-tight text-[#241A16]">{value}</span>
+        <span className="block text-lg sm:text-2xl font-bold tabular-nums leading-tight text-[#241A16]">{value}</span>
         {hint && <span className="block truncate text-[10px] sm:text-xs text-[#6B4030]/80">{hint}</span>}
       </span>
     </Tag>
@@ -111,48 +111,50 @@ export function SearchInput({ value, onChange, placeholder }) {
 
 export function Segmented({ options, value, onChange, label }) {
   return (
-    <div
-      role="tablist"
-      aria-label={label}
-      className="inline-flex max-w-full overflow-x-auto no-scrollbar gap-1 rounded-xl border border-[#6B4030]/15 bg-white p-1"
-    >
-      {options.map((o) => {
-        const active = o.value === value;
-        return (
-          <button
-            key={o.value}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(o.value)}
-            className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-              active ? 'bg-[#4A2C20] text-white shadow-2xs' : 'text-[#6B4030] hover:text-[#241A16]'
-            }`}
-          >
-            {o.label}
-            {o.count !== undefined && (
-              <span
-                className={`rounded-full px-1.5 text-[11px] sm:text-xs tabular-nums ${
-                  active ? 'bg-white/15 text-[#E5B869]' : 'bg-[#FAF7F0] text-[#6B4030]'
-                }`}
-              >
-                {o.count}
-              </span>
-            )}
-          </button>
-        );
-      })}
+    <div className="w-full max-w-full overflow-x-auto no-scrollbar py-0.5">
+      <div
+        role="tablist"
+        aria-label={label}
+        className="inline-flex min-w-full sm:min-w-0 gap-1 rounded-xl border border-[#6B4030]/15 bg-white p-1"
+      >
+        {options.map((o) => {
+          const active = o.value === value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(o.value)}
+              className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors cursor-pointer whitespace-nowrap flex-1 sm:flex-initial ${
+                active ? 'bg-[#4A2C20] text-white shadow-2xs' : 'text-[#6B4030] hover:text-[#241A16]'
+              }`}
+            >
+              <span>{o.label}</span>
+              {o.count !== undefined && (
+                <span
+                  className={`rounded-full px-1.5 text-[11px] sm:text-xs tabular-nums ${
+                    active ? 'bg-white/15 text-[#E5B869]' : 'bg-[#FAF7F0] text-[#6B4030]'
+                  }`}
+                >
+                  {o.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-export function Select({ value, onChange, children, label }) {
+export function Select({ value, onChange, children, label, className = '' }) {
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label={label}
-      className="max-w-full rounded-xl border border-[#6B4030]/20 bg-white py-2 pl-3 pr-8 text-sm text-[#241A16] focus:border-[#B89555] focus:outline-none focus:ring-2 focus:ring-[#B89555]/20 cursor-pointer"
+      className={`w-full sm:w-auto max-w-full rounded-xl border border-[#6B4030]/20 bg-white py-2 pl-3 pr-8 text-xs sm:text-sm text-[#241A16] focus:border-[#B89555] focus:outline-none focus:ring-2 focus:ring-[#B89555]/20 cursor-pointer ${className}`}
     >
       {children}
     </select>
