@@ -134,7 +134,9 @@ export default function StudioFacilities() {
     const step = () => {
       const el = scrollRef.current;
       if (el) {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
         const isPaused =
+          isMobile ||
           isHoveredRef.current ||
           isDraggingRef.current ||
           isTouchingRef.current ||
@@ -314,7 +316,7 @@ export default function StudioFacilities() {
     const el = scrollRef.current;
     if (!el) return;
     isAnimatingRef.current = true;
-    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? 212 : 160;
+    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? el.clientWidth : 160;
     el.scrollBy({ left: -step, behavior: 'smooth' });
     setTimeout(() => {
       isAnimatingRef.current = false;
@@ -331,7 +333,7 @@ export default function StudioFacilities() {
     const el = scrollRef.current;
     if (!el) return;
     isAnimatingRef.current = true;
-    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? 212 : 160;
+    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? el.clientWidth : 160;
     el.scrollBy({ left: step, behavior: 'smooth' });
     setTimeout(() => {
       isAnimatingRef.current = false;
@@ -346,7 +348,7 @@ export default function StudioFacilities() {
   const CurrentIcon = current ? current.icon : facilities[0].icon;
 
   return (
-    <section id="facilities" className="py-8 md:py-12 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
+    <section id="facilities" className="py-10 sm:py-16 md:py-20 bg-[#F7F2E8] relative overflow-hidden border-t border-[#6B4030]/15">
       {/* Floating Animated Bubbles in Background */}
       <FloatingBubbles count={8} color="#B89555" />
 
@@ -395,7 +397,7 @@ export default function StudioFacilities() {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-start gap-3 sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-[calc(50%-100px)] sm:px-12 select-none w-full snap-x snap-mandatory scroll-smooth"
+              className="flex items-start sm:gap-6 overflow-x-auto no-scrollbar py-2.5 px-10 sm:px-12 select-none w-full snap-x snap-mandatory scroll-smooth"
             >
               {displayList.map((fac, idx) => {
                 const Icon = fac.icon;
@@ -406,23 +408,23 @@ export default function StudioFacilities() {
                     key={`${fac.id}-${idx}`}
                     data-facility-id={fac.id}
                     onClick={(e) => handleItemClick(e, idx, fac.id)}
-                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-[200px] min-w-[200px] sm:w-[130px] sm:min-w-[130px] snap-center py-1"
+                    className="flex flex-col items-center justify-start shrink-0 transition-all duration-300 cursor-pointer group focus:outline-hidden w-full min-w-full sm:w-[130px] sm:min-w-[130px] snap-center py-1"
                   >
                     {/* Round Shape Icon Container */}
                     <div
-                      className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 ${
+                      className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 ${
                         isSelected
                           ? 'bg-[#4A2C20] text-[#B89555] ring-2 sm:ring-4 ring-[#B89555]/50 shadow-md scale-105 sm:scale-110'
                           : 'bg-white border border-[#6B4030]/20 text-[#6B4030] group-hover:bg-[#4A2C20] group-hover:text-[#B89555] group-hover:scale-105 shadow-xs opacity-80 group-hover:opacity-100'
                       }`}
                     >
-                      <Icon className="w-5 h-5 sm:w-7 sm:h-7" />
+                      <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
                     </div>
 
                     {/* Full Facility Name Below Icon - Optimized for Mobile & Desktop */}
                     <div className="min-h-[36px] sm:min-h-[40px] flex items-center justify-center text-center mt-2.5 sm:mt-3 px-1.5 w-full">
                       <span
-                        className={`text-[10.5px] sm:text-xs font-['DM_Sans'] text-center leading-tight transition-colors break-words ${
+                        className={`text-xs sm:text-xs font-['DM_Sans'] text-center leading-tight transition-colors break-words ${
                           isSelected ? 'font-bold text-[#241A16]' : 'font-medium text-[#6B4030]'
                         }`}
                       >
@@ -431,7 +433,7 @@ export default function StudioFacilities() {
                     </div>
 
                     {/* Active Dot/Bar */}
-                    <div className="h-2 flex items-center justify-center mt-1 mb-0.5">
+                    <div className="h-2 hidden sm:flex items-center justify-center mt-1 mb-0.5">
                       {isSelected ? (
                         <span className="w-5 h-1 sm:w-6 sm:h-1 rounded-full bg-[#B89555] transition-all" />
                       ) : (
@@ -461,10 +463,10 @@ export default function StudioFacilities() {
         <Reveal direction="up" delay={200}>
           <div
             key={current.id}
-            className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-4 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
+            className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-10 border border-[#6B4030]/15 shadow-[0_12px_28px_-6px_rgba(74,44,32,0.12)] grid lg:grid-cols-12 gap-5 sm:gap-8 items-center relative overflow-hidden transition-all duration-500"
           >
             {/* Left Column: Authentic Studio Visual with Details */}
-              <div className="lg:col-span-6 relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#241A16] h-48 sm:h-[340px] md:h-[420px] group">
+              <div className="lg:col-span-6 relative rounded-xl sm:rounded-2xl overflow-hidden bg-[#241A16] h-56 xs:h-64 sm:h-[340px] md:h-[420px] group">
                 <img
                   src={current.image}
                   alt={current.title}

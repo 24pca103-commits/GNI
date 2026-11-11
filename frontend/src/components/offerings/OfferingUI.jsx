@@ -31,7 +31,7 @@ export function SectionHeader({ icon: Icon, eyebrow, title, subtitle }) {
           {Icon && <Icon className="w-3.5 h-3.5" />}
           {eyebrow}
         </span>
-        <h2 className="mt-4 font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-bold text-[#241A16] leading-[1.1] tracking-tight">
+        <h2 className="mt-3 sm:mt-4 font-['Cormorant_Garamond'] text-2xl sm:text-4xl md:text-5xl font-bold text-[#241A16] leading-tight tracking-tight">
           {title}
         </h2>
         <p className="mt-4 font-['DM_Sans'] text-[15px] sm:text-base text-[#6B4030] leading-relaxed">
@@ -45,7 +45,7 @@ export function SectionHeader({ icon: Icon, eyebrow, title, subtitle }) {
 export function SubHeading({ title, meta }) {
   return (
     <div className="flex items-end justify-between gap-4 border-b border-[#6B4030]/10 pb-3">
-      <h4 className="font-['Cormorant_Garamond'] text-2xl sm:text-[28px] font-bold text-[#241A16] leading-tight">
+      <h4 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] leading-tight">
         {title}
       </h4>
       {meta && (
@@ -136,7 +136,7 @@ export function OverviewCard({ course, facts, fallbackImage }) {
             {course.pillar_title}
           </p>
         )}
-        <h3 className="mt-2 font-['Cormorant_Garamond'] text-2xl xs:text-[28px] sm:text-4xl font-bold text-[#241A16] leading-tight text-balance">
+        <h3 className="mt-2 font-['Cormorant_Garamond'] text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-[#241A16] leading-tight text-balance">
           {course.title}
         </h3>
         {course.description && (

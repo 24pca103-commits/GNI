@@ -457,9 +457,7 @@ export default function Navbar() {
                   >
                     {item.shortLabel || item.label}
                   </span>
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#E5B869] shadow-[0_0_6px_#E5B869] mt-0.5 animate-pulse" />
-                  )}
+                  
                 </a>
               );
             }
@@ -493,9 +491,7 @@ export default function Navbar() {
                 >
                   {item.shortLabel || item.label}
                 </span>
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E5B869] shadow-[0_0_6px_#E5B869] mt-0.5" />
-                )}
+                
               </a>
             );
           })}
@@ -534,9 +530,7 @@ export default function Navbar() {
                 >
                   More
                 </span>
-                {isMoreActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#E5B869] shadow-[0_0_6px_#E5B869] mt-0.5" />
-                )}
+                
               </button>
             );
           })()}

@@ -222,7 +222,7 @@ function Roadmap({ phases, totalDays }) {
 
 function FieldVisitBanner({ visit }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-[#4A2C20] text-[#F7F2E8] p-7 sm:p-10 border border-[#B89555]/30">
+    <div className="relative overflow-hidden rounded-3xl bg-[#4A2C20] text-[#F7F2E8] p-5 sm:p-10 border border-[#B89555]/30">
       <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-end">
         <img
           src={FIELD_VISIT_IMAGE}
@@ -238,7 +238,7 @@ function FieldVisitBanner({ visit }) {
           <MapPin className="w-3.5 h-3.5" />
           Field visit
         </span>
-        <h4 className="mt-4 font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-bold text-white leading-tight">
+        <h4 className="mt-3 sm:mt-4 font-['Cormorant_Garamond'] text-xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
           {visit.title || 'Includes an on-site field visit'}
         </h4>
         {visit.description && (
