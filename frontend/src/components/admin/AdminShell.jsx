@@ -13,7 +13,7 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
   return (
     <div className="flex h-full flex-col bg-white">
       {/* Brand Header */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-[#6B4030]/10">
+      <div className="flex items-center gap-3 px-5 pr-12 lg:pr-5 py-4 sm:py-5 border-b border-[#6B4030]/10">
         <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-10 w-auto object-contain shrink-0" />
         <div className="min-w-0">
           <p className="truncate font-['Cormorant_Garamond'] text-lg font-bold leading-tight text-[#241A16]">Global Nagas Institute</p>
@@ -22,7 +22,7 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
       </div>
 
       {/* Nav List */}
-      <nav className="flex-1 space-y-1.5 px-3 py-3" aria-label="Admin sections">
+      <nav className="flex-1 space-y-1.5 px-3 py-3 overflow-y-auto" aria-label="Admin sections">
         {NAV.map((item) => {
           const isActive = active === item.id;
           const badge = badges[item.id];
@@ -107,7 +107,7 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#6B4030]/15 bg-[#F7F2E8]/95 backdrop-blur-md px-3 sm:px-4 py-2.5 lg:hidden shadow-xs w-full max-w-full">
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-2">
           <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-8 sm:h-9 w-auto object-contain shrink-0" />
-          <span className="font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold tracking-tight text-[#4A2C20] truncate">
+          <span className="font-['Cormorant_Garamond'] text-base sm:text-lg md:text-xl font-bold tracking-tight text-[#4A2C20] truncate">
             Global Nagas Institute
           </span>
           <span className="hidden sm:inline-block rounded-md bg-[#4A2C20]/8 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#B89555] shrink-0">

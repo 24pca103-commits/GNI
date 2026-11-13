@@ -84,10 +84,10 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
         description="Workshops and learning journeys shown on the website."
         actions={
           <>
-            <Button icon={Hammer} onClick={() => onCreate('workshop')}>
+            <Button icon={Hammer} onClick={() => onCreate('workshop')} className="flex-1 sm:flex-initial">
               New workshop
             </Button>
-            <Button variant="primary" icon={Compass} onClick={() => onCreate('journey')}>
+            <Button variant="primary" icon={Compass} onClick={() => onCreate('journey')} className="flex-1 sm:flex-initial">
               New journey
             </Button>
           </>
@@ -234,12 +234,12 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
                       <span>
                         <span className="font-semibold tabular-nums">{formatINR(offer)}</span>
                         {regular > offer && <span className="ml-2 text-xs text-[#6B4030]/60 line-through">{formatINR(regular)}</span>}
                       </span>
-                      <div className="w-full xs:w-40 max-w-[200px]">
+                      <div className="w-full sm:w-48 sm:max-w-[200px]">
                         <SeatsBar total={Number(course.seats_total) || 0} booked={Number(course.booked_seats) || 0} />
                       </div>
                     </div>

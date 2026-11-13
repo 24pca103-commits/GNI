@@ -96,11 +96,11 @@ export default function Footer() {
                 <span className="font-number">+91 90616 21111</span>
               </a>
               <a
-                href="mailto:info@artisancoach.org"
+                href="mailto:info@globalnagasinstitute.com"
                 className="flex items-center gap-2 hover:text-[#4A2C20] transition-colors"
               >
                 <Mail className="w-3.5 h-3.5 text-[#B89555]" />
-                <span>info@artisancoach.org</span>
+                <span>info@globalnagasinstitute.com</span>
               </a>
             </div>
           </div>

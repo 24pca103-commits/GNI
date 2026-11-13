@@ -1231,7 +1231,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
     <div className="fixed inset-0 z-[60] flex items-stretch justify-center bg-[#241A16]/60 backdrop-blur-sm sm:p-4" role="dialog" aria-modal="true" aria-labelledby="offering-editor-title">
       <div className="flex w-full max-w-6xl flex-col overflow-hidden bg-[#F7F2E8] shadow-2xl sm:rounded-3xl">
         {/* Header */}
-        <header className="flex shrink-0 items-center justify-between gap-4 border-b border-[#6B4030]/15 bg-white px-5 py-4 sm:px-6">
+        <header className="flex shrink-0 items-center justify-between gap-2.5 sm:gap-4 border-b border-[#6B4030]/15 bg-white px-3.5 py-3 sm:px-6 sm:py-4">
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#B89555]">
               {mode === 'create' ? 'New offering' : 'Edit offering'}
@@ -1244,7 +1244,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
             <button
               type="button"
               onClick={() => setPreviewOpen(true)}
-              className="inline-flex items-center gap-2 rounded-full border border-[#4A2C20] bg-[#4A2C20] px-3.5 py-1.5 text-xs font-semibold text-[#F7F2E8] hover:bg-[#603929] cursor-pointer"
+              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#4A2C20] bg-[#4A2C20] px-2.5 sm:px-3.5 py-1.5 text-xs font-semibold text-[#F7F2E8] hover:bg-[#603929] cursor-pointer shrink-0"
               title="See how this offering will look on the website"
             >
               <Monitor className="h-3.5 w-3.5 text-[#E5B869]" />
@@ -1253,7 +1253,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
             <button
               type="button"
               onClick={() => set('is_active', state.is_active ? 0 : 1)}
-              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full border px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
                 state.is_active
                   ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
                   : 'border-[#6B4030]/20 bg-[#FAF7F0] text-[#6B4030]'
@@ -1267,7 +1267,7 @@ export default function OfferingEditor({ mode, course, initialType = 'workshop',
               type="button"
               onClick={requestClose}
               aria-label="Close editor"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FAF7F0] text-[#4A2C20] hover:bg-[#EFE4D0] cursor-pointer"
+              className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-[#FAF7F0] text-[#4A2C20] hover:bg-[#EFE4D0] cursor-pointer"
             >
               <X className="h-4 w-4" />
             </button>

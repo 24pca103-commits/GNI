@@ -1317,7 +1317,7 @@ export default function Register() {
                   </div>
                   <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                     <span className="text-[#6B4030] font-medium">Selected Course / Program:</span>
-                    <span className="font-bold text-[#B89555] text-right break-words max-w-[260px] leading-snug">
+                    <span className="font-bold text-[#B89555] text-right break-words max-w-[180px] sm:max-w-[260px] leading-snug [overflow-wrap:anywhere]">
                       {registeredData.courseName || selectedCourseName}
                     </span>
                   </div>
@@ -1567,7 +1567,7 @@ export default function Register() {
                     className="flex items-stretch rounded-xl border border-[#6B4030]/20 transition-colors bg-white focus-within:border-[#B89555] relative"
                   >
                     {/* Clean Country Selector (Clean Dial Code & Country Name - NO flag letter / NO pre-font) */}
-                    <div className="relative border-r border-[#6B4030]/20 shrink-0 flex items-center bg-[#FAF7F0] rounded-l-xl w-[82px] sm:w-[90px]">
+                    <div className="relative border-r border-[#6B4030]/20 shrink-0 flex items-center bg-[#FAF7F0] rounded-l-xl w-[76px] sm:w-[90px]">
                       <select
                         aria-label="Country Code"
                         value={selectedCountryCode}
@@ -1591,7 +1591,7 @@ export default function Register() {
                       onChange={handleChange}
                       onKeyDown={handleNumberOnlyKeyDown}
                       onBlur={handleBlur}
-                      placeholder="Enter your phone / WhatsApp number"
+                      placeholder="Phone / WhatsApp number"
                       className="flex-1 w-full pl-3.5 pr-4 py-2.5 bg-transparent text-sm font-['DM_Sans'] text-[#241A16] font-medium placeholder-[#6B4030]/40 focus:outline-hidden"
                     />
                   </div>
@@ -1952,7 +1952,7 @@ export default function Register() {
                           : ''
                       }
                       placeholder="Choose course & duration"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/80 text-sm font-semibold text-[#4A2C20] placeholder-[#6B4030]/50 cursor-default select-none caret-transparent pointer-events-none focus:outline-hidden focus:ring-0"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#6B4030]/20 bg-[#FAF7F0]/80 text-xs sm:text-sm font-semibold text-[#4A2C20] placeholder-[#6B4030]/50 cursor-default select-none caret-transparent pointer-events-none focus:outline-hidden focus:ring-0 truncate"
                     />
                   </div>
                 </div>
@@ -2014,7 +2014,7 @@ export default function Register() {
                     {experienceOptions.map((lvl) => (
                       <label
                         key={lvl}
-                        className={`flex items-center justify-center p-2.5 rounded-xl border text-xs font-['DM_Sans'] font-medium cursor-pointer transition-all ${
+                        className={`flex items-center justify-center p-2 sm:p-2.5 rounded-xl border text-[11px] sm:text-xs font-['DM_Sans'] font-medium cursor-pointer transition-all ${
                           formData.experienceLevel === lvl
                             ? 'bg-[#4A2C20] text-[#F7F2E8] border-[#4A2C20] shadow-xs'
                             : 'bg-white text-[#241A16] border-[#6B4030]/20 hover:border-[#B89555]'

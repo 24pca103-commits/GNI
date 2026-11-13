@@ -87,7 +87,7 @@ Status: ${statusLabel(current)} → ${statusLabel(target)}.${seatNote} The stude
 function DetailRow({ label, children }) {
   if (children === undefined || children === null || children === '') return null;
   return (
-    <div className="grid grid-cols-[105px_1fr] sm:grid-cols-[130px_1fr] gap-2 sm:gap-3 py-2 sm:py-2.5 text-xs sm:text-sm">
+    <div className="grid grid-cols-[90px_1fr] sm:grid-cols-[130px_1fr] gap-2 sm:gap-3 py-2 sm:py-2.5 text-xs sm:text-sm">
       <dt className="text-[#6B4030]">{label}</dt>
       <dd className="min-w-0 font-medium text-[#241A16] [overflow-wrap:anywhere]">{children}</dd>
     </div>
@@ -321,12 +321,12 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-between gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
                     <StatusSelect value={r.payment_status} studentName={nameOf(r)} onChange={(v) => onStatusChange(r.id, v)} />
                     <button
                       type="button"
                       onClick={() => setOpenId(r.id)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#4A2C20] hover:text-[#B89555] cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#4A2C20] hover:text-[#B89555] cursor-pointer shrink-0"
                     >
                       Details <ChevronRight className="h-3.5 w-3.5" />
                     </button>

@@ -77,7 +77,7 @@ function getStoredAdminCredentials() {
 /**
  * Save updated admin password hash
  */
-function saveAdminPasswordHash(newPassword, adminEmail = 'kan93095@gmail.com') {
+function saveAdminPasswordHash(newPassword, adminEmail = 'info@globalnagasinstitute.com') {
   try {
     const salt = crypto.randomBytes(16).toString('hex');
     const passwordHash = crypto
@@ -86,7 +86,7 @@ function saveAdminPasswordHash(newPassword, adminEmail = 'kan93095@gmail.com') {
 
     const payload = {
       updatedAt: new Date().toISOString(),
-      adminEmail: adminEmail || 'kan93095@gmail.com',
+      adminEmail: adminEmail || 'info@globalnagasinstitute.com',
       salt,
       passwordHash,
     };
@@ -137,10 +137,8 @@ export function getAdminEmails() {
   };
 
   // 1. Explicit admin mail id specified for GNI administration
-  emails.add('kan93095@gmail.com');
-  emails.add('info@globalnagasinstitute.com');
-  emails.add('24pca103@anjaconline.org');
-
+    emails.add('info@globalnagasinstitute.com');
+  
   // 2. From environment variables
   addEmail(process.env.ADMIN_EMAIL);
   addEmail(process.env.ADMIN_USER);
@@ -160,10 +158,10 @@ export function getAdminEmails() {
  */
 export function getAdminEmail() {
   const all = getAdminEmails();
-  if (all.includes('kan93095@gmail.com')) {
-    return 'kan93095@gmail.com';
+  if (all.includes('info@globalnagasinstitute.com')) {
+    return 'info@globalnagasinstitute.com';
   }
-  return all[0] || 'kan93095@gmail.com';
+  return all[0] || 'info@globalnagasinstitute.com';
 }
 
 /**
@@ -186,8 +184,7 @@ export const adminLogin = async (req, res) => {
     const validEmails = getAdminEmails();
     const allowedUsernames = new Set([
       'admin',
-      'kan93095',
-      (process.env.ADMIN_USER || '').trim().toLowerCase(),
+            (process.env.ADMIN_USER || '').trim().toLowerCase(),
       ...validEmails,
     ]);
 
@@ -203,7 +200,7 @@ export const adminLogin = async (req, res) => {
 
     // Determine target email for 2FA OTP:
     // If the input is a valid admin email, dispatch OTP to that address.
-    // Otherwise, dispatch to the primary admin email (kan93095@gmail.com).
+    // Otherwise, dispatch to the primary admin email (info@globalnagasinstitute.com).
     const targetEmail = validEmails.includes(inputUser)
       ? inputUser
       : getAdminEmail();
@@ -572,7 +569,7 @@ export const resetAdminPassword = async (req, res) => {
     }
 
     // Persist new password
-    const saved = saveAdminPasswordHash(newPassword, tokenSession.email || 'kan93095@gmail.com');
+    const saved = saveAdminPasswordHash(newPassword, tokenSession.email || 'info@globalnagasinstitute.com');
 
     // Invalidate reset token immediately
     resetTokenStore.delete(resetToken);

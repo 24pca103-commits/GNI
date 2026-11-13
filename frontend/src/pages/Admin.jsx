@@ -520,8 +520,8 @@ export default function Admin() {
   // -------------------------------------------------------------
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#F7F2E8] flex flex-col justify-center items-center px-4 py-12 font-['DM_Sans']">
-        <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 border border-[#6B4030]/20 shadow-xl space-y-6">
+      <div className="min-h-screen bg-[#F7F2E8] flex flex-col justify-center items-center px-3.5 sm:px-4 py-6 sm:py-12 font-['DM_Sans']">
+        <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-[#6B4030]/20 shadow-xl space-y-5 sm:space-y-6">
           {/* Header Brand */}
           <div className="text-center space-y-2.5">
             <div className="flex items-center justify-center">
@@ -571,7 +571,7 @@ export default function Admin() {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
-                  placeholder="example@gmail.com"
+                  placeholder="e.g. admin@example.com"
                 />
               </div>
 
@@ -649,7 +649,7 @@ export default function Admin() {
                   required
                   autoFocus
                   placeholder="• • • • • •"
-                  className="w-full text-center tracking-[12px] font-mono text-2xl font-bold py-3 rounded-xl border border-[#B89555] bg-[#FAF7F0] text-[#4A2C20] cursor-text select-text focus:outline-hidden focus:ring-2 focus:ring-[#B89555]/30"
+                  className="w-full text-center tracking-[6px] sm:tracking-[12px] font-mono text-xl sm:text-2xl font-bold py-2.5 sm:py-3 rounded-xl border border-[#B89555] bg-[#FAF7F0] text-[#4A2C20] cursor-text select-text focus:outline-hidden focus:ring-2 focus:ring-[#B89555]/30"
                 />
                 <span className="text-[10px] text-center block text-[#6B4030]/70">
                   Valid for 10 minutes
@@ -671,7 +671,7 @@ export default function Admin() {
                 )}
               </button>
 
-              <div className="flex items-center justify-between text-xs pt-1">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs pt-1">
                 <button
                   type="button"
                   onClick={handleResendOtp}
@@ -708,7 +708,7 @@ export default function Admin() {
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
-                  placeholder="kan93.com"
+                  placeholder="e.g. admin@example.com"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#6B4030]/25 bg-[#FAF7F0] text-xs text-[#241A16] cursor-text select-text focus:outline-hidden focus:border-[#B89555]"
                 />
                 <span className="text-[10.5px] text-[#6B4030]/80 block">
@@ -766,7 +766,7 @@ export default function Admin() {
                   required
                   autoFocus
                   placeholder="• • • • • •"
-                  className="w-full text-center tracking-[12px] font-mono text-2xl font-bold py-3 rounded-xl border border-[#B89555] bg-[#FAF7F0] text-[#4A2C20] cursor-text select-text focus:outline-hidden focus:ring-2 focus:ring-[#B89555]/30"
+                  className="w-full text-center tracking-[6px] sm:tracking-[12px] font-mono text-xl sm:text-2xl font-bold py-2.5 sm:py-3 rounded-xl border border-[#B89555] bg-[#FAF7F0] text-[#4A2C20] cursor-text select-text focus:outline-hidden focus:ring-2 focus:ring-[#B89555]/30"
                 />
               </div>
 

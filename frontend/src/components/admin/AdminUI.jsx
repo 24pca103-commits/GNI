@@ -169,9 +169,9 @@ const BADGE_TONES = {
   gray: 'bg-stone-100 text-stone-600 ring-stone-200',
 };
 
-export function Badge({ tone = 'gray', children, icon: Icon }) {
+export function Badge({ tone = 'gray', children, icon: Icon, className = '' }) {
   return (
-    <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${BADGE_TONES[tone]}`}>
+    <span className={`inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${BADGE_TONES[tone]} ${className}`}>
       {Icon && <Icon className="h-3 w-3" />}
       {children}
     </span>
