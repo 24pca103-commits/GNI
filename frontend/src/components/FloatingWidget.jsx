@@ -44,7 +44,7 @@ export default function FloatingWidget() {
   const whatsappMessage = encodeURIComponent(
     'Hello Global Nagas Institute, I am interested in your heritage programs, workshops and admissions.'
   );
-  const whatsappUrl = `https://wa.me/919061621111?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/919514334698?text=${whatsappMessage}`;
 
   return (
     <aside
@@ -69,9 +69,9 @@ export default function FloatingWidget() {
 
       {/* Quick Direct Call Button (Icon Only - Requirement 1) */}
       <a
-        href="tel:+919061621111"
-        aria-label="Call Admissions Desk: +91 90616 21111"
-        title="Call Admissions (+91 90616 21111)"
+        href="tel:+919514334698"
+        aria-label="Call Admissions Desk: +91 95143 34698"
+        title="Call Admissions (+91 95143 34698)"
         className="w-11 h-11 rounded-full bg-white/95 hover:bg-[#FAF7F0] text-[#4A2C20] border border-[#6B4030]/25 shadow-md hover:shadow-lg flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 cursor-pointer backdrop-blur-xs group"
       >
         <Phone className="w-5 h-5 text-[#6B4030] group-hover:text-[#4A2C20] transition-colors" />
@@ -83,7 +83,7 @@ export default function FloatingWidget() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Heritage Advisor on WhatsApp"
-        title="Chat on WhatsApp (+91 90616 21111)"
+        title="Chat on WhatsApp (+91 95143 34698)"
         className="relative group w-11 h-11 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
       >
         {/* Subtle breathing glow ring */}

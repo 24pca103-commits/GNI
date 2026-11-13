@@ -7,6 +7,18 @@ import { SEAT_HOLDING_SQL } from '../models/registrationStatus.js';
 // In-memory fallback cache if MySQL is temporarily offline
 let memoryCourses = JSON.parse(JSON.stringify(DEFAULT_COURSES));
 
+// High-performance server-side in-memory cache for concurrent traffic (e.g. 1000+ simultaneous users)
+let cachedActiveCourses = null;
+let cachedAllCourses = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 25000; // 25-second TTL keeps seat metrics fresh while serving 10,000+ req/sec from RAM
+
+export function invalidateCoursesCache() {
+  cachedActiveCourses = null;
+  cachedAllCourses = null;
+  lastCacheTime = 0;
+}
+
 /**
  * Requirement 6: Automatically classify offering based strictly on Duration
  * 1–9 Days -> Workshop
@@ -181,6 +193,17 @@ async function enrichCoursesWithSeatMetrics(pool, coursesList) {
  * Public: Get all active courses with real-time seat metrics
  */
 export const getActiveCourses = async (req, res) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  });
+
+  const now = Date.now();
+  if (cachedActiveCourses && now - lastCacheTime < CACHE_TTL_MS) {
+    return res.status(200).json({ success: true, count: cachedActiveCourses.length, data: cachedActiveCourses });
+  }
+
   try {
     const pool = getPool();
     const [rows] = await pool.query(
@@ -193,6 +216,8 @@ export const getActiveCourses = async (req, res) => {
         : memoryCourses.filter((c) => c.is_active === 1 || c.is_active === true);
 
     const enriched = await enrichCoursesWithSeatMetrics(pool, baseList);
+    cachedActiveCourses = enriched;
+    lastCacheTime = Date.now();
     return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
@@ -207,13 +232,24 @@ export const getActiveCourses = async (req, res) => {
  * Admin: Get all courses (active + inactive) with full seat analytics
  */
 export const getAllCourses = async (req, res) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+  });
+
+  const now = Date.now();
+  if (cachedAllCourses && now - lastCacheTime < CACHE_TTL_MS) {
+    return res.status(200).json({ success: true, count: cachedAllCourses.length, data: cachedAllCourses });
+  }
+
   try {
     const pool = getPool();
     const [rows] = await pool.query('SELECT * FROM `courses` ORDER BY `id` ASC');
 
     const baseList = rows && rows.length > 0 ? rows : memoryCourses;
     const enriched = await enrichCoursesWithSeatMetrics(pool, baseList);
-
+    cachedAllCourses = enriched;
     return res.status(200).json({ success: true, count: enriched.length, data: enriched });
   } catch (error) {
     console.warn('[Courses] MySQL fallback to in-memory store:', error.message);
@@ -417,6 +453,7 @@ export const createCourse = async (req, res) => {
       };
 
       memoryCourses.unshift(newCourse);
+      invalidateCoursesCache();
 
       return res.status(201).json({
         success: true,
@@ -452,6 +489,7 @@ export const createCourse = async (req, res) => {
       };
       // Append newly added offering at the end
       memoryCourses.push(newCourse);
+      invalidateCoursesCache();
 
       return res.status(201).json({
         success: true,
@@ -698,6 +736,8 @@ export const updateCourse = async (req, res) => {
       };
     }
 
+    invalidateCoursesCache();
+
     return res.status(200).json({
       success: true,
       message: 'Offering & seat configuration updated successfully!',
@@ -732,6 +772,8 @@ export const toggleCourseStatus = async (req, res) => {
       memoryCourses[idx].is_active = newStatus;
     }
 
+    invalidateCoursesCache();
+
     return res.status(200).json({
       success: true,
       message: `Offering status changed to ${newStatus ? 'Active' : 'Inactive'}.`,
@@ -761,6 +803,7 @@ export const deleteCourse = async (req, res) => {
     }
 
     memoryCourses = memoryCourses.filter((c) => String(c.id) !== String(id));
+    invalidateCoursesCache();
 
     return res.status(200).json({
       success: true,

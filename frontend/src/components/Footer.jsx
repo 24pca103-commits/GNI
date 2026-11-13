@@ -89,11 +89,11 @@ export default function Footer() {
             </div>
             <div className="space-y-1.5 pt-1 text-xs font-['DM_Sans'] text-[#6B4030]">
               <a
-                href="tel:+919061621111"
+                href="tel:+919514334698"
                 className="flex items-center gap-2 hover:text-[#4A2C20] transition-colors"
               >
                 <Phone className="w-3.5 h-3.5 text-[#B89555]" />
-                <span className="font-number">+91 90616 21111</span>
+                <span className="font-number">+91 95143 34698</span>
               </a>
               <a
                 href="mailto:info@globalnagasinstitute.com"

@@ -73,7 +73,7 @@ export default function CreatorsCircle() {
             <Reveal direction="up" delay={500}>
               <div className="pt-2">
                 <a
-                  href="https://wa.me/919061621111?text=Hello%20Global%20Nagas%20Institute%2C%20I%20would%20like%20to%20join%20the%20A2O%20Artisan%20Community"
+                  href="https://wa.me/919514334698?text=Hello%20Global%20Nagas%20Institute%2C%20I%20would%20like%20to%20join%20the%20A2O%20Artisan%20Community"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl font-['DM_Sans'] text-xs font-semibold text-[#241A16] bg-[#B89555] hover:bg-[#c8a565] shadow-sm transition-all duration-200 cursor-pointer group"

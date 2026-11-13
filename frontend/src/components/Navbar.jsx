@@ -167,11 +167,11 @@ export default function Navbar() {
                 <span className="hidden sm:inline">info@globalnagasinstitute.com</span>
               </a>
               <a
-                href="tel:+919061621111"
+                href="tel:+919514334698"
                 className="flex items-center gap-1.5 hover:text-[#B89555] transition-colors text-[#F7F2E8]/85"
               >
                 <Phone className="w-3.5 h-3.5 text-[#B89555]" />
-                <span className="font-number font-medium text-[#F7F2E8] text-[11px] sm:text-xs">+91 90616 21111</span>
+                <span className="font-number font-medium text-[#F7F2E8] text-[11px] sm:text-xs">+91 95143 34698</span>
               </a>
             </div>
 

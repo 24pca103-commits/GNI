@@ -438,8 +438,18 @@ export default function Register() {
 
     loadConfig();
 
+    window.addEventListener('storage', loadConfig);
+    window.addEventListener('focus', loadConfig);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') loadConfig();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('storage', loadConfig);
+      window.removeEventListener('focus', loadConfig);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, []);
 
