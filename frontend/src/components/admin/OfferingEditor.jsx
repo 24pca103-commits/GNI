@@ -692,9 +692,9 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                   className={inputClass(effectiveFeeError, 'w-full h-10 tabular-nums font-semibold')}
                 />
               </div>
-              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-36 min-w-[85px]">
-                <label htmlFor={`dur-${i}-reg`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
-                  Regular fee ₹ <span className="text-[11px] font-normal text-[#6B4030]/60">(optional)</span>
+              <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-36 min-w-0">
+                <label htmlFor={`dur-${i}-reg`} className="text-xs font-semibold text-[#6B4030] leading-tight">
+                  Regular fee ₹ <span className="text-[10.5px] font-normal text-[#6B4030]/70 inline-block">(optional)</span>
                 </label>
                 <input
                   id={`dur-${i}-reg`}
@@ -724,7 +724,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
             {/* Row 2: Total seats, Booked, Seats left & Cohort Badges with matching top-aligned labels */}
             <div className="mt-3 flex flex-wrap items-end gap-2 sm:gap-4 rounded-xl border border-[#6B4030]/12 bg-[#FAF7F0] p-2.5 sm:p-3">
               <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-24 min-w-0">
-                <label htmlFor={`dur-${i}-seats`} className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">
+                <label htmlFor={`dur-${i}-seats`} className="text-xs font-semibold text-[#6B4030] leading-tight">
                   Total seats <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -754,7 +754,7 @@ function DurationOptions({ options, type, bookedSeats = 0, mainTitle = '', mainD
                 </div>
               </div>
               <div className="flex flex-col gap-1 flex-1 sm:flex-initial sm:w-20 min-w-0">
-                <span className="text-xs font-semibold text-[#6B4030] whitespace-nowrap">Seats left</span>
+                <span className="text-xs font-semibold text-[#6B4030] leading-tight">Seats left</span>
                 <div
                   className={`flex h-10 w-full items-center justify-center rounded-xl border px-2 text-sm font-bold tabular-nums ${
                     optLeft > 0 ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-red-300 bg-red-50 text-red-600'

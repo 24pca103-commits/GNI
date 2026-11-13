@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle2, Clock, MessageSquareQuote, RefreshCw, Star, ThumbsDown, ThumbsUp, Trash2, XCircle } from 'lucide-react';
-import { Badge, Button, EmptyState, IconAction, PageHeader, Panel, Segmented } from './AdminUI';
+import { Badge, Button, EmptyState, IconAction, PageHeader, Panel, Select } from './AdminUI';
 import { formatDate } from './adminFormat';
 
 const statusOf = (f) => (f.status === 'approved' || f.status === 'rejected' ? f.status : 'pending');
@@ -48,17 +48,23 @@ export default function FeedbackView({ feedbacks, loading, busyId, onRefresh, on
         }
       />
 
-      <Segmented
-        label="Filter reviews"
-        value={filter}
-        onChange={setFilter}
-        options={[
-          { value: 'pending', label: 'Awaiting review', count: counts.pending },
-          { value: 'approved', label: 'Published', count: counts.approved },
-          { value: 'rejected', label: 'Rejected', count: counts.rejected },
-          { value: 'all', label: 'All', count: counts.all },
-        ]}
-      />
+      <div className="flex items-center gap-2 w-full sm:w-auto">
+        <label htmlFor="feedback-filter-select" className="text-xs font-semibold uppercase tracking-wider text-[#6B4030]/80 shrink-0">
+          Status:
+        </label>
+        <Select
+          id="feedback-filter-select"
+          label="Filter reviews"
+          value={filter}
+          onChange={setFilter}
+          className="w-full sm:w-auto font-medium"
+        >
+          <option value="pending">Awaiting review ({counts.pending})</option>
+          <option value="approved">Published ({counts.approved})</option>
+          <option value="rejected">Rejected ({counts.rejected})</option>
+          <option value="all">All reviews ({counts.all})</option>
+        </Select>
+      </div>
 
       {visible.length === 0 ? (
         <Panel>

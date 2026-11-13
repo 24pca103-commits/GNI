@@ -293,13 +293,13 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
           />
         ) : (
           <>
-            {/* Mobile card list */}
-            <ul className="divide-y divide-[#6B4030]/8 md:hidden">
+            {/* Mobile card list with distinct spaced cards */}
+            <div className="p-3 sm:p-4 space-y-3 md:hidden bg-[#FAF7F0]/40">
               {visible.map((r) => (
-                <li
+                <article
                   key={r.id}
                   onClick={() => setOpenId(r.id)}
-                  className="space-y-2.5 p-4 transition-colors hover:bg-[#FCFAF6] cursor-pointer"
+                  className="rounded-2xl border border-[#6B4030]/15 bg-white p-3.5 shadow-xs space-y-2.5 transition-all hover:border-[#B89555]/50 hover:shadow-sm cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -321,7 +321,7 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#6B4030]/8" onClick={(e) => e.stopPropagation()}>
                     <StatusSelect value={r.payment_status} studentName={nameOf(r)} onChange={(v) => onStatusChange(r.id, v)} />
                     <button
                       type="button"
@@ -331,9 +331,9 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                       Details <ChevronRight className="h-3.5 w-3.5" />
                     </button>
                   </div>
-                </li>
+                </article>
               ))}
-            </ul>
+            </div>
 
             {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">

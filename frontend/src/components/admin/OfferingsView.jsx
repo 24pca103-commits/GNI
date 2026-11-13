@@ -9,7 +9,7 @@ import {
   PageHeader,
   Panel,
   SearchInput,
-  Segmented,
+  Select,
   StatCard,
   Switch
 } from './AdminUI';
@@ -103,17 +103,23 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
 
       <Panel>
         <div className="flex flex-col gap-3 border-b border-[#6B4030]/10 p-3 sm:flex-row sm:items-center sm:justify-between">
-          <Segmented
-            label="Filter offerings"
-            value={filter}
-            onChange={setFilter}
-            options={[
-              { value: 'all', label: 'All', count: counts.all },
-              { value: 'workshop', label: 'Workshops', count: counts.workshop },
-              { value: 'journey', label: 'Journeys', count: counts.journey },
-              { value: 'hidden', label: 'Hidden', count: counts.hidden },
-            ]}
-          />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <label htmlFor="offering-filter-select" className="text-xs font-semibold uppercase tracking-wider text-[#6B4030]/80 shrink-0">
+              Category:
+            </label>
+            <Select
+              id="offering-filter-select"
+              label="Filter offerings"
+              value={filter}
+              onChange={setFilter}
+              className="w-full sm:w-auto font-medium"
+            >
+              <option value="all">All offerings ({counts.all})</option>
+              <option value="workshop">Workshops ({counts.workshop})</option>
+              <option value="journey">Journeys ({counts.journey})</option>
+              <option value="hidden">Hidden from website ({counts.hidden})</option>
+            </Select>
+          </div>
           <SearchInput value={search} onChange={setSearch} placeholder="Search by title, badge or pillar" />
         </div>
 
@@ -216,49 +222,92 @@ export default function OfferingsView({ courses, loading, onCreate, onEdit, onTo
               </tbody>
             </table>
 
-            {/* Mobile / tablet cards */}
-            <ul className="divide-y divide-[#6B4030]/8 xl:hidden">
+            {/* Mobile / tablet cards with clear spacing and boundaries */}
+            <div className="p-3 sm:p-4 space-y-3.5 xl:hidden bg-[#FAF7F0]/40">
               {visible.map(({ course, kind }) => {
                 const live = Boolean(Number(course.is_active));
                 const offer = Number(course.discount_price) || 0;
                 const regular = Number(course.original_price) || 0;
                 return (
-                  <li key={course.id} className={`space-y-3 p-4 ${live ? '' : 'opacity-70'}`}>
+                  <article
+                    key={course.id}
+                    className={`rounded-2xl border border-[#6B4030]/15 bg-white p-4 shadow-xs space-y-3.5 transition-all hover:border-[#B89555]/50 hover:shadow-sm ${
+                      live ? '' : 'opacity-75 bg-[#FAF7F0]/60'
+                    }`}
+                  >
                     <div className="flex gap-3">
-                      <img src={course.image_url || '/artisan/workshop.jpg'} alt="" className="h-14 w-16 shrink-0 rounded-lg object-cover" />
+                      <img
+                        src={course.image_url || '/artisan/workshop.jpg'}
+                        alt=""
+                        className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-xl object-cover border border-[#6B4030]/10"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/artisan/workshop.jpg';
+                        }}
+                      />
                       <div className="min-w-0 flex-1">
-                        <p className="line-clamp-2 font-semibold text-[#241A16] [overflow-wrap:anywhere]">{course.title}</p>
-                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[#6B4030]">
-                          <Badge tone="brown">{kind === 'journey' ? 'Journey' : 'Workshop'}</Badge>
+                        <button
+                          type="button"
+                          onClick={() => onEdit(course)}
+                          className="block w-full text-left line-clamp-2 font-semibold text-sm sm:text-base text-[#241A16] hover:text-[#8A6A30] cursor-pointer [overflow-wrap:anywhere]"
+                        >
+                          {course.title}
+                        </button>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-[#6B4030]">
+                          <Badge tone="brown" icon={kind === 'journey' ? Compass : Hammer}>
+                            {kind === 'journey' ? 'Journey' : 'Workshop'}
+                          </Badge>
                           <span>{course.duration}</span>
+                          <span aria-hidden="true">·</span>
+                          <span>{contentSummary(course, kind)}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-                      <span>
-                        <span className="font-semibold tabular-nums">{formatINR(offer)}</span>
-                        {regular > offer && <span className="ml-2 text-xs text-[#6B4030]/60 line-through">{formatINR(regular)}</span>}
-                      </span>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 pt-1 border-t border-[#6B4030]/8">
+                      <div>
+                        <span className="font-bold text-base sm:text-lg tabular-nums text-[#241A16]">{formatINR(offer)}</span>
+                        {regular > offer && (
+                          <span className="ml-2 text-xs tabular-nums text-[#6B4030]/60 line-through">{formatINR(regular)}</span>
+                        )}
+                      </div>
                       <div className="w-full sm:w-48 sm:max-w-[200px]">
                         <SeatsBar total={Number(course.seats_total) || 0} booked={Number(course.booked_seats) || 0} />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
+
+                    <div className="flex items-center justify-between pt-2 border-t border-[#6B4030]/8">
                       <div className="flex items-center gap-2">
-                        <Switch checked={live} onChange={() => onToggle(course.id, live ? 1 : 0)} label={live ? 'Hide from website' : 'Show on website'} />
-                        <span className={`text-xs font-medium ${live ? 'text-emerald-700' : 'text-[#6B4030]/70'}`}>{live ? 'Live' : 'Hidden'}</span>
+                        <Switch
+                          checked={live}
+                          onChange={() => onToggle(course.id, live ? 1 : 0)}
+                          label={live ? 'Hide from website' : 'Show on website'}
+                        />
+                        <span className={`text-xs font-semibold ${live ? 'text-emerald-700' : 'text-[#6B4030]/70'}`}>
+                          {live ? 'Live' : 'Hidden'}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Button icon={Pencil} onClick={() => onEdit(course)} className="py-1 px-2.5 sm:px-3 text-xs sm:text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="secondary"
+                          icon={Pencil}
+                          onClick={() => onEdit(course)}
+                          className="py-1 px-3 text-xs sm:text-sm"
+                        >
                           Edit
                         </Button>
-                        <IconAction icon={Trash2} label="Delete offering" tone="danger" onClick={() => onDelete(course.id, course.title)} />
+                        <IconAction
+                          icon={Trash2}
+                          label="Delete offering"
+                          tone="danger"
+                          onClick={() => onDelete(course.id, course.title)}
+                        />
                       </div>
                     </div>
-                  </li>
+                  </article>
                 );
               })}
-            </ul>
+            </div>
           </>
         )}
       </Panel>
