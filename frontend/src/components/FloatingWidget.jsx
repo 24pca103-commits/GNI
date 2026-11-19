@@ -50,7 +50,7 @@ export default function FloatingWidget() {
     <aside
       aria-label="Quick actions and contact options"
       aria-hidden={!atBottom}
-      className={`fixed right-4 bottom-[84px] sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2.5 print:hidden transition-all duration-300 ease-out ${
+      className={`fixed right-4 bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6 lg:right-6 z-50 flex flex-col items-end gap-2.5 print:hidden transition-all duration-300 ease-out ${
         atBottom ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none invisible'
       }`}
     >

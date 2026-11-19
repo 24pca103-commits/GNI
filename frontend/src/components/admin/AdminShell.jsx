@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Inbox, Landmark, Layers, LogOut, Menu, MessageSquareQuote, RefreshCw, X } from 'lucide-react';
 
@@ -9,20 +9,32 @@ const NAV = [
   { id: 'pillars', label: 'Pillars', icon: Landmark },
 ];
 
-function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync, onLogout }) {
+function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync, onLogout, onClose }) {
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full min-h-full flex-col bg-white">
       {/* Brand Header */}
-      <div className="flex items-center gap-3 px-5 pr-12 lg:pr-5 py-4 sm:py-5 border-b border-[#6B4030]/10">
-        <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-10 w-auto object-contain shrink-0" />
-        <div className="min-w-0">
-          <p className="truncate font-['Cormorant_Garamond'] text-lg font-bold leading-tight text-[#241A16]">Global Nagas Institute</p>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#B89555]">Admin</p>
+      <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-4 sm:py-5 border-b border-[#6B4030]/10 shrink-0 bg-white">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-9 sm:h-10 w-auto object-contain shrink-0" />
+          <div className="min-w-0">
+            <p className="truncate font-['Cormorant_Garamond'] text-base sm:text-lg font-bold leading-tight text-[#241A16]">Global Nagas Institute</p>
+            <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#B89555]">Admin Workspace</p>
+          </div>
         </div>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close menu"
+            className="lg:hidden rounded-lg p-1.5 text-[#6B4030] hover:bg-[#4A2C20]/10 hover:text-[#241A16] cursor-pointer shrink-0 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* Nav List */}
-      <nav className="flex-1 space-y-1.5 px-3 py-3 overflow-y-auto" aria-label="Admin sections">
+      <nav className="flex-1 space-y-1.5 px-3 py-3 overflow-y-auto overscroll-contain bg-white" aria-label="Admin sections">
         {NAV.map((item) => {
           const isActive = active === item.id;
           const badge = badges[item.id];
@@ -30,7 +42,10 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
             <button
               key={item.id}
               type="button"
-              onClick={() => onNavigate(item.id)}
+              onClick={() => {
+                onNavigate(item.id);
+                if (onClose) onClose();
+              }}
               aria-current={isActive ? 'page' : undefined}
               className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold transition-all cursor-pointer ${
                 isActive
@@ -60,7 +75,7 @@ function SidebarContent({ active, onNavigate, badges, onSync, syncing, lastSync,
       </nav>
 
       {/* Bottom Footer Actions */}
-      <div className="space-y-1 border-t border-[#6B4030]/10 px-3 py-3 bg-[#FAF7F0]/50">
+      <div className="space-y-1 border-t border-[#6B4030]/10 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0.75rem))] bg-[#FAF7F0] shrink-0">
         <button
           type="button"
           onClick={onSync}
@@ -96,6 +111,18 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
   const [mobileOpen, setMobileOpen] = useState(false);
   const shared = { active, badges, onSync, syncing, lastSync, onLogout };
 
+  // Lock body scroll on mobile when menu drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F7F2E8] font-['DM_Sans'] text-[#241A16]">
       {/* Desktop sidebar */}
@@ -103,7 +130,7 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
         <SidebarContent {...shared} onNavigate={onNavigate} />
       </aside>
 
-      {/* Mobile top bar */}
+      {/* Mobile & Tablet top bar */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[#6B4030]/15 bg-[#F7F2E8]/95 backdrop-blur-md px-3 sm:px-4 py-2.5 lg:hidden shadow-xs w-full max-w-full">
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-2">
           <img src="/artisan/logo.png" alt="Global Nagas Institute logo" className="h-8 sm:h-9 w-auto object-contain shrink-0" />
@@ -124,20 +151,17 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
         </button>
       </header>
 
+      {/* Mobile & Tablet Drawer Modal */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-2xs" onClick={() => setMobileOpen(false)} />
-          <aside className="relative h-full w-72 max-w-[85vw] border-r border-[#6B4030]/15 bg-white shadow-xl">
-            <button
-              type="button"
-              onClick={() => setMobileOpen(false)}
-              aria-label="Close menu"
-              className="absolute right-3 top-5 rounded-lg p-1.5 text-[#6B4030] hover:bg-[#4A2C20]/10 cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
+        <div className="fixed inset-0 z-50 lg:hidden flex h-dvh min-h-dvh" role="dialog" aria-modal="true">
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-2xs transition-opacity"
+            onClick={() => setMobileOpen(false)}
+          />
+          <aside className="relative flex flex-col h-full h-dvh max-h-dvh min-h-dvh w-72 max-w-[85vw] border-r border-[#6B4030]/15 bg-white shadow-2xl z-10 overscroll-contain">
             <SidebarContent
               {...shared}
+              onClose={() => setMobileOpen(false)}
               onNavigate={(id) => {
                 setMobileOpen(false);
                 onNavigate(id);

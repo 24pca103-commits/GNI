@@ -23,8 +23,42 @@ export default function Navbar() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('#home');
 
+  const navBarRef = React.useRef(null);
+  const [navBarHeight, setNavBarHeight] = useState(58);
+
   const isClickScrollingRef = React.useRef(false);
   const clickTimeoutRef = React.useRef(null);
+
+  // Dynamically track the bottom nav bar's exact rendered height across devices
+  useEffect(() => {
+    const updateHeight = () => {
+      if (navBarRef.current) {
+        setNavBarHeight(navBarRef.current.offsetHeight);
+      }
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+    };
+  }, []);
+
+  // Lock background body scroll when mobile "More" drawer is open
+  useEffect(() => {
+    if (moreMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      if (navBarRef.current) {
+        setNavBarHeight(navBarRef.current.offsetHeight);
+      }
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [moreMenuOpen]);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -268,8 +302,8 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Right: Register CTA Button */}
-            <div className="hidden sm:flex items-center">
+            {/* Desktop Right: Register CTA Button */}
+            <div className="hidden lg:flex items-center">
               <Link
                 to="/register"
                 className="inline-flex items-center gap-1.5 px-4.5 py-2 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors border border-[#4A2C20] shadow-sm"
@@ -279,8 +313,8 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile Right: Register CTA Button (No Hamburger 3-Line Menu) */}
-            <div className="flex sm:hidden items-center shrink-0">
+            {/* Mobile & Tablet Right: Register CTA Button */}
+            <div className="flex lg:hidden items-center shrink-0">
               <Link
                 to="/register"
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full font-['DM_Sans'] text-xs font-semibold text-[#F7F2E8] bg-[#4A2C20] hover:bg-[#6B4030] transition-colors shadow-xs border border-[#B89555]/40"
@@ -294,9 +328,14 @@ export default function Navbar() {
       </nav>
       </header>
 
-      {/* Mobile "More" Menu Bottom Sheet / Drawer - Positioned cleanly right above the bottom nav bar */}
+      {/* Mobile & Tablet "More" Menu Bottom Sheet / Drawer - Anchored seamlessly right above the bottom nav bar with zero gap */}
       {moreMenuOpen && (
-        <div className="sm:hidden fixed inset-0 z-40 flex flex-col justify-end pb-[54px]">
+        <div
+          className="lg:hidden fixed inset-0 z-40 flex flex-col justify-end"
+          style={{ paddingBottom: `${navBarHeight}px` }}
+          role="dialog"
+          aria-modal="true"
+        >
           {/* Backdrop overlay */}
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-200"
@@ -304,7 +343,7 @@ export default function Navbar() {
           />
 
           {/* Bottom Drawer Card */}
-          <div className="relative z-10 bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.6)] p-4 pb-4 space-y-3 max-h-[72vh] overflow-y-auto">
+          <div className="relative z-10 w-full max-w-lg mx-auto bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.6)] p-4 pb-4 space-y-3 max-h-[72dvh] overflow-y-auto overscroll-contain">
             {/* Header with Title & Close Button */}
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
               <div className="flex items-center gap-2">
@@ -413,9 +452,12 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Mobile Fixed Bottom Navigation Bar - Exactly 5 items with Clicked/Active Link Highlight */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] py-1.5 px-1">
-        <div className="flex items-center justify-between w-full max-w-md mx-auto">
+      {/* Mobile & Tablet Fixed Bottom Navigation Bar - Exactly 5 items with Clicked/Active Link Highlight */}
+      <div
+        ref={navBarRef}
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] pt-1.5 px-1 pb-[max(0.375rem,env(safe-area-inset-bottom,0.375rem))]"
+      >
+        <div className="flex items-center justify-between w-full max-w-lg mx-auto">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.href;
