@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Inbox, Landmark, Layers, LogOut, Menu, MessageSquareQuote, RefreshCw, X } from 'lucide-react';
 
@@ -111,16 +112,31 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
   const [mobileOpen, setMobileOpen] = useState(false);
   const shared = { active, badges, onSync, syncing, lastSync, onLogout };
 
-  // Lock body scroll on mobile when menu drawer is open
+  // Bulletproof mobile scroll lock: freeze body with position fixed so background cannot scroll
   useEffect(() => {
     if (mobileOpen) {
+      const scrollY = window.scrollY;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalWidth = document.body.style.width;
+      const originalOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+
+      return () => {
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.overflow = originalOverflow;
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.width = originalWidth;
+        window.scrollTo(0, scrollY);
+      };
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [mobileOpen]);
 
   return (
@@ -151,25 +167,30 @@ export default function AdminShell({ active, onNavigate, badges, onSync, syncing
         </button>
       </header>
 
-      {/* Mobile & Tablet Drawer Modal */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex h-dvh min-h-dvh" role="dialog" aria-modal="true">
-          <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-2xs transition-opacity"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="relative flex flex-col h-full h-dvh max-h-dvh min-h-dvh w-72 max-w-[85vw] border-r border-[#6B4030]/15 bg-white shadow-2xl z-10 overscroll-contain">
-            <SidebarContent
-              {...shared}
-              onClose={() => setMobileOpen(false)}
-              onNavigate={(id) => {
-                setMobileOpen(false);
-                onNavigate(id);
-              }}
+      {/* Mobile & Tablet Drawer Modal - Rendered via Portal directly into document.body */}
+      {mobileOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[9990] lg:hidden" role="dialog" aria-modal="true">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200"
+              onClick={() => setMobileOpen(false)}
+              onTouchMove={(e) => e.preventDefault()}
             />
-          </aside>
-        </div>
-      )}
+            {/* Fixed Sidebar Drawer - 100% viewport height, anchored top: 0 to bottom: 0 */}
+            <aside className="fixed inset-y-0 left-0 z-10 flex flex-col w-72 max-w-[85vw] h-full h-[100dvh] min-h-[100dvh] max-h-[100dvh] bg-white shadow-2xl border-r border-[#6B4030]/15 overscroll-contain">
+              <SidebarContent
+                {...shared}
+                onClose={() => setMobileOpen(false)}
+                onNavigate={(id) => {
+                  setMobileOpen(false);
+                  onNavigate(id);
+                }}
+              />
+            </aside>
+          </div>,
+          document.body
+        )}
 
       <main className="w-full max-w-full min-w-0 lg:pl-64">
         <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-10 min-w-0">{children}</div>

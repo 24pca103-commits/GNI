@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import {
   Menu,
@@ -28,6 +29,7 @@ export default function Navbar() {
 
   const isClickScrollingRef = React.useRef(false);
   const clickTimeoutRef = React.useRef(null);
+  const pendingScrollRef = React.useRef(null);
 
   // Dynamically track the bottom nav bar's exact rendered height across devices
   useEffect(() => {
@@ -45,19 +47,54 @@ export default function Navbar() {
     };
   }, []);
 
-  // Lock background body scroll when mobile "More" drawer is open
+  // Bulletproof mobile scroll lock: freeze body with position fixed so background cannot scroll
   useEffect(() => {
     if (moreMenuOpen) {
-      document.body.style.overflow = 'hidden';
       if (navBarRef.current) {
         setNavBarHeight(navBarRef.current.offsetHeight);
       }
-    } else {
-      document.body.style.overflow = '';
+      const scrollY = window.scrollY;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalWidth = document.body.style.width;
+      const originalOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+
+      return () => {
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.overflow = originalOverflow;
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.width = originalWidth;
+
+        if (pendingScrollRef.current) {
+          const targetSelector = pendingScrollRef.current;
+          pendingScrollRef.current = null;
+          // Restore position first so offsets calculate accurately
+          window.scrollTo(0, scrollY);
+          // Wait a frame for DOM unfreezing to settle before initiating smooth scroll
+          requestAnimationFrame(() => {
+            const target = document.querySelector(targetSelector);
+            if (target) {
+              const headerOffset = 70;
+              const targetTop = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+              window.scrollTo({
+                top: targetTop,
+                behavior: 'smooth',
+              });
+            }
+          });
+        } else {
+          window.scrollTo(0, scrollY);
+        }
+      };
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [moreMenuOpen]);
 
   useEffect(() => {
@@ -158,18 +195,28 @@ export default function Navbar() {
   ];
 
   const handleNavClick = (e, href) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setActiveSection(href);
     isClickScrollingRef.current = true;
     if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
     clickTimeoutRef.current = setTimeout(() => {
       isClickScrollingRef.current = false;
-    }, 1000);
+    }, 1200);
 
     if (window.location.pathname !== '/') {
       window.location.href = '/' + href;
       return;
     }
+
+    // If "More" drawer is open, queue the target section so the cleanup can unfreeze the body first,
+    // then smoothly scroll to the section without getting blocked or reset by the scroll-lock.
+    if (moreMenuOpen) {
+      pendingScrollRef.current = href;
+      setMoreMenuOpen(false);
+      setMobileMenuOpen(false);
+      return;
+    }
+
     const target = document.querySelector(href);
     if (target) {
       const headerOffset = 70;
@@ -328,22 +375,29 @@ export default function Navbar() {
       </nav>
       </header>
 
-      {/* Mobile & Tablet "More" Menu Bottom Sheet / Drawer - Anchored seamlessly right above the bottom nav bar with zero gap */}
-      {moreMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-40 flex flex-col justify-end"
-          style={{ paddingBottom: `${navBarHeight}px` }}
-          role="dialog"
-          aria-modal="true"
-        >
-          {/* Backdrop overlay */}
+      {/* Mobile & Tablet "More" Menu Bottom Sheet / Drawer - Rendered via Portal directly into document.body */}
+      {moreMenuOpen &&
+        createPortal(
           <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-200"
-            onClick={() => setMoreMenuOpen(false)}
-          />
+            className="lg:hidden fixed inset-0 z-[9990] flex flex-col justify-end"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Backdrop overlay */}
+            <div
+              className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity duration-200"
+              onClick={() => setMoreMenuOpen(false)}
+              onTouchMove={(e) => e.preventDefault()}
+            />
 
-          {/* Bottom Drawer Card */}
-          <div className="relative z-10 w-full max-w-lg mx-auto bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.6)] p-4 pb-4 space-y-3 max-h-[72dvh] overflow-y-auto overscroll-contain">
+            {/* Bottom Drawer Card - Solid brown background extends down behind bottom nav bar */}
+            <div
+              className="relative z-10 w-full max-w-lg mx-auto bg-[#351E14] border-t-2 border-[#B89555] rounded-t-3xl shadow-[0_-10px_35px_rgba(0,0,0,0.6)] px-4 pt-4 pb-3 space-y-3 overscroll-contain"
+              style={{
+                paddingBottom: `calc(${navBarHeight}px + 0.75rem)`,
+              }}
+              onTouchMove={(e) => e.stopPropagation()}
+            >
             {/* Header with Title & Close Button */}
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
               <div className="flex items-center gap-2">
@@ -449,131 +503,133 @@ export default function Navbar() {
               })}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* Mobile & Tablet Fixed Bottom Navigation Bar - Exactly 5 items with Clicked/Active Link Highlight */}
+      {/* Mobile & Tablet Fixed Bottom Navigation Bar - Elevated to z-[9995] */}
       <div
         ref={navBarRef}
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] pt-1.5 px-1 pb-[max(0.375rem,env(safe-area-inset-bottom,0.375rem))]"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-[9995] bg-[#4A2C20]/95 backdrop-blur-md border-t border-[#B89555]/30 shadow-[0_-4px_25px_rgba(0,0,0,0.35)] pt-1.5 px-1 pb-[max(0.375rem,env(safe-area-inset-bottom,0.375rem))]"
       >
         <div className="flex items-center justify-between w-full max-w-lg mx-auto">
-          {mobileNavItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.href;
-
-            // Center Journey item
-            if (item.isCenter) {
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  aria-label={item.label}
-                  title={item.label}
-                  className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group relative ${
-                    isActive ? 'scale-105' : ''
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all ${
-                      isActive
-                        ? 'bg-[#B89555] text-[#241A16] shadow-[0_0_14px_rgba(184,149,85,0.9)] ring-2 ring-[#E5B869]'
-                        : 'group-hover:bg-white/10 text-[#B89555]'
-                    }`}
-                  >
-                    <Sparkles
-                      className={`w-5 h-5 ${
-                        isActive
-                          ? 'text-[#241A16] animate-pulse drop-shadow-sm'
-                          : 'text-[#B89555] animate-pulse drop-shadow-[0_0_8px_rgba(184,149,85,0.85)]'
-                      }`}
-                    />
-                  </div>
-                  <span
-                    className={`text-[9.5px] font-['DM_Sans'] font-bold mt-0.5 whitespace-nowrap transition-colors ${
-                      isActive
-                        ? 'text-[#E5B869] font-extrabold drop-shadow-[0_0_6px_rgba(229,184,105,0.8)]'
-                        : 'text-[#B89555] animate-text-glow'
-                    }`}
-                  >
-                    {item.shortLabel || item.label}
-                  </span>
-                  
-                </a>
-              );
-            }
-
-            return (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                aria-label={item.label}
-                title={item.label}
-                className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group relative ${
-                  isActive ? 'scale-105' : 'text-[#F7F2E8]/75 hover:text-[#B89555]'
-                }`}
-              >
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all ${
-                    isActive
-                      ? 'bg-[#B89555] text-[#241A16] shadow-[0_0_12px_rgba(184,149,85,0.85)] ring-1 ring-[#E5B869]/60'
-                      : 'text-[#F7F2E8]/80 group-hover:bg-white/10 group-hover:text-[#B89555]'
-                  }`}
-                >
-                  {Icon && <Icon className="w-4.5 h-4.5" />}
-                </div>
-                <span
-                  className={`text-[9.5px] font-['DM_Sans'] mt-0.5 whitespace-nowrap transition-colors ${
-                    isActive
-                      ? 'font-bold text-[#E5B869] drop-shadow-[0_0_4px_rgba(229,184,105,0.6)]'
-                      : 'font-medium text-[#F7F2E8]/75 group-hover:text-[#B89555]'
-                  }`}
-                >
-                  {item.shortLabel || item.label}
-                </span>
-                
-              </a>
-            );
-          })}
-
-          {/* 5th Item: More Button with Active State */}
           {(() => {
+            // Determine if More is currently active (either its drawer is open or user is in a "More" sub-section)
             const isMoreActive =
               moreMenuOpen ||
               moreNavLinks.some((m) => !m.isRoute && m.href === activeSection);
 
             return (
-              <button
-                type="button"
-                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                aria-label="More navigation sections"
-                title="More sections"
-                className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group select-none outline-none focus:outline-none [-webkit-tap-highlight-color:transparent] relative ${
-                  isMoreActive ? 'scale-105' : 'text-[#F7F2E8]/75 hover:text-[#B89555]'
-                }`}
-              >
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all ${
-                    isMoreActive
-                      ? 'bg-[#B89555] text-[#241A16] shadow-[0_0_12px_rgba(184,149,85,0.85)] ring-1 ring-[#E5B869]/60'
-                      : 'text-[#F7F2E8]/80 group-hover:bg-white/10 group-hover:text-[#B89555]'
+              <>
+                {mobileNavItems.map((item) => {
+                  const Icon = item.icon;
+                  // Strictly ONLY ONE menu item can be active at a time! If More is active, Home/About/etc. cannot be active.
+                  const isActive = !isMoreActive && activeSection === item.href;
+
+                  // Center Journey item
+                  if (item.isCenter) {
+                    return (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href)}
+                        aria-label={item.label}
+                        title={item.label}
+                        className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group relative ${
+                          isActive ? 'scale-105' : ''
+                        }`}
+                      >
+                        <div
+                          className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all ${
+                            isActive
+                              ? 'bg-[#B89555] text-[#241A16] shadow-[0_0_14px_rgba(184,149,85,0.9)] ring-2 ring-[#E5B869]'
+                              : 'group-hover:bg-white/10 text-[#B89555]'
+                          }`}
+                        >
+                          <Sparkles
+                            className={`w-5 h-5 ${
+                              isActive
+                                ? 'text-[#241A16] animate-pulse drop-shadow-sm'
+                                : 'text-[#B89555] animate-pulse drop-shadow-[0_0_8px_rgba(184,149,85,0.85)]'
+                            }`}
+                          />
+                        </div>
+                        <span
+                          className={`text-[9.5px] font-['DM_Sans'] font-bold mt-0.5 whitespace-nowrap transition-colors ${
+                            isActive
+                              ? 'text-[#E5B869] font-extrabold drop-shadow-[0_0_6px_rgba(229,184,105,0.8)]'
+                              : 'text-[#B89555] animate-text-glow'
+                          }`}
+                        >
+                          {item.shortLabel || item.label}
+                        </span>
+                      </a>
+                    );
+                  }
+
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      aria-label={item.label}
+                      title={item.label}
+                      className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group relative ${
+                        isActive ? 'scale-105' : 'text-[#F7F2E8]/75 hover:text-[#B89555]'
+                      }`}
+                    >
+                      <div
+                        className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all ${
+                          isActive
+                            ? 'bg-[#B89555] text-[#241A16] shadow-[0_0_12px_rgba(184,149,85,0.85)] ring-1 ring-[#E5B869]/60'
+                            : 'text-[#F7F2E8]/80 group-hover:bg-white/10 group-hover:text-[#B89555]'
+                        }`}
+                      >
+                        {Icon && <Icon className="w-4.5 h-4.5" />}
+                      </div>
+                      <span
+                        className={`text-[9.5px] font-['DM_Sans'] mt-0.5 whitespace-nowrap transition-colors ${
+                          isActive
+                            ? 'font-bold text-[#E5B869] drop-shadow-[0_0_4px_rgba(229,184,105,0.6)]'
+                            : 'font-medium text-[#F7F2E8]/75 group-hover:text-[#B89555]'
+                        }`}
+                      >
+                        {item.shortLabel || item.label}
+                      </span>
+                    </a>
+                  );
+                })}
+
+                {/* 5th Item: More Button with Active State */}
+                <button
+                  type="button"
+                  onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                  aria-label="More navigation sections"
+                  title="More sections"
+                  className={`flex flex-col items-center justify-center flex-1 min-w-0 py-0.5 px-0.5 active:scale-95 transition-all cursor-pointer group select-none outline-none focus:outline-none [-webkit-tap-highlight-color:transparent] relative ${
+                    isMoreActive ? 'scale-105' : 'text-[#F7F2E8]/75 hover:text-[#B89555]'
                   }`}
                 >
-                  <MoreHorizontal className="w-4.5 h-4.5" />
-                </div>
-                <span
-                  className={`text-[9.5px] font-['DM_Sans'] mt-0.5 whitespace-nowrap transition-colors ${
-                    isMoreActive
-                      ? 'font-bold text-[#E5B869] drop-shadow-[0_0_4px_rgba(229,184,105,0.6)]'
-                      : 'font-medium text-[#F7F2E8]/75 group-hover:text-[#B89555]'
-                  }`}
-                >
-                  More
-                </span>
-                
-              </button>
+                  <div
+                    className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all ${
+                      isMoreActive
+                        ? 'bg-[#B89555] text-[#241A16] shadow-[0_0_12px_rgba(184,149,85,0.85)] ring-1 ring-[#E5B869]/60'
+                        : 'text-[#F7F2E8]/80 group-hover:bg-white/10 group-hover:text-[#B89555]'
+                    }`}
+                  >
+                    <MoreHorizontal className="w-4.5 h-4.5" />
+                  </div>
+                  <span
+                    className={`text-[9.5px] font-['DM_Sans'] mt-0.5 whitespace-nowrap transition-colors ${
+                      isMoreActive
+                        ? 'font-bold text-[#E5B869] drop-shadow-[0_0_4px_rgba(229,184,105,0.6)]'
+                        : 'font-medium text-[#F7F2E8]/75 group-hover:text-[#B89555]'
+                    }`}
+                  >
+                    More
+                  </span>
+                </button>
+              </>
             );
           })()}
         </div>
