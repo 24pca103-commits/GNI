@@ -6,6 +6,7 @@ import {
   AlertCircle,
   Mail,
   User,
+  Users,
   Phone,
   MapPin,
   Briefcase,
@@ -48,6 +49,13 @@ import {
 } from '../data/locationData';
 import { DEFAULT_PILLARS } from '../data/pillarData';
 
+export const PILLAR_PATH_OPTIONS = [
+  { id: 'painting', label: 'Painting' },
+  { id: 'libi', label: 'Libi – Language & Epigraphy' },
+  { id: 'sculpturing', label: 'Sculpturing' },
+  { id: 'nagas_metal', label: 'Nagas Metal Art' },
+];
+
 /**
  * Official GNI Approved Course Catalog & Pricing Matrix
  * Strictly course-and-duration-based pricing.
@@ -84,6 +92,80 @@ export function isJourneyOffering(item) {
   if (cat.includes('journey') || title.includes('journey') || cat.includes('cohort')) return true;
 
   return false;
+}
+
+/**
+ * Automatically generates realistic scheduled batches/cohorts based on duration and current calendar.
+ */
+export function generateBatchesForOffering(durationStr, courseTitle) {
+  if (!durationStr) return [];
+
+  const m = String(durationStr).match(/(\d+)\s*days?/i) || String(durationStr).match(/^(\d+)$/);
+  const days = m ? parseInt(m[1], 10) : (durationStr.toLowerCase().includes('month') ? 90 : 30);
+
+  const now = new Date();
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const batches = [];
+
+  if (days < 10) {
+    // Workshops (1-9 days): Frequent studio cohorts
+    for (let i = 1; i <= 3; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      const monthName = monthNames[d.getMonth()];
+      const year = d.getFullYear();
+      if (i === 1) {
+        batches.push({
+          id: `batch-${year}-${d.getMonth() + 1}-1`,
+          name: `${monthName} ${year} — 1st Studio Cohort (1st–${days}th)`,
+          note: 'Studio Hands-on (Morning)',
+        });
+        batches.push({
+          id: `batch-${year}-${d.getMonth() + 1}-2`,
+          name: `${monthName} ${year} — 2nd Studio Cohort (15th–${15 + days - 1}th)`,
+          note: 'Studio Hands-on (Weekend)',
+        });
+      } else {
+        batches.push({
+          id: `batch-${year}-${d.getMonth() + 1}`,
+          name: `${monthName} ${year} — Regular Studio Cohort`,
+          note: 'Open for admissions',
+        });
+      }
+    }
+  } else if (days <= 35) {
+    // 10 - 35 Days: Monthly immersive cohorts
+    for (let i = 1; i <= 3; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      const monthName = monthNames[d.getMonth()];
+      const year = d.getFullYear();
+      batches.push({
+        id: `batch-${year}-${d.getMonth() + 1}`,
+        name: `${monthName} ${year} Intensive Cohort (${monthName} 1st – ${days} Days)`,
+        note: 'Full Studio Immersion',
+      });
+    }
+  } else {
+    // 60+ Days or Multi-month journeys: Seasonal / Quarterly cohorts
+    for (let i = 1; i <= 3; i++) {
+      const startD = new Date(now.getFullYear(), now.getMonth() + (i * 2) - 1, 1);
+      const endD = new Date(startD.getFullYear(), startD.getMonth() + Math.ceil(days / 30), 0);
+      const startMonth = monthNames[startD.getMonth()];
+      const endMonth = monthNames[endD.getMonth()];
+      const year = startD.getFullYear();
+      const cohortTag = i === 1 ? 'Early Cohort' : i === 2 ? 'Mid-Year Cohort' : 'Advanced Cohort';
+      batches.push({
+        id: `batch-${year}-${startD.getMonth() + 1}`,
+        name: `${cohortTag} ${year} (${startMonth} – ${endMonth})`,
+        note: `${days} Days Complete Apprenticeship`,
+      });
+    }
+  }
+
+  return batches;
 }
 
 /**
@@ -367,6 +449,12 @@ export default function Register() {
   const [activeCoursesWithSeats, setActiveCoursesWithSeats] = useState([]);
   const [selectedCourseName, setSelectedCourseName] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('');
+  const [selectedBatch, setSelectedBatch] = useState('');
+
+  // 60 Days Heritage Journey – Learning Path Selection
+  const [learningMode, setLearningMode] = useState('one'); // 'one' | 'all'
+  const [selectedSinglePillar, setSelectedSinglePillar] = useState('Painting');
+  const [isPathCustomMode, setIsPathCustomMode] = useState(true);
 
   // Form Fields
   const [formData, setFormData] = useState({
@@ -501,9 +589,35 @@ export default function Register() {
         } else {
           setSelectedDuration(matched.durations[0]?.duration || '');
         }
+        if (!matched.courseName.toLowerCase().includes('60-day')) {
+          setIsPathCustomMode(false);
+        }
+      }
+    } else if (!courseParam && coursesCatalog.length > 0 && !selectedCourseName) {
+      const journey60 = coursesCatalog.find((c) => c.courseName.includes('60-Day') || c.id.includes('60-day')) || coursesCatalog[0];
+      if (journey60) {
+        setSelectedCourseName(journey60.courseName);
+        setSelectedDuration(journey60.durations[0]?.duration || '60 Days');
       }
     }
   }, [location.search, coursesCatalog.length, activeCoursesWithSeats, allPillars]);
+
+  // Auto-align 60-Day course and batch when in custom learning path mode
+  useEffect(() => {
+    if (isPathCustomMode && coursesCatalog.length > 0) {
+      const journey60 = coursesCatalog.find((c) => c.courseName.includes('60-Day') || c.id.includes('60-day')) || coursesCatalog[0];
+      if (journey60 && selectedCourseName !== journey60.courseName) {
+        setSelectedCourseName(journey60.courseName);
+        setSelectedDuration(journey60.durations[0]?.duration || '60 Days');
+      }
+    }
+  }, [isPathCustomMode, coursesCatalog, selectedCourseName]);
+
+  useEffect(() => {
+    if (isPathCustomMode && availableBatches.length > 0 && !selectedBatch) {
+      setSelectedBatch(availableBatches[0].name);
+    }
+  }, [isPathCustomMode, availableBatches, selectedBatch]);
 
   // Dynamic filtered courses based on selected Pillar and Program Category
   const filteredCourses = useMemo(() => {
@@ -563,6 +677,12 @@ export default function Register() {
     if (!currentCourse) return [];
     return currentCourse.durations || [];
   }, [currentCourse]);
+
+  // Available batches for the currently selected course and duration
+  const availableBatches = useMemo(() => {
+    if (!selectedCourseName || !selectedDuration) return [];
+    return generateBatchesForOffering(selectedDuration, selectedCourseName);
+  }, [selectedCourseName, selectedDuration]);
 
   // Dynamic fee details for currently selected course and duration
   const currentFeeDetails = useMemo(() => {
@@ -636,18 +756,20 @@ export default function Register() {
     setSelectedCategoryFilter(cat);
   };
 
-  // Reset duration whenever the course changes
+  // Reset duration and batch whenever the course changes
   const handleCourseChange = (e) => {
     const newCourseName = e.target.value;
     setSelectedCourseName(newCourseName);
-    // Requirement 2: Reset the selected duration whenever the user changes the course
+    // Reset selected duration & batch whenever the user changes the course
     setSelectedDuration('');
+    setSelectedBatch('');
 
     if (touched.courseName) {
       setErrors((prev) => ({
         ...prev,
         courseName: newCourseName ? '' : 'Please select a Course / Program Name',
         courseDuration: 'Please select an available duration',
+        batch: 'Please select an available Batch / Cohort',
       }));
     }
   };
@@ -655,21 +777,36 @@ export default function Register() {
   const handleDurationChange = (e) => {
     const newDuration = e.target.value;
     setSelectedDuration(newDuration);
+    setSelectedBatch('');
 
     if (touched.courseDuration) {
       setErrors((prev) => ({
         ...prev,
         courseDuration: newDuration ? '' : 'Please select Course Duration',
+        batch: 'Please select an available Batch / Cohort',
       }));
     }
   };
 
   const handleDurationSelect = (durationStr) => {
     setSelectedDuration(durationStr);
+    setSelectedBatch('');
     if (touched.courseDuration) {
       setErrors((prev) => ({
         ...prev,
         courseDuration: durationStr ? '' : 'Please select Course Duration',
+        batch: 'Please select an available Batch / Cohort',
+      }));
+    }
+  };
+
+  const handleBatchChange = (e) => {
+    const newBatch = e.target.value;
+    setSelectedBatch(newBatch);
+    if (touched.batch) {
+      setErrors((prev) => ({
+        ...prev,
+        batch: newBatch ? '' : 'Please select an available Batch / Cohort',
       }));
     }
   };
@@ -781,6 +918,12 @@ export default function Register() {
         }
         break;
 
+      case 'batch':
+        if (!value || !String(value).trim()) {
+          error = 'Please select an available Batch / Cohort';
+        }
+        break;
+
       case 'experienceLevel':
         if (!value) {
           error = 'Please select your prior experience level';
@@ -829,8 +972,10 @@ export default function Register() {
     }
 
     // Validate course selection & duration
+    const effectiveCourseName = isPathCustomMode ? (selectedCourseName || '60-Day Heritage Creator Journey') : selectedCourseName;
+    const effectiveDuration = isPathCustomMode ? (selectedDuration || '60 Days') : selectedDuration;
     newTouched.courseName = true;
-    const courseError = validateField('courseName', selectedCourseName);
+    const courseError = validateField('courseName', effectiveCourseName);
     if (courseError) {
       newErrors.courseName = courseError;
     } else if (isSelectedCourseFull) {
@@ -838,8 +983,12 @@ export default function Register() {
     }
 
     newTouched.courseDuration = true;
-    const durationError = validateField('courseDuration', selectedDuration);
+    const durationError = validateField('courseDuration', effectiveDuration);
     if (durationError) newErrors.courseDuration = durationError;
+
+    newTouched.batch = true;
+    const batchError = validateField('batch', selectedBatch);
+    if (batchError) newErrors.batch = batchError;
 
     setTouched(newTouched);
     setErrors(newErrors);
@@ -856,6 +1005,7 @@ export default function Register() {
     'city',
     'courseName',
     'courseDuration',
+    'batch',
     'profession',
     'experienceLevel',
     'learningPurpose',
@@ -1095,6 +1245,15 @@ export default function Register() {
     const effectiveCity = selectedCity === 'Other' ? (customCity.trim() || 'Other') : selectedCity;
     const currentFullLocation = [effectiveCity, selectedState, currentCountry.name].filter(Boolean).join(', ');
 
+    const is60DayCustom = isPathCustomMode && (selectedCourseName.includes('60-Day') || !selectedCourseName);
+    const learningPathLabel = is60DayCustom
+      ? (learningMode === 'one' ? `Single-Pillar Journey (${selectedSinglePillar})` : 'Four-Pillar Journey (All Four Pillars)')
+      : 'Standard Enrollment';
+
+    const interestedSkillLabel = is60DayCustom
+      ? (learningMode === 'one' ? `Single-Pillar Journey: ${selectedSinglePillar}` : '60-Day Heritage Creator Journey (All Four Pillars)')
+      : (selectedCourseName || '60-Day Heritage Creator Journey');
+
     const submissionPayload = {
       fullName: formData.fullName.trim(),
       email: formData.email.trim().toLowerCase(),
@@ -1107,10 +1266,12 @@ export default function Register() {
       state: selectedState,
       city: effectiveCity,
       profession: formData.profession.trim(),
-      courseName: selectedCourseName,
-      interestedSkill: selectedCourseName,
-      courseDuration: selectedDuration,
-      duration: selectedDuration,
+      courseName: selectedCourseName || '60-Day Heritage Creator Journey',
+      interestedSkill: interestedSkillLabel,
+      learningPath: learningPathLabel,
+      courseDuration: selectedDuration || '60 Days',
+      duration: selectedDuration || '60 Days',
+      batch: selectedBatch,
       experienceLevel: formData.experienceLevel,
       learningPurpose: formData.learningPurpose.trim(),
       paymentMethod: 'Offline Payment at Campus',
@@ -1325,6 +1486,14 @@ export default function Register() {
                       {registeredData.countryDial || currentCountry.dial} {registeredData.phone}
                     </span>
                   </div>
+                  {registeredData.learningPath && registeredData.learningPath !== 'Standard Enrollment' && (
+                    <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                      <span className="text-[#6B4030] font-medium">Selected Learning Path:</span>
+                      <span className="font-bold text-[#B89555] text-right max-w-[200px] sm:max-w-[280px]">
+                        {registeredData.learningPath}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                     <span className="text-[#6B4030] font-medium">Selected Course / Program:</span>
                     <span className="font-bold text-[#B89555] text-right break-words max-w-[180px] sm:max-w-[260px] leading-snug [overflow-wrap:anywhere]">
@@ -1337,6 +1506,14 @@ export default function Register() {
                       {registeredData.courseDuration || selectedDuration}
                     </span>
                   </div>
+                  {(registeredData.batch || selectedBatch) && (
+                    <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
+                      <span className="text-[#6B4030] font-medium">Assigned Batch / Cohort:</span>
+                      <span className="font-semibold text-[#B89555]">
+                        {registeredData.batch || selectedBatch}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between border-b border-[#6B4030]/15 pb-1.5">
                     <span className="text-[#6B4030] font-medium">Approved Course Fee:</span>
                     <span className="font-bold font-number text-[#B89555]">
@@ -1765,164 +1942,355 @@ export default function Register() {
               </div>
 
               {/* -------------------------------------------------------------
-                  STEP 3: HERITAGE PROGRAM & DURATION (List Boxes Only)
+                  STEP 3: HERITAGE PROGRAM & LEARNING PATH
                   ------------------------------------------------------------- */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF7F0] border border-[#6B4030]/15 space-y-3.5">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF7F0] border border-[#6B4030]/15 space-y-4">
                 <div className="flex items-center justify-between border-b border-[#6B4030]/10 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[#4A2C20] text-[#B89555] text-xs font-bold flex items-center justify-center font-number">
                       3
                     </span>
                     <h3 className="font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#4A2C20]">
-                      Heritage Program &amp; Duration
+                      Heritage Program &amp; Learning Path
                     </h3>
                   </div>
-                </div>
-
-                {/* 1. Heritage Skill Pillar List Box */}
-                <div className="space-y-1 text-left">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                      Heritage Skill Pillar
-                    </label>
-                    {selectedPillarId !== 'all' && (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedPillarId('all')}
-                        className="text-[10.5px] font-['DM_Sans'] text-[#B89555] hover:text-[#4A2C20] underline cursor-pointer"
-                      >
-                        Show All Pillars
-                      </button>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <Landmark className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
-                    <select
-                      aria-label="Heritage Skill Pillar"
-                      value={selectedPillarId}
-                      onChange={handlePillarChange}
-                      className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-[#6B4030]/20 bg-white text-xs font-semibold text-[#241A16] cursor-pointer appearance-none focus:outline-hidden focus:border-[#B89555]"
+                  {isPathCustomMode ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsPathCustomMode(false)}
+                      className="text-[11px] font-['DM_Sans'] text-[#8C6832] hover:text-[#4A2C20] underline cursor-pointer"
                     >
-                      <option value="all">All Heritage Pillars</option>
-                      {allPillars.map((p, pIdx) => (
-                        <option key={p.id} value={p.id}>
-                          Pillar {pIdx + 1}: {p.title}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* 2. Course / Program Name List Box */}
-                <div className="space-y-1 text-left">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                      Course / Program Name <span className="text-red-600">*</span>
-                    </label>
-                    {selectedCourseSeatInfo && (
-                      <span className={`text-[10px] font-['DM_Sans'] font-semibold px-2 py-0.5 rounded-full ${
-                        selectedCourseSeatInfo.seats_available === 0
-                          ? 'bg-red-100 text-red-800 border border-red-200'
-                          : selectedCourseSeatInfo.seats_available <= 5
-                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                          : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      }`}>
-                        {selectedCourseSeatInfo.seats_available === 0
-                          ? '0 Seats Available (Full)'
-                          : `${selectedCourseSeatInfo.seats_available} Seats Open`}
-                      </span>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <Layers className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
-                    <select
-                      name="courseName"
-                      value={selectedCourseName}
-                      onChange={handleCourseChange}
-                      onBlur={() => {
-                        setTouched((prev) => ({ ...prev, courseName: true }));
-                        const error = validateField('courseName', selectedCourseName);
-                        setErrors((prev) => ({ ...prev, courseName: error }));
+                      Browse Other Catalog Offerings
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPathCustomMode(true);
+                        const j60 = coursesCatalog.find((c) => c.courseName.includes('60-Day') || c.id.includes('60-day')) || coursesCatalog[0];
+                        if (j60) {
+                          setSelectedCourseName(j60.courseName);
+                          setSelectedDuration(j60.durations[0]?.duration || '60 Days');
+                        }
                       }}
-                      className={`w-full pl-10 pr-9 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden cursor-pointer appearance-none ${
-                        firstErrorField === 'courseName' || isSelectedCourseFull
-                          ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
-                          : selectedCourseName
-                          ? 'border-[#B89555] bg-white'
-                          : 'border-[#6B4030]/20 bg-white focus:bg-white focus:border-[#B89555]'
-                      }`}
+                      className="text-[11px] font-['DM_Sans'] text-[#8C6832] hover:text-[#4A2C20] underline cursor-pointer"
                     >
-                      <option value="">— Select Heritage Program —</option>
-                      {filteredCourses.length === 0 ? (
-                        <option value="" disabled>No programs available in this pillar</option>
-                      ) : (
-                        filteredCourses.map((c) => {
-                          const seat = activeCoursesWithSeats.find((ac) => {
-                            const t = String(ac.title || '').toLowerCase().trim();
-                            const cn = String(c.courseName || '').toLowerCase().trim();
-                            return t.includes(cn) || cn.includes(t);
-                          });
-                          const isCourseFull = seat && seat.seats_available === 0;
-                          const isJourney = isJourneyOffering(c) || (seat && isJourneyOffering(seat));
-                          const shortType = isJourney ? 'Journey' : 'Workshop';
-
-                          return (
-                            <option key={c.id || c.courseName} value={c.courseName}>
-                              [{shortType}] {c.courseName}{isCourseFull ? ' (Full)' : ''}
-                            </option>
-                          );
-                        })
-                      )}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
-                  </div>
-
-                  {firstErrorField === 'courseName' && errors.courseName && (
-                    <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-center gap-1 pt-0.5">
-                      <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>{errors.courseName}</span>
-                    </p>
+                      ← 60-Day Learning Path
+                    </button>
                   )}
                 </div>
 
-                {/* 3. Course Duration List Box */}
+                {isPathCustomMode ? (
+                  /* =========================================================
+                     Custom 60 Days Heritage Journey – Path Selector Card
+                     Exact matching design from user's requested layout
+                     ========================================================= */
+                  <div className="bg-[#0B0907] rounded-2xl p-5 sm:p-6 text-white text-left space-y-5 border border-white/10 shadow-xl">
+                    <h4 className="text-base sm:text-lg font-medium text-white tracking-wide">
+                      60 Days Heritage Journey – Choose Your Learning Path
+                    </h4>
+
+                    {/* Question 1: How would you like to learn? */}
+                    <div className="space-y-2.5">
+                      <p className="text-sm font-medium text-stone-200">
+                        How would you like to learn?
+                      </p>
+                      <div className="space-y-2.5 pl-1">
+                        <label
+                          onClick={() => setLearningMode('one')}
+                          className="flex items-center gap-3 cursor-pointer select-none group"
+                        >
+                          <span
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                              learningMode === 'one'
+                                ? 'border-white'
+                                : 'border-stone-500 group-hover:border-stone-400'
+                            }`}
+                          >
+                            {learningMode === 'one' && (
+                              <span className="w-2 h-2 rounded-full bg-white" />
+                            )}
+                          </span>
+                          <span className="text-sm text-stone-200 group-hover:text-white transition-colors">
+                            I want to learn one pillar
+                          </span>
+                        </label>
+
+                        <label
+                          onClick={() => setLearningMode('all')}
+                          className="flex items-center gap-3 cursor-pointer select-none group"
+                        >
+                          <span
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                              learningMode === 'all'
+                                ? 'border-white'
+                                : 'border-stone-500 group-hover:border-stone-400'
+                            }`}
+                          >
+                            {learningMode === 'all' && (
+                              <span className="w-2 h-2 rounded-full bg-white" />
+                            )}
+                          </span>
+                          <span className="text-sm text-stone-200 group-hover:text-white transition-colors">
+                            I want to learn all four pillars
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Question 2: Select your pillar (shown when learningMode === 'one') */}
+                    {learningMode === 'one' && (
+                      <div className="space-y-2.5 pt-1">
+                        <p className="text-sm font-medium text-stone-200">
+                          Select your pillar
+                        </p>
+                        <div className="space-y-2.5 pl-1">
+                          {PILLAR_PATH_OPTIONS.map((pillar) => (
+                            <label
+                              key={pillar.id}
+                              onClick={() => setSelectedSinglePillar(pillar.label)}
+                              className="flex items-center gap-3 cursor-pointer select-none group"
+                            >
+                              <span
+                                className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                                  selectedSinglePillar === pillar.label
+                                    ? 'border-white'
+                                    : 'border-stone-500 group-hover:border-stone-400'
+                                }`}
+                              >
+                                {selectedSinglePillar === pillar.label && (
+                                  <span className="w-2 h-2 rounded-full bg-white" />
+                                )}
+                              </span>
+                              <span className="text-sm text-stone-200 group-hover:text-white transition-colors">
+                                {pillar.label}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Live Preview Box: Your selection */}
+                    <div className="pt-4 border-t border-white/10 space-y-1.5 text-left">
+                      <p className="text-xs text-stone-400 font-medium">
+                        Your selection
+                      </p>
+                      <h5 className="text-sm sm:text-base font-bold text-white tracking-wide">
+                        {learningMode === 'one' ? 'Single-Pillar Journey' : 'Four-Pillar Journey'}
+                      </h5>
+                      <p className="text-xs sm:text-sm text-stone-300">
+                        {learningMode === 'one'
+                          ? selectedSinglePillar
+                          : 'All Four Pillars (Painting, Libi, Sculpturing, Nagas Metal Art)'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  /* Standard Course Catalog Selectors (Fallback/Browse mode) */
+                  <>
+                    {/* 1. Heritage Skill Pillar List Box */}
+                    <div className="space-y-1 text-left">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                          Heritage Skill Pillar
+                        </label>
+                        {selectedPillarId !== 'all' && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPillarId('all')}
+                            className="text-[10.5px] font-['DM_Sans'] text-[#B89555] hover:text-[#4A2C20] underline cursor-pointer"
+                          >
+                            Show All Pillars
+                          </button>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <Landmark className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
+                        <select
+                          aria-label="Heritage Skill Pillar"
+                          value={selectedPillarId}
+                          onChange={handlePillarChange}
+                          className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-[#6B4030]/20 bg-white text-xs font-semibold text-[#241A16] cursor-pointer appearance-none focus:outline-hidden focus:border-[#B89555]"
+                        >
+                          <option value="all">All Heritage Pillars</option>
+                          {allPillars.map((p, pIdx) => (
+                            <option key={p.id} value={p.id}>
+                              Pillar {pIdx + 1}: {p.title}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* 2. Course / Program Name List Box */}
+                    <div className="space-y-1 text-left">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                          Course / Program Name <span className="text-red-600">*</span>
+                        </label>
+                        {selectedCourseSeatInfo && (
+                          <span className={`text-[10px] font-['DM_Sans'] font-semibold px-2 py-0.5 rounded-full ${
+                            selectedCourseSeatInfo.seats_available === 0
+                              ? 'bg-red-100 text-red-800 border border-red-200'
+                              : selectedCourseSeatInfo.seats_available <= 5
+                              ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          }`}>
+                            {selectedCourseSeatInfo.seats_available === 0
+                              ? '0 Seats Available (Full)'
+                              : `${selectedCourseSeatInfo.seats_available} Seats Open`}
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <Layers className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
+                        <select
+                          name="courseName"
+                          value={selectedCourseName}
+                          onChange={handleCourseChange}
+                          onBlur={() => {
+                            setTouched((prev) => ({ ...prev, courseName: true }));
+                            const error = validateField('courseName', selectedCourseName);
+                            setErrors((prev) => ({ ...prev, courseName: error }));
+                          }}
+                          className={`w-full pl-10 pr-9 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden cursor-pointer appearance-none ${
+                            firstErrorField === 'courseName' || isSelectedCourseFull
+                              ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
+                              : selectedCourseName
+                              ? 'border-[#B89555] bg-white'
+                              : 'border-[#6B4030]/20 bg-white focus:bg-white focus:border-[#B89555]'
+                          }`}
+                        >
+                          <option value="">— Select Heritage Program —</option>
+                          {filteredCourses.length === 0 ? (
+                            <option value="" disabled>No programs available in this pillar</option>
+                          ) : (
+                            filteredCourses.map((c) => {
+                              const seat = activeCoursesWithSeats.find((ac) => {
+                                const t = String(ac.title || '').toLowerCase().trim();
+                                const cn = String(c.courseName || '').toLowerCase().trim();
+                                return t.includes(cn) || cn.includes(t);
+                              });
+                              const isCourseFull = seat && seat.seats_available === 0;
+                              const isJourney = isJourneyOffering(c) || (seat && isJourneyOffering(seat));
+                              const shortType = isJourney ? 'Journey' : 'Workshop';
+
+                              return (
+                                <option key={c.id || c.courseName} value={c.courseName}>
+                                  [{shortType}] {c.courseName}{isCourseFull ? ' (Full)' : ''}
+                                </option>
+                              );
+                            })
+                          )}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
+                      </div>
+                      {firstErrorField === 'courseName' && errors.courseName && (
+                        <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-center gap-1 pt-0.5">
+                          <AlertCircle className="w-3 h-3 shrink-0" />
+                          <span>{errors.courseName}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* 3. Course Duration List Box */}
+                    <div className="space-y-1 text-left">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
+                          Course Duration <span className="text-red-600">*</span>
+                        </label>
+                        {selectedCourseName && availableDurations.length > 0 && (
+                          <span className="text-[10.5px] font-['DM_Sans'] text-[#6B4030]">
+                            {availableDurations.length} duration options available
+                          </span>
+                        )}
+                      </div>
+
+                      {selectedCourseName ? (
+                        <div className="relative">
+                          <Calendar className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
+                          <select
+                            name="courseDuration"
+                            value={selectedDuration}
+                            onChange={handleDurationChange}
+                            onBlur={() => {
+                              setTouched((prev) => ({ ...prev, courseDuration: true }));
+                              const error = validateField('courseDuration', selectedDuration);
+                              setErrors((prev) => ({ ...prev, courseDuration: error }));
+                            }}
+                            className={`w-full pl-10 pr-9 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden cursor-pointer appearance-none ${
+                              firstErrorField === 'courseDuration'
+                                ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
+                                : selectedDuration
+                                ? 'border-[#B89555] bg-white'
+                                : 'border-[#6B4030]/20 bg-white focus:bg-white focus:border-[#B89555]'
+                            }`}
+                          >
+                            <option value="">— Choose Duration for {selectedCourseName} —</option>
+                            {availableDurations.map((d) => (
+                              <option key={d.duration} value={d.duration}>
+                                {d.duration} — Fee: {d.formattedFee} ({d.mode})
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-[#6B4030] absolute right-3 top-3.5 pointer-events-none" />
+                        </div>
+                      ) : (
+                        <div className="p-2.5 rounded-xl border border-dashed border-[#6B4030]/25 bg-white text-xs text-[#6B4030] flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-[#B89555] shrink-0" />
+                          <span>Please select a Course / Program Name above to view available durations.</span>
+                        </div>
+                      )}
+
+                      {firstErrorField === 'courseDuration' && errors.courseDuration && (
+                        <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-center gap-1 pt-0.5">
+                          <AlertCircle className="w-3 h-3 shrink-0" />
+                          <span>{errors.courseDuration}</span>
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* 3b. Batch / Cohort Selection */}
                 <div className="space-y-1 text-left">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-['DM_Sans'] font-medium text-[#4A2C20]">
-                      Course Duration <span className="text-red-600">*</span>
+                      Batch / Cohort <span className="text-red-600">*</span>
                     </label>
-                    {selectedCourseName && availableDurations.length > 0 && (
-                      <span className="text-[10.5px] font-['DM_Sans'] text-[#6B4030]">
-                        {availableDurations.length} duration options available
+                    {selectedCourseName && selectedDuration && availableBatches.length > 0 && (
+                      <span className="text-[10.5px] font-['DM_Sans'] text-[#8C6832] font-medium">
+                        {availableBatches.length} upcoming cohorts
                       </span>
                     )}
                   </div>
 
-                  {selectedCourseName ? (
+                  {selectedCourseName && selectedDuration ? (
                     <div className="relative">
-                      <Calendar className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
+                      <Users className="w-4 h-4 text-[#6B4030] absolute left-3.5 top-3.5 pointer-events-none" />
                       <select
-                        name="courseDuration"
-                        value={selectedDuration}
-                        onChange={handleDurationChange}
+                        name="batch"
+                        value={selectedBatch}
+                        onChange={handleBatchChange}
                         onBlur={() => {
-                          setTouched((prev) => ({ ...prev, courseDuration: true }));
-                          const error = validateField('courseDuration', selectedDuration);
-                          setErrors((prev) => ({ ...prev, courseDuration: error }));
+                          setTouched((prev) => ({ ...prev, batch: true }));
+                          const error = validateField('batch', selectedBatch);
+                          setErrors((prev) => ({ ...prev, batch: error }));
                         }}
                         className={`w-full pl-10 pr-9 py-2.5 rounded-xl border text-sm text-[#241A16] transition-colors focus:outline-hidden cursor-pointer appearance-none ${
-                          firstErrorField === 'courseDuration'
+                          firstErrorField === 'batch'
                             ? 'border-red-500 bg-red-50/10 focus:border-red-600 focus:ring-1 focus:ring-red-500/20'
-                            : selectedDuration
+                            : selectedBatch
                             ? 'border-[#B89555] bg-white'
                             : 'border-[#6B4030]/20 bg-white focus:bg-white focus:border-[#B89555]'
                         }`}
                       >
-                        <option value="">— Choose Duration for {selectedCourseName} —</option>
-                        {availableDurations.map((d) => (
-                          <option key={d.duration} value={d.duration}>
-                            {d.duration} — Fee: {d.formattedFee} ({d.mode})
+                        <option value="">— Choose Batch / Cohort —</option>
+                        {availableBatches.map((b) => (
+                          <option key={b.id || b.name} value={b.name}>
+                            {b.name} {b.note ? `• ${b.note}` : ''}
                           </option>
                         ))}
                       </select>
@@ -1931,14 +2299,14 @@ export default function Register() {
                   ) : (
                     <div className="p-2.5 rounded-xl border border-dashed border-[#6B4030]/25 bg-white text-xs text-[#6B4030] flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#B89555] shrink-0" />
-                      <span>Please select a Course / Program Name above to view available durations.</span>
+                      <span>Please select course and duration above to view scheduled batches.</span>
                     </div>
                   )}
 
-                  {firstErrorField === 'courseDuration' && errors.courseDuration && (
+                  {firstErrorField === 'batch' && errors.batch && (
                     <p className="text-[11px] font-['DM_Sans'] text-red-600 flex items-center gap-1 pt-0.5">
                       <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>{errors.courseDuration}</span>
+                      <span>{errors.batch}</span>
                     </p>
                   )}
                 </div>

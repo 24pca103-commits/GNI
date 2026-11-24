@@ -25,6 +25,8 @@ export const registerUser = async (req, res, next) => {
       interestedSkill,
       courseDuration,
       duration,
+      batch,
+      selectedBatch,
       experienceLevel,
       learningPurpose,
       paymentRef,
@@ -36,6 +38,7 @@ export const registerUser = async (req, res, next) => {
 
     const chosenCourse = (courseName || interestedSkill || '').trim();
     const chosenDuration = (courseDuration || duration || '').trim();
+    const chosenBatch = (batch || selectedBatch || '').trim();
 
     // Validate presence of required fields
     if (
@@ -46,12 +49,13 @@ export const registerUser = async (req, res, next) => {
       !profession ||
       !chosenCourse ||
       !chosenDuration ||
+      !chosenBatch ||
       !experienceLevel ||
       !learningPurpose
     ) {
       return res.status(400).json({
         success: false,
-        message: 'All application fields including Course Name and Course Duration are required.',
+        message: 'All application fields including Course Name, Course Duration, and Batch / Cohort are required.',
       });
     }
 
@@ -160,6 +164,7 @@ export const registerUser = async (req, res, next) => {
           \`profession\`,
           \`interested_skill\`,
           \`course_duration\`,
+          \`batch\`,
           \`course_fee\`,
           \`total_amount\`,
           \`application_ref\`,
@@ -167,7 +172,7 @@ export const registerUser = async (req, res, next) => {
           \`payment_ref\`,
           \`experience_level\`,
           \`learning_purpose\`
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const valuesNew = [
@@ -182,6 +187,7 @@ export const registerUser = async (req, res, next) => {
         profession.trim(),
         courseTitle,
         validatedDuration,
+        chosenBatch,
         trustedFee,
         totalAmount,
         applicationRef,
@@ -222,7 +228,7 @@ export const registerUser = async (req, res, next) => {
         fullPhone || `${countryDial || '+91'} ${phone.trim()}`,
         resolvedLocation.trim(),
         profession.trim(),
-        `${courseTitle} — ${validatedDuration} (${formattedTotal}) [Ref: ${applicationRef}]`,
+        `${courseTitle} — ${validatedDuration} [${chosenBatch}] (${formattedTotal}) [Ref: ${applicationRef}]`,
         experienceLevel,
         learningPurpose.trim(),
       ];
@@ -248,6 +254,10 @@ export const registerUser = async (req, res, next) => {
       interestedSkill: courseTitle,
       courseName: courseTitle,
       courseDuration: validatedDuration,
+        batch: chosenBatch,
+        learningPath: (req.body.learningPath || '').trim(),
+      batch: chosenBatch,
+      learningPath: (req.body.learningPath || '').trim(),
       courseFee: formattedTrustedFee,
       totalAmount: formattedTotal,
       paymentStatus,

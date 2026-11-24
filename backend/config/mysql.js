@@ -58,6 +58,7 @@ export const initMySQL = async () => {
       \`profession\` VARCHAR(255) NOT NULL,
       \`interested_skill\` VARCHAR(255) NOT NULL,
       \`course_duration\` VARCHAR(100) DEFAULT NULL,
+      \`batch\` VARCHAR(150) DEFAULT NULL,
       \`course_fee\` DECIMAL(10,2) DEFAULT NULL,
       \`total_amount\` DECIMAL(10,2) DEFAULT NULL,
       \`application_ref\` VARCHAR(100) DEFAULT NULL,
@@ -261,6 +262,8 @@ export const initMySQL = async () => {
       '`payment_ref` VARCHAR(150) DEFAULT NULL',
       '`state` VARCHAR(150) DEFAULT NULL',
       '`city` VARCHAR(150) DEFAULT NULL',
+      '`batch` VARCHAR(150) DEFAULT NULL',
+      '`learning_path` VARCHAR(150) DEFAULT NULL',
     ];
     for (const col of regCols) {
       try {

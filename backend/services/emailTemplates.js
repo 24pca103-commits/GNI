@@ -197,6 +197,8 @@ export function generateCustomerRegistrationEmail(data) {
   const registrationId = data.applicationRef || (data.id ? `GNI-APP-${data.id}` : 'GNI-REG-CONFIRMED');
   const programName = data.courseName || data.interestedSkill || 'Heritage Learning Program';
   const duration = data.courseDuration || data.duration || 'Scheduled Cohort';
+  const batch = data.batch || data.selectedBatch || '';
+  const learningPath = data.learningPath || '';
   const totalPayable = data.totalAmount || data.courseFee || '₹4,999';
   const paymentStatus = data.paymentStatus || 'Pending Offline Payment at Campus';
 
@@ -241,6 +243,14 @@ export function generateCustomerRegistrationEmail(data) {
           <td style="padding: 5px 0; color: #6B4030; font-weight: 600;">Duration:</td>
           <td style="padding: 5px 0; color: #241A16;">${escapeHtml(duration)}</td>
         </tr>
+        ${learningPath ? `<tr>
+          <td style="padding: 5px 0; color: #6B4030; font-weight: 600;">Learning Path:</td>
+          <td style="padding: 5px 0; color: #B89555; font-weight: 700;">${escapeHtml(learningPath)}</td>
+        </tr>` : ''}
+        ${batch ? `<tr>
+          <td style="padding: 5px 0; color: #6B4030; font-weight: 600;">Batch / Cohort:</td>
+          <td style="padding: 5px 0; color: #4A2C20; font-weight: 700;">${escapeHtml(batch)}</td>
+        </tr>` : ''}
         <tr>
           <td style="padding: 5px 0; color: #6B4030; font-weight: 600;">Tuition / Fee:</td>
           <td style="padding: 5px 0; color: #2D6A4F; font-weight: 700;">${escapeHtml(totalPayable)}</td>
@@ -338,6 +348,8 @@ export function generateAdminRegistrationAlert(data) {
   const profession = data.profession || 'Applicant';
   const program = data.interestedSkill || data.courseName || 'Heritage Learning Program';
   const duration = data.courseDuration || data.duration || 'Scheduled Cohort';
+  const batch = data.batch || data.selectedBatch || '';
+  const learningPath = data.learningPath || '';
   const fee = data.totalAmount || data.courseFee || '₹4,999';
   const experience = data.experienceLevel || 'Beginner';
   const purpose = data.learningPurpose || 'Not provided';
@@ -385,6 +397,10 @@ export function generateAdminRegistrationAlert(data) {
           <td style="padding: 5px 0; color: #8C6832; font-weight: 700; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.5px;">Selected Program:</td>
           <td style="padding: 5px 0; color: #4A2C20; font-weight: 700;">${escapeHtml(program)} (${escapeHtml(duration)})</td>
         </tr>
+        ${data.batch ? `<tr>
+          <td style="padding: 5px 0; color: #8C6832; font-weight: 700; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.5px;">Batch / Cohort:</td>
+          <td style="padding: 5px 0; color: #4A2C20; font-weight: 700;">${escapeHtml(data.batch)}</td>
+        </tr>` : ''}
         <tr>
           <td style="padding: 5px 0; color: #8C6832; font-weight: 700; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.5px;">Tuition / Fee:</td>
           <td style="padding: 5px 0; color: #2D6A4F; font-weight: 700;">${escapeHtml(fee)}</td>
@@ -588,6 +604,8 @@ export function generatePaymentConfirmationEmail(data) {
   const refId = data.applicationRef || 'GNI-APP';
   const program = data.courseName || data.interestedSkill || 'Heritage Learning Program';
   const duration = data.courseDuration || data.duration || 'Scheduled Cohort';
+  const batch = data.batch || data.selectedBatch || '';
+  const learningPath = data.learningPath || '';
   const amountPaid = data.totalAmount || data.courseFee || '₹4,999';
   const paymentMethod = data.paymentMethod || data.paymentRef || 'Verified Official Payment';
 
@@ -691,6 +709,8 @@ export function generateApplicationStatusUpdateEmail(data, newStatus) {
   const refId = data.applicationRef || 'GNI-APP';
   const program = data.courseName || data.interestedSkill || 'Heritage Learning Program';
   const duration = data.courseDuration || data.duration || 'Scheduled Cohort';
+  const batch = data.batch || data.selectedBatch || '';
+  const learningPath = data.learningPath || '';
 
   let badgeType = 'gold';
   let badgeLabel = `Status: ${newStatus}`;
@@ -806,6 +826,8 @@ export function generateCourseUpdateEmail(data, updateNotice) {
   const userName = data.fullName ? data.fullName.trim() : 'Applicant';
   const program = data.courseName || data.interestedSkill || 'Heritage Learning Program';
   const duration = data.courseDuration || data.duration || 'Scheduled Cohort';
+  const batch = data.batch || data.selectedBatch || '';
+  const learningPath = data.learningPath || '';
   const refId = data.applicationRef || 'GNI-APP';
 
   const noticeTitle =

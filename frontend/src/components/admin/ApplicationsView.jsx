@@ -140,6 +140,7 @@ function ApplicationDrawer({ reg, onClose, onStatusChange, onDelete }) {
             <dl className="mt-1 divide-y divide-[#6B4030]/8">
               <DetailRow label="Course">{courseOf(reg)}</DetailRow>
               <DetailRow label="Duration">{reg.course_duration}</DetailRow>
+              <DetailRow label="Batch">{reg.batch}</DetailRow>
               <DetailRow label="Course fee">{reg.course_fee ? formatINR(reg.course_fee) : ''}</DetailRow>
               <DetailRow label="Total amount">{reg.total_amount ? formatINR(reg.total_amount) : ''}</DetailRow>
               <DetailRow label="Payment ref">{reg.payment_ref}</DetailRow>
@@ -187,6 +188,7 @@ function toCSV(rows) {
     ['Profession', (r) => r.profession],
     ['Course', courseOf],
     ['Duration', (r) => r.course_duration],
+    ['Batch', (r) => r.batch || '—'],
     ['Fee', (r) => r.course_fee],
     ['Status', (r) => statusLabel(r.payment_status)],
     ['Experience', (r) => r.experience_level],
@@ -220,7 +222,7 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
     .filter((r) =>
       !term
         ? true
-        : [nameOf(r), r.email, phoneOf(r), r.location, r.application_ref].filter(Boolean).some((v) => String(v).toLowerCase().includes(term))
+        : [nameOf(r), r.email, phoneOf(r), r.location, r.batch, r.application_ref].filter(Boolean).some((v) => String(v).toLowerCase().includes(term))
     )
     .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
@@ -317,7 +319,7 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                   <div className="rounded-lg bg-[#FAF7F0] p-2.5 text-xs">
                     <p className="font-medium text-[#241A16] line-clamp-1">{courseOf(r)}</p>
                     <p className="mt-0.5 text-[#6B4030]/80">
-                      {[r.course_duration, r.course_fee ? formatINR(r.course_fee) : ''].filter(Boolean).join(' · ')}
+                      {[r.course_duration, r.batch, r.course_fee ? formatINR(r.course_fee) : ''].filter(Boolean).join(' · ')}
                     </p>
                   </div>
 
@@ -369,7 +371,7 @@ export default function ApplicationsView({ registrations, loading, onStatusChang
                       <p className="truncate font-medium text-[#241A16]" title={courseOf(r)}>
                         {courseOf(r)}
                       </p>
-                      <p className="text-xs text-[#6B4030]">{[r.course_duration, r.course_fee ? formatINR(r.course_fee) : ''].filter(Boolean).join(' · ')}</p>
+                      <p className="text-xs text-[#6B4030]">{[r.course_duration, r.batch, r.course_fee ? formatINR(r.course_fee) : ''].filter(Boolean).join(' · ')}</p>
                     </td>
                     <td className="px-4 py-3">
                       <StatusSelect value={r.payment_status} studentName={nameOf(r)} onChange={(v) => onStatusChange(r.id, v)} />

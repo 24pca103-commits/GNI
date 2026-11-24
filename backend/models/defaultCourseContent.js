@@ -133,6 +133,36 @@ export const DEFAULT_COURSE_CONTENT = {
     },
   },
 
+  '30-day-classical-iconography-sculptural-forms': {
+    highlights: [
+      {
+        period: 'Day 1–10',
+        title: 'Iconographic Canon & Shilpa Grids',
+        details: 'Dhyana sloka visualization, sacred thalam mana proportion calculations, deity posture canons, and beeswax carving fundamentals.',
+        outcome: 'Canonic Dravidian iconographic proportion drawing & beeswax model',
+        materials: ['Shilpa proportion calipers', 'Beeswax sculpting blank', 'Palm-leaf stylus', 'Handmade cotton paper'],
+      },
+      {
+        period: 'Day 11–20',
+        title: 'Sacred Proportion Metal & Lost-Wax Casting',
+        details: 'Clay slurry investment moulding, furnace dewaxing, antique bronze melting, crucible pouring, and core breakout.',
+        outcome: 'Cast bronze deity sculpture form & copper repoussé sacred medallion',
+        materials: ['Jewellery bronze alloy', 'Graphite crucible', 'Refractory investment clay', 'Chasing chisels'],
+      },
+      {
+        period: 'Day 21–30',
+        title: 'Patina Finishing & Consecration',
+        details: 'Pitch-bowl repoussé chasing, cold chiselling, herbal mineral patina application, agate burnishing, and traditional finishing.',
+        outcome: 'Finished consecrated bronze icon with archival GNI artisan credentials',
+        materials: ['Pine pitch bowl', 'Mineral oxidisers', 'River agate burnishers', 'Buffing compounds'],
+      },
+    ],
+    details: {
+      inclusions: 'All bronze alloy stock, sculpting wax, clay investment materials, chasing chisels and studio tools are included.',
+      field_visit: { enabled: false, title: '', description: '' },
+    },
+  },
+
   '30-day-heritage-foundation-track': {
     highlights: [
       {

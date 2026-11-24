@@ -117,7 +117,7 @@ export const CARD_SHADOW = 'shadow-[0_1px_2px_rgba(36,26,22,0.04),0_12px_32px_-1
 export function OverviewCard({ course, facts, fallbackImage }) {
   return (
     <article className={`h-full rounded-3xl bg-white border border-[#6B4030]/12 overflow-hidden ${CARD_SHADOW} grid sm:grid-cols-5`}>
-      <div className="relative sm:col-span-2 aspect-[16/10] sm:aspect-auto sm:min-h-[340px] bg-[#241A16]">
+      <div className="relative sm:col-span-2 aspect-[16/10] sm:aspect-auto sm:min-h-[290px] bg-[#241A16]">
         <OfferingImage
           src={course.image_url}
           alt={course.title}
@@ -130,7 +130,7 @@ export function OverviewCard({ course, facts, fallbackImage }) {
           </span>
         )}
       </div>
-      <div className="sm:col-span-3 p-5 sm:p-8 flex flex-col justify-center w-full">
+      <div className="sm:col-span-3 p-5 sm:p-6 lg:p-7 flex flex-col justify-center w-full">
         {course.pillar_title && (
           <p className="font-['DM_Sans'] text-xs font-semibold uppercase tracking-[0.14em] text-[#B89555]">
             {course.pillar_title}
@@ -226,7 +226,7 @@ export function BookingCard({ course, inclusions, ctaLabel, onSelectDuration, cl
   const durationOptions = getDurationOptions(course);
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl bg-[#241A16] text-[#F7F2E8] p-6 sm:p-7 shadow-xl shadow-[#241A16]/15 flex flex-col ${className}`}>
+    <div className={`relative overflow-hidden rounded-3xl bg-[#241A16] text-[#F7F2E8] p-5 sm:p-6 lg:p-7 shadow-xl shadow-[#241A16]/15 flex flex-col ${className}`}>
       <div className="pointer-events-none absolute -top-20 -right-20 w-56 h-56 rounded-full bg-[#B89555]/20 blur-3xl" />
       <div className="relative flex flex-col flex-1">
         <div className="flex items-center justify-between gap-3">

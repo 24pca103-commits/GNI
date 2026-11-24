@@ -28,45 +28,47 @@ const FIELD_VISIT_IMAGE = '/artisan/field-visit-banner.png';
 
 function PhaseDetail({ phase, index, className = '' }) {
   return (
-    <div className={`flex flex-col rounded-2xl bg-[#FAF7F0] border border-[#6B4030]/10 p-5 sm:p-7 ${className}`}>
-      <p className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#B89555]">
-        Phase {index + 1}
-        {phase.period && ` · ${phase.period}`}
-      </p>
-      <h5 className="mt-1.5 font-['Cormorant_Garamond'] text-2xl sm:text-[28px] font-bold text-[#241A16] leading-tight">
-        {phase.title}
-      </h5>
-      {phase.details && (
-        <p className="mt-3 font-['DM_Sans'] text-sm sm:text-[15px] text-[#6B4030] leading-relaxed">{phase.details}</p>
-      )}
+    <div className={`flex flex-col justify-between rounded-2xl bg-[#FAF7F0] border border-[#6B4030]/10 p-4 sm:p-5 lg:p-6 ${className}`}>
+      <div>
+        <p className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#B89555]">
+          Phase {index + 1}
+          {phase.period && ` · ${phase.period}`}
+        </p>
+        <h5 className="mt-1 font-['Cormorant_Garamond'] text-xl sm:text-2xl font-bold text-[#241A16] leading-tight">
+          {phase.title}
+        </h5>
+        {phase.details && (
+          <p className="mt-2.5 font-['DM_Sans'] text-xs sm:text-sm text-[#6B4030] leading-relaxed">{phase.details}</p>
+        )}
 
-      {phase.materials.length > 0 && (
-        <div className="mt-5">
-          <p className="font-['DM_Sans'] text-xs font-semibold text-[#4A2C20]">Materials provided</p>
-          <ul className="mt-2 flex flex-wrap gap-1.5">
-            {phase.materials.map((m) => (
-              <li
-                key={m}
-                className="px-2.5 py-1 rounded-md bg-white border border-[#6B4030]/12 font-['DM_Sans'] text-xs text-[#4A2C20]"
-              >
-                {m}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        {phase.materials.length > 0 && (
+          <div className="mt-3.5 sm:mt-4">
+            <p className="font-['DM_Sans'] text-xs font-semibold text-[#4A2C20]">Materials provided</p>
+            <ul className="mt-1.5 flex flex-wrap gap-1.5">
+              {phase.materials.map((m) => (
+                <li
+                  key={m}
+                  className="px-2 py-0.5 rounded-md bg-white border border-[#6B4030]/12 font-['DM_Sans'] text-[11px] text-[#4A2C20]"
+                >
+                  {m}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       {phase.outcome && (
-        <div className="mt-5">
-          <div className="rounded-xl bg-white border border-[#B89555]/40 p-4 flex items-start gap-3">
-            <span className="w-8 h-8 rounded-lg bg-[#4A2C20] text-[#E5B869] flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4" />
+        <div className="mt-4 pt-3 border-t border-[#6B4030]/10">
+          <div className="rounded-xl bg-white border border-[#B89555]/40 p-3 sm:p-3.5 flex items-start gap-3">
+            <span className="w-7 h-7 rounded-lg bg-[#4A2C20] text-[#E5B869] flex items-center justify-center shrink-0">
+              <Sparkles className="w-3.5 h-3.5" />
             </span>
             <div className="min-w-0">
-              <p className="font-['DM_Sans'] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6B4030]/80">
+              <p className="font-['DM_Sans'] text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#6B4030]/80">
                 You&apos;ll create
               </p>
-              <p className="mt-0.5 font-['Cormorant_Garamond'] text-lg sm:text-xl font-bold text-[#241A16] leading-snug">
+              <p className="mt-0.5 font-['Cormorant_Garamond'] text-base sm:text-lg font-bold text-[#241A16] leading-snug">
                 {phase.outcome}
               </p>
             </div>
@@ -128,7 +130,7 @@ function Roadmap({ phases, totalDays }) {
   };
 
   return (
-    <section className={`rounded-3xl bg-white border border-[#6B4030]/12 p-6 sm:p-8 lg:p-10 ${CARD_SHADOW}`}>
+    <section className={`rounded-3xl bg-white border border-[#6B4030]/12 p-5 sm:p-7 lg:p-8 ${CARD_SHADOW}`}>
       <SubHeading
         title="Your roadmap"
         meta={`${phases.length} ${phases.length === 1 ? 'phase' : 'phases'}${totalDays ? ` · ${totalDays} days` : ''}`}
@@ -136,7 +138,7 @@ function Roadmap({ phases, totalDays }) {
 
       {/* Proportional progress bar: one segment per phase */}
       {phases.length > 1 && (
-        <div className="mt-6">
+        <div className="mt-5 sm:mt-6">
           <div className="flex gap-1 h-2">
             {phases.map((p, i) => (
               <button
@@ -159,7 +161,7 @@ function Roadmap({ phases, totalDays }) {
         </div>
       )}
 
-      <div className="mt-6 grid lg:grid-cols-12 gap-4 lg:gap-8 items-start">
+      <div className="mt-5 sm:mt-6 grid lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
         {/* Phase list: displays maximum 4 cards in view, remaining cards scroll inside vertical scroller */}
         <div className="lg:col-span-5 w-full">
           <div className="relative">
@@ -170,8 +172,8 @@ function Roadmap({ phases, totalDays }) {
               ref={listRef}
               className={`space-y-2 overflow-y-auto pr-1.5 [scrollbar-width:thin] [scrollbar-color:#D9C9A6_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-[#6B4030]/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#D9C9A6] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#B89555] ${
                 mobileOpen !== null
-                  ? 'max-h-[520px] lg:max-h-[285px]'
-                  : 'max-h-[285px]'
+                  ? 'max-h-[520px] lg:max-h-[295px]'
+                  : 'max-h-[295px]'
               }`}
             >
             {phases.map((p, i) => {
@@ -262,12 +264,12 @@ function Roadmap({ phases, totalDays }) {
           )}
         </div>
 
-        <div className="hidden lg:block lg:col-span-7">
+        <div className="hidden lg:block lg:col-span-7 h-full">
           <PhaseDetail
             key={safeActive}
             phase={phases[safeActive]}
             index={safeActive}
-            className="gni-fade-up w-full"
+            className="gni-fade-up w-full h-full"
           />
         </div>
       </div>
@@ -277,7 +279,7 @@ function Roadmap({ phases, totalDays }) {
 
 function FieldVisitBanner({ visit }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-[#4A2C20] text-[#F7F2E8] p-5 sm:p-10 border border-[#B89555]/30">
+    <div className="relative overflow-hidden rounded-3xl bg-[#4A2C20] text-[#F7F2E8] p-5 sm:p-7 lg:p-8 border border-[#B89555]/30">
       <div className="absolute inset-0 pointer-events-none select-none flex items-center justify-end">
         <img
           src={FIELD_VISIT_IMAGE}
@@ -293,11 +295,11 @@ function FieldVisitBanner({ visit }) {
           <MapPin className="w-3.5 h-3.5" />
           Field visit
         </span>
-        <h4 className="mt-3 sm:mt-4 font-['Cormorant_Garamond'] text-xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
+        <h4 className="mt-2.5 sm:mt-3 font-['Cormorant_Garamond'] text-lg sm:text-2xl md:text-3xl font-bold text-white leading-tight">
           {visit.title || 'Includes an on-site field visit'}
         </h4>
         {visit.description && (
-          <p className="mt-3 font-['DM_Sans'] text-sm sm:text-base text-[#F7F2E8]/85 leading-relaxed">
+          <p className="mt-2 sm:mt-2.5 font-['DM_Sans'] text-xs sm:text-sm text-[#F7F2E8]/85 leading-relaxed">
             {visit.description}
           </p>
         )}
